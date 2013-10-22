@@ -1,0 +1,43 @@
+[
+    {
+        "pk": 1,
+        "model": "sites.site",
+        "fields": {
+            "domain": "localhost",
+            "name": "Local"
+        }
+    },
+    {
+        "pk": 1,
+        "model": "auth.group",
+        "fields": {
+            "name": "Sample Managers",
+            "permissions": [
+                ["change_sample", "samples", "sample"],
+                ["change_batch", "samples", "batch"],
+                ["change_project", "samples", "project"],
+                ["change_samplemanifest", "samples", "samplemanifest"]
+            ]
+        }
+    },
+    {
+        "pk": 2,
+        "model": "auth.group",
+        "fields": {
+            "name": "Data Source Managers",
+            "permissions": [
+                ["add_source", "sources", "source"],
+                ["change_source", "sources", "source"],
+                ["delete_source", "sources", "source"]
+            ]
+        }
+    },
+    {
+        "pk": 3,
+        "model": "auth.group",
+        "fields": {
+            "name": "Permission Managers",
+            "permissions": []
+        }
+    }
+]

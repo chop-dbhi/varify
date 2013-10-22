@@ -1,0 +1,7 @@
+{% load url from future %}
+<form method="post" action="{% url "login" %}">
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next }}">
+    {{ form|bootstrap }}
+    <input class="btn btn-primary btn-block" type="submit" value="Login">
+</form>

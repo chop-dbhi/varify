@@ -1,0 +1,10 @@
+{% if moderated %}Please verify your account by clicking on the following link:
+
+http://{{ site.domain }}{% url verify-registration activation_key=profile.activation_key %}.
+
+Once your account is verified, account moderators will be reviewing your account.
+
+You will receieve an email regarding your acceptance status shortly.{% else %}
+Please activate your account by clicking on the following link:
+
+http://{{ site.domain }}{% url verify-registration activation_key=profile.activation_key %}.{% endif %}

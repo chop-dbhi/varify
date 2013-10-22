@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container no-title">
+        <div class="content">
+            <section>
+                <table>
+                    <thead>
+                        <th>Name</th>
+                        <th>Email</th>
+                    </thead>
+                    <tbody>
+                        {% for profile in profiles %}
+                            {% with profile.user as user %}
+                                {% if profile.verified %}
+                                    <tr>
+                                        <td><a href="{% url moderate-registration activation_key=profile.activation_key %}">{{ user.get_full_name }}</a></td>
+                                {% else %}
+                                    <tr class="unverified">
+                                        <td>{{ user.get_full_name }}</td>
+                                {% endif %}
+                                <td>{{ user.email|urlize }}</td>
+                            </tr>
+                            {% endwith %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+{% endblock %}

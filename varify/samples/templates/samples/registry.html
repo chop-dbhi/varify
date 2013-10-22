@@ -1,0 +1,79 @@
+{% extends "cilantro/base.html" %}
+{% load url from future %}
+{% load humanize %}
+
+{% block subnav %}
+    <div id=subnav class="navbar navbar-fixed-top">
+        <div class=navbar-inner>
+            <div class=container-fluid>{% block subnav_content %}{% endblock %}</div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div id=main-area class=scrollable-column>
+        <div class=inner>
+            <h2>Registry</h2>
+            <div class=row-fluid>
+
+                <div class="span6 area-container">
+                    <h3 class=heading>Projects</h3>
+                    <div class=content>
+                        <table class=table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Batch Count</th>
+                                    <th>Sample Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for project in projects %}
+                                <tr>
+                                    <td><a href={% url "project-registry" project.pk %}>{{ project }}</a></td>
+                                    <td>{{ project.batch_count|intcomma }}</td>
+                                    <td>{{ project.sample_count|intcomma }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="span6 area-container">
+                    <h3 class=heading>Sample Queue</h3>
+                    <div class=content>
+                        <p class=muted>The sample queue lists samples that are
+                            pending to be loaded or are already loading.</p>
+                        {% if staged_samples %}
+                        <table class=table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Batch</th>
+                                    <th>Project</th>
+                                    <th>Start Time</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sample in staged_samples %}
+                                    <tr>
+                                        <td>{{ sample }}</td>
+                                        <td>{{ sample.batch }}</td>
+                                        <td>{{ sample.project }}</td>
+                                        <td>{{ sample.created.date|date }} @ {{ sample.created.time|time }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                            <em>No samples are staged at this time.</em>
+                        {% endif %}
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

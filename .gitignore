@@ -1,0 +1,40 @@
+.DS_Store
+
+*.py?
+*.sw?
+*.ipynb
+dist
+sdist
+build
+logs
+docs
+pip-log.txt
+./MANIFEST
+whoosh.index
+profiled_tests.txt
+.fabhosts
+
+.watch-pid
+.sass-cache
+.coverage
+.vagrant
+
+# ignore local settings file intended for environment-specific settings
+settings
+local_settings.py
+
+*.js
+build.txt
+
+!varify/templates/cilantro/config.js
+!varify/static/scripts/javascript/src/lib/raven.js
+
+# all Sass files will be compiled into this directory
+varify/static/stylesheets/css/style.css
+
+# Collected static files via Django's staticfiles app
+_site/static
+
+# Do not version user uploaded content since these files might be huge.
+# Have another strategy for backing up this content.
+_site/media

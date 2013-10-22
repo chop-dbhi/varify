@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block content %}
+    <div class=container-fluid>
+        <div class=row-fluid>
+
+            <div class="span4 offset2">
+                <div class=well>
+                    <h3>{% if geneset %}Editing "{{ geneset }}"{% else %}Create Gene Set{% endif %}</h3>
+                    <form class=horizontal-form method=post style=margin-bottom:0>
+                        {% csrf_token %}
+                        {{ form.name|bootstrap }}
+                        {{ form.description|attr:"rows:3"|bootstrap }}
+                        {% if perms.genes.change_geneset %}
+                            {{ form.user|bootstrap }}
+                        {% endif %}
+                        {{ form.genes|attr:"rows:20"|bootstrap }}
+                        {% if geneset %}
+                            <a class="btn btn-danger" href="{% url "geneset-delete" geneset.pk %}">Delete</a>
+                        {% endif %}
+                        <input type=submit class="btn btn-primary pull-right">
+                    </form>
+                </div>
+            </div>
+
+            <div class="span4">
+                <div class=well>
+                    <h3>Gene Sets</h3>
+                    {% for set in genesets %}
+                        <ul class=unstyled>
+                            <li><a href="{% url "genesets" set.pk %}">{{ set.name }}</a> <span class=muted>-
+                                {% if not set.user %}(public){% elif set.user and set.user != user %}{{ set.user }}{% endif %}</span>
+                            {% if set.description %}<br><span class=muted>{{ set.description }}</span>{% endif %}</li>
+                        </ul>
+                    {% empty %}
+                        <div class=muted>
+                            <strong>You have not created any gene sets yet!</strong>
+                            <p>Simply copy and paste a list of genes into the text box and
+                            give the set a name.</p>
+                            <p><em>Note, HUGO gene names are guaranteed to be valid (and present
+                            in the database), so it is preferred to use them rather than synonyms.</em></p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

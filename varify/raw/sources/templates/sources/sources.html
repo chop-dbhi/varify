@@ -1,0 +1,47 @@
+{% extends "cilantro/base.html" %}
+{% load markup %}
+
+{% block subnav_content %}{% endblock %}
+
+{% block content %}
+    <div id=main-area class=centered>
+        <div class=inner>
+            <h2>Data Sources</h2>
+
+            <table class=table>
+                <thead>
+                    <tr>
+                        <th style="width: 20%">Name</th>
+                        <th style="width: 5%">Version</th>
+                        <th style="width: 15%">Release Date</th>
+                        <th style="width: 30%">Description</th>
+                        <th style="width: 30%">Info/Stats</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for source in sources %}
+                        <tr>
+                            <td>{% if source.website %}<a href="{{ source.website }}" target=_blank>{{ source.name }}</a>{% else %}{{ source.name }}{% endif %}</td>
+                            <td>{{ source.version|default:"-" }}</td>
+                            <td>{{ source.release_date|date|default:"-" }}</td>
+                            <td>{{ source.description|default:"-" }}</td>
+                            <td>{% with stats=source.stats.all %}
+                                {% if stats %}
+                                    <ul>
+                                        {% for stat in stats %}
+                                            <li>{{ stat.name }} - {{ stat.value }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    -
+                                {% endif %}
+                                {% endwith %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+{% endblock %}

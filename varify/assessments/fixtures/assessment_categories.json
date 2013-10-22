@@ -1,0 +1,44 @@
+[
+    {
+        "model": "assessments.assessmentcategory",
+        "pk": 1,
+        "fields": {
+            "name": "Definitive cause of phenotype"
+        }
+    },
+    {
+        "model": "assessments.assessmentcategory",
+        "pk": 2,
+        "fields": {
+            "name": "Possibly linked to clinical indication"
+        }
+    },
+    {
+        "model": "assessments.assessmentcategory",
+        "pk": 3,
+        "fields": {
+            "name": "Immediately medically actionable"
+        }
+    },
+    {
+        "model": "assessments.assessmentcategory",
+        "pk": 4,
+        "fields": {
+            "name": "Childhood onset"
+        }
+    },
+    {
+        "model": "assessments.assessmentcategory",
+        "pk": 5,
+        "fields": {
+            "name": "Adult onset"
+        }
+    },
+    {
+        "model": "assessments.assessmentcategory",
+        "pk": 6,
+        "fields": {
+            "name": "Recessive carrier"
+        }
+    }
+]

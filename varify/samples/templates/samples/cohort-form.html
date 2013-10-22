@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load url from future %}
+
+{% block content %}
+    <div class=container-fluid>
+        <div class=row-fluid>
+
+            <div class="span4 offset2">
+                <div class=well>
+                    <h3>{% if cohort %}Editing "{{ cohort }}"{% else %}Create Cohort{% endif %}</h3>
+                    <form class=horizontal-form method=post style=margin-bottom:0>
+                        {% csrf_token %}
+                        {{ form.name|bootstrap }}
+                        {{ form.description|attr:"rows:3"|bootstrap }}
+                        {% if perms.samples.change_cohort %}
+                            {{ form.user|bootstrap }}
+                        {% endif %}
+                        {{ form.published|bootstrap }}
+                        {{ form.samples|add_class:"unstyled" }}
+                        {% if cohort %}
+                            <a class="btn btn-danger" href="{% url "cohort-delete" cohort.pk %}">Delete</a>
+                        {% endif %}
+                        <input type=submit class="btn btn-primary pull-right">
+                    </form>
+                </div>
+            </div>
+
+            <div class="span4">
+                <div class=well>
+                    <h3>Cohorts</h3>
+                    {% for set in cohorts %}
+                        <ul class=unstyled>
+                            <li><a href="{% url "cohorts" set.pk %}">{{ set.name }}</a> <span class=muted>-
+                                {% if not set.user %}(public){% elif set.user and set.user != user %}{{ set.user }}{% endif %}</span>
+                            {% if set.description %}<br><span class=muted>{{ set.description }}</span>{% endif %}</li>
+                        </ul>
+                    {% empty %}
+                        <div class=muted>
+                            <strong>You have not created any cohorts yet!</strong>
+                            <p>Simply check the samples you want to include in your cohort and save it.</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    {{ block.super }}
+    <style>input[type=text], textarea { width: 388px; }</style>
+{% endblock %}
+
+{% block content %}
+    <div class="container" style="width: 500px">
+        <div class="title">Leave a Message</div>
+        <div class="info">
+            <p>Describe any usability issues you are encountering, odd behaviors
+            in the app itself, formatting issues or seemingly incorrect data.</p>
+            {% if error %}
+                <strong class="error">We are having an issue sending your message. Sorry for the inconvenience.</strong>
+            {% endif %} 
+        </div>
+        <div class="content">
+            <form method="post" action="{% url support %}">
+                {% csrf_token %}
+                <table>
+                    {% if not user.is_authenticated %}
+                    <tr>
+                        <th>{{ form.email.label_tag }}</th>
+                        <td>{{ form.email|bootstrap }}</td>
+                    </tr>
+                    {% endif %}
+                    <tr>
+                        <th>{{ form.subject.label_tag }}</th>
+                        <td>{{ form.subject|bootstrap }}</td>
+                    </tr>
+                    <tr>
+                        <th>{{ form.message.label_tag }}</th>
+                        <td>{{ form.message|bootstrap }}</td>
+                    </tr>
+                </table>
+                <div class="controls">
+                    <input type="submit" value="Send Message">
+                </div>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}

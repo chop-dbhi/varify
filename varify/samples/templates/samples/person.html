@@ -1,0 +1,102 @@
+{% extends "samples/registry.html" %}
+{% load url from future %}
+{% load humanize %}
+
+{% block subnav_content %}
+    <ul class="breadcrumb">
+        <li><a href={% url "global-registry" %}>Registry</a> <span class=divider>/</span></li>
+        <li>{{ person }}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <div id=main-area class=scrollable-column>
+        <div class=inner>
+            <h2>{{ person }} {% if person.proband %}<span class=label>proband</span>{% endif %}</h2>
+
+            <div class=row-fluid>
+
+                <div class="span6 area-container">
+                    <h3 class=heading>Samples</h3>
+                    <div class=content>
+                        {% regroup samples by batch as grouped_samples %}
+                        <table class=table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Variant Count</th>
+                                    <th>Proband?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for group in grouped_samples %}
+                                    <tr>
+                                        <th colspan=3><a href={% url "batch-registry" group.grouper.pk %}>{{ group.grouper }}</a></th>
+                                    </tr>
+                                    {% for sample in group.list %}
+                                        <tr>
+                                            <td><a href={% url "sample-registry" sample.pk %}>{{ sample }}</a></td>
+                                            <td>{{ sample.count|intword }}</td>
+                                            <td>{{ sample.person.proband|yesno }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% if person.proband %}
+                <div class="span6 area-container">
+                    <h3 class=heading>Pedigree</h3>
+                    <div class=content>
+                        <table class=table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Relation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for relation in family %}
+                                <tr>
+                                    <td><a href={% url "person-registry" relation.relative.pk %}>{{ relation.relative }}</a></td>
+                                    <td>{{ relation.type }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% else %}
+
+                <div class="span6 area-container">
+                    <h3 class=heading>Relative Of</h3>
+                    <div class=content>
+                        <table class=table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Relation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for relation in family %}
+                                <tr>
+                                    <td><a href={% url "person-registry" relation.person.pk %}>{{ relation.person }}</a></td>
+                                    <td>{{ relation.type }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

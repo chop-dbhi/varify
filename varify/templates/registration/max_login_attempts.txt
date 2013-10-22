@@ -1,0 +1,17 @@
+The max login attempts for username "{{ username }}" with the IP address
+"{{ ip_address }}" has been reached.
+
+{% if user_already_inactive %}
+A client is attempting to access this account even though it was already deemed
+"inactive". Either the client is attempting to access this account from another
+IP address, cleared the session cookie, or has waited the suspension time of
+{{ minutes }} minutes.
+{% else %}
+{% if user %}
+This user's account has been deactivated and the client has been suspended
+for {{ minutes }} minutes.
+{% else %}
+No account exists for this username. The client has been suspended for
+{{ minutes }} minutes.
+{% endif %}
+{% endif %}

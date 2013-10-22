@@ -1,0 +1,3 @@
+A new user has requested an account. To view the details of this request, click the link below:
+http://{{ site.domain }}{% url moderate-registration activation_key=profile.activation_key %}
+{% if expiration_days %}Note, after {{ expiration_days }} days this link will be not work.{% endif %}

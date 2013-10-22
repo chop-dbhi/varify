@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container no-title" style="width: 334px">
+        {% if form.non_field_errors %}
+            <div class="info messages">
+                <p class="error">{{ form.non_field_errors.0 }}</p>
+            </div>
+        {% endif %}
+        <div class="content">
+            <form method="post" action="">
+                {% csrf_token %}
+                <section>
+                    <table>
+                        <tr>
+                            <th>{{ form.first_name.label_tag }}</th>
+                            <td>{{ form.first_name|bootstrap }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ form.last_name.label_tag }}</th>
+                            <td>{{ form.last_name|bootstrap }}</td>
+                        </tr>
+                        <tr>
+                            <th>{{ form.email.label_tag }}</th>
+                            <td>{{ form.email|bootstrap }}<br>
+                                <span class="info">{{ form.email.help_text }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ form.password1.label_tag }}</th>
+                            <td>{{ form.password1|bootstrap }}<br>
+                                <span class="info">{{ form.password1.help_text }}</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>{{ form.password2.label_tag }}</th>
+                            <td>{{ form.password2|bootstrap }}</td>
+                        </tr>
+                    </table>
+                </section>
+                
+                <div class="controls">
+                    <input type="submit" value="Register">
+                </div>
+            </form>
+        </div>
+    </div>
+{% endblock %}
