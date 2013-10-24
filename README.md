@@ -1,5 +1,8 @@
 # Varify Development
 
+##Need some help?
+Join our chat room and speak with our dev team: http://www.hipchat.com/gZcKr0p3y
+
 ## Dependencies
 
 Listed are the download links to each dependency, however most OSes have a
