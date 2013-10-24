@@ -60,13 +60,6 @@ GeneSynonym = {
 }
 
 
-# U01 specific gene details, a very limited number of genes have this
-GeneDetail = {
-    'fields': ['tier', 'syndrome_type', 'inheritance_pattern',
-        'clinical_phenotype'],
-    'merge': True,
-}
-
 GeneTranscript = {
     'fields': ['transcript'],
     'key_map': {
@@ -85,7 +78,6 @@ Gene = {
         'families': GeneFamily,
         'articles': Article,
         'phenotypes': PhenotypeList,
-        'detail': GeneDetail
     }
 }
 
@@ -107,7 +99,6 @@ TranscriptGene = {
     'related': {
         'chr': Chromosome,
         'articles': Article,
-        'detail': GeneDetail
     }
 }
 
@@ -200,7 +191,7 @@ Effect = {
 # Variant, it is assumed to be used in the context of a Variant
 VariantEffect = {
     'fields': ['transcript', 'codon_change', 'amino_acid_change',
-        'functional_class', 'effect', 'hgvs_c', 'hgvs_p', 'segment'],
+               'functional_class', 'effect', 'hgvs_c', 'hgvs_p', 'segment'],
     'related': {
         'transcript': Transcript,
         'functional_class': {
@@ -235,8 +226,8 @@ CohortVariant = {
 # one or a few variants at time (meaning don't pull down 1000).
 Variant = {
     'fields': [':pk', 'chr', 'pos', 'ref', 'alt', 'rsid', 'type',
-        'effects', '1000g', 'sift', 'evs', 'polyphen2', 'articles',
-        'phenotypes'],
+               'effects', '1000g', 'sift', 'evs', 'polyphen2', 'articles',
+               'phenotypes'],
 
     # Map to cleaner names
     'key_map': {
@@ -325,11 +316,12 @@ ResultAssessment = {
 
 SampleResult = {
     'fields': [':pk', ':local', 'genotype_value', 'read_depth_ref',
-        'read_depth_alt', 'base_counts'],
+               'read_depth_alt', 'base_counts'],
     'exclude': ['created', 'modified', 'downsampling', 'fisher_strand',
-        'homopolymer_run', 'notes', 'spanning_deletions', 'strand_bias',
-        'mq', 'mq0', 'mq_rank_sum', 'phred_scaled_likelihood',
-        'read_pos_rank_sum', 'in_dbsnp', 'coverage_ref', 'coverage_alt'],
+                'homopolymer_run', 'notes', 'spanning_deletions',
+                'strand_bias', 'mq', 'mq0', 'mq_rank_sum',
+                'phred_scaled_likelihood', 'read_pos_rank_sum', 'in_dbsnp',
+                'coverage_ref', 'coverage_alt'],
     'key_map': {
         'base_counts': 'base_count_map',
         'read_depth_alt': 'coverage_alt',
