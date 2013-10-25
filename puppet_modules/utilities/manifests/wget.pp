@@ -3,7 +3,7 @@
 #   Executes command wget to fetch a file from the internet
 #
 # === Parameters
-#   
+#
 #   [*file*]
 #       The URL of the file to fetch.
 #
@@ -30,11 +30,11 @@ define utilities::wget($file = $title, $target){
   if $target == 'false' {
     fail('utilities::wget cannot run without a target location')
 }
- 
-  
+
+
   exec{"wget ${file}":
     path    => $path,
-    command => "wget -O $target ${file}",
+    command => "wget --no-check-certificate -O $target ${file}",
     creates => "$target",
   }
 
