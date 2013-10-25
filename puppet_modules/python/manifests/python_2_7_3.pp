@@ -9,7 +9,7 @@
 # === Variables
 #
 #   [*::opt_path*]
-#       Convenience variable for opt path 
+#       Convenience variable for opt path
 #
 #   [*::python_path*]
 #       Convenience variable for python path
@@ -36,7 +36,7 @@ class python::python_2_7_3{
 		target => '/tmp/Python-2.7.3.tgz'
     }
 
-    utilities::untar{'python': 
+    utilities::untar{'python':
         file    => "Python-2.7.3.tgz",
         require => Utilities::Wget['python'],
     }
@@ -62,9 +62,9 @@ class python::python_2_7_3{
         path    => $path,
         cwd     => '/home/vagrant',
         command => "echo \"export PATH=${opt_path}:\\\$PATH\" >> .bashrc",
-        require => Exec['make python'] 
+        require => Exec['make python']
     }
-    
+
     exec{'adjust path for python':
         path    => $path,
         cwd     => '/etc/profile.d/',
@@ -74,7 +74,7 @@ class python::python_2_7_3{
     }
 
     utilities::wget{'distribute':
-        file    => 'http://pypi.python.org/packages/source/d/distribute/distribute-0.6.27.tar.gz',
+        file    => 'https://pypi.python.org/packages/source/d/distribute/distribute-0.6.27.tar.gz',
 		target => '/tmp/distribute-0.6.27.tar.gz',
         require => Exec['adjust path for python']
     }
@@ -83,7 +83,7 @@ class python::python_2_7_3{
         file    => 'distribute-0.6.27.tar.gz',
         require => Utilities::Wget['distribute'],
     }
-    
+
     exec{'install distribute':
         path    => [$python_path, $opt_path, $path],
         cwd     => '/tmp/distribute-0.6.27/',
