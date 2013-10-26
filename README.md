@@ -106,9 +106,10 @@ memcached -d
 ```
 
 Start redis
-``
+```
 redis-server /usr/local/etc/redis.conf
 ```
+
 If you are on a Mac, you will need to start postfix to allow SMTP:
 ```
 sudo postfix start
