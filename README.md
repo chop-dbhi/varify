@@ -106,9 +106,10 @@ memcached -d
 ```
 
 Start redis
-``
+```
 redis-server /usr/local/etc/redis.conf
 ```
+
 If you are on a Mac, you will need to start postfix to allow SMTP:
 ```
 sudo postfix start
@@ -154,7 +155,7 @@ for changes and automatically recompiles the files
 
 ## Local Settings
 
-`local_settings.py` is intentionally not versioned (via .gitignore). It should
+`local_settings.py` is intentionally not versioned (via `.gitignore`). It should
 contain any environment-specific settings and/or sensitive settings such as
 passwords, the `SECRET_KEY` and other information that should not be in version
 control. Defining `local_settings.py` is not mandatory but will warn if it does
