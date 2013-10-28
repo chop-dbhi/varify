@@ -25,9 +25,9 @@ def alamut(request):
 def sentry(request):
     SENTRY_PUBLIC_DSN = getattr(settings, 'SENTRY_PUBLIC_DSN', None)
 
-    if SENTRY_PUBLIC_DSN:
-        return {
-            'SENTRY_PUBLIC_DSN': SENTRY_PUBLIC_DSN
-        }
+    if not SENTRY_PUBLIC_DSN:
+        log.warning('SENTRY_PUBLIC_DSN not defined in settings.')
 
-    log.warning('SENTRY_PUBLIC_DSN not defined in settings.')
+    return {
+        'SENTRY_PUBLIC_DSN': SENTRY_PUBLIC_DSN
+    }
