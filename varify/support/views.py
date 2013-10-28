@@ -9,7 +9,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from varify.support.forms import SupportForm
 
-SUPPORT_EMAIL = settings.SUPPORT_EMAIL
+SUPPORT_EMAIL = getattr(settings, 'SUPPORT_EMAIL', None)
 
 def send_support_mail(request, form):
     email = form.cleaned_data['email']
