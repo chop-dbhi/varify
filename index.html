@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>Varify by cbmi</title>
+
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <div class="wrapper">
+      <header>
+        <h1>Varify</h1>
+        <p>Clinical DNA Sequencing Analysis and Data Warehouse</p>
+
+        <p class="view"><a href="https://github.com/cbmi/varify">View the Project on GitHub <small>cbmi/varify</small></a></p>
+
+
+        <ul>
+          <li><a href="https://github.com/cbmi/varify/zipball/master">Download <strong>ZIP File</strong></a></li>
+          <li><a href="https://github.com/cbmi/varify/tarball/master">Download <strong>TAR Ball</strong></a></li>
+          <li><a href="https://github.com/cbmi/varify">View On <strong>GitHub</strong></a></li>
+        </ul>
+      </header>
+      <section>
+        <h1>
+<a name="varify-development" class="anchor" href="#varify-development"><span class="octicon octicon-link"></span></a>Varify Development</h1>
+
+<h2>
+<a name="need-some-help" class="anchor" href="#need-some-help"><span class="octicon octicon-link"></span></a>Need some help?</h2>
+
+<p>Join our chat room and speak with our dev team: <a href="http://www.hipchat.com/gZcKr0p3y">http://www.hipchat.com/gZcKr0p3y</a></p>
+
+<h2>
+<a name="dependencies" class="anchor" href="#dependencies"><span class="octicon octicon-link"></span></a>Dependencies</h2>
+
+<p>Listed are the download links to each dependency, however most OSes have a
+package manager or binaries that can be easily installed. Most of the below
+links describe alternate download and install methods.</p>
+
+<p>On Mac OS X, <a href="http://mxcl.github.com/homebrew/">Homebrew</a> is the recommended
+way to install most of these of these libraries.</p>
+
+<ul>
+<li><a href="http://python.org/download/releases/2.7.3/">Python 2.7</a></li>
+<li><a href="http://www.ruby-lang.org/en/downloads/">Ruby 1.8.7+</a></li>
+<li><a href="http://rubygems.org/pages/download">RubyGems 1.3+</a></li>
+<li><a href="http://nodejs.org/download/">NodeJS 0.8+</a></li>
+<li><a href="http://redis.io/download">Redis 2.6+</a></li>
+<li><a href="http://www.postgresql.org/download/">PostgreSQL 9.2+</a></li>
+<li><a href="http://memcached.org">Memcached</a></li>
+<li>Ruby Sass gem</li>
+<li>Node CoffeeScript module</li>
+</ul><p>Install CoffeeScript:</p>
+
+<div class="highlight highlight-bash"><pre>npm install -g coffee-script
+</pre></div>
+
+<p>Install the Sass gem:</p>
+
+<div class="highlight highlight-bash"><pre>gem install sass
+</pre></div>
+
+<h3>
+<a name="deployment-dependencies" class="anchor" href="#deployment-dependencies"><span class="octicon octicon-link"></span></a>Deployment Dependencies</h3>
+
+<p>Note, the <code>INSTALL</code> file contains instructions for setting up a server running
+RedHat Enterprise Linux Server 6.3.</p>
+
+<ul>
+<li><a href="http://nginx.org/en/download.html">nginx</a></li>
+<li><a href="http://supervisord.org">supervisord</a></li>
+</ul><h2>
+<a name="setup--install" class="anchor" href="#setup--install"><span class="octicon octicon-link"></span></a>Setup &amp; Install</h2>
+
+<p>Distribute, Pip and virtualenv are required. To check if you have them:</p>
+
+<div class="highlight highlight-bash"><pre>which pip easy_install virtualenv
+</pre></div>
+
+<p>If nothing prints out, install the libraries corresponding to the commands
+below:</p>
+
+<p><em>Watch out for sudo! The root user <code>$PATH</code> most likely does not include
+<code>/usr/local/bin</code>. If you did not install Python through your distro's package
+manager, use the absolute path to the new Python binary to prevent installing
+the above libraries with the wrong version (like Python 2.4 on CentOS 5),
+e.g. <code>/usr/local/bin/python2.7</code>.</em></p>
+
+<div class="highlight highlight-bash"><pre>curl http://python-distribute.org/distribute_setup.py | python
+curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
+pip install virtualenv
+</pre></div>
+
+<p>Create your virtualenv:</p>
+
+<div class="highlight highlight-bash"><pre>virtualenv varify-env
+<span class="nb">cd </span>varify-env
+. bin/activate
+</pre></div>
+
+<p>Clone the repo:</p>
+
+<div class="highlight highlight-bash"><pre>git clone https://github.com/cbmi/varify.git
+<span class="nb">cd </span>varify
+</pre></div>
+
+<p>Install the requirements:</p>
+
+<div class="highlight highlight-bash"><pre>pip install -r requirements.txt
+</pre></div>
+
+<p><a href="http://www.postgresql.org/docs/9.2/static/server-start.html">Start the postgres server</a>. This <em>may</em> look something like:</p>
+
+<pre><code>initdb /usr/local/var/postgres -E utf8
+
+pg_ctl -D /usr/local/var/postgres -l /usr/local/var/postgres/server.log start
+</code></pre>
+
+<p>Create the varify database, you might first want to make sure you are a user</p>
+
+<pre><code>createuser --user postgres -s -r yourusername
+createdb varify
+
+</code></pre>
+
+<p>Start memcached</p>
+
+<div class="highlight highlight-bash"><pre>memcached -d
+</pre></div>
+
+<p>Start redis</p>
+
+<pre><code>redis-server /usr/local/etc/redis.conf
+</code></pre>
+
+<p>If you are on a Mac, you will need to start postfix to allow SMTP:</p>
+
+<pre><code>sudo postfix start
+</code></pre>
+
+<p>Initialize the Django and Varify schemas</p>
+
+<pre><code>./bin/manage.py syncdb
+./bin/manage.py migrate
+</code></pre>
+
+<p>Load the initial data</p>
+
+<pre><code>./bin/manage.py loaddata ./varify/fixtures/*
+</code></pre>
+
+<p>Then either start the built-in Django server:</p>
+
+<div class="highlight highlight-bash"><pre>./bin/manage.py runserver
+</pre></div>
+
+<p>or run a <code>uwsgi</code> process:</p>
+
+<div class="highlight highlight-bash"><pre>uwsgi --ini server/uwsgi/local.ini --protocol http --socket 127.0.0.1:8000 --check-static _site
+</pre></div>
+
+<h2>
+<a name="makefile-commands" class="anchor" href="#makefile-commands"><span class="octicon octicon-link"></span></a>Makefile Commands</h2>
+
+<ul>
+<li>
+<code>build</code> - builds and initializes all submodules, compiles SCSS and
+CoffeeScript and optimizes JavaScript</li>
+<li>
+<code>watch</code> - watches the CoffeeScript and SCSS files in the background
+for changes and automatically recompiles the files</li>
+<li>
+<code>unwatch</code> - stops watching the CoffeeScript and SCSS files</li>
+<li>
+<code>sass</code> - one-time explicit recompilation of SCSS files</li>
+<li>
+<code>coffee</code> - one-time explicit recompilation of CoffeeScript files</li>
+</ul><h2>
+<a name="fabfile-commands" class="anchor" href="#fabfile-commands"><span class="octicon octicon-link"></span></a>Fabfile Commands</h2>
+
+<ul>
+<li>
+<code>deploy:[&lt;branch&gt;@]&lt;commit&gt;</code> - deploy a specific Git commit or tag</li>
+</ul><h2>
+<a name="local-settings" class="anchor" href="#local-settings"><span class="octicon octicon-link"></span></a>Local Settings</h2>
+
+<p><code>local_settings.py</code> is intentionally not versioned (via <code>.gitignore</code>). It should
+contain any environment-specific settings and/or sensitive settings such as
+passwords, the <code>SECRET_KEY</code> and other information that should not be in version
+control. Defining <code>local_settings.py</code> is not mandatory but will warn if it does
+not exist.</p>
+
+<h2>
+<a name="coffeescript--sass-development" class="anchor" href="#coffeescript--sass-development"><span class="octicon octicon-link"></span></a>CoffeeScript &amp; Sass Development</h2>
+
+<p>CoffeeScript is lovely. The flow is simple:</p>
+
+<ul>
+<li>write some CoffeeScript which automatically gets compiled in JavaScript
+(by doing <code>make watch</code>)</li>
+<li>when ready to test non-<code>DEBUG</code> mode, run <code>make optimize</code>
+</li>
+</ul><p>The <code>app.build.js</code> file will need to be updated to define which modules
+should be compiled to single files. It is recommended to take a tiered
+approach to reduce overall file size across pages and increase cache potential
+for libraries that won't change for a while, for example jQuery.</p>
+
+<p><a href="http://sass-lang.com/">Sass</a> is awesome. SCSS is a superset of CSS so you can
+use as much or as little SCSS syntax as you want. It is recommended to write
+all of your CSS rules as SCSS, since at the very least the Sass minifier can
+be taken advantage of.</p>
+
+<p>Execute the following commands to begin watching the static files and
+collect the files (using Django's collectstatic command):</p>
+
+<div class="highlight highlight-bash"><pre>make sass coffee collect watch
+</pre></div>
+
+<p><em>Note, the <code>sass</code> and <code>coffee</code> targets are called first to ensure the compiled
+files exist before attempting to collect them.</em></p>
+      </section>
+      <footer>
+        <p>This project is maintained by <a href="https://github.com/cbmi">cbmi</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    </div>
+    <script src="javascripts/scale.fix.js"></script>
+    
+  </body>
+</html>
