@@ -3,6 +3,10 @@ from south.v2 import DataMigration
 
 class Migration(DataMigration):
 
+    depends_on = (
+        ('samples', '0001_initial'),
+    )
+
     def forwards(self, orm):
         "Perform a 'safe' load using Avocado's backup utilities."
         from avocado.core import backup
