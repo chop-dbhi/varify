@@ -7,9 +7,10 @@ from django.test.utils import override_settings
 from django_rq import get_worker, get_queue, get_connection
 from rq.queue import get_failed_queue
 from sts.models import System
-from varify.chop.models import SampleQc
-from varify.samples.models import Project, Batch, Cohort, Sample, SampleManifest, Result
-from varify.variants.models import Variant, VariantEffect, Sift, PolyPhen2, ThousandG, EVS
+from varify.samples.models import Project, Batch, Cohort, Sample, \
+    SampleManifest, Result
+from varify.variants.models import Variant, VariantEffect, Sift, PolyPhen2, \
+    ThousandG, EVS
 from varify.variants.pipeline.utils import VariantCache
 from varify.genes.models import Transcript, Gene
 
@@ -57,8 +58,10 @@ class SampleLoadTestCase(QueueTestCase):
 
         # Nothing published yet..
         self.assertEqual(Sample.objects.filter(published=False).count(), 15)
-        self.assertEqual(Cohort.objects.filter(count=0, published=False).count(), 2)
-        self.assertEqual(Batch.objects.filter(count=0, published=False).count(), 4)
+        self.assertEqual(
+            Cohort.objects.filter(count=0, published=False).count(), 2)
+        self.assertEqual(
+            Batch.objects.filter(count=0, published=False).count(), 4)
 
         # Manifests are stored
         self.assertEqual(SampleManifest.objects.count(), 15)
@@ -89,11 +92,10 @@ class SampleLoadTestCase(QueueTestCase):
         # Batches are now published..
         self.assertEqual(Batch.objects.filter(published=True).count(), 3)
 
-        # QC loaded..
-        self.assertEqual(SampleQc.objects.count(), 1)
-
         # Ensure the counts are accurate for each sample..
-        for pk, count in [(1, 289), (2, 281), (3, 268), (4, 295), (5, 296), (6, 293), (7, 264), (8, 289), (9, 264), (10, 293), (11, 289), (12, 315)]:
+        for pk, count in [(1, 289), (2, 281), (3, 268), (4, 295), (5, 296),
+                          (6, 293), (7, 264), (8, 289), (9, 264), (10, 293),
+                          (11, 289), (12, 315)]:
             sample = Sample.objects.get(pk=pk)
             self.assertTrue(sample.published)
             self.assertEqual(sample.count, count)
@@ -112,7 +114,8 @@ class SampleLoadTestCase(QueueTestCase):
 class SnpeffReloadTest(QueueTestCase):
     def test(self):
         "Load a single VCF, reload the snpEff data using the same VCF."
-        management.call_command('samples', 'queue', os.path.join(SAMPLE_DIRS[0], 'batch1/sample1'))
+        management.call_command('samples', 'queue',
+                                os.path.join(SAMPLE_DIRS[0], 'batch1/sample1'))
 
         # Synchronously work on queue
         worker1 = get_worker('variants')
@@ -121,10 +124,14 @@ class SnpeffReloadTest(QueueTestCase):
         worker2.work(burst=True)
 
         self.assertEqual(VariantEffect.objects.count(), 614)
-        self.assertEqual(VariantEffect.objects.aggregate(max_id=Max('id'))['max_id'], 614)
+        self.assertEqual(
+            VariantEffect.objects.aggregate(max_id=Max('id'))['max_id'], 614)
 
-        management.call_command('variants', 'reload-snpeff', os.path.join(SAMPLE_DIRS[0], 'batch1/sample1/results.vcf'))
+        management.call_command('variants', 'reload-snpeff',
+                                os.path.join(SAMPLE_DIRS[0],
+                                             'batch1/sample1/results.vcf'))
 
         # Ensure data was actually reloaded, check the auto-incremented key
         self.assertEqual(VariantEffect.objects.count(), 614)
-        self.assertEqual(VariantEffect.objects.aggregate(max_id=Max('id'))['max_id'], 614 * 2)
+        self.assertEqual(VariantEffect.objects.aggregate(
+            max_id=Max('id'))['max_id'], 614 * 2)

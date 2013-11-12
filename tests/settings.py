@@ -13,7 +13,6 @@ INSTALLED_APPS = (
     'tests.cases.sample_load_process',
 
     'varify',
-    'varify.chop',
 
     'varify.raw',
     'varify.raw.sources',
