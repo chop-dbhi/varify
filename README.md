@@ -14,7 +14,7 @@ links describe alternate download and install methods.
 On Mac OS X, [Homebrew](http://mxcl.github.com/homebrew/) is the recommended
 way to install most of these of these libraries.
 
-- [Python 2.7](http://python.org/download/releases/2.7.3/)
+- [Python 2.6+](http://python.org/download/releases/2.6.9/)
 - [Ruby 1.8.7+](http://www.ruby-lang.org/en/downloads/)
 - [RubyGems 1.3+](http://rubygems.org/pages/download)
 - [NodeJS 0.8+](http://nodejs.org/download/)
