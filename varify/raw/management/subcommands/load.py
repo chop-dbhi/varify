@@ -2,7 +2,10 @@ import os
 import sys
 import shlex
 import traceback
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 from ConfigParser import ConfigParser
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError

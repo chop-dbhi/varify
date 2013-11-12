@@ -3,7 +3,10 @@ import sys
 import logging
 import traceback
 from optparse import make_option
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 from django.db import transaction, connections, DEFAULT_DB_ALIAS
 from django.core.management.base import BaseCommand
 from varify.genes.models import GeneFamily, Gene, Synonym, GenePhenotype

@@ -1,7 +1,10 @@
 import sys
 import logging
 import tempfile
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 from optparse import make_option
 from django.db import transaction, connections, DEFAULT_DB_ALIAS
 from django.core.management.base import BaseCommand

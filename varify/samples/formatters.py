@@ -1,4 +1,7 @@
-from collections import OrderedDict
+try:
+    from collections import OrderedDict
+except ImportError:
+    from ordereddict import OrderedDict
 from django.db.models import Q
 from avocado.formatters import registry as formatters
 from serrano.formatters import HTMLFormatter
