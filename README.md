@@ -1,6 +1,8 @@
 # Varify Development
 
-##Need some help?
+[![Build Status](https://travis-ci.org/cbmi/varify.png?branch=master)](https://travis-ci.org/cbmi/varify) 
+
+## Need some help?
 Join our chat room and speak with our dev team: http://www.hipchat.com/gZcKr0p3y
 
 ## Dependencies
