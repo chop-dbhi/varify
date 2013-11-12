@@ -188,3 +188,144 @@ make sass coffee collect watch
 
 _Note, the `sass` and `coffee` targets are called first to ensure the compiled
 files exist before attempting to collect them._
+
+## Pipeline
+
+The following describes the steps to execute the loading pipeline, the performance of the pipeline, and the process behind it.
+
+### Executing the Load Pipeline
+
+### Retrieving Test Data
+
+We have provided a [set of test data](https://github.com/cbmi/varify-demo-data) to use to test the load pipeline or use as sample data when first standing up your Varify instance. To use the test data, run the commands below.
+
+```bash
+wget https://github.com/cbmi/varify-demo-data/archive/0.1.tar.gz -O varify-demo-data-0.1.tar.gz
+tar -zxf varify-demo-data-0.1.tar.gz
+gunzip varify-demo-data-0.1/CEU.trio.2010_03.genotypes.annotated.vcf.gz
+```
+
+At this point, the VCF and MANIFEST in the `varify-demo-data-0.1` directory are ready for loading in the pipeline. You can use the `varify-demo-data-0.1` directory as the argument to the `samples queue` command in the _Queue Samples_ step below if you want to just load this test data.
+
+#### Tmux (optional)
+
+Since the pipeline can take a while to load large collections(see Performance section below), you may want to consider following the Tmux steps to attach/detach to/from the load process.
+
+[Tmux](http://robots.thoughtbot.com/post/2641409235/a-tmux-crash-course) is like [screen](http://www.gnu.org/software/screen/), just newer. It is useful for detaching/reattaching sessions with long running processes.
+
+**New Session**
+
+```bash
+tmux
+```
+
+**Existing Session**
+
+```bash
+tmux attach -t 0 # first session
+```
+
+### Activate Environment
+
+```bash
+source bin/activate
+```
+
+#### Define RQ_QUEUES
+
+For this example, we will assume you have `redis-server` running on `localhost:6379` against the database with index 0. If you have redis running elsewhere simply update the settings below with the address info and DB you wish to use. Open your `local_settings.py` file and add the following setting:
+
+```python
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+    'samples': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+    'variants': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+}
+```
+
+#### Queue Samples
+
+Optionally specify a directory, otherwise it will recursively scan all directories defined in the `VARIFY_SAMPLE_DIRS` setting in the Varify project.
+
+```bash
+./bin/manage.py samples queue [directory]
+```
+
+#### Kick Off Workers
+
+You can technically start as many of each type for loading data in parallel, but this may cause undesired database contention which could actually slow down the loading process. A single worker for `variants` is generally preferred and two or three are suitable for the `default` type.
+
+```bash
+./bin/manage.py rqworker variants &
+./bin/manage.py rqworker default &
+```
+
+Note, these workers will run forever, if there is only a single sample being loaded, the `--burst` argument can be used to terminate the worker when there are no more items left in the queue.
+
+#### Post-Load
+
+After the batch of samples have been loaded, a two more commands need to be executed to update the annotations and cohort frequencies. These are performed _post-load_ for performance reasons.
+
+```bash
+./bin/manage.py variants load --evs --1000g --sift --polyphen2 2>&1 variants.load.txt &
+./bin/manage.py samples allele-freqs 2>&1 samples.allele-freqs.txt &
+```
+
+### Performance
+
+- File size: 610 MB
+- Variant count: 1,794,055
+
+#### Baseline
+
+Iteration over flat file (no parsing) with batch counting (every 1000)
+
+- Time: 80 seconds
+- Memory: 0
+
+#### Baseline VCF
+
+Iteration over VCF parsed file using PyVCF
+
+- Time: 41 minutes (extrapolated)
+- Memory: 246 KB
+
+### Parallelized Queue/Worker Process
+
+#### Summary of Workflow
+
+1. Fill Queue
+2. Spawn Worker(s)
+3. Consume Job(s)
+    a. Validate Input
+    b. (work)
+    c. Validate Output
+    d. Commit
+
+#### Parallelism Constraints
+
+The COPY command is a single statement which means the data being loaded is
+all or nothing. If multiple samples are being loaded in parallel, it is likely
+they will have overlapping variants.
+
+To prevent integrity errors, workers will need to consult one or more
+centralized caches to check if the current variant has been _addressed_
+already. If this is the case, the variant will be skipped by the worker.
+
+This incurs a second issue in that downstream jobs that depend on the existence
+of some data that does not yet exist because another worker has not yet
+committed it's data. In this case, non-matches will be queued up in the
+`deferred` queue that can be run at a later time, after the `default` queue
+is empty or in parallel with the `default` queue.
