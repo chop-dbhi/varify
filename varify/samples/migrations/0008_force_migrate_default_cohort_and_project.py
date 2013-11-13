@@ -3,11 +3,7 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
-
-# Hard-coded since this is the _real_ default objects, not the ones
-# defined in the settings
-DEFAULT_COHORT_ID = 1
-DEFAULT_PROJECT_ID = 1
+from varify.samples.models import DEFAULT_COHORT_NAME, DEFAULT_PROJECT_NAME
 
 
 class Migration(DataMigration):
@@ -16,73 +12,31 @@ class Migration(DataMigration):
         "Write your forwards methods here."
 
         Project = orm['samples.Project']
-        Batch = orm['samples.Batch']
         Cohort = orm['samples.Cohort']
-        CohortSample = orm['samples.CohortSample']
-        CohortVariant = orm['samples.CohortVariant']
 
         now = datetime.datetime.now()
 
+        # Create default project
         try:
-            project = Project.objects.get(pk=DEFAULT_PROJECT_ID)
+            project = Project.objects.get(name=DEFAULT_PROJECT_NAME)
         except Project.DoesNotExist:
-            project = None
-
-        default_project = Project(pk=DEFAULT_PROJECT_ID, name='Default',
-            label='Default', created=now, modified=now)
-
-        if project:
-            # Get all samples for this project
-            cohorts = Cohort.objects.filter(project=project)
-            batches = Batch.objects.filter(project=project)
-
-            # Save and override the existing record for pk=1. This is to ensure
-            # integrity errors are not thrown for referenced samples
-            default_project.save(force_update=True)
-
-            # Clear primary key to save with a new ID
-            project.pk = None
+            project = Project(name=DEFAULT_PROJECT_NAME,
+                label=DEFAULT_PROJECT_NAME, created=now, modified=now)
             project.save()
-
-            # Update samples with new project
-            cohorts.update(project=project)
-            batches.update(project=project)
-        else:
-            # Force the insert with the specific primary key
-            default_project.save(force_insert=True)
 
         # Create default cohort
         try:
-            cohort = Cohort.objects.get(pk=DEFAULT_COHORT_ID)
+            cohort = Cohort.objects.get(name=DEFAULT_COHORT_NAME)
         except Cohort.DoesNotExist:
-            cohort = None
-
-        default_cohort = Cohort(pk=DEFAULT_COHORT_ID, name='World',
-            published=True, autocreated=True, created=now, modified=now)
-
-        if cohort:
-            variants = CohortVariant.objects.filter(cohort=cohort)
-            samples = CohortSample.objects.filter(object_set=cohort)
-
-            # Save and override the existing record for pk=1. This is to ensure
-            # integrity errors are not thrown for referenced samples
-            default_cohort.save(force_update=True)
-
-            # Clear primary key to save with a new ID
-            cohort.pk = None
+            cohort = Cohort(name=DEFAULT_COHORT_NAME, published=True,
+                autocreated=True, created=now, modified=now)
             cohort.save()
-
-            variants.update(cohort=cohort)
-            samples.update(cohort=cohort)
-        else:
-            # Force the insert with the specific primary key
-            default_cohort.save(force_insert=True)
 
 
     def backwards(self, orm):
         "Write your backwards methods here."
-        orm['samples.Project'].objects.filter(pk=DEFAULT_PROJECT_ID).delete()
-        orm['samples.Cohort'].objects.filter(pk=DEFAULT_COHORT_ID).delete()
+        # There is not guarantee these objects did not already exist
+        # so these should not be deleted
 
 
     models = {

@@ -10,11 +10,11 @@ from varify.variants.models import Variant
 
 # The catch all project. If this is None, samples will not be added to
 # a default project.
-DEFAULT_PROJECT_ID = getattr(settings, 'DEFAULT_PROJECT_ID', 1)
+DEFAULT_PROJECT_NAME = getattr(settings, 'DEFAULT_PROJECT_NAME', 'Default')
 
 # Cohort of the entire population of samples. If this is None, samples
 # will not be added to a default cohort
-DEFAULT_COHORT_ID = getattr(settings, 'DEFAULT_COHORT_ID', 1)
+DEFAULT_COHORT_NAME = getattr(settings, 'DEFAULT_COHORT_NAME', 'World')
 
 log = logging.getLogger(__name__)
 
@@ -129,7 +129,7 @@ class Sample(LabeledModel, TimestampedModel):
     #the name this sample was given in the VCF file (as opposed to the MANIFEST)
     vcf_colname = models.CharField(max_length=200,null=True, blank=True,
         help_text='vcf column sample name')
-    
+
     # Marks whether this sample is published. Once this sample's results have
     # been fully processed will this flag be true. As a sanity check, there
     # should only ever be one sample published for a single person.
