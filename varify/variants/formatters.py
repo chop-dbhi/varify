@@ -16,7 +16,7 @@ class GenomicCoordinate(HTMLFormatter):
 
 
 class dbSNP(HTMLFormatter):
-    href = 'http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs={}'
+    href = 'http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs={0}'
 
     def to_html(self, rsid, **context):
         if rsid:
@@ -32,7 +32,7 @@ class dbSNP(HTMLFormatter):
 
 class VariantEffect(HTMLFormatter):
     def to_html(self, values, **context):
-        return '{} <span class=muted>({})</span>'.format(*values.values())
+        return '{0} <span class=muted>({1})</span>'.format(*values.values())
 
     to_html.process_multiple = True
 
@@ -54,8 +54,8 @@ class AlleleFrequency(HTMLFormatter):
                 # off the _af
                 key = key.split('_')[0]
 
-            toks.append('<li><small>{}</small> {}</li>'.format(key.title(), tok))
-        return '<ul class=unstyled>{}</ul>'.format(''.join(toks))
+            toks.append('<li><small>{0}</small> {1}</li>'.format(key.title(), tok))
+        return '<ul class=unstyled>{0}</ul>'.format(''.join(toks))
 
     to_html.process_multiple = True
 
@@ -71,7 +71,7 @@ class SiftFormatter(HTMLFormatter):
         if value is None:
             return self.html_map[value]
         score, prediction = self._get_values(value)
-        return '{} <span class=muted>({})</span>'.format(prediction, score)
+        return '{0} <span class=muted>({1})</span>'.format(prediction, score)
 
     def to_excel(self, value, **context):
         score, prediction = self._get_values(value)
@@ -91,7 +91,7 @@ class PolyPhen2Formatter(HTMLFormatter):
         if value is None:
             return self.html_map[value]
         score, prediction = self._get_values(value)
-        return '{} <span class=muted>({})</span>'.format(prediction, score)
+        return '{0} <span class=muted>({1})</span>'.format(prediction, score)
 
     def to_excel(self, value, **context):
         score, prediction = self._get_values(value)

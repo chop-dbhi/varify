@@ -7,7 +7,7 @@ from django.db.models.signals import post_save, post_delete
 from guardian.shortcuts import assign
 from .models import Cohort, Project, Batch, Sample
 
-PROJECT_GROUP_TEMPLATE = '{} Project Team'
+PROJECT_GROUP_TEMPLATE = '{0} Project Team'
 AUTO_PUBLISH_BATCH = getattr(settings, 'VARIFY_AUTO_PUBLISH_BATCH', True)
 
 log = logging.getLogger(__name__)
@@ -66,8 +66,8 @@ def auto_create_project_group(instance, created, **kwargs):
     if created:
         assign('view_project', group, instance)
         kwargs = {
-            'subject': '{}Project "{}" Created'.format(settings.EMAIL_SUBJECT_PREFIX, name),
-            'message': 'The "{}" Project Group has been created. This is a ' \
+            'subject': '{0}Project "{1}" Created'.format(settings.EMAIL_SUBJECT_PREFIX, name),
+            'message': 'The "{0}" Project Group has been created. This is a ' \
                 'reminder to setup any permissions for the associated ' \
                 'users.'.format(name),
             'from_email': settings.NO_REPLY_EMAIL,
@@ -81,13 +81,13 @@ def auto_create_project_group(instance, created, **kwargs):
         except Exception:
             log.exception("Error sending project group notification email")
 
-        log.info('Autocreate project group {}'.format(group))
+        log.info('Autocreate project group {0}'.format(group))
 
 
 def auto_delete_project_group(instance, **kwargs):
     name = PROJECT_GROUP_TEMPLATE.format(instance.name)
     Group.objects.filter(name=name).delete()
-    log.info('Delete autocreated project group {}'.format(name))
+    log.info('Delete autocreated project group {0}'.format(name))
 
 
 def update_batch_count(instance, **kwargs):

@@ -83,11 +83,11 @@ def get_hosts_settings():
     # Validate all hosts have an entry in the .hosts file
     for target in env.hosts:
         if target not in hosts:
-            abort(red('Error: No settings have been defined for the "{}" host'.format(target)))
+            abort(red('Error: No settings have been defined for the "{0}" host'.format(target)))
         settings = hosts[target]
         for key in required_settings:
             if not settings[key]:
-                abort(red('Error: The setting "{}" is not defined for "{}" host'.format(key, target)))
+                abort(red('Error: The setting "{0}" is not defined for "{1}" host'.format(key, target)))
     return hosts
 
 
@@ -108,8 +108,8 @@ def merge_commit(commit):
         run('git fetch')
         if '@' in commit:
             branch, commit = commit.split('@')
-            run('git checkout {}'.format(branch))
-        run('git merge {}'.format(commit))
+            run('git checkout {0}'.format(branch))
+        run('git merge {0}'.format(commit))
 
 
 @host_context
@@ -164,7 +164,7 @@ def reload_wsgi():
     pid = run('supervisorctl pid varify-{host}'.format(host=env.host))
     try:
         int(pid)
-        sudo('kill -HUP {}'.format(pid))
+        sudo('kill -HUP {0}'.format(pid))
     except (TypeError, ValueError):
         pass
 
@@ -204,8 +204,8 @@ def setup():
     parent, project = os.path.split(env.path)
 
     if not exists(parent):
-        run('mkdir -p {}'.format(parent))
-        run('virtualenv {}'.format(parent))
+        run('mkdir -p {0}'.format(parent))
+        run('virtualenv {0}'.format(parent))
 
     with cd(parent):
         if not exists(project):
@@ -215,12 +215,12 @@ def setup():
 @host_context
 def upload_settings():
     "Uploads the non-versioned local settings to the server."
-    local_path = os.path.join(curdir, 'settings/{}.py'.format(env.host))
+    local_path = os.path.join(curdir, 'settings/{0}.py'.format(env.host))
     if os.path.exists(local_path):
         remote_path = os.path.join(env.path, 'varify/conf/local_settings.py')
         put(local_path, remote_path)
-    elif not confirm(yellow('No local settings found for host "{}". Continue anyway?'.format(env.host))):
-        abort('No local settings found for host "{}". Aborting.')
+    elif not confirm(yellow('No local settings found for host "{0}". Continue anyway?'.format(env.host))):
+        abort('No local settings found for host "{0}". Aborting.'.format(env.host))
 
 
 @host_context

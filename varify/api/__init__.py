@@ -1,7 +1,6 @@
 from functools import wraps
 from django.conf import settings
 from django.core.cache import cache
-from . import templates
 
 PAGE_SIZE = 10
 
@@ -16,7 +15,7 @@ def cache_key(model, pk):
     "Generates a cache key for a model instance."
     app = model._meta.app_label
     name = model._meta.module_name
-    return 'api:{}:{}:{}'.format(app, name, pk)
+    return 'api:{0}:{1}:{2}'.format(app, name, pk)
 
 
 def cache_resource(func):

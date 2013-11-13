@@ -23,7 +23,7 @@ class GeneSetField(forms.Field):
         if len(names) != len(genes):
             unknown = [n for n in names if n not in genes]
             raise forms.ValidationError('The following genes were not found: '
-                '{}'.format(', '.join(sorted(unknown))))
+                '{0}'.format(', '.join(sorted(unknown))))
 
         return queryset
 

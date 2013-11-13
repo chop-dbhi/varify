@@ -7,8 +7,8 @@ class Migration(DataMigration):
     def forwards(self, orm):
         "Write your forwards methods here."
         db_table = orm['samples.CohortVariant']._meta.db_table
-        db.execute('TRUNCATE TABLE "{}"'.format(db_table))
-        db.execute('ALTER SEQUENCE "{}_id_seq" RESTART 1'.format(db_table))
+        db.execute('TRUNCATE TABLE "{0}"'.format(db_table))
+        db.execute('ALTER SEQUENCE "{0}_id_seq" RESTART 1'.format(db_table))
         cohorts = list(orm['samples.Cohort'].objects.all())
 
         for c in cohorts:

@@ -22,7 +22,7 @@ class ManifestReader(object):
     def option(self, section, option, default=None):
         if self.config.has_option(section, option):
             return self.config.get(section, option)
-        log.warning('No manifest option: {}.{}'.format(section, option), extra={
+        log.warning('No manifest option: {0}.{1}'.format(section, option), extra={
             'path': self.path,
         })
         return default
@@ -33,7 +33,7 @@ class ManifestReader(object):
     def section(self, section):
         if self.config.has_section(section):
             return dict(self.config.items(section))
-        log.warning('No manifest section: {}'.format(section), extra={
+        log.warning('No manifest section: {0}'.format(section), extra={
             'path': self.path,
         })
         return {}
@@ -105,7 +105,7 @@ class Channel(object):
         return unicode(self.name)
 
     def __repr__(self):
-        return '<Channel: {}>'.format(self.name)
+        return '<Channel: {0}>'.format(self.name)
 
     def publish(self, **kwargs):
         "Publishes to the channel which notifies all connected handlers."

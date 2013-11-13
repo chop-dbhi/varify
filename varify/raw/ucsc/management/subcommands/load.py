@@ -109,7 +109,7 @@ class Command(LoadCommand):
         '- exons [5]',
         '- knownToRefSeq [6]',
         '',
-        'Available targets include: {}'.format(', '.join(targets)),
+        'Available targets include: {0}'.format(', '.join(targets)),
         '',
         '[1]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=knownGene',
         '[2]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=kgAlias',

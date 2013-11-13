@@ -28,12 +28,12 @@ class Command(BaseCommand):
         total_count = 0
 
         conditions = [
-            '{}.{} IS NULL'.format(db_table, quote('thousandg_id')),
-            '{}.{} IS NULL'.format(db_table, quote('polyphen2_id')),
-            '{}.{} IS NULL'.format(db_table, quote('sift_id')),
-            '{}.{} IS NULL'.format(db_table, quote('evs_id')),
+            '{0}.{1} IS NULL'.format(db_table, quote('thousandg_id')),
+            '{0}.{1} IS NULL'.format(db_table, quote('polyphen2_id')),
+            '{0}.{1} IS NULL'.format(db_table, quote('sift_id')),
+            '{0}.{1} IS NULL'.format(db_table, quote('evs_id')),
         ]
-        missing = '({})'.format(' OR '.join(conditions))
+        missing = '({0})'.format(' OR '.join(conditions))
         variants = Variant.objects.values('id').extra(where=[missing]).distinct()
 
         if not no_input:
@@ -89,6 +89,6 @@ class Command(BaseCommand):
                 sys.stdout.flush()
                 gc.collect()
 
-        print 'Total time:\t{} seconds'.format(time.time() - t0)
-        print 'Updated:\t{:,}'.format(updated)
-        print 'Not Updated:\t{:,}'.format(not_updated)
+        print 'Total time:\t{0} seconds'.format(time.time() - t0)
+        print 'Updated:\t{0:n}'.format(updated)
+        print 'Not Updated:\t{0:n}'.format(not_updated)

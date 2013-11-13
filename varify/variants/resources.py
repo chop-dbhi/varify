@@ -63,23 +63,23 @@ class VariantAssessmentMetricsResource(resources.Resource):
         assessments = Assessment.objects.filter(sample_result__variant=pk)
         categories = AssessmentCategory.objects.all()
         pathogenicities = Pathogenicity.objects.all()
-        
+
         data = {
             'metrics': {},
         }
 
         num_assessments = len(assessments)
 
-        # Easier to check for 0 assessments here than checking for a divide by      
+        # Easier to check for 0 assessments here than checking for a divide by
         # 0 situation in every loop iteration.
         if num_assessments > 0:
             for p in pathogenicities:
                 for c in categories:
-                    key = "{}: {}".format(p.name, c.name)
+                    key = "{0}: {1}".format(p.name, c.name)
 
                     filter_results = assessments.filter(
                             pathogenicity=p.id, assessment_category=c.id)
-                    
+
                     count = filter_results.count()
                     is_user_call = filter_results.filter(
                             user=request.user.id).exists()
@@ -91,7 +91,7 @@ class VariantAssessmentMetricsResource(resources.Resource):
                         'count': count,
                         'percentage': count / float(num_assessments) * 100.0,
                     }
-            
+
                 # Handle empty categories since category isn't required
                 key = p.name
                 filter_results = assessments.filter(
@@ -106,11 +106,11 @@ class VariantAssessmentMetricsResource(resources.Resource):
                     'count': count,
                     'percentage': count / float(num_assessments) * 100.0,
                 }
-                
+
         else:
             for c in categories:
                 for p in pathogenicities:
-                    key = "{}: {}".format(p.name, c.name)
+                    key = "{0}: {1}".format(p.name, c.name)
                     data['metrics'][key] = {
                         'count': 0.0,
                         'percentage': 0.0,

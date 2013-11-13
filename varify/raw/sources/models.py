@@ -21,10 +21,10 @@ class Source(models.Model):
 
     def __unicode__(self):
         if self.version:
-            return u'{} (v{})'.format(self.name, self.version.lstrip('v'))
+            return u'{0} (v{1})'.format(self.name, self.version.lstrip('v'))
         if self.release_date:
-            return u'{} ({})'.format(self.name, self.release_date.strftime('%Y-%m-%d'))
-        return u'{}'.format(self.name)
+            return u'{0} ({1})'.format(self.name, self.release_date.strftime('%Y-%m-%d'))
+        return u'{0}'.format(self.name)
 
 
 class Stat(models.Model):

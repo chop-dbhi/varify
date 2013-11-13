@@ -8,17 +8,17 @@ from serrano.formatters import HTMLFormatter
 from django.conf import settings
 
 class AlamutFormatter(HTMLFormatter):
-    href = settings.ALAMUT_URL + '/show?request={}'
+    href = settings.ALAMUT_URL + '/show?request={0}'
     request = 'chr{chr}:g.{pos}{ref}>{alt}'
-    
+
     def to_html(self, values, **context):
-        request = self.request.format(**values) 
+        request = self.request.format(**values)
         href = self.href.format(request)
         return '<a target=_blank href="{href}">{label}</a>'.format(href=href, label=request)
     to_html.process_multiple = True
 
     def to_excel(self, values, **context):
-        request = self.request.format(**values) 
+        request = self.request.format(**values)
         href = self.href.format(request)
 
         return '=HYPERLINK("{href}", "{label}")'.format(href=href, label=request)
@@ -80,7 +80,7 @@ class CohortsFormatter(HTMLFormatter):
 
         html = ['<ul class=unstyled>']
         for name, af, count in variants:
-            html.append('<li><small>{}</small> {}% <span class=muted>({})</span></li>'.format(name, str(af * 100), count))
+            html.append('<li><small>{0}</small> {1}% <span class=muted>({2})</span></li>'.format(name, str(af * 100), count))
         html.append('</ul>')
 
         return ''.join(html)
@@ -89,7 +89,7 @@ class CohortsFormatter(HTMLFormatter):
         variants = self._get_cohort_variants(value, **context)
         output = OrderedDict()
         for name, af, count in variants:
-            key = '{} Cohort Allele Freq ({} samples)'.format(name, count)
+            key = '{0} Cohort Allele Freq ({1} samples)'.format(name, count)
             output[key] = af
         return output
 

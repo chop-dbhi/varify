@@ -41,6 +41,6 @@ class Command(BaseCommand):
             count += 1
 
         if count:
-            print '{} variants prioritized\n'.format(count)
+            print '{0} variants prioritized\n'.format(count)
 
         call_command('results stats', database=database)

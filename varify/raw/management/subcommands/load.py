@@ -51,11 +51,11 @@ class LoadCommand(BaseCommand):
         for target in targets:
             try:
                 self.drop_table(cursor, target, targets[target][1])
-                print('- {}'.format(target))
+                print('- {0}'.format(target))
             except Exception:
                 traceback.print_exc()
                 print('----')
-                print('Error dropping {}, rolling back..'.format(target))
+                print('Error dropping {0}, rolling back..'.format(target))
                 transaction.rollback()
                 sys.exit(1)
 
@@ -64,11 +64,11 @@ class LoadCommand(BaseCommand):
         for target in targets:
             try:
                 self.create_table(cursor, target, targets[target][1])
-                print('- {}'.format(target))
+                print('- {0}'.format(target))
             except Exception:
                 traceback.print_exc()
                 print('----')
-                print('Error creating {}, rolling back'.format(target))
+                print('Error creating {0}, rolling back'.format(target))
                 transaction.rollbak()
                 sys.exit(1)
 
@@ -78,17 +78,17 @@ class LoadCommand(BaseCommand):
             files, options = targets[target]
             try:
                 self.load_files(cursor, target, files, options)
-                print('- {}'.format(target))
+                print('- {0}'.format(target))
             except Exception:
                 traceback.print_exc()
                 print('----')
-                print('Error loading {}, rolling back'.format(target))
+                print('Error loading {0}, rolling back'.format(target))
                 transaction.rollback()
                 sys.exit(1)
 
     def drop_table(self, cursor, target, options):
         "Drops the target table."
-        sql = 'DROP TABLE IF EXISTS {}'
+        sql = 'DROP TABLE IF EXISTS {0}'
         cursor.execute(sql.format(self.qualified_names[target]))
 
     def create_table(self, cursor, target, options):
@@ -134,7 +134,7 @@ class LoadCommand(BaseCommand):
         # Perform checks ahead of time to prevent failing in an
         # inconsistent state
         if not os.path.exists(os.path.join(source, 'MANIFEST')):
-            raise CommandError('No MANIFEST in the source directory: {}'.format(source))
+            raise CommandError('No MANIFEST in the source directory: {0}'.format(source))
 
         targets = OrderedDict()
         parser = ConfigParser()
@@ -142,7 +142,7 @@ class LoadCommand(BaseCommand):
 
         for target in parser.sections():
             if target not in self.targets:
-                print('Unknown target "{}", skipping...'.format(target))
+                print('Unknown target "{0}", skipping...'.format(target))
                 continue
 
             options = dict(parser.items(target))
@@ -151,7 +151,7 @@ class LoadCommand(BaseCommand):
             for fn in shlex.split(options['files']):
                 path = os.path.join(source, fn)
                 if not os.path.exists(path):
-                    raise CommandError('No file named {} exists'.format(fn))
+                    raise CommandError('No file named {0} exists'.format(fn))
                 files.append(path)
             targets[target] = (files, options)
 

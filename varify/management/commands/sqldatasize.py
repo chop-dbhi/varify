@@ -34,16 +34,16 @@ class Command(NoArgsCommand):
                     # Some tables may not yet be created in the database, so
                     # this statement will fail
                     try:
-                        cursor.execute("SELECT pg_total_relation_size('{}')".format(opts.db_table))
+                        cursor.execute("SELECT pg_total_relation_size('{0}')".format(opts.db_table))
                         sizes.append((cursor.fetchone()[0], opts.module_name))
                     except DatabaseError:
                         transaction.rollback()
         for size, name in sorted(sizes):
             if suffix:
                 size = filesizeformat(size)
-            print '{}\t{}'.format(size, name)
+            print '{0}\t{1}'.format(size, name)
         if suffix:
-            cursor.execute("SELECT pg_size_pretty(pg_database_size('{}'))".format(db_name))
+            cursor.execute("SELECT pg_size_pretty(pg_database_size('{0}'))".format(db_name))
         else:
-            cursor.execute("SELECT pg_database_size('{}')".format(db_name))
-        print '{}\tTOTAL'.format(cursor.fetchone()[0])
+            cursor.execute("SELECT pg_database_size('{0}')".format(db_name))
+        print '{0}\tTOTAL'.format(cursor.fetchone()[0])

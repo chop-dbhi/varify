@@ -41,7 +41,7 @@ class Migration(DataMigration):
             samples = orm['samples.Sample'].objects.filter(published=True, batch=batch)
             count = samples.count()
             cohort = orm['samples.Cohort'](batch=batch, project=batch.project,
-                name='{}: {}'.format(batch.project.label, batch.label), autocreated=True,
+                name='{0}: {1}'.format(batch.project.label, batch.label), autocreated=True,
                 published=bool(count), count=count)
             cohort.save()
 

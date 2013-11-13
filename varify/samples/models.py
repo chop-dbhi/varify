@@ -43,7 +43,7 @@ class Person(TimestampedModel):
         )
 
     def __unicode__(self):
-        return self.mrn or 'P{}'.format(str(self.pk).zfill(6))
+        return self.mrn or 'P{0}'.format(str(self.pk).zfill(6))
 
 
 class Relation(TimestampedModel):
@@ -290,7 +290,7 @@ class SampleRun(TimestampedModel):
         db_table = 'sample_run'
 
     def __unicode__(self):
-        return '{} on {}'.format(self.sample, self.completed)
+        return '{0} on {1}'.format(self.sample, self.completed)
 
 
 class Result(TimestampedModel):

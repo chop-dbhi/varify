@@ -42,7 +42,7 @@ class Command(BaseCommand):
 
     def check_cache(self, chrom):
         if not getattr(self, 'chrom', None) or chrom != self.chrom:
-            sys.stdout.write('\nLoading cache for chr{}...'.format(chrom))
+            sys.stdout.write('\nLoading cache for chr{0}...'.format(chrom))
             sys.stdout.flush()
             if hasattr(self, 'chrom'):
                 transaction.savepoint()
@@ -236,7 +236,7 @@ class Command(BaseCommand):
                 for sample_colname in record.samples:
                     #we have to honor the column name with multiple columns
                     self.load_result(record,sample_colname)
-                    
+
             # Loading remaining elements in each batch
             self.load_batch(self.result_batch)
             self.load_batch(self.effect_batch)
@@ -270,10 +270,10 @@ class Command(BaseCommand):
         # Cache genes for fast lookups
         print 'Loading all known genes...',
         self.cache_genes()
-        print '{:,}'.format(len(self.gene_cache))
+        print '{0:n}'.format(len(self.gene_cache))
         print 'Loading all known transcripts...',
         self.cache_transcripts()
-        print '{:,}'.format(len(self.transcript_cache))
+        print '{0:n}'.format(len(self.transcript_cache))
 
         # Walk the source tree and find all directories with a valid MANIFEST
         # file
@@ -286,7 +286,7 @@ class Command(BaseCommand):
 
             # Light check in case there are other MANIFEST formats encountered
             if not parser.has_section('general') or not parser.has_section('files'):
-                print 'Not a valid MANIFEST in {}. Skipping...'.format(root)
+                print 'Not a valid MANIFEST in {0}. Skipping...'.format(root)
                 continue
 
             sample_info = dict(parser.items('general'))
@@ -295,7 +295,7 @@ class Command(BaseCommand):
             project, created = Project.objects.get_or_create(name=sample_info['project'],
                 defaults={'label': sample_info['project']})
             batch, created = Batch.objects.get_or_create(name=sample_info['cohort'], project=project,
-                    defaults={'label': sample_info['cohort']})                
+                    defaults={'label': sample_info['cohort']})
             file_t0 = time.time()
 
             self.file_variants = 0
@@ -303,7 +303,7 @@ class Command(BaseCommand):
             self.file_effects = 0
 
             print '---'
-            print 'Loading {}'.format(sample_name)
+            print 'Loading {0}'.format(sample_name)
 
             with transaction.commit_manually(using):
                 try:
@@ -315,10 +315,10 @@ class Command(BaseCommand):
                             sample, created = Sample.objects.get_or_create(name=loaded_sample, batch=batch,
                                 version=int(sample_info['version']), defaults={'label': loaded_sample})
 
-                                sample_name = '{}.{}.{}.{}'.format(project.name, batch.name, sample.name, sample.version)
+                                sample_name = '{0}.{1}.{2}.{3}'.format(project.name, batch.name, sample.name, sample.version)
                                 # This version of the sample has already been loaded, skip it
                                 if not created:
-                                    print 'Sample {} already loaded. Skipping...'.format(sample_name)
+                                    print 'Sample {0} already loaded. Skipping...'.format(sample_name)
                                     continue
                                 sample.count = self.file_results
                                 sample.published = True
@@ -333,10 +333,10 @@ class Command(BaseCommand):
                 transaction.commit()
 
             file_time = time.time() - file_t0
-            print 'Sample time:\t{:,} seconds'.format(int(file_time))
-            print 'Variants:\t{:,}'.format(self.file_variants)
-            print 'Effects:\t{:,}'.format(self.file_effects)
-            print 'Results:\t{:,}'.format(self.file_results)
+            print 'Sample time:\t{0:n} seconds'.format(int(file_time))
+            print 'Variants:\t{0:n}'.format(self.file_variants)
+            print 'Effects:\t{0:n}'.format(self.file_effects)
+            print 'Results:\t{0:n}'.format(self.file_results)
 
             # Update total counts
             self.total_samples += 1
@@ -355,12 +355,12 @@ class Command(BaseCommand):
                 pass
 
         print '\n---'
-        print 'Total time:\t{:,} seconds'.format(int(time.time() - total_t0))
-        print 'Samples:\t{:,}'.format(self.total_samples)
-        print 'Variants:\t{:,}'.format(self.total_variants)
-        print 'Effects:\t{:,}'.format(self.total_effects)
-        print 'Results:\t{:,}'.format(self.total_results)
-        print 'Avg. Results/Sample:\t{:,}'.format(int(self.total_results / self.total_samples))
+        print 'Total time:\t{0:n} seconds'.format(int(time.time() - total_t0))
+        print 'Samples:\t{0:n}'.format(self.total_samples)
+        print 'Variants:\t{0:n}'.format(self.total_variants)
+        print 'Effects:\t{0:n}'.format(self.total_effects)
+        print 'Results:\t{0:n}'.format(self.total_results)
+        print 'Avg. Results/Sample:\t{0:n}'.format(int(self.total_results / self.total_samples))
 
     # Helper methods to return lightweight instances with just their primary
     # key. These are all fixed sets, therefore this should error out if the

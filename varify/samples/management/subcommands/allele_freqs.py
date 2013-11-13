@@ -26,17 +26,17 @@ class Command(BaseCommand):
         else:
             cohorts = list(Cohort.objects.filter(Q(allele_freq_modified=None) | Q(modified__gt=F('allele_freq_modified'))))
 
-        print 'Computing for {} cohorts'.format(len(cohorts))
+        print 'Computing for {0} cohorts'.format(len(cohorts))
 
         for cohort in cohorts:
-            sys.stdout.write('"{}" ({} samples)...'.format(cohort, cohort.count))
+            sys.stdout.write('"{0}" ({1} samples)...'.format(cohort, cohort.count))
             sys.stdout.flush()
 
             t0 = time.time()
             with transaction.commit_manually(database):
                 try:
                     cohort.compute_allele_frequencies(database)
-                    sys.stdout.write('done in {}s\n'.format(int(time.time() - t0)))
+                    sys.stdout.write('done in {0}s\n'.format(int(time.time() - t0)))
                     transaction.commit()
                 except DatabaseError, e:
                     transaction.rollback()
