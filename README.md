@@ -306,10 +306,10 @@ Iteration over VCF parsed file using PyVCF
 1. Fill Queue
 2. Spawn Worker(s)
 3. Consume Job(s)
-    a. Validate Input
-    b. (work)
-    c. Validate Output
-    d. Commit
+    - Validate Input
+    - (work)
+    - Validate Output
+    - Commit
 
 #### Parallelism Constraints
 
