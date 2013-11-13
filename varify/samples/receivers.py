@@ -73,7 +73,14 @@ def auto_create_project_group(instance, created, **kwargs):
             'from_email': settings.NO_REPLY_EMAIL,
             'recipient_list': [settings.SUPPORT_EMAIL],
         }
-        send_mail(**kwargs)
+        try:
+            # Since we aren't passing the fail_silently kwarg to the send_mail
+            # method, it will throw any errors back in our face so we catch
+            # them here and log them rather than letting it propogate.
+            send_mail(**kwargs)
+        except Exception:
+            log.exception("Error sending project group notification email")
+
         log.info('Autocreate project group {}'.format(group))
 
 
