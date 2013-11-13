@@ -7,7 +7,7 @@
 # Core requirements
 django>=1.4.4,<1.5
 markdown==2.1.1
-south
+south==0.8.2
 python-memcached==1.48
 coverage
 raven>=3.3.9
