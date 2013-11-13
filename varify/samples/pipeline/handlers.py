@@ -8,7 +8,7 @@ from sts.contextmanagers import transition
 from varify.pipeline import job, ManifestReader
 from varify.pipeline.load import pgcopy_batch
 from varify.pipeline import checks
-from varify.samples.models import Result, Project, Batch, Sample, SampleManifest, DEFAULT_PROJECT_ID
+from varify.samples.models import Result, Project, Batch, Sample, SampleManifest, DEFAULT_PROJECT_NAME
 from . import SAMPLE_CHANNEL
 from .utils import ResultStream
 
@@ -23,7 +23,7 @@ def create_sample(sample_name, vcf_colname, batch_name, project_name=None, versi
         project, created = Project.objects.get_or_create(name__iexact=project_name,
                 defaults={'label': project_name, 'name': project_name})
     else:
-        project = Project.objects.get(pk=DEFAULT_PROJECT_ID)
+        project = Project.objects.get(name=DEFAULT_PROJECT_NAME)
 
     batch, created = Batch.objects.get_or_create(name__iexact=batch_name,
         project=project, defaults={'label': batch_name, 'name': batch_name})
@@ -59,13 +59,13 @@ def load_samples(manifest_path, database, **kwargs):
             'manifest_path': manifest_path,
         })
         return
-    
+
     # [sample]
     # project = PCGC
     # batch = OTHER
     # sample = 1-03131
     # version = 1
-    
+
     sample_info = manifest.section('sample')
     vcf_info = manifest.section('vcf')
     # ignore whatever sample is listed in the manifest and scan the vcf for samples
@@ -95,7 +95,7 @@ def load_samples(manifest_path, database, **kwargs):
             sts.transition(sample, 'Sample Record Created')
         else:
             num_skipped+=1
-                
+
         # Create a manfiest object for the sample if one does not exist
         if created or not SampleManifest.objects.filter(sample=sample).exists():
             sample_manifest = SampleManifest(sample=sample)
@@ -129,7 +129,7 @@ def load_results(manifest_path, database, **kwargs):
             'manifest_path': manifest_path,
         })
         return
-    
+
     sample_info = manifest.section('sample')
     vcf_info = manifest.section('vcf')
     # ignore whatever sample is listed in the manifest and scan the vcf for samples
@@ -142,7 +142,7 @@ def load_results(manifest_path, database, **kwargs):
         pretty_names = sample_info['sample'].split(',')
     else:
         pretty_names = samples
-    
+
     for pretty_name, vcf_sample in zip(pretty_names, samples):
         try:
             sample = Sample.objects.get(name__iexact=pretty_name,
@@ -151,13 +151,13 @@ def load_results(manifest_path, database, **kwargs):
         except Sample.DoesNotExist:
             log.error('Sample does not exist', extra=sample_info)
             return
-        
+
         #is it already loaded, let's skip for now
         if Result.objects.filter(sample=sample).exists():
             log.debug('{0} exists in results'.format(vcf_sample))
-        else:            
-            log.debug('about to load results for {0}'.format(vcf_sample))    
-        
+        else:
+            log.debug('about to load results for {0}'.format(vcf_sample))
+
             #STSError: Cannot start transition while already in one.
             successful = False
             while not successful:
@@ -180,7 +180,7 @@ def load_results(manifest_path, database, **kwargs):
                 except:
                     log.error('STS errors')
                     time.sleep(10)
-            
+
     vcf_info = manifest.section('vcf')
 
     # Absolute path relative to the MANIFEST directory

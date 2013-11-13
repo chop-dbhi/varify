@@ -3,6 +3,7 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
+from varify.samples.models import DEFAULT_COHORT_NAME
 
 class Migration(DataMigration):
 
@@ -13,7 +14,7 @@ class Migration(DataMigration):
         orm['samples.Cohort'].objects.filter(name__in=names).update(published=True)
 
         # World cohort
-        orm['samples.Cohort'].objects.filter(pk=1).update(published=True)
+        orm['samples.Cohort'].objects.filter(name=DEFAULT_COHORT_NAME).update(published=True)
 
     def backwards(self, orm):
         "Write your backwards methods here."
@@ -22,7 +23,7 @@ class Migration(DataMigration):
         orm['samples.Cohort'].objects.filter(name__in=names).update(published=False)
 
         # World cohort
-        orm['samples.Cohort'].objects.filter(pk=1).update(published=False)
+        orm['samples.Cohort'].objects.filter(name=DEFAULT_COHORT_NAME).update(published=False)
 
     models = {
         'auth.group': {

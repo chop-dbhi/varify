@@ -3,9 +3,7 @@ import datetime
 from south.db import db
 from south.v2 import DataMigration
 from django.db import models
-
-DEFAULT_COHORT_ID = 1
-DEFAULT_PROJECT_ID = 1
+from varify.samples.models import DEFAULT_COHORT_NAME, DEFAULT_PROJECT_NAME
 
 
 def cohort_bulk_add(orm, cohort, samples):
@@ -24,7 +22,7 @@ class Migration(DataMigration):
     def forwards(self, orm):
         "Write your forwards methods here."
 
-        projects = orm['samples.Project'].objects.exclude(pk=DEFAULT_PROJECT_ID)
+        projects = orm['samples.Project'].objects.exclude(name=DEFAULT_PROJECT_NAME)
         for project in projects:
             cohort = orm['samples.Cohort'](name=project.label, autocreated=True)
             cohort.project = project
@@ -39,13 +37,13 @@ class Migration(DataMigration):
             cohort_bulk_add(orm, cohort, orm['samples.Sample'].objects.filter(batch=batch).distinct())
 
         # Populate the default cohort with all samples
-        default_cohort = orm['samples.Cohort'].objects.get(pk=DEFAULT_COHORT_ID)
+        default_cohort = orm['samples.Cohort'].objects.get(name=DEFAULT_COHORT_NAME)
         cohort_bulk_add(orm, default_cohort, orm['samples.Sample'].objects.all())
 
     def backwards(self, orm):
         "Write your backwards methods here."
         orm['samples.CohortSample'].objects.all().delete()
-        orm['samples.Cohort'].objects.exclude(pk=DEFAULT_COHORT_ID).delete()
+        orm['samples.Cohort'].objects.exclude(name=DEFAULT_COHORT_NAME).delete()
 
 
     models = {
