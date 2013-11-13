@@ -234,6 +234,8 @@ MIDDLEWARE_CLASSES = (
 #
 
 EMAIL_SUBJECT_PREFIX = '[Varify] '
+NO_REPLY_EMAIL = 'noreply@varify-example.com'
+SUPPORT_EMAIL = 'support@varify-example.com'
 
 #
 # LOGGING
