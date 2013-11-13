@@ -123,11 +123,6 @@ Initialize the Django and Varify schemas
 ./bin/manage.py migrate
 ```
 
-Load the initial data
-```
-./bin/manage.py loaddata ./varify/fixtures/*
-```
-
 Then either start the built-in Django server:
 
 ```bash
