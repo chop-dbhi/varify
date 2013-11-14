@@ -225,7 +225,7 @@ class Command(BaseCommand):
         "Process and load the VCF file."
         with open(path) as fin:
             log.debug("opening {0} in {1} load_vcf".format(path,__name__))
-            reader = vcf.Reader(fin)
+            reader = vcf.Reader(fin, preserve_order=False)
             for record in reader:
                 # No random contigs
                 if record.CHROM.startswith('GL'):

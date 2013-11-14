@@ -53,7 +53,7 @@ django-bootstrap-form>=0.5
 # VCF loading
 # Cython==0.16
 #PyVCF==0.6.4
-git+git://github.com/jamescasbon/PyVCF.git
+git+git://github.com/cbmi/PyVCF.git@perf-od
 
 # News
 git+git://github.com/cbmi/django-news.git#egg=django-news

@@ -42,7 +42,7 @@ def vcf_baseline():
     max_count = 20
     count = -1
     with open(sys.argv[-1]) as source:
-        fin = vcf.Reader(source)
+        fin = vcf.Reader(source, preserve_order=False)
         for i, line in enumerate(fin):
             if i % 1000 == 0:
                 count += 1
