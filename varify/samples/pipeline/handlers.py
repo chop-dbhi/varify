@@ -72,7 +72,7 @@ def load_samples(manifest_path, database, **kwargs):
     vcf_path = os.path.join(os.path.dirname(manifest_path), vcf_info['file'])
     with open(vcf_path) as file_obj:
         log.debug("opening {0} in load_samples".format(vcf_path))
-        reader = vcf.Reader(file_obj)
+        reader = vcf.Reader(file_obj, preserve_order=False)
         samples = reader.samples
     if 'sample' in sample_info:
         pretty_names = sample_info['sample'].split(',')
@@ -136,7 +136,7 @@ def load_results(manifest_path, database, **kwargs):
     vcf_path = os.path.join(os.path.dirname(manifest_path), vcf_info['file'])
     with open(vcf_path) as file_obj:
         log.debug("opening {0} in load_samples".format(vcf_path))
-        reader = vcf.Reader(file_obj)
+        reader = vcf.Reader(file_obj, preserve_order=False)
         samples = reader.samples
     if 'sample' in sample_info:
         pretty_names = sample_info['sample'].split(',')
