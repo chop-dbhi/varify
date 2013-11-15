@@ -16,7 +16,7 @@ from . import VARIANT_CHANNEL
 log = logging.getLogger(__name__)
 
 
-@job(VARIANT_CHANNEL, timeout=60 * 60)
+@job(VARIANT_CHANNEL, timeout=3 * 60 * 60)
 def load_variants(manifest_path, database, **kwargs):
     "Variant loading requires only a VCF file and will never load a duplicate."
     manifest = ManifestReader(manifest_path)
@@ -41,7 +41,7 @@ def load_variants(manifest_path, database, **kwargs):
     VARIANT_CHANNEL.publish(manifest_path=manifest_path, database=database)
 
 
-@job(timeout=60 * 60)
+@job(timeout=3 * 60 * 60)
 def load_effects(manifest_path, database, **kwargs):
     manifest = ManifestReader(manifest_path)
 
