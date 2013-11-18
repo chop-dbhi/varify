@@ -179,32 +179,33 @@ class Command(BaseCommand):
 
         # Create result
         result = Result(
-            quality = record.QUAL,
+            quality=record.QUAL,
 
-            read_depth = call['DP'],
+            read_depth=getattr(call, 'DP', None),
 
-            genotype = genotype,
-            genotype_quality = call['GQ'],
+            genotype=genotype,
+            genotype_quality=getattr(call, 'GQ', None),
 
-            coverage_ref = call['AD'][0],
-            coverage_alt = call['AD'][1],
+            coverage_ref=call['AD'][0] if getattr(call, 'AD') else None,
+            coverage_alt=call['AD'][1] if getattr(call, 'AD') else None,
 
-            phred_scaled_likelihood = ','.join([str(x) for x in call['PL']]),
+            phred_scaled_likelihood=','.join(
+                [str(x) for x in getattr(call, 'PL', [])]),
 
-            in_dbsnp = bool(self.clean_value(info, 'DB')),
+            in_dbsnp=bool(self.clean_value(info, 'DB')),
 
-            downsampling = self.clean_value(info, 'DS'),
-            spanning_deletions = self.clean_value(info, 'Dels'),
-            mq = self.clean_value(info, 'MQ'),
-            mq0 = self.clean_value(info, 'MQ0'),
-            baseq_rank_sum = self.clean_value(info, 'BaseQRankSum'),
-            mq_rank_sum = self.clean_value(info, 'MQRankSum'),
-            read_pos_rank_sum = self.clean_value(info, 'ReadPosRankSum'),
-            strand_bias = self.clean_value(info, 'SB'),
-            homopolymer_run = self.clean_value(info, 'HRun'),
-            haplotype_score = self.clean_value(info, 'HaplotypeScore'),
-            quality_by_depth = self.clean_value(info, 'QD'),
-            fisher_strand = self.clean_value(info, 'FS'),
+            downsampling=self.clean_value(info, 'DS'),
+            spanning_deletions=self.clean_value(info, 'Dels'),
+            mq=self.clean_value(info, 'MQ'),
+            mq0=self.clean_value(info, 'MQ0'),
+            baseq_rank_sum=self.clean_value(info, 'BaseQRankSum'),
+            mq_rank_sum=self.clean_value(info, 'MQRankSum'),
+            read_pos_rank_sum=self.clean_value(info, 'ReadPosRankSum'),
+            strand_bias=self.clean_value(info, 'SB'),
+            homopolymer_run=self.clean_value(info, 'HRun'),
+            haplotype_score=self.clean_value(info, 'HaplotypeScore'),
+            quality_by_depth=self.clean_value(info, 'QD'),
+            fisher_strand=self.clean_value(info, 'FS'),
         )
 
         result.variant = variant

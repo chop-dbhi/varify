@@ -36,7 +36,7 @@ class ResultStream(VCFPGCopyEditor):
         # we are revisiting the same line once for each sample
         # until I figure out how the cleaning and loading will
         # work otherwise
-        
+
         # Ensures the cache is updated and available
         self.variants.ensure_cache(record)
 
@@ -47,7 +47,7 @@ class ResultStream(VCFPGCopyEditor):
         variant_id = self.variants.get(md5)
         assert variant_id is not None
 
-        
+
         cleaned = super(ResultStream, self).process_line(record)
         # Remove variant specific parts
         cleaned = cleaned[4:]
@@ -60,16 +60,16 @@ class ResultStream(VCFPGCopyEditor):
         #        break
 
         #log.debug('record {0} annotating sample {1} with variant {2} details {3}'.format(record,self.vcf_sample, variant_id,call))
-        
-        # empty values cause KeyErrors#
-        if None in (call['AD'],call['DP'],call['GQ'],call['GT'],call['PL']):
-            return None
-        
+
+        for key in ['AD', 'DP', 'GQ', 'GT', 'PL']:
+            if not getattr(call, key, None):
+                return None
+
         # already seen this variant for this sample
         # otherwise we would get a duplicate key value violation in sample_result
         if Result.objects.filter(variant=variant_id,sample=self.sample_id).exists():
             return None
-        
+
         # the possibility for multiple alleles in these wide vcfs is almost infinite
         # so we need to triage the really weird ones into having a reference allele "0/#"
         # or being off the map entirely "#/#""
@@ -80,7 +80,7 @@ class ResultStream(VCFPGCopyEditor):
                 keyed_geno = self.genotypes['0/#']
             else:
                 keyed_geno = self.genotypes['#/#']
-                
+
         # Append remaining columns
         other = [
             variant_id,
@@ -95,7 +95,7 @@ class ResultStream(VCFPGCopyEditor):
             self.now,
             self.now,
         ]
-        
+
         cleaned.extend([self.process_column('', x) for x in other])
         return cleaned
 
