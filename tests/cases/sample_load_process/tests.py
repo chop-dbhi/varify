@@ -162,7 +162,7 @@ class SnpeffReloadTest(QueueTestCase):
                          expected_variant_effects_count)
 
         # Since we reloaded, we should now have double the number of expected
-        # result, thus the 2 * operation in the assertion below.
+        # results, thus the 2 * operation in the assertion below.
         self.assertEqual(
             VariantEffect.objects.aggregate(max_id=Max('id'))['max_id'],
             2 * expected_variant_effects_count)

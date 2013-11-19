@@ -14,7 +14,7 @@ install:
 services:
     - memcached
 before_script:
-  - psql -c 'create database varifydb;' -U postgres
+    - psql -c 'create database varifydb;' -U postgres
 script:
     - coverage run test_suite.py
 after_success:
