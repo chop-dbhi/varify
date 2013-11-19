@@ -61,10 +61,6 @@ class ResultStream(VCFPGCopyEditor):
 
         #log.debug('record {0} annotating sample {1} with variant {2} details {3}'.format(record,self.vcf_sample, variant_id,call))
 
-        for key in ['AD', 'DP', 'GQ', 'GT', 'PL']:
-            if not getattr(call, key, None):
-                return None
-
         # already seen this variant for this sample
         # otherwise we would get a duplicate key value violation in sample_result
         if Result.objects.filter(variant=variant_id,sample=self.sample_id).exists():
@@ -73,28 +69,34 @@ class ResultStream(VCFPGCopyEditor):
         # the possibility for multiple alleles in these wide vcfs is almost infinite
         # so we need to triage the really weird ones into having a reference allele "0/#"
         # or being off the map entirely "#/#""
-        try:
-            keyed_geno = self.genotypes[call['GT']]
-        except KeyError, e:
-            if call['GT'].startswith('0'):
-                keyed_geno = self.genotypes['0/#']
-            else:
-                keyed_geno = self.genotypes['#/#']
+        gt = getattr(call, 'GT', None)
+        if gt:
+            try:
+                keyed_geno = self.genotypes[gt]
+            except KeyError:
+                if gt.startswith('0'):
+                    keyed_geno = self.genotypes['0/#']
+                else:
+                    keyed_geno = self.genotypes['#/#']
+        else:
+            keyed_geno = None
+
+        dp = getattr(call, 'DP', None)
+        gq = getattr(call, 'GQ', None)
+        ad = getattr(call, 'AD', None)
+        if ad and len(ad) > 1:
+            ad0 = ad[0]
+            ad1 = ad[1]
+        else:
+            ad0 = None
+            ad1 = None
+        pl = getattr(call, 'PL', None)
+        if pl:
+            pl = ','.join([str(x) for x in pl])
 
         # Append remaining columns
-        other = [
-            variant_id,
-            self.sample_id,
-            call['DP'],
-            record.QUAL,
-            keyed_geno,
-            call['GQ'],
-            call['AD'][0],
-            call['AD'][1],
-            ','.join([str(x) for x in call['PL']]),
-            self.now,
-            self.now,
-        ]
+        other = [variant_id, self.sample_id, dp, record.QUAL, keyed_geno, gq,
+                 ad0, ad1, pl, self.now, self.now]
 
         cleaned.extend([self.process_column('', x) for x in other])
         return cleaned
