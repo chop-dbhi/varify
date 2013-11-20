@@ -6,6 +6,7 @@ source = varify
 omit =
     varify/admin.py
     varify/migrations/*
+    varify/*/migrations/*
     varify/__init__.py
     varify/*/__init__.py
     varify/*/*/__init__.py
