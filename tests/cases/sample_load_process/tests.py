@@ -41,21 +41,58 @@ class VariantCacheTestCase(TestCase):
 @override_settings(VARIFY_SAMPLE_DIRS=SAMPLE_DIRS)
 class SampleLoadTestCase(QueueTestCase):
     def test_pipeline(self):
-        # Immediately validates and creates a sample
-        management.call_command('samples', 'queue')
-
-        # Synchronously work on queue
-        worker1 = get_worker('variants')
-        worker2 = get_worker('default')
-
         expected_counts = {
             'batches': 3,
             'cohorts': 2,
             'genes': 193,
             'projects': 1,
-            'results_per_sample': [(1, 1963), (2, 1963), (3, 1963), (4, 2094),
-                                   (5, 2094), (6, 2094), (7, 4377), (8, 4377),
-                                   (9, 4377)],
+            'results_per_sample': [
+                {
+                    'batch': 'batch1',
+                    'sample': 'NA12891',
+                    'count': 1963,
+                },
+                {
+                    'batch': 'batch1',
+                    'sample': 'NA12892',
+                    'count': 1963,
+                },
+                {
+                    'batch': 'batch1',
+                    'sample': 'NA12878',
+                    'count': 1963,
+                },
+                {
+                    'batch': 'batch2',
+                    'sample': 'NA12891',
+                    'count': 2094,
+                },
+                {
+                    'batch': 'batch2',
+                    'sample': 'NA12892',
+                    'count': 2094,
+                },
+                {
+                    'batch': 'batch2',
+                    'sample': 'NA12878',
+                    'count': 2094,
+                },
+                {
+                    'batch': 'batch3',
+                    'sample': 'NA12891',
+                    'count': 4377,
+                },
+                {
+                    'batch': 'batch3',
+                    'sample': 'NA12892',
+                    'count': 4377,
+                },
+                {
+                    'batch': 'batch3',
+                    'sample': 'NA12878',
+                    'count': 4377,
+                }
+            ],
             'samples': 9,
             'transcripts': 351,
             'variant_effects': 15698,
@@ -63,7 +100,14 @@ class SampleLoadTestCase(QueueTestCase):
             'samples_per_batch': [(1, 3), (2, 3), (3, 3)],
         }
         expected_counts['results'] = \
-            sum([count for pk, count in expected_counts['results_per_sample']])
+            sum([x['count'] for x in expected_counts['results_per_sample']])
+
+        # Immediately validates and creates a sample
+        management.call_command('samples', 'queue')
+
+        # Synchronously work on queue
+        worker1 = get_worker('variants')
+        worker2 = get_worker('default')
 
         # Ensure sample-related entries are created..
         self.assertEqual(Project.objects.count(), expected_counts['projects'])
@@ -117,10 +161,11 @@ class SampleLoadTestCase(QueueTestCase):
                          expected_counts['batches'])
 
         # Ensure the counts are accurate for each sample..
-        for pk, count in expected_counts['results_per_sample']:
-            sample = Sample.objects.get(pk=pk)
+        for ec in expected_counts['results_per_sample']:
+            sample = Sample.objects.get(name=ec['sample'],
+                                        batch__name=ec['batch'])
             self.assertTrue(sample.published)
-            self.assertEqual(sample.count, count)
+            self.assertEqual(sample.count, ec['count'])
 
         # Batches are created with the samples, but are unpublished
         for pk, count in expected_counts['samples_per_batch']:
