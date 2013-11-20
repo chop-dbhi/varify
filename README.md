@@ -1,6 +1,6 @@
 # Varify Development
 
-[![Build Status](https://travis-ci.org/cbmi/varify.png?branch=master)](https://travis-ci.org/cbmi/varify) 
+[![Build Status](https://travis-ci.org/cbmi/varify.png?branch=master)](https://travis-ci.org/cbmi/varify) [![Coverage Status](https://coveralls.io/repos/cbmi/varify/badge.png)](https://coveralls.io/r/cbmi/varify)
 
 ## Need some help?
 Join our chat room and speak with our dev team: http://www.hipchat.com/gZcKr0p3y
