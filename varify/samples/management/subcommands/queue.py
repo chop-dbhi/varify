@@ -13,10 +13,11 @@ SAMPLE_DIRS = getattr(settings, 'VARIFY_SAMPLE_DIRS', ())
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--database', action='store', dest='database',
-            default=DEFAULT_DB_ALIAS,
-            help='Specifies the target database loading results.'),
+                    default=DEFAULT_DB_ALIAS,
+                    help='Specifies the target database loading results.'),
         make_option('--max', action='store', dest='max', default=50,
-            type='int', help='Specifies the maximum number of samples to queue.'),
+                    type='int',
+                    help='Specifies the maximum number of samples to queue.'),
     )
 
     def _queue(self, dirs, max_count, database, verbosity):
@@ -39,9 +40,13 @@ class Command(BaseCommand):
                 manifest_path = os.path.join(root, 'MANIFEST')
 
                 load_dict = load_samples(manifest_path, database)
+
+                if not load_dict:
+                    continue
+
                 count += load_dict['created']
                 skipped += load_dict['skipped']
-                if load_dict['created']>0:
+                if load_dict['created'] > 0:
                     if verbosity > 1:
                         print('Queued sample: "{0}"'.format(root))
                 elif verbosity > 2:
@@ -55,7 +60,9 @@ class Command(BaseCommand):
                 # Print along the way since this is the only output for this
                 # verbosity level
                 if verbosity == 1:
-                    sys.stdout.write('Queued {0} samples (max {1}) {2} skipped of {3} scanned\r'.format(count,max_count, skipped,scanned))
+                    sys.stdout.write("Queued {0} samples (max {1}) {2} "
+                                     "skipped of {3} scanned\r".format(
+                                         count, max_count, skipped, scanned))
                     sys.stdout.flush()
 
         return count, scanned
@@ -73,7 +80,8 @@ class Command(BaseCommand):
         count, scanned = self._queue(dirs, max_count, database, verbosity)
 
         if verbosity > 1:
-            print('Queued {0} samples (max {1}) of {2} scanned'.format(count, max_count, scanned))
+            print('Queued {0} samples (max {1}) of {2} scanned'.format(
+                count, max_count, scanned))
         else:
             # Add a newline since the verbosity=1 output is written in-place
             # with a carriage return
