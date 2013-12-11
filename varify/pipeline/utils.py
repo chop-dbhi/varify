@@ -39,7 +39,8 @@ class ManifestReader(object):
         return {}
 
     def marked_for_load(self):
-        return self.option('general', 'load', False)
+        load = self.option('general', 'load')
+        return load is not None and load.lower() == 'true'
 
 
 class _job(_rq_job):
