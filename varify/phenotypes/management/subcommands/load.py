@@ -17,6 +17,7 @@ log = logging.getLogger(__name__)
 
 def load_hgmd_phenotypes(label, keys, cursor, using):
     count = 0
+    total = 0
 
     # Local storage for new instances
     pmids = {}
@@ -95,13 +96,14 @@ def load_hgmd_phenotypes(label, keys, cursor, using):
                 if gene:
                     gene.articles.add(pubmed)
 
+            total += 1
             if saved:
                 count += 1
 
                 if count % BATCH_SIZE == 0:
                     transaction.commit()
 
-        sys.stdout.write('Loading {0}...{1}\r'.format(label, count))
+        sys.stdout.write('Loading {0}...{1}/{2}\r'.format(label, count, total))
         sys.stdout.flush()
 
     # Print a newline for the terminal prompt
