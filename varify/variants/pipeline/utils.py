@@ -4,7 +4,8 @@ from django.core.cache import get_cache
 from django.db import IntegrityError
 from varify.pipeline import PIPELINE_CACHE_ALIAS
 from varify.genome.models import Chromosome
-from varify.variants.models import Variant, VariantType, Effect, FunctionalClass, VariantEffect
+from varify.variants.models import Variant, VariantType, Effect, \
+    FunctionalClass, VariantEffect
 from varify.variants.utils import calculate_md5
 from varify.raw.utils.stream import VCFPGCopyEditor
 from varify.genes.models import Gene, Transcript
@@ -42,11 +43,13 @@ class VariantCache(object):
             self._cache = {}
 
     def _get_variants(self):
-        return Variant.objects.filter(chr__value=self.chrom,
+        return Variant.objects.filter(
+            chr__value=self.chrom,
             pos__range=(self.start, self.end)).values_list('md5', 'pk')
 
     def ensure_cache(self, record):
-        if record.CHROM != self.chrom or not (self.start <= record.POS <= self.end):
+        if (record.CHROM != self.chrom or
+                not (self.start <= record.POS <= self.end)):
             self.chrom = record.CHROM
             self.start = record.POS
             self.end = self.start + self.size
@@ -98,7 +101,8 @@ class VariantCache(object):
 
 
 class VariantStream(VCFPGCopyEditor):
-    """Reads a VCF file and loads variants that are not already in the database.
+    """
+    Reads a VCF file and loads variants that are not already in the database.
 
     An instance of `VariantCache` is used to determine whether a variant is
     present in the database or not.
@@ -113,10 +117,12 @@ class VariantStream(VCFPGCopyEditor):
         super(VariantStream, self).__init__(*args, **kwargs)
 
         # Cache of chromosomes and their keys
-        self.chromosomes = dict([(x.value, x) for x in Chromosome.objects.all()])
+        self.chromosomes = \
+            dict([(x.value, x) for x in Chromosome.objects.all()])
 
         # Cache variant types and their keys
-        self.variant_types = dict([(x.value, x) for x in VariantType.objects.all()])
+        self.variant_types = \
+            dict([(x.value, x) for x in VariantType.objects.all()])
 
         # Special cache for variants
         self.variants = VariantCache(cache_size)
@@ -172,15 +178,18 @@ class EffectStream(VCFPGCopyEditor):
     vcf_fields = ('CHROM', 'POS', 'REF', 'ALT')
 
     output_columns = ('variant_id', 'codon_change', 'amino_acid_change',
-        'effect_id', 'functional_class_id', 'gene_id', 'transcript_id',
-        'segment', 'hgvs_c', 'hgvs_p')
+                      'effect_id', 'functional_class_id', 'gene_id',
+                      'transcript_id', 'segment', 'hgvs_c', 'hgvs_p')
 
     def __init__(self, *args, **kwargs):
-        self.chromosomes = dict([(x.value, x) for x in Chromosome.objects.all()])
+        self.chromosomes = \
+            dict([(x.value, x) for x in Chromosome.objects.all()])
         self.effects = dict(Effect.objects.values_list('value', 'pk'))
-        self.functional_classes = dict(FunctionalClass.objects.values_list('value', 'pk'))
+        self.functional_classes = \
+            dict(FunctionalClass.objects.values_list('value', 'pk'))
         self.genes = dict(Gene.objects.values_list('symbol', 'id'))
-        self.transcripts = dict(Transcript.objects.values_list('refseq_id', 'id'))
+        self.transcripts = \
+            dict(Transcript.objects.values_list('refseq_id', 'id'))
         self.variants = VariantCache()
 
         self.skip_existing = kwargs.pop('skip_existing', True)
@@ -196,10 +205,12 @@ class EffectStream(VCFPGCopyEditor):
         self._snpeff_regex = re.compile(r'(\w+)\s*\((.*)\)')
 
         # Remove optional fields
-        desc = self.reader.infos['EFF'].desc.replace('[ | ERRORS | WARNINGS ]', '')
+        if 'EFF' in self.reader.infos:
+            desc = self.reader.infos['EFF'].desc.replace(
+                '[ | ERRORS | WARNINGS ]', '')
 
-        # Get available fields, a dict will be created in process_line
-        self.snpeff_keys = self._parse_snpeff_row(desc)[1]
+            # Get available fields, a dict will be created in process_line
+            self.snpeff_keys = self._parse_snpeff_row(desc)[1]
 
     def _parse_snpeff_row(self, row):
         effect, tail = self._snpeff_regex.search(row).groups()
@@ -251,7 +262,8 @@ class EffectStream(VCFPGCopyEditor):
         # If a successful add occurred, this means it is not in the cache,
         # fallback to database check
         if self._cache.add(key, 1, self._cache_timeout):
-            return VariantEffect.objects.filter(variant__pk=variant_id).exists()
+            return VariantEffect.objects.filter(
+                variant__pk=variant_id).exists()
         return True
 
     def process_line(self, record):
@@ -278,9 +290,9 @@ class EffectStream(VCFPGCopyEditor):
             return
 
         effects = []
-        
+
         #is this returning a list now??
-        effects_line = record.INFO['EFF']
+        effects_line = record.INFO.get('EFF', [])
 
         # Multiple separate SNPEff records
         for eff in effects_line:
@@ -307,7 +319,8 @@ class EffectStream(VCFPGCopyEditor):
             # Trim off transcript prefix, clean up format
             if transcript:
                 if segment and segment.startswith(transcript):
-                    segment = segment[len(transcript):].strip('._').replace('_', '.')
+                    segment = \
+                        segment[len(transcript):].strip('._').replace('_', '.')
                 if hgvs_c and hgvs_c.startswith(transcript):
                     hgvs_c = hgvs_c[len(transcript):].lstrip(':')
 
