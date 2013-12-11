@@ -8,4 +8,6 @@ class Command(Subcommander):
         'load': 'load',
         'allele-freqs': 'allele_freqs',
         'queue': 'queue',
+        'delete-sample': 'delete_sample',
+        'delete-project': 'delete_project',
     }

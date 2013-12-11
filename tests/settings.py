@@ -11,12 +11,14 @@ INSTALLED_APPS = (
     'tests.cases.south_tests',
     'tests.cases.geneset_form',
     'tests.cases.sample_load_process',
+    'tests.cases.commands',
 
     'varify',
 
     'varify.raw',
     'varify.raw.sources',
 
+    'varify.assessments',
     'varify.genome',
     'varify.phenotypes',
     'varify.genes',
