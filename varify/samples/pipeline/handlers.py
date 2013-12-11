@@ -29,8 +29,9 @@ def create_sample(sample_name, vcf_colname, batch_name, project_name=None, versi
         project=project, defaults={'label': batch_name, 'name': batch_name})
 
     sample, created = Sample.objects.get_or_create(name__iexact=sample_name,
-        vcf_colname=vcf_colname, project=project, batch=batch, version=version,
-        defaults={'label': sample_name, 'name': sample_name})
+        project=project, batch=batch, version=version,
+        defaults={'label': sample_name, 'name': sample_name,
+        'vcf_colname': vcf_colname})
 
     return sample, created
 
