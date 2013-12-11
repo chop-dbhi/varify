@@ -1,6 +1,7 @@
 import os
 import sys
 import glob
+import logging
 from optparse import make_option
 from django.conf import settings
 from django.core.management.base import BaseCommand
@@ -8,6 +9,8 @@ from django.db import DEFAULT_DB_ALIAS
 from varify.samples.pipeline.handlers import load_samples
 
 SAMPLE_DIRS = getattr(settings, 'VARIFY_SAMPLE_DIRS', ())
+
+logger = logging.getLogger(__file__)
 
 
 class Command(BaseCommand):
@@ -39,7 +42,12 @@ class Command(BaseCommand):
 
                 manifest_path = os.path.join(root, 'MANIFEST')
 
-                load_dict = load_samples(manifest_path, database)
+                try:
+                    load_dict = load_samples(manifest_path, database)
+                except Exception:
+                    logger.exception('error processing manifest {0}'
+                                     .format(manifest_path))
+                    continue
 
                 if not load_dict:
                     continue
