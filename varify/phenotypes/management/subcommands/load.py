@@ -124,7 +124,7 @@ class Command(BaseCommand):
                     help='Load HGMD phenotypes and associations for INDELs.'),
     )
 
-    def load_hpo(self, cursor):
+    def load_hpo(self, cursor, using):
         keys = ['gene_id', 'hpo_terms']
 
         # Fetch, parse and load only genes that cleanly map to the gene table.
@@ -275,7 +275,8 @@ class Command(BaseCommand):
             (
                 select
                     m.acc_num as hgmd_id,
-                    trim(both from regexp_replace(m.disease, '\s*\?$', '')) as disease, # noqa
+                    trim(both from regexp_replace(m.disease, '\s*\?$', ''))
+                        as disease,
                     m.gene,
                     m.pmid,
                     c.chromosome as chr,
