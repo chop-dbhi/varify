@@ -195,16 +195,19 @@ define [
 
         # If there was proband information parsed out of the url then start the
         # process of selecting that proband and showing this modal.
-        if not _(selectedProband).isEmpty()
+        if not _.isEmpty(selectedProband)
             $projects.val(selectedProband.project).change()
             $batches.val(selectedProband.batch).change()
-            # Since the sample is referenced in the url by name and the
-            # options use sample id for their values, we need to look the
-            # sample up by matching the name with the text in the dropdown.
-            $('select[name=sample] option').filter(() ->
-                return $(this).text() == selectedProband.sample
-            ).prop('selected', true)
-            $samples.change()
+
+            if selectedProband.sample?
+                # Since the sample is referenced in the url by name and the
+                # options use sample id for their values, we need to look the
+                # sample up by matching the name with the text in the dropdown.
+                $('select[name=sample] option').filter(() ->
+                    return $(this).text() == selectedProband.sample
+                ).prop('selected', true)
+                $samples.change()
+
             analysisModal.modal('show')
             analysisModal.find('[href=#analysis-0]').tab('show')
 
