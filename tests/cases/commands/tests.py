@@ -9,7 +9,7 @@ from varify.samples.models import Sample, CohortSample, Result, SampleRun, \
 from ..sample_load_process.tests import QueueTestCase
 
 TESTS_DIR = os.path.join(os.path.dirname(__file__), '../..')
-SAMPLE_DIRS = [os.path.join(TESTS_DIR, 'samples')]
+SAMPLE_DIRS = [os.path.join(TESTS_DIR, 'samples', 'batch1')]
 
 
 @override_settings(VARIFY_SAMPLE_DIRS=SAMPLE_DIRS)
@@ -39,7 +39,7 @@ class DeleteTestCase(QueueTestCase):
         self.user = User.objects.all()[0]
 
     def test_delete(self):
-        sample_id = Sample.objects.get(batch__name='batch1', name='sample1').id
+        sample_id = Sample.objects.get(batch__name='batch1', name='NA12891').id
 
         # Associate some knowledge capture with a sample result for the sample
         # we are trying to delete.
