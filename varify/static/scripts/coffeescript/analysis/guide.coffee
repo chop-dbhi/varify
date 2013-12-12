@@ -128,15 +128,15 @@ define [
         if not model.isSession() then return
 
         conditions = $('#analysis-conditions').html('')
-        language = model.get('language')
-        if not language
+        json = model.get('json')
+        if not json
             conditions.append "<li>No filters are applied</li>"
-        else if language.children
-            for obj in language.children
+        else if json.children
+            for obj in json.children
                 if obj then conditions.append "<li>#{ obj.language }</li>"
             return
-        else if language.language
-            conditions.append "<li>#{ language.language }</li>"
+        else if json.language
+            conditions.append "<li>#{ json.language }</li>"
 
     # When the data context is cleared, the analysis modal form controls need
     # to be reset to their default values
