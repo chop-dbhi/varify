@@ -18,7 +18,7 @@ def app(request, project=None, batch=None, sample=None):
     preferences['id'] = obj.pk
 
     selectedProband = {}
-    if project and batch and sample:
+    if project and batch:
         selectedProband['project'] = project
         selectedProband['batch'] = batch
         selectedProband['sample'] = sample

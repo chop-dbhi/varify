@@ -13,7 +13,7 @@ define [
         initialize: ->
             super
 
-            $analysisModalButton = $ '<button class="btn btn-primary" data-toggle=modal data-target="#analysis-modal"><i class=icon-filter></i> Edit Analysis</button>'
+            $analysisModalButton = $ '<button class="btn btn-primary edit-analysis-button" data-toggle=modal data-target="#analysis-modal"><i class=icon-filter></i> Edit Analysis</button>'
 
             $clearAnalysis = $('[data-toggle=clear-analysis]').click ->
                 mediator.publish Serrano.DATACONTEXT_CLEAR
@@ -32,7 +32,6 @@ define [
 
             # Add button to subnav for editing the current analysis
             $analysisModalButton
-                .addClass('pull-right')
                 .appendTo('#subnav .container-fluid')
 
             # While the analysis dialog is open, subscribers can subscribe to

@@ -341,14 +341,15 @@ class Result(TimestampedModel):
 
     @property
     def genotype_value(self):
-        genotype = self.genotype.value
-        variant = self.variant
-        if genotype in ('1/1', '1/2'):
-            return variant.alt + '/' + variant.alt
-        elif genotype == '0/1':
-            return variant.ref + '/' + variant.alt
-        elif genotype == '0/0':
-            return variant.ref + '/' + variant.alt
+        if self.genotype:
+            genotype = self.genotype.value
+            variant = self.variant
+            if genotype in ('1/1', '1/2'):
+                return variant.alt + '/' + variant.alt
+            elif genotype == '0/1':
+                return variant.ref + '/' + variant.alt
+            elif genotype == '0/0':
+                return variant.ref + '/' + variant.alt
 
     @property
     def base_count_map(self):

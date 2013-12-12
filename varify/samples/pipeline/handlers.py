@@ -29,8 +29,9 @@ def create_sample(sample_name, vcf_colname, batch_name, project_name=None, versi
         project=project, defaults={'label': batch_name, 'name': batch_name})
 
     sample, created = Sample.objects.get_or_create(name__iexact=sample_name,
-        vcf_colname=vcf_colname, project=project, batch=batch, version=version,
-        defaults={'label': sample_name, 'name': sample_name})
+        project=project, batch=batch, version=version,
+        defaults={'label': sample_name, 'name': sample_name,
+        'vcf_colname': vcf_colname})
 
     return sample, created
 
@@ -68,36 +69,49 @@ def load_samples(manifest_path, database, **kwargs):
 
     sample_info = manifest.section('sample')
     vcf_info = manifest.section('vcf')
-    # ignore whatever sample is listed in the manifest and scan the vcf for samples
+
+    # ignore whatever sample is listed in the manifest and scan the vcf
+    # for samples
     vcf_path = os.path.join(os.path.dirname(manifest_path), vcf_info['file'])
+
     with open(vcf_path) as file_obj:
         log.debug("opening {0} in load_samples".format(vcf_path))
         reader = vcf.Reader(file_obj)
         samples = reader.samples
+
     if 'sample' in sample_info:
         pretty_names = sample_info['sample'].split(',')
     else:
         pretty_names = samples
+
     if len(samples) != len(pretty_names):
-        log.info("Length of comma-delimited samples field in manifest does not match the length of samples in {0}".format(vcf_info['file']))
+        log.info('Length of comma-delimited samples field in manifest '
+                 'does not match the length of samples in {0}'
+                 .format(vcf_info['file']))
         return
+
     # Create the sample (and batch and project if needed)..
-    num_created=0
-    num_skipped=0
+    num_created = 0
+    num_skipped = 0
+
     for pretty_name, vcf_sample in zip(pretty_names, samples):
-        log.debug("trying to create {0} sample record".format(vcf_sample))
-        sample, created = create_sample(sample_name=pretty_name,vcf_colname=vcf_sample,
-            batch_name=sample_info['batch'], project_name=sample_info['project'],
-            version=sample_info['version'])
-        log.debug("{0} created".format(sample))
+        log.debug('Trying to create {0} sample record'.format(vcf_sample))
+        sample, created = create_sample(sample_name=pretty_name,
+                                        vcf_colname=vcf_sample,
+                                        batch_name=sample_info['batch'],
+                                        project_name=sample_info['project'],
+                                        version=sample_info['version'])
+        log.debug('{0} created'.format(sample))
+
         if created:
-            num_created+=1
+            num_created += 1
             sts.transition(sample, 'Sample Record Created')
         else:
-            num_skipped+=1
+            num_skipped += 1
 
+        manifest = SampleManifest.objects.filter(sample=sample)
         # Create a manfiest object for the sample if one does not exist
-        if created or not SampleManifest.objects.filter(sample=sample).exists():
+        if created or not manifest.exists():
             sample_manifest = SampleManifest(sample=sample)
             sample_manifest.load_content(manifest_path)
             sample_manifest.save()
@@ -105,11 +119,11 @@ def load_samples(manifest_path, database, **kwargs):
 
     # Publish to channel that this manifest is eligible for processing
     # downstream..
-    #if num_created>0 or kwargs.get('force', False):
-    SAMPLE_CHANNEL.publish(manifest_path=manifest_path, database=database)
+    if num_created > 0 or kwargs.get('force', False):
+        SAMPLE_CHANNEL.publish(manifest_path=manifest_path, database=database)
 
     # Returns whether the sample has been created
-    load_dict={'created':num_created,'skipped':num_skipped}
+    load_dict = {'created': num_created, 'skipped': num_skipped}
     return load_dict
 
 

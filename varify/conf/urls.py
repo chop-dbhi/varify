@@ -29,6 +29,8 @@ urlpatterns = patterns('',
     # Cilantro
     url(r'^workspace/$', 'varify.views.app', name='cilantro'),
     url(r'^workspace/(?P<project>.+)/(?P<batch>.+)/(?P<sample>.+)/$', 'varify.views.app', name='cilantro'),
+    url(r'^workspace/(?P<project>.+)/(?P<batch>.+)/$', 'varify.views.app',
+        name='cilantro'),
     url(r'^', include('cilantro.urls')),
 
     # Serrano provides the REST API
