@@ -124,3 +124,5 @@ LOGGING = {
 }
 
 SOUTH_TESTS_MIGRATE = False
+
+SECRET_KEY = 'acb123'
