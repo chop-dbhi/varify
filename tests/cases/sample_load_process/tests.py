@@ -42,9 +42,9 @@ class VariantCacheTestCase(TestCase):
 class SampleLoadTestCase(QueueTestCase):
     def test_pipeline(self):
         expected_counts = {
-            'batches': 3,
+            'batches': 2,
             'cohorts': 2,
-            'genes': 193,
+            'genes': 65,
             'projects': 1,
             'results_per_sample': [
                 {
@@ -77,27 +77,12 @@ class SampleLoadTestCase(QueueTestCase):
                     'sample': 'NA12878',
                     'count': 2094,
                 },
-                {
-                    'batch': 'batch3',
-                    'sample': 'NA12891',
-                    'count': 4377,
-                },
-                {
-                    'batch': 'batch3',
-                    'sample': 'NA12892',
-                    'count': 4377,
-                },
-                {
-                    'batch': 'batch3',
-                    'sample': 'NA12878',
-                    'count': 4377,
-                }
             ],
-            'samples': 9,
-            'transcripts': 351,
-            'variant_effects': 15698,
-            'variants': 8434,
-            'samples_per_batch': [(1, 3), (2, 3), (3, 3)],
+            'samples': 6,
+            'transcripts': 108,
+            'variant_effects': 8788,
+            'variants': 4057,
+            'samples_per_batch': [(1, 3), (2, 3)],
         }
         expected_counts['results'] = \
             sum([x['count'] for x in expected_counts['results_per_sample']])
