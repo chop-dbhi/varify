@@ -4,7 +4,7 @@ PACKAGE = 'varify'
 VERSION = __import__(PACKAGE).get_version()
 
 install_requires = [
-    'django>=1.4.4,<1.6',
+    'django>=1.4.4,<1.5',
     'markdown==2.1.1',
     'south==0.8.2',
     'python-memcached==1.48',
