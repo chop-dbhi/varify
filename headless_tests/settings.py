@@ -10,7 +10,11 @@ SECRET_KEY = '12345678900987654321abcdefghijlmnopqrtuvwyz'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(PROJECT_PATH, 'openmrs.db'),
-    }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'varifydb',
+        'USER': 'postgres',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+    },
 }
+

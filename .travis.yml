@@ -33,7 +33,7 @@ before_install:
 install:
     - pip install -q coveralls Django==$DJANGO --use-mirrors
     - pip install -r requirements.txt
-    - 'if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install --use-mirrors cython && pip install --use-mirrors pysam argparse counter ordereddict importlib; fi'
+    - 'if [[ $TRAVIS_PYTHON_VERSION == "2.6" ]]; then pip install --use-mirrors cython && pip install --use-mirrors pysam argparse counter ordereddict importlib; fi'
     - pip install flake8
     - pip install httpretty
     - npm install jshint
