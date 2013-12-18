@@ -58,6 +58,20 @@ script:
     - "python -m unittest discover -s headless_tests/test --pattern=test*.py"
     - "ls headless_tests/test/screen_shots"
 
+before_script:
+  - psql -c 'create database varifydb;' -U postgres
+  - "python headless_tests/test/start_ghostdriver.py"
+  - "sleep 8"
+  - "cp headless_tests/settings.py varify/conf/local_settings.py"
+  - "./bin/manage.py runserver 0.0.0.0:8004 &"
+  - "sleep 10"
+  - "rm -rf headless_tests/test/screen_shots/*"
+  - "rm -rf headless_tests/test/log/*"
+  - "gem install travis-artifacts"
+script:
+  - "python -m unittest discover -s headless_tests/test --pattern=test_*.py"
+  - "ls headless_tests/test/screen_shots"
+
 after_script:
     #This should after_test , not sure why it didn't work there
     - "travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path headless_tests/test/screen_shots"
