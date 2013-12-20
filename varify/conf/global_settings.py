@@ -171,7 +171,6 @@ TEMPLATE_DIRS = ()
 # template context.
 TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.request',
-    'cilantro.context_processors.cilantro',
     'varify.context_processors.static',
     'varify.context_processors.sentry',
     'varify.context_processors.alamut',
