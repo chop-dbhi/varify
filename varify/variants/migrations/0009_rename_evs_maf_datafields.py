@@ -121,7 +121,6 @@ class Migration(DataMigration):
             'archived': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'category': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['avocado.DataCategory']", 'null': 'True', 'blank': 'True'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'data_modified': ('django.db.models.fields.DateTimeField', [], {'null': 'True'}),
             'description': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
             'enumerable': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'field_name': ('django.db.models.fields.CharField', [], {'max_length': '50'}),

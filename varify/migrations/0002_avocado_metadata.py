@@ -4,7 +4,7 @@ from django.core.management import call_command
 class Migration(DataMigration):
 
     depends_on = (
-        ('avocado', '0009_auto__del_field_datafield_data_source'),
+        ('avocado', '0029_auto__add_field_dataview_parent__add_field_dataquery_parent__add_field'),
     )
 
     def forwards(self, orm):
@@ -16,7 +16,7 @@ class Migration(DataMigration):
         pass
 
     models = {
-        
+
     }
 
     complete_apps = ['varify']
