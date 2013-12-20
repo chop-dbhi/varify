@@ -23,14 +23,11 @@ profiled_tests.txt
 settings
 local_settings.py
 
-*.js
-build.txt
-
-!varify/templates/cilantro/config.js
-!varify/static/scripts/javascript/src/lib/raven.js
+# ignore optimized javascript
+varify/static/scripts/javascript/min
 
 # all Sass files will be compiled into this directory
-varify/static/stylesheets/css/style.css
+varify/static/stylesheets/css
 
 # Collected static files via Django's staticfiles app
 _site/static
