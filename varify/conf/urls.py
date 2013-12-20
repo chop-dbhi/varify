@@ -11,7 +11,9 @@ add_to_builtins('widget_tweaks.templatetags.widget_tweaks')
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
+
     # Landing page
     url(r'^$', 'varify.views.index', name='index'),
 
@@ -25,13 +27,6 @@ urlpatterns = patterns('',
     url(r'^sources/', include('varify.raw.sources.urls')),
 
     url(r'^genes/', include('varify.genes.urls')),
-
-    # Cilantro
-    url(r'^workspace/$', 'varify.views.app', name='cilantro'),
-    url(r'^workspace/(?P<project>.+)/(?P<batch>.+)/(?P<sample>.+)/$', 'varify.views.app', name='cilantro'),
-    url(r'^workspace/(?P<project>.+)/(?P<batch>.+)/$', 'varify.views.app',
-        name='cilantro'),
-    url(r'^', include('cilantro.urls')),
 
     # Serrano provides the REST API
     url(r'^api/', include('serrano.urls')),
@@ -49,7 +44,8 @@ urlpatterns = patterns('',
 )
 
 # In production, these two locations must be served up statically
-urlpatterns += patterns('django.views.static',
+urlpatterns += patterns(
+    'django.views.static',
     url(r'^%s(?P<path>.*)$' % re.escape(settings.MEDIA_URL.lstrip('/')),
         'serve', {'document_root': settings.MEDIA_ROOT}),
     url(r'^%s(?P<path>.*)$' % re.escape(settings.STATIC_URL.lstrip('/')),
@@ -58,7 +54,9 @@ urlpatterns += patterns('django.views.static',
 
 #Allow testing of 404 and 500 pages in development
 if settings.DEBUG:
-    urlpatterns += patterns('',
+    urlpatterns += patterns(
+        '',
         (r'^500/$', 'django.views.defaults.server_error'),
-        (r'^404/$', 'django.views.generic.simple.direct_to_template', {'template': '404.html'}),
+        (r'^404/$', 'django.views.generic.simple.direct_to_template',
+         {'template': '404.html'}),
     )

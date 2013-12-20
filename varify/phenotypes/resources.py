@@ -8,6 +8,7 @@ from varify import api
 from .models import Phenotype
 from preserialize.serialize import serialize
 
+
 class PhenotypeResource(resources.Resource):
     model = Phenotype
 
@@ -57,7 +58,7 @@ class PhenotypeSearchResource(resources.Resource):
 
         resp = {
             'result_count': paginator.count,
-            'results': utils.serialize(page.object_list, **self.template),
+            'results': serialize(page.object_list, **self.template),
         }
 
         # Post procesing..
@@ -66,7 +67,7 @@ class PhenotypeSearchResource(resources.Resource):
                 'self': {
                     'rel': 'self',
                     'href': reverse('api:phenotypes:phenotype',
-                        kwargs={'pk': obj['id']})
+                                    kwargs={'pk': obj['id']})
                 }
             }
 
@@ -74,14 +75,14 @@ class PhenotypeSearchResource(resources.Resource):
         if page.number != 1:
             links['prev'] = {
                 'rel': 'prev',
-                'href': reverse('api:phenotypes:search') + \
-                    '?page=' + str(page.number - 1)
+                'href': "{0}?page={1}".format(reverse('api:phenotypes:search'),
+                                              str(page.number - 1))
             }
         if page.number < paginator.num_pages - 1:
             links['next'] = {
                 'rel': 'next',
-                'href': reverse('api:phenotypes:search') + \
-                    '?page=' + str(page.number + 1)
+                'href': "{0}?page={1}".format(reverse('api:phenotypes:search'),
+                                              str(page.number + 1))
             }
         if links:
             resp['_links'] = links
@@ -91,7 +92,8 @@ class PhenotypeSearchResource(resources.Resource):
 phenotype_resource = never_cache(PhenotypeResource())
 phenotype_search_resource = never_cache(PhenotypeSearchResource())
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^$', phenotype_search_resource, name='search'),
     url(r'^(?P<pk>\d+)/$', phenotype_resource, name='phenotype'),
 )

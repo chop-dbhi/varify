@@ -2,12 +2,14 @@ from django.conf.urls import patterns, url
 from django.http import Http404
 from django.db.models import Q
 from django.views.decorators.cache import never_cache
+from preserialize.serialize import serialize
 from restlib2 import resources
 from varify import api
 from varify.samples.models import CohortVariant
-from varify.assessments.models import Assessment, Pathogenicity, AssessmentCategory
+from varify.assessments.models import Assessment, Pathogenicity, \
+    AssessmentCategory
 from .models import Variant
-from preserialize.serialize import serialize
+
 
 class VariantResource(resources.Resource):
     model = Variant
@@ -42,7 +44,8 @@ class VariantResource(resources.Resource):
         data['unique_genes'] = sorted(genes)
         data['unique_effects'] = sorted(effects)
 
-        # Augment resource with cohort-related details (e.g. allele frequencies)
+        # Augment resource with cohort-related details
+        # (e.g. allele frequencies)
         perms = Q(cohort__user=None, cohort__published=True) | \
             Q(cohort__user=request.user)
         cohort_variants = CohortVariant.objects.filter(perms,
@@ -122,7 +125,9 @@ class VariantAssessmentMetricsResource(resources.Resource):
 variant_resource = never_cache(VariantResource())
 variant_metrics_resource = never_cache(VariantAssessmentMetricsResource())
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^(?P<pk>\d+)/$', variant_resource, name='variant'),
-    url(r'^(?P<pk>\d+)/assessment-metrics/$', variant_metrics_resource, name='variant_assessment_metrics'),
+    url(r'^(?P<pk>\d+)/assessment-metrics/$', variant_metrics_resource,
+        name='variant_assessment_metrics'),
 )

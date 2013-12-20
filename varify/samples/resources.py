@@ -5,12 +5,12 @@ from django.core.cache import cache
 from django.http import Http404
 from django.core.urlresolvers import reverse
 from django.views.decorators.cache import never_cache
+from preserialize.serialize import serialize
 from restlib2 import resources
 from varify.variants.resources import VariantResource
 from varify import api
 from varify.assessments.models import Assessment, Pathogenicity, AssessmentCategory
 from .models import Sample, Result
-from preserialize.serialize import serialize
 
 
 class SampleResource(resources.Resource):
@@ -24,7 +24,8 @@ class SampleResource(resources.Resource):
     @api.cache_resource
     def get(self, request, pk):
         try:
-            sample = self.model.objects.select_related('batch', 'project').get(pk=pk)
+            sample = self.model.objects.select_related(
+                'batch', 'project').get(pk=pk)
         except self.model.DoesNotExist:
             raise Http404
 
@@ -33,12 +34,12 @@ class SampleResource(resources.Resource):
             'self': {
                 'rel': 'self',
                 'href': reverse('api:samples:sample',
-                    kwargs={'pk': pk})
+                                kwargs={'pk': pk})
             },
             'variants': {
                 'rel': 'related',
                 'href': reverse('api:samples:variants',
-                    kwargs={'pk': pk}),
+                                kwargs={'pk': pk}),
             }
         }
         return data
@@ -53,7 +54,7 @@ class NamedSampleResource(resources.Resource):
     def is_not_found(self, request, response, project, batch, sample):
         try:
             instance = self.model.objects.get(project__name=project,
-                batch__name=batch, name=sample)
+                                              batch__name=batch, name=sample)
         except self.model.DoesNotExist:
             return True
 
@@ -61,17 +62,17 @@ class NamedSampleResource(resources.Resource):
         return False
 
     def get(self, request, project, batch, sample):
-        data = utils.serialize(request.instance, **self.template)
+        data = serialize(request.instance, **self.template)
         data['_links'] = {
             'self': {
                 'rel': 'self',
                 'href': reverse('api:samples:sample',
-                    kwargs={'pk': request.instance.pk})
+                                kwargs={'pk': request.instance.pk})
             },
             'variants': {
                 'rel': 'related',
                 'href': reverse('api:samples:variants',
-                    kwargs={'pk': request.instance.pk}),
+                                kwargs={'pk': request.instance.pk}),
             }
         }
         return data
@@ -114,17 +115,17 @@ class SampleResultsResource(resources.Resource):
                 'self': {
                     'rel': 'self',
                     'href': reverse('api:samples:variant',
-                        kwargs={'pk': obj['id']})
+                                    kwargs={'pk': obj['id']})
                 },
                 'sample': {
                     'rel': 'related',
                     'href': reverse('api:samples:sample',
-                        kwargs={'pk': obj['sample']['id']})
+                                    kwargs={'pk': obj['sample']['id']})
                 },
                 'variant': {
                     'rel': 'related',
                     'href': reverse('api:variants:variant',
-                        kwargs={'pk': obj['variant_id']}),
+                                    kwargs={'pk': obj['variant_id']}),
                 }
             }
             obj.pop('variant_id')
@@ -133,14 +134,16 @@ class SampleResultsResource(resources.Resource):
         if page.number != 1:
             links['prev'] = {
                 'rel': 'prev',
-                'href': reverse('api:samples:variants',
-                    kwargs={'pk': pk}) + '?page=' + str(page.number - 1)
+                'href': "{0}?page={1}".format(
+                    reverse('api:samples:variants', kwargs={'pk': pk}),
+                    str(page.number - 1))
             }
         if page.number < paginator.num_pages - 1:
             links['next'] = {
                 'rel': 'next',
-                'href': reverse('api:samples:variants',
-                    kwargs={'pk': pk}) + '?page=' + str(page.number + 1)
+                'href': "{0}?page={1}".format(
+                    reverse('api:samples:variants', kwargs={'pk': pk}),
+                    str(page.number + 1))
             }
         if links:
             resp['_links'] = links
@@ -169,17 +172,17 @@ class SampleResultResource(resources.Resource):
             'self': {
                 'rel': 'self',
                 'href': reverse('api:samples:variant',
-                    kwargs={'pk': data['id']})
+                                kwargs={'pk': data['id']})
             },
             'sample': {
                 'rel': 'related',
                 'href': reverse('api:samples:sample',
-                    kwargs={'pk': data['sample']['id']})
+                                kwargs={'pk': data['sample']['id']})
             },
             'variant': {
                 'rel': 'related',
                 'href': reverse('api:variants:variant',
-                    kwargs={'pk': data['variant_id']}),
+                                kwargs={'pk': data['variant_id']}),
             }
         }
 
@@ -198,8 +201,10 @@ class SampleResultResource(resources.Resource):
             data = self._cache_data(request, pk, key)
 
         try:
-            assessment = Assessment.objects.get(sample_result=pk, user=request.user.id)
-            data['assessment'] = serialize(assessment, **api.templates.ResultAssessment)
+            assessment = Assessment.objects.get(sample_result=pk,
+                                                user=request.user.id)
+            data['assessment'] = serialize(assessment,
+                                           **api.templates.ResultAssessment)
         except Assessment.DoesNotExist:
             data['assessment'] = {}
 
@@ -211,9 +216,11 @@ named_sample_resource = never_cache(NamedSampleResource())
 sample_results_resource = never_cache(SampleResultsResource())
 sample_result_resource = never_cache(SampleResultResource())
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^(?P<pk>\d+)/$', sample_resource, name='sample'),
-    url(r'^(?P<project>.+)/(?P<batch>.+)/(?P<sample>.+)/$', named_sample_resource, name='named_sample'),
+    url(r'^(?P<project>.+)/(?P<batch>.+)/(?P<sample>.+)/$',
+        named_sample_resource, name='named_sample'),
     url(r'^(?P<pk>\d+)/variants/$', sample_results_resource, name='variants'),
     url(r'^variants/(?P<pk>\d+)/$', sample_result_resource, name='variant'),
 )

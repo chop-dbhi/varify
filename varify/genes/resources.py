@@ -3,6 +3,7 @@ from django.conf.urls import patterns, url
 from django.http import Http404
 from django.views.decorators.cache import never_cache
 from django.core.urlresolvers import reverse
+from preserialize.serialize import serialize
 from restlib2 import resources
 from varify import api
 from .models import Gene
@@ -24,7 +25,7 @@ class GeneResource(resources.Resource):
             gene = self.model.objects.select_related(*related).get(pk=pk)
         except self.model.DoesNotExist:
             raise Http404
-        data = utils.serialize(gene, **self.template)
+        data = serialize(gene, **self.template)
         # The approved symbol and name is listed as a synonym for easier
         # searching, but they should be displayed in the output
         data['synonyms'].remove(data['name'])
@@ -65,7 +66,7 @@ class GeneSearchResource(resources.Resource):
 
         resp = {
             'result_count': paginator.count,
-            'results': utils.serialize(page.object_list, **self.template),
+            'results': serialize(page.object_list, **self.template),
         }
 
         # Post procesing..
@@ -79,7 +80,7 @@ class GeneSearchResource(resources.Resource):
                 'self': {
                     'rel': 'self',
                     'href': reverse('api:genes:gene',
-                        kwargs={'pk': obj['id']})
+                                    kwargs={'pk': obj['id']})
                 }
             }
 
@@ -87,14 +88,14 @@ class GeneSearchResource(resources.Resource):
         if page.number != 1:
             links['prev'] = {
                 'rel': 'prev',
-                'href': reverse('api:genes:search') + \
-                    '?page=' + str(page.number - 1)
+                'href': "{0}?page={1}".format(reverse('api:genes:search'),
+                                              str(page.number - 1))
             }
         if page.number < paginator.num_pages - 1:
             links['next'] = {
                 'rel': 'next',
-                'href': reverse('api:genes:search') + \
-                    '?page=' + str(page.number + 1)
+                'href': "{0}?page={1}".format(reverse('api:genes:search'),
+                                              str(page.number + 1))
             }
         if links:
             resp['_links'] = links
@@ -104,7 +105,8 @@ class GeneSearchResource(resources.Resource):
 gene_resource = never_cache(GeneResource())
 gene_search_resource = never_cache(GeneSearchResource())
 
-urlpatterns = patterns('',
+urlpatterns = patterns(
+    '',
     url(r'^$', gene_search_resource, name='search'),
     url(r'^(?P<pk>\d+)/$', gene_resource, name='gene'),
 )
