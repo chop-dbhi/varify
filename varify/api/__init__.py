@@ -1,6 +1,8 @@
 from functools import wraps
 from django.conf import settings
 from django.core.cache import cache
+from . import templates     # noqa
+
 
 PAGE_SIZE = 10
 
