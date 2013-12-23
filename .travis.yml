@@ -50,11 +50,11 @@ before_script:
     - jshint varify/static/js/src/
     - psql -c "create user varify with password 'varify';" -U postgres
     - psql -c "create database varifydb with owner varify template template1 encoding 'utf8';" -U postgres
+    - 'cp headless_tests/settings.py varify/conf/local_settings.py'
     - ./bin/manage.py syncdb
     - ./bin/manage.py migrate
     - 'python headless_tests/test/start_ghostdriver.py'
     - 'sleep 8'
-    - 'cp headless_tests/settings.py varify/conf/local_settings.py'
     - './bin/manage.py runserver 0.0.0.0:8004 &'
     - 'sleep 10'
     - 'rm -rf headless_tests/test/screen_shots/*'
