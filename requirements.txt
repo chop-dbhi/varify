@@ -36,10 +36,6 @@ openpyxl==1.6.1
 # Site-wide authentication
 django-siteauth==0.9b1
 
-# LDAP authentication. On Mac OS X installing from pip will fail.
-# See a few notes here: http://projects.skurfer.com/posts/2011/python_ldap_lion/
-python-ldap>=2.3.12,<2.4
-
 # Application registration and moderation
 django-registration2==0.9b2
 

@@ -25,7 +25,6 @@ install_requires = [
     'whoosh==2.4.0',
     'openpyxl==1.6.1',
     'django-siteauth==0.9b1',
-    'python-ldap>=2.3.12,<2.4',
     'django-registration2==0.9b2',
     'django-tracking2==0.1.2',
     'django-bootstrap-form>=0.5',

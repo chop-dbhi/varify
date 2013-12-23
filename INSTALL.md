@@ -276,12 +276,6 @@ _TODO programmatic commands for creating the database and user_
 echo 'export PATH=/usr/pgsql-9.2/bin:$PATH' | sudo tee /etc/profile.d/postgres.sh
 ```
 
-### LDAP
-
-```bash
-sudo yum install -y openldap-devel
-```
-
 ### Redis
 
 ```bash

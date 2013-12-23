@@ -296,11 +296,7 @@ CACHE_MIDDLEWARE_KEY_PREFIX = ''
 # AUTHENTICATION
 #
 
-# Two additional auth backends for email-based (rather than username)
-# and LDAP-based authentication. To use the LDAP authentication, the
-# rematining LDAP settings (see below) must be defined.
 AUTHENTICATION_BACKENDS = (
-    'varify.backends.LdapBackend',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
