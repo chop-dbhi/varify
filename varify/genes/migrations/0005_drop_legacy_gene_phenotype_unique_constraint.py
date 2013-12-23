@@ -8,7 +8,13 @@ from django.db import models
 class Migration(SchemaMigration):
 
     def forwards(self, orm):
-        db.delete_unique('gene_phenotype', ['gene_id', 'phenotype_id'])
+        try:
+            db.delete_unique('gene_phenotype', ['gene_id', 'phenotype_id'])
+        except ValueError:
+            # When starting completely fresh, there is no unique constraint on
+            # the table on these columns yet so catch that here instead of
+            # letting the migration fail.
+            pass
 
     def backwards(self, orm):
         pass
