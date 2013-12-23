@@ -31,6 +31,7 @@ install:
     - gem install sass
     - psql -c "create user varify with password 'varify';" -U postgres
     - psql -c "create database varifydb with owner varify template template1 encoding 'utf8';" -U postgres
+    - cp headless_tests/settings.py varify/conf/local_settings.py
     - ./bin/manage.py syncdb
     - ./bin/manage.py migrate
 
