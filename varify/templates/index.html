@@ -1,44 +1,6 @@
 {% extends "base.html" %}
 
-{% block styles %}
-    {{ block.super }}
-    <style>.news h4 { font-weight: normal; }</style>
-{% endblock %}
-
 {% block scripts %}
-    <script>
-        document.getElementById('id_username').focus();
-    </script>
     {{ block.super }}
-{% endblock %}
-
-{% block content %}
-
-    <div class=container-fluid>
-        <div class=row-fluid>
-            <div class=span9>
-                <div class=hero-unit>
-                    <h1><em>Verify</em> with Varify.</h1>
-                    <p>Quickly discover clinically relevant variants using
-                        integrated annotations sources.</p>
-                </div>
-
-                <div class="news">
-                    <h3>Latest News</h3>
-                    {% for article in articles %}
-                    <h4><a href="{% url news %}#{{ article.slug }}">{{ article.title }}</a>
-                        <small>{{ article.created|date:"M j, Y" }}</small></h4>
-                        {% if article.summary %}<p>{{ article.summary }}</p>{% endif %}
-                    {% empty %}
-                        <p class=muted>No news yet!</p>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class=span3>
-                {% include "registration/_login.html" %}
-            </div>
-
-        </div>
-    </div>
+    <script src="{{ STATIC_URL }}cilantro/js/cilantro/main.js"></script>
 {% endblock %}

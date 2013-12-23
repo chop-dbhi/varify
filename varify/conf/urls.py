@@ -3,11 +3,10 @@ from django.conf.urls.defaults import url, patterns, include
 from django.conf import settings
 from django.contrib import admin
 from django.template.loader import add_to_builtins
+from django.views.generic import RedirectView, TemplateView
 
 add_to_builtins('bootstrapform.templatetags.bootstrap')
-add_to_builtins('django.contrib.humanize.templatetags.humanize')
 add_to_builtins('avocado.templatetags.avocado_tags')
-add_to_builtins('widget_tweaks.templatetags.widget_tweaks')
 
 admin.autodiscover()
 
@@ -15,18 +14,16 @@ urlpatterns = patterns(
     '',
 
     # Landing page
-    url(r'^$', 'varify.views.index', name='index'),
+    url(r'^$', RedirectView.as_view(url=settings.LOGIN_URL, permanent=True),
+        name='landing'),
 
-    # News
-    url(r'^news/$', 'varify.views.news', name='news'),
-
-    # Includes registration, moderation and authentication
-    url(r'', include('varify.accounts.urls')),
-
-    url(r'^', include('varify.samples.urls')),
-    url(r'^sources/', include('varify.raw.sources.urls')),
-
-    url(r'^genes/', include('varify.genes.urls')),
+    # Cilantro Pages
+    url(r'^workspace/', TemplateView.as_view(template_name='index.html'),
+        name='workspace'),
+    url(r'^query/', TemplateView.as_view(template_name='index.html'),
+        name='query'),
+    url(r'^results/', TemplateView.as_view(template_name='index.html'),
+        name='results'),
 
     # Serrano provides the REST API
     url(r'^api/', include('serrano.urls')),
@@ -34,13 +31,11 @@ urlpatterns = patterns(
     # Varify and other API
     url(r'^api/', include('varify.api.urls', namespace='api')),
 
-    url(r'^support/$', include('varify.support.urls')),
+    # Includes registration, moderation and authentication
+    url(r'^', include('varify.accounts.urls')),
 
     # Administrative components
-    url(r'^tracking/', include('tracking.urls')),
-    url(r'^admin/rq/', include('django_rq_dashboard.urls')),
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^monitor/', include('sts.urls')),
 )
 
 # In production, these two locations must be served up statically

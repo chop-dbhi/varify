@@ -172,7 +172,6 @@ TEMPLATE_DIRS = ()
 TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.request',
     'varify.context_processors.static',
-    'varify.context_processors.sentry',
     'varify.context_processors.alamut',
 )
 
@@ -215,14 +214,12 @@ SITEAUTH_ALLOW_URLS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'tracking.middleware.VisitorTrackingMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'siteauth.middleware.SiteAuthenticationMiddleware',
-    'serrano.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
+    'serrano.middleware.SessionMiddleware',
     'reversion.middleware.RevisionMiddleware',
 )
 
@@ -232,8 +229,8 @@ MIDDLEWARE_CLASSES = (
 #
 
 EMAIL_SUBJECT_PREFIX = '[Varify] '
-NO_REPLY_EMAIL = 'noreply@varify-example.com'
-SUPPORT_EMAIL = 'support@varify-example.com'
+NO_REPLY_EMAIL = 'noreply@example.com'
+SUPPORT_EMAIL = 'support@example.com'
 
 #
 # LOGGING
