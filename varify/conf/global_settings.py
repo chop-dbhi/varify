@@ -219,8 +219,9 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
-    'serrano.middleware.SessionMiddleware',
     'reversion.middleware.RevisionMiddleware',
+    'serrano.middleware.SessionMiddleware',
+    'siteauth.middleware.SiteAuthenticationMiddleware',
 )
 
 
