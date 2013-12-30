@@ -34,7 +34,6 @@ INSTALLED_APPS = (
     'django_rq',
     'sts',
 
-    'cilantro',
     'serrano',
     'avocado',
     'avocado.export',
