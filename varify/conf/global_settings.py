@@ -342,10 +342,12 @@ TRACK_IGNORE_URLS = (
     r'^(static|media|admin|tracking)/',
 )
 
-
-HAYSTACK_SITECONF = 'varify.conf.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'whoosh'
-HAYSTACK_WHOOSH_PATH = os.path.join(os.path.dirname(__file__), '../../whoosh.index')
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_backend.WhooshEngine',
+        'PATH': os.path.join(os.path.dirname(__file__), '../../whoosh.index'),
+    }
+}
 
 # For django-guardian
 ANONYMOUS_USER_ID = -1
