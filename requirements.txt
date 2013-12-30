@@ -32,6 +32,7 @@ modeltree>=1.1.7
 django-haystack==2.0.0
 whoosh==2.4.1
 openpyxl==1.6.1
+django-objectset>=0.2.2
 
 # Site-wide authentication
 django-siteauth==0.9b1

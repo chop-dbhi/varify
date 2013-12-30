@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.conf import settings
 from django.db import router, models, transaction, connections, DatabaseError
 from sts.contextmanagers import transition
-from avocado.sets.models import ObjectSet, SetObject
+from objectset.models import ObjectSet, SetObject
 from varify.core.models import TimestampedModel, LabeledModel
 from varify.genome.models import Genome, Genotype
 from varify.variants.models import Variant
@@ -185,6 +185,7 @@ class SampleManifest(TimestampedModel):
 class Cohort(ObjectSet):
     "A Cohort is a logical grouping of samples for some purpose."
     user = models.ForeignKey(User, null=True, blank=True)
+    name = models.CharField(max_length=100, null=True, blank=True)
 
     # Reference for easier management and delegation of permissions
     # for related users
