@@ -34,7 +34,7 @@ class Person(TimestampedModel):
     # For trio or general pedigree analysis, this marks an explicit link
     # between the proband and the family member.
     relations = models.ManyToManyField('self', through='Relation',
-        symmetrical=False)
+                                       symmetrical=False)
 
     class Meta(object):
         db_table = 'person'
@@ -115,20 +115,19 @@ class Sample(LabeledModel, TimestampedModel):
 
     # Reference to the person this sample is derived from.
     person = models.ForeignKey(Person, null=True, blank=True,
-        related_name='samples')
+                               related_name='samples')
 
     # Store the result count since this does not change
     count = models.IntegerField(default=0)
-
-    # Operational Bookkeeping
 
     # Identifier of the biological sample this data is associated with
     # in the LIMS
     bio_sample = models.IntegerField(null=True, blank=True)
 
-    #the name this sample was given in the VCF file (as opposed to the MANIFEST)
-    vcf_colname = models.CharField(max_length=200,null=True, blank=True,
-        help_text='vcf column sample name')
+    # The name this sample was given in the VCF file (as opposed to the
+    # MANIFEST)
+    vcf_colname = models.CharField(max_length=200, null=True, blank=True,
+                                   help_text='vcf column sample name')
 
     # Marks whether this sample is published. Once this sample's results have
     # been fully processed will this flag be true. As a sanity check, there
@@ -139,7 +138,7 @@ class Sample(LabeledModel, TimestampedModel):
     # new files that represent the same sample in case reloads need
     # to happen.
     md5 = models.CharField(max_length=32, null=True, blank=True,
-        editable=False)
+                           editable=False)
 
     class Meta(LabeledModel.Meta):
         db_table = 'sample'
@@ -170,20 +169,23 @@ class SampleManifest(TimestampedModel):
 
     def load_content(self, path):
         "Attempts to open the file and read the content."
-        log.debug('Opening {0} in {1} load_content'.format(path,__name__))
+        log.debug('Opening {0} in {1} load_content'.format(path, __name__))
         with open(path) as fin:
             self.path = path
             self.content = fin.read()
 
     def content_has_changed(self):
         "Reads the contents from the file and compares with the local copy."
-        log.debug('Opening {0} in {1} content_has_changed'.format(self.path,__name__))
+
+        log.debug('Opening {0} in {1} content_has_changed'
+                  .format(self.path, __name__))
         with open(self.path) as fin:
             return fin.read() != self.content
 
 
 class Cohort(ObjectSet):
     "A Cohort is a logical grouping of samples for some purpose."
+
     user = models.ForeignKey(User, null=True, blank=True)
     name = models.CharField(max_length=100, null=True, blank=True)
 
@@ -211,6 +213,9 @@ class Cohort(ObjectSet):
 
     set_object_rel = 'samples'
 
+    def __unicode__(self):
+        return unicode(self.name)
+
     class Meta(object):
         db_table = 'cohort'
         ordering = ('-order', 'name')
@@ -228,8 +233,11 @@ class Cohort(ObjectSet):
             with transaction.commit_manually(using):
                 # TODO update to use model._meta.db_table..
                 try:
-                    # Raw query to prevent all the overhead of using the `delete()` method
-                    cursor.execute('DELETE FROM cohort_variant WHERE cohort_id = %s', [self.id])
+                    # Raw query to prevent all the overhead of using the
+                    # `delete()` method.
+                    cursor.execute(
+                        'DELETE FROM cohort_variant WHERE cohort_id = %s',
+                        [self.id])
 
                     # Update count on cohort instance
                     cursor.execute('''
@@ -240,8 +248,8 @@ class Cohort(ObjectSet):
                         ) WHERE "id" = %s
                     ''', [self.id])
 
-                    # Calculate frequencies for all variants associated with all
-                    # samples in this cohort
+                    # Calculate frequencies for all variants associated with
+                    # all samples in this cohort
                     cursor.execute('''
                         INSERT INTO cohort_variant (cohort_id, variant_id, af) (
                             SELECT c.id, r.variant_id, COUNT(r.id) / c."count"::float
@@ -324,9 +332,9 @@ class Result(TimestampedModel):
     mq = models.FloatField('mapping quality', null=True, blank=True)
     mq0 = models.FloatField('mapping quality zero', null=True, blank=True)
     baseq_rank_sum = models.FloatField('base quality rank sum test',
-        null=True, blank=True)
+                                       null=True, blank=True)
     mq_rank_sum = models.FloatField('mapping quality rank sum test',
-        null=True, blank=True)
+                                    null=True, blank=True)
     read_pos_rank_sum = models.FloatField(null=True, blank=True)
     strand_bias = models.FloatField(null=True, blank=True)
     homopolymer_run = models.IntegerField(null=True, blank=True)
@@ -334,7 +342,7 @@ class Result(TimestampedModel):
     quality_by_depth = models.FloatField(null=True, blank=True)
     fisher_strand = models.FloatField(null=True, blank=True)
     base_counts = models.CharField(max_length=100, null=True, blank=True,
-        help_text='A,C,G,T base counts')
+                                   help_text='A,C,G,T base counts')
 
     class Meta(object):
         db_table = 'sample_result'
@@ -365,4 +373,4 @@ class Result(TimestampedModel):
 
 # Load signal receivers. This is imported below to prevent circular imports
 # with the above models.
-from . import receivers
+from . import receivers     # noqa
