@@ -22,8 +22,9 @@ class GeneSetField(forms.Field):
 
         if len(names) != len(genes):
             unknown = [n for n in names if n not in genes]
-            raise forms.ValidationError('The following genes were not found: '
-                '{0}'.format(', '.join(sorted(unknown))))
+            raise forms.ValidationError(
+                'The following genes were not found: {0}'
+                .format(', '.join(sorted(unknown))))
 
         return queryset
 
@@ -42,7 +43,8 @@ class GeneSetBulkForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(GeneSetBulkForm, self).__init__(*args, **kwargs)
         if self.instance.pk and 'genes' not in self.initial:
-            self.initial['genes'] = self.instance.genes.values_list('symbol', flat=True)
+            self.initial['genes'] = \
+                self.instance.genes.values_list('symbol', flat=True)
 
     @transaction.commit_on_success
     def save(self, commit=True):
@@ -64,4 +66,4 @@ class GeneSetBulkForm(forms.ModelForm):
 
     class Meta(object):
         model = GeneSet
-        fields = ('name', 'description', 'user')
+        fields = ('name', 'user')
