@@ -13,19 +13,19 @@ class Migration(SchemaMigration):
         # after the load of the initial data since the initial data explicity
         # sets the IDs of the models. I have only seen this behavior on new
         # instances on postgres.
-        if orm.DataConcept.objects.count():
+        if orm['avocado.DataConcept'].objects.count():
             highest_id = db.execute('select id from avocado_dataconcept order '
                                     'by id desc limit 1;')[0][0]
             db.execute('alter sequence avocado_dataconcept_id_seq restart '
                        'with %s;' % (highest_id + 1))
 
-        if orm.DataConceptField.objects.count():
+        if orm['avocado.DataConceptField'].objects.count():
             highest_id = db.execute('select id from avocado_dataconceptfield '
                                     'order by id desc limit 1;')[0][0]
             db.execute('alter sequence avocado_dataconceptfield_id_seq '
                        'restart with %s;' % (highest_id + 1))
 
-        if orm.DataField.objects.count():
+        if orm['avocado.DataField'].objects.count():
             highest_id = db.execute('select id from avocado_datafield order '
                                     'by id desc limit 1;')[0][0]
             db.execute('alter sequence avocado_datafield_id_seq restart '
