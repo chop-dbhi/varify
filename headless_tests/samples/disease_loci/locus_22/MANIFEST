@@ -1,0 +1,11 @@
+[general]
+load = true
+
+[sample]
+project = CEU trio
+batch = locus_22
+version = 0
+
+[vcf]
+file = locus_22.vcf
+md5 = fc71aa1d16da737620ebfefb24c5fea0
