@@ -58,7 +58,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(os.path.abspath(os.path.dirname(__name__)),'headless_tests/test/log/varify.log'),
+            'filename': './headless_tests/test/log/varify.log',
         },
         'console':{
             'level': 'DEBUG',
@@ -109,5 +109,5 @@ LOGGING = {
 }
             
 VARIFY_SAMPLE_DIRS = (
-    os.path.join(os.path.abspath(os.path.dirname(__name__)),'headless_tests/samples'),
+    './headless_tests/samples',
 )
