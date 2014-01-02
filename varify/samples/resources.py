@@ -1,4 +1,4 @@
-from copy import deepcopy
+import functools
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf.urls import patterns, url
 from django.core.cache import cache
@@ -9,8 +9,24 @@ from preserialize.serialize import serialize
 from restlib2 import resources
 from varify.variants.resources import VariantResource
 from varify import api
-from varify.assessments.models import Assessment, Pathogenicity, AssessmentCategory
+from varify.assessments.models import Assessment
 from .models import Sample, Result
+
+
+def sample_posthook(instance, data, request):
+    uri = request.build_absolute_uri
+    data['_links'] = {
+        'self': {
+            'rel': 'self',
+            'href': uri(reverse('api:samples:sample', args=[instance.pk])),
+        },
+        'variants': {
+            'rel': 'related',
+            'href': uri(reverse('api:samples:variants', args=[instance.pk])),
+        }
+    }
+
+    return data
 
 
 class SampleResource(resources.Resource):
@@ -29,20 +45,19 @@ class SampleResource(resources.Resource):
         except self.model.DoesNotExist:
             raise Http404
 
-        data = serialize(sample, **self.template)
-        data['_links'] = {
-            'self': {
-                'rel': 'self',
-                'href': reverse('api:samples:sample',
-                                kwargs={'pk': pk})
-            },
-            'variants': {
-                'rel': 'related',
-                'href': reverse('api:samples:variants',
-                                kwargs={'pk': pk}),
-            }
-        }
-        return data
+        posthook = functools.partial(sample_posthook, request=request)
+        return serialize(sample, posthook=posthook, **self.template)
+
+
+class SamplesResource(resources.Resource):
+    model = Sample
+
+    template = api.templates.Sample
+
+    def get(self, request):
+        samples = self.model.objects.all()
+        posthook = functools.partial(sample_posthook, request=request)
+        return serialize(samples, posthook=posthook, **self.template)
 
 
 class NamedSampleResource(resources.Resource):
@@ -212,12 +227,14 @@ class SampleResultResource(resources.Resource):
 
 
 sample_resource = never_cache(SampleResource())
+samples_resource = never_cache(SamplesResource())
 named_sample_resource = never_cache(NamedSampleResource())
 sample_results_resource = never_cache(SampleResultsResource())
 sample_result_resource = never_cache(SampleResultResource())
 
 urlpatterns = patterns(
     '',
+    url(r'^$', samples_resource, name='samples'),
     url(r'^(?P<pk>\d+)/$', sample_resource, name='sample'),
     url(r'^(?P<project>.+)/(?P<batch>.+)/(?P<sample>.+)/$',
         named_sample_resource, name='named_sample'),
