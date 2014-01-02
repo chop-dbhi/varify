@@ -24,6 +24,8 @@ urlpatterns = patterns(
         name='query'),
     url(r'^results/', TemplateView.as_view(template_name='index.html'),
         name='results'),
+    url(r'^analysis/', TemplateView.as_view(template_name='index.html'),
+        name='analysis'),
 
     # Serrano provides the REST API
     url(r'^api/', include('serrano.urls')),
