@@ -66,8 +66,8 @@ before_script:
 
 script:
     - coverage run test_suite.py
-    - 'python -m unittest discover -s headless_tests/test --pattern=test*.py'
-    - 'ls headless_tests/test/screen_shots'
+    - "python -m unittest discover -s headless_tests/test --pattern=Verify*.py"
+    - "ls headless_tests/test/screen_shots"
 
 after_script:
     - 'travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path headless_tests/test/screen_shots'
