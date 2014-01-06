@@ -2889,6 +2889,75 @@
         "fields": {
             "archived": false,
             "category": null,
+            "created": "2014-1-2T11:13:46.197",
+            "description": "Cohort to compare the proband's variants against",
+            "formatter_name": "Formatter",
+            "group": null,
+            "ident": null,
+            "internal": false,
+            "keywords": "",
+            "modified": "2014-1-2T11:13:46.197",
+            "name": "Cohort",
+            "name_plural": "",
+            "order": null,
+            "published": true,
+            "queryable": true,
+            "sites": [],
+            "sortable": true
+        },
+        "model": "avocado.dataconcept",
+        "pk": 27
+    },
+    {
+        "fields": {
+            "archived": false,
+            "category": null,
+            "created": "2014-1-2T11:13:46.197",
+            "description": "The minimum possible allele frequency is bound by the number of samples in the cohort. For example, the minimum possible frequency for 8 samples would be 0.125, while for 100 would be 0.01.",
+            "formatter_name": "Formatter",
+            "group": null,
+            "ident": null,
+            "internal": false,
+            "keywords": "",
+            "modified": "2014-1-2T11:13:46.197",
+            "name": "Cohort Allele Frequency",
+            "name_plural": "",
+            "order": null,
+            "published": true,
+            "queryable": true,
+            "sites": [],
+            "sortable": true
+        },
+        "model": "avocado.dataconcept",
+        "pk": 28
+    },
+    {
+        "fields": {
+            "archived": false,
+            "category": null,
+            "created": "2014-1-2T11:13:46.197",
+            "description": "Choose from a pre-defined set of genes or search below to select some arbitrary genes.",
+            "formatter_name": "Formatter",
+            "group": null,
+            "ident": null,
+            "internal": false,
+            "keywords": "",
+            "modified": "2014-1-2T11:13:46.197",
+            "name": "Gene Set",
+            "name_plural": "",
+            "order": null,
+            "published": true,
+            "queryable": true,
+            "sites": [],
+            "sortable": true
+        },
+        "model": "avocado.dataconcept",
+        "pk": 29
+    },
+    {
+        "fields": {
+            "archived": false,
+            "category": null,
             "created": "2012-12-20T13:46:21.013",
             "description": "The predicted impact of the variant.",
             "formatter_name": "Formatter",
@@ -3989,5 +4058,44 @@
         },
         "model": "avocado.dataconceptfield",
         "pk": 4
+    },
+    {
+        "fields": {
+            "concept": 27,
+            "created": "2014-01-06T11:43:08.786",
+            "field": 75,
+            "modified": "2014-01-06T11:43:08.786",
+            "name": null,
+            "name_plural": null,
+            "order": null
+        },
+        "model": "avocado.dataconceptfield",
+        "pk": 50
+    },
+    {
+        "fields": {
+            "concept": 28,
+            "created": "2014-01-06T11:43:08.786",
+            "field": 104,
+            "modified": "2014-01-06T11:43:08.786",
+            "name": null,
+            "name_plural": null,
+            "order": null
+        },
+        "model": "avocado.dataconceptfield",
+        "pk": 51
+    },
+    {
+        "fields": {
+            "concept": 29,
+            "created": "2014-01-06T11:43:08.786",
+            "field": 82,
+            "modified": "2014-01-06T11:43:08.786",
+            "name": null,
+            "name_plural": null,
+            "order": null
+        },
+        "model": "avocado.dataconceptfield",
+        "pk": 52
     }
 ]
