@@ -547,32 +547,6 @@
     },
     {
         "fields": {
-            "app_name": "chop",
-            "archived": false,
-            "category": null,
-            "created": "2012-09-23T12:03:28.774",
-            "description": "",
-            "enumerable": false,
-            "field_name": "clinical_phenotype",
-            "group": null,
-            "internal": false,
-            "keywords": "",
-            "model_name": "genedetail",
-            "modified": "2012-09-23T13:58:48.100",
-            "name": "Clinical Phenotype",
-            "name_plural": "",
-            "order": null,
-            "published": false,
-            "sites": [],
-            "translator": null,
-            "unit": "",
-            "unit_plural": ""
-        },
-        "model": "avocado.datafield",
-        "pk": 81
-    },
-    {
-        "fields": {
             "app_name": "variants",
             "archived": false,
             "category": null,
@@ -1454,32 +1428,6 @@
         },
         "model": "avocado.datafield",
         "pk": 14
-    },
-    {
-        "fields": {
-            "app_name": "chop",
-            "archived": false,
-            "category": null,
-            "created": "2012-09-23T12:03:28.653",
-            "description": "",
-            "enumerable": true,
-            "field_name": "inheritance_pattern",
-            "group": null,
-            "internal": false,
-            "keywords": "",
-            "model_name": "genedetail",
-            "modified": "2012-09-23T13:58:34.359",
-            "name": "Inheritance Pattern",
-            "name_plural": "",
-            "order": null,
-            "published": true,
-            "sites": [],
-            "translator": null,
-            "unit": "",
-            "unit_plural": ""
-        },
-        "model": "avocado.datafield",
-        "pk": 80
     },
     {
         "fields": {
@@ -2445,32 +2393,6 @@
     },
     {
         "fields": {
-            "app_name": "chop",
-            "archived": false,
-            "category": null,
-            "created": "2012-09-23T12:03:28.507",
-            "description": "",
-            "enumerable": true,
-            "field_name": "syndrome_type",
-            "group": null,
-            "internal": false,
-            "keywords": "",
-            "model_name": "genedetail",
-            "modified": "2012-09-23T13:58:11.175",
-            "name": "Syndrome Type",
-            "name_plural": "",
-            "order": null,
-            "published": true,
-            "sites": [],
-            "translator": null,
-            "unit": "",
-            "unit_plural": ""
-        },
-        "model": "avocado.datafield",
-        "pk": 79
-    },
-    {
-        "fields": {
             "app_name": "genes",
             "archived": false,
             "category": null,
@@ -2494,32 +2416,6 @@
         },
         "model": "avocado.datafield",
         "pk": 85
-    },
-    {
-        "fields": {
-            "app_name": "chop",
-            "archived": false,
-            "category": null,
-            "created": "2012-09-23T12:03:28.283",
-            "description": "",
-            "enumerable": true,
-            "field_name": "tier",
-            "group": null,
-            "internal": false,
-            "keywords": "",
-            "model_name": "genedetail",
-            "modified": "2012-09-23T13:58:59.453",
-            "name": "Tier",
-            "name_plural": "",
-            "order": null,
-            "published": true,
-            "sites": [],
-            "translator": null,
-            "unit": "",
-            "unit_plural": ""
-        },
-        "model": "avocado.datafield",
-        "pk": 78
     },
     {
         "fields": {
