@@ -43,10 +43,10 @@ services:
 before_script:
     - flake8
     - psql -c 'create database varifydb;' -U postgres
-    - DJANGO_SETTINGS_MODULE='tests.settings' PYTHONPATH=. `which django-admin.py` test varify sample_load_process
+    - DJANGO_SETTINGS_MODULE=varify.conf.settings ./bin/manage.py variants load --evs --1000g --sift --polyphen2 > variants.load.txt 2>&1 &
+    - DJANGO_SETTINGS_MODULE=varify.conf.settings ./bin/manage.py samples allele-freqs > samples.allele-freqs.txt 2>&1 &
     - python headless_tests/test/start_ghostdriver.py
     - sleep 8
-    - cp headless_tests/settings.py varify/conf/local_settings.py
     - ./bin/manage.py runserver 0.0.0.0:8004 &
     - sleep 10
     - rm -rf headless_tests/test/screen_shots/*
