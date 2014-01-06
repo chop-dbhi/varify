@@ -54,6 +54,8 @@ before_script:
     - 'cp headless_tests/initial_data.json .'
     - ./bin/manage.py syncdb --noinput
     - ./bin/manage.py migrate
+    - DJANGO_SETTINGS_MODULE=varify.conf.settings ./bin/manage.py variants load --evs --1000g --sift --polyphen2 > variants.load.txt 2>&1 &
+    - DJANGO_SETTINGS_MODULE=varify.conf.settings ./bin/manage.py samples allele-freqs > samples.allele-freqs.txt 2>&1 &
     - 'python headless_tests/test/start_ghostdriver.py'
     - 'sleep 8'
     - './bin/manage.py runserver 0.0.0.0:8004 &'
