@@ -77,3 +77,13 @@ after_failure:
 
 after_success:
     - coveralls
+
+deploy:
+    provider: s3
+    access_key_id:
+        secure: eauLZfWhP3bliVwBebwrh99BuO1iqHoEkVwbD/kHsjKPQY5WwaBfsROKXgOhc0sQVMMX4pyQe33jSEgogFe5claLTLNlMnkf2NAMFlRlQ8/ICUfLyiif/N7vWk940Cztbh7wFQiWW69FdbAmI8/xBiTzjgNIdc+80qRfKMMGiK8=
+    secret_access_key:
+        secure: Pd7cVgWwUp6HGLFx+k0ss/ZVOz/SybVRLBmm1HC2VMVEH8bkkZk/Qd6QQIynzKr24TIVFpuKUhzkaF3r1uL3ciQTzu0fxr/Lay5VVeJ/mLJmbVFXDcjCpoR8md0YJtSc2XyklsvBbWohjsDY+m2n1Uo1eLZ73fYPJHbAhNw/4/w=
+        bucket: edu.chop.cbmi.tiu.travisci
+        local-dir: headless_tests/test
+        upload-dir: $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID
