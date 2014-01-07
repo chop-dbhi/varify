@@ -8,6 +8,7 @@ python:
     - '2.7'
 
 env:
+<<<<<<< HEAD
     - DJANGO=1.4.15
     - DJANGO=1.5.10
 
@@ -29,6 +30,21 @@ before_install:
       git fetch --append --no-tags upstream refs/heads/$upstream:refs/remotes/upstream/$upstream
     - /usr/bin/python bin/check_signoff.py
 
+=======
+  global:
+  - ARTIFACTS_S3_BUCKET=edu.chop.cbmi.tiu.travisci
+  - ARTIFACTS_AWS_ACCESS_KEY_ID:
+      secure: eauLZfWhP3bliVwBebwrh99BuO1iqHoEkVwbD/kHsjKPQY5WwaBfsROKXgOhc0sQVMMX4pyQe33jSEgogFe5claLTLNlMnkf2NAMFlRlQ8/ICUfLyiif/N7vWk940Cztbh7wFQiWW69FdbAmI8/xBiTzjgNIdc+80qRfKMMGiK8=
+  - ARTIFACTS_AWS_SECRET_ACCESS_KEY:
+      secure: KX6OC+YNmd7QdlttAZi0h6ut++owxegM/cQdX5LsRUm1G9gIMbeusreinZi7twM/MWYry1bbGjEERtyBvKUrelrdSJ8jeaidrLjxWBWQhtYm9tEAhZkSywaXZ62cd5gdyhMJHTMCcwwmkpnYJTSCOzp3k+C9pct+5ZTbyQNFek4=
+  - S3_POLICY="ewoJIlZlcnNpb24iOiAiMjAwOC0xMC0xNyIsCgkiSWQiOiAiUG9saWN5MTM4Njg4ODIxMTgyNCIsCgkiU3RhdGVtZW50IjogWwoJCXsKCQkJIlNpZCI6ICJTdG10MTM4Njg4ODE5MjE5MSIsCgkJCSJFZmZlY3QiOiAiQWxsb3ciLAoJCQkiUHJpbmNpcGFsIjogewoJCQkJIkFXUyI6ICIqIgoJCQl9LAoJCQkiQWN0aW9uIjogInMzOioiLAoJCQkiUmVzb3VyY2UiOiAiYXJuOmF3czpzMzo6OmVkdV9jaG9wX2NibWlfdGl1X3RyYXZpc2NpLyoiCgkJfQoJXQp9Cg=="
+  - S3_SIGNATURE="DzomQiBA4U8Q3o4INLpJv1Py07U="
+  - DJANGO=1.4.5
+  - DJANGO=1.5.1
+virtualenv:
+  system_site_packages: true
+before_install:
+>>>>>>> Putting headings for secure keys
 install:
     - pip install -q coveralls Django==$DJANGO --use-mirrors
     - pip install -r requirements.txt
@@ -61,24 +77,18 @@ before_script:
     - sleep 10
     - rm -rf headless_tests/test/screen_shots/*
     - rm -rf headless_tests/test/log/*
+    - gem install travis-artifacts
 
 script:
     - coverage run test_suite.py
     - python -m unittest discover -s headless_tests/test --pattern=Verify*.py
     - ls headless_tests/test/screen_shots
 
+after_script:
+    - travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path headless_tests/test/screen_shots
+
+after_failure:
+    - travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path headless_tests/test/log
+
 after_success:
     - coveralls
-
-after_test:
-    deploy:
-        provider: s3
-        access_key_id:
-            secure: eauLZfWhP3bliVwBebwrh99BuO1iqHoEkVwbD/kHsjKPQY5WwaBfsROKXgOhc0sQVMMX4pyQe33jSEgogFe5claLTLNlMnkf2NAMFlRlQ8/ICUfLyiif/N7vWk940Cztbh7wFQiWW69FdbAmI8/xBiTzjgNIdc+80qRfKMMGiK8=
-        secret_access_key:
-            secure: Pd7cVgWwUp6HGLFx+k0ss/ZVOz/SybVRLBmm1HC2VMVEH8bkkZk/Qd6QQIynzKr24TIVFpuKUhzkaF3r1uL3ciQTzu0fxr/Lay5VVeJ/mLJmbVFXDcjCpoR8md0YJtSc2XyklsvBbWohjsDY+m2n1Uo1eLZ73fYPJHbAhNw/4/w=
-        bucket: edu.chop.cbmi.tiu.travisci
-        local-dir: headless_tests/test
-        upload-dir: $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID
-        on:
-            branch: headless_test
