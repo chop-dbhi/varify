@@ -3,3 +3,101 @@
 body {
     padding-top: 40px;
 }
+
+.variant-container {
+    @include transition((margin, display) 0.6s ease-in-out);
+    @include box-shadow(none);
+    @include border-radius(0);
+
+    font-size: 14px;
+    cursor: pointer;
+    height: 18px;
+    margin: 0;
+    margin-bottom: 0;
+    border-top: 0;
+    border-bottom: 1px solid #eee;
+    background-color: #f9f9f9;
+    text-shadow: 0 1px 1px #fff;
+    padding: 0;
+    font-weight: bold;
+
+    td {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        padding-right: 10px;
+
+        overflow: hidden;
+        white-space: nowrap;
+        -o-text-overflow: ellipsis;
+        text-overflow: ellipsis;
+
+        small {
+            font-weight: normal;
+            color: #999;
+        }
+    }
+
+    td:first-child {
+        padding-left: 10px;
+    }
+
+    .variant-effects {
+        max-width: 250px;
+    }
+
+    .hgvs-c {
+        max-width: 150px;
+    }
+
+    .genotype {
+        max-width: 100px;
+    }
+
+    .pathogenicity, .assessment-category {
+        font-size: 12px;
+        white-space: nowrap;
+        overflow: visible;
+    }
+
+    .flags-container {
+        text-align: right;
+    }
+
+    .flags {
+        font-size: 11px;
+        border-right: 0;
+        padding: 0;
+        min-width: 0;
+        max-width: 100%;
+
+        > .flag {
+            padding: 0 5px;
+            &.muted {
+                color: #ddd;
+            }
+            &:first-child {
+                padding-left: 0;
+            }
+            &:last-child {
+                padding-right: 0;
+            }
+        }
+    }
+
+    li small {
+        color: #999;
+    }
+
+    .sample-result {
+        border-bottom: 1px solid #ccc;
+    }
+}
+
+.variant-container:first-child {
+    @include border-radius(3px 3px 0 0);
+    border-top: 1px solid #bbb;
+}
+
+.variant-container:last-child {
+    @include border-radius(0 0 3px 3px);
+}
