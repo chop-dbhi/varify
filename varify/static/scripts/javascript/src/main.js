@@ -10,7 +10,7 @@ require({
       variable: 'data'
     }
   }
-}, ['cilantro', '../../scripts/javascript/src/ui', 'project/csrf'], function(c, ui, csrft) {
+}, ['cilantro', '../../scripts/javascript/src/ui', 'project/csrf'], function(c, ui, csrf) {
   var options;
   options = {
     url: c.config.get('url'),

@@ -8,7 +8,7 @@ require
         tpl:
             variable: 'data'
 
-, ['cilantro', '../../scripts/javascript/src/ui', 'project/csrf'], (c, ui, csrft) ->
+, ['cilantro', '../../scripts/javascript/src/ui', 'project/csrf'], (c, ui, csrf) ->
 
     # Session options
     options =
