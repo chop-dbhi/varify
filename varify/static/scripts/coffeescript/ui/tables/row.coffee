@@ -59,7 +59,7 @@ define [
             condensedFlags = new cell.CondensedFlags
                 variant: variant
 
-            @$el.html ''
+            @$el.empty()
             @$el.append gene.render().el,
                         hgvsP.render().el,
                         variantEffects.render().el,

@@ -383,7 +383,7 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
 
     ResultsWorkflow.prototype.exportData = function(event) {
       var delay, i, pagesSuffix, selectedTypes, _i, _ref2, _results;
-      this.$('.export-iframe-container').html('');
+      this.$('.export-iframe-container').empty();
       selectedTypes = this.$('input[name=export-type-checkbox]:checked');
       if (selectedTypes.length === 0) {
         this.$('#export-error-message').html('An export type must be selected.');

@@ -70,7 +70,7 @@ define(['underscore', 'marionette', 'cilantro/ui/base', '../../models', './cell'
       condensedFlags = new cell.CondensedFlags({
         variant: variant
       });
-      this.$el.html('');
+      this.$el.empty();
       return this.$el.append(gene.render().el, hgvsP.render().el, variantEffects.render().el, hgvsC.render().el, genotype.render().el, genomicPosition.render().el, condensedFlags.render().el);
     };
 

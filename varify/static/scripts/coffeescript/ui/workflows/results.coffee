@@ -376,7 +376,7 @@ define [
             # Clear any of the old iframes. If we are exporting again, these
             # downloads should all have finished based on the UI blocking
             # during active exports.
-            @$('.export-iframe-container').html('')
+            @$('.export-iframe-container').empty()
 
             selectedTypes = @$('input[name=export-type-checkbox]:checked')
 
