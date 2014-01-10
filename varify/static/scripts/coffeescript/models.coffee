@@ -1,6 +1,6 @@
 define [
     'underscore'
-    './workflows/results'
+    './models/result'
 ], (_, mods...) ->
 
     _.extend {}, mods...

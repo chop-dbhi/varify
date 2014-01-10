@@ -10,7 +10,7 @@ require({
       variable: 'data'
     }
   }
-}, ['cilantro', '../../scripts/javascript/src/ui'], function(c, ui) {
+}, ['cilantro', '../../scripts/javascript/src/ui', 'project/csrf'], function(c, ui, csrf) {
   var options;
   options = {
     url: c.config.get('url'),
@@ -20,16 +20,16 @@ require({
     var data, routes;
     routes = [
       {
-        id: 'analysis',
-        route: 'analysis/',
-        view: new ui.AnalysisWorkflow({
+        id: 'query',
+        route: 'query/',
+        view: new c.ui.QueryWorkflow({
           context: this.data.contexts.session,
           concepts: this.data.concepts.queryable
         })
       }, {
         id: 'results',
         route: 'results/',
-        view: new c.ui.ResultsWorkflow({
+        view: new ui.ResultsWorkflow({
           view: this.data.views.session,
           context: this.data.contexts.session,
           concepts: this.data.concepts.viewable,

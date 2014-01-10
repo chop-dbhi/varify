@@ -8,7 +8,7 @@ require
         tpl:
             variable: 'data'
 
-, ['cilantro', '../../scripts/javascript/src/ui'], (c, ui) ->
+, ['cilantro', '../../scripts/javascript/src/ui', 'project/csrf'], (c, ui, csrf) ->
 
     # Session options
     options =
@@ -21,15 +21,15 @@ require
 
         # Define routes
         routes = [
-           id: 'analysis'
-           route: 'analysis/'
-           view: new ui.AnalysisWorkflow
+           id: 'query'
+           route: 'query/'
+           view: new c.ui.QueryWorkflow
                context: @data.contexts.session
                concepts: @data.concepts.queryable
         ,
             id: 'results'
             route: 'results/'
-            view: new c.ui.ResultsWorkflow
+            view: new ui.ResultsWorkflow
                 view: @data.views.session
                 context: @data.contexts.session
                 concepts: @data.concepts.viewable
