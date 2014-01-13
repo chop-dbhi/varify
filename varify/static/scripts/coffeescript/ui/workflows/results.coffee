@@ -129,10 +129,6 @@ define [
             @on 'router:load', @onRouterLoad
             @on 'router:unload', @onRouterUnload
 
-            # Get the route-free URL. That is, we want to remove the route at
-            # the end of the URL and be left with the root URL so we can use
-            # this to construct the result URLs later on.
-            @rootUrl = window.location.href.replace(new RegExp('/[^/]*/$'), '/')
 
         onRouterUnload: =>
             @data.results.trigger('workspace:unload')
@@ -452,7 +448,6 @@ define [
 
             @table.show new tables.ResultTable
                 collection: @data.results
-                rootUrl: @rootUrl
 
             @table.currentView.on 'render', () =>
                 @$('.context').stacked('restack', @$el.height())

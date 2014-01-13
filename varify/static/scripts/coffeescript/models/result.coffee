@@ -7,7 +7,7 @@ define [
 
     class Result extends Backbone.Model
         url: ->
-            "#{ @get("rootUrl") }api/samples/variants/#{ @id }/"
+            "#{ utils.getRootUrl() }api/samples/variants/#{ @id }/"
 
         parse: (attrs) ->
             variant = attrs.variant

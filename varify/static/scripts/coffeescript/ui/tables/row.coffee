@@ -21,12 +21,9 @@ define [
             @data = {}
             if not (@data.resultPk = @options.resultPk)
                 throw new Error 'result pk required'
-            if not (@data.rootUrl = @options.rootUrl)
-                throw new Error 'root url required'
 
             @model = new models.Result
                 id: @data.resultPk
-                rootUrl: @options.rootUrl
             @model.on 'sync', @onSync
 
         onSync: =>

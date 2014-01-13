@@ -17,17 +17,12 @@ define [
         itemViewOptions: (item, index) ->
             _.defaults
                 collection: item.series
-                rootUrl: @data.rootUrl
             , @options
 
         collectionEvents:
             'change:currentpage': 'showCurentPage'
 
         initialize: ->
-            @data = {}
-            if not (@data.rootUrl = @options.rootUrl)
-                throw new Error 'root url required'
-
             @collection.on 'reset', =>
                 if @collection.objectCount == 0
                     @$el.hide()
