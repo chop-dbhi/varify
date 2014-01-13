@@ -20,8 +20,7 @@ define(['underscore', 'marionette', './body'], function(_, Marionette, body) {
 
     ResultTable.prototype.itemViewOptions = function(item, index) {
       return _.defaults({
-        collection: item.series,
-        rootUrl: this.data.rootUrl
+        collection: item.series
       }, this.options);
     };
 
@@ -31,10 +30,6 @@ define(['underscore', 'marionette', './body'], function(_, Marionette, body) {
 
     ResultTable.prototype.initialize = function() {
       var _this = this;
-      this.data = {};
-      if (!(this.data.rootUrl = this.options.rootUrl)) {
-        throw new Error('root url required');
-      }
       return this.collection.on('reset', function() {
         if (_this.collection.objectCount === 0) {
           return _this.$el.hide();

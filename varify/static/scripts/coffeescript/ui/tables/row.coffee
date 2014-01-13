@@ -17,6 +17,12 @@ define [
 
         tagName: 'tr'
 
+        events:
+            'click': 'onClick'
+
+        onClick: (events) =>
+            c.trigger('resultRow:click', @model)
+
         initialize: ->
             @data = {}
             if not (@data.resultPk = @options.resultPk)

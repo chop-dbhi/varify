@@ -4,9 +4,9 @@ var __slice = [].slice,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cilantro/ui/paginator', 'cilantro/ui/numbers', 'cilantro/structs', 'cilantro/models', '../tables', 'cilantro/ui/context', 'cilantro/ui/concept', 'cilantro/ui/exporter', 'cilantro/ui/query', 'tpl!templates/count.html', 'tpl!templates/varify/workflows/results.html'], function() {
-  var Marionette, ResultCount, ResultsWorkflow, base, c, concept, context, exporter, models, numbers, paginator, query, structs, tables, templates, _, _ref, _ref1;
-  _ = arguments[0], Marionette = arguments[1], c = arguments[2], base = arguments[3], paginator = arguments[4], numbers = arguments[5], structs = arguments[6], models = arguments[7], tables = arguments[8], context = arguments[9], concept = arguments[10], exporter = arguments[11], query = arguments[12], templates = 14 <= arguments.length ? __slice.call(arguments, 13) : [];
+define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cilantro/ui/paginator', 'cilantro/ui/numbers', 'cilantro/structs', 'cilantro/models', '../tables', 'cilantro/ui/context', 'cilantro/ui/concept', 'cilantro/ui/exporter', 'cilantro/ui/query', '../modals', 'tpl!templates/count.html', 'tpl!templates/varify/workflows/results.html'], function() {
+  var Marionette, ResultCount, ResultsWorkflow, base, c, concept, context, exporter, modal, models, numbers, paginator, query, structs, tables, templates, _, _ref, _ref1;
+  _ = arguments[0], Marionette = arguments[1], c = arguments[2], base = arguments[3], paginator = arguments[4], numbers = arguments[5], structs = arguments[6], models = arguments[7], tables = arguments[8], context = arguments[9], concept = arguments[10], exporter = arguments[11], query = arguments[12], modal = arguments[13], templates = 15 <= arguments.length ? __slice.call(arguments, 14) : [];
   templates = _.object(['count', 'results'], templates);
   ResultCount = (function(_super) {
     __extends(ResultCount, _super);
@@ -128,10 +128,12 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
       context: '.context-region',
       exportTypes: '.export-options-modal .export-type-region',
       exportProgress: '.export-progress-modal .export-progress-region',
-      saveQueryModal: '.save-query-modal'
+      saveQueryModal: '.save-query-modal',
+      resultDetailsModal: '.result-details-modal'
     };
 
     ResultsWorkflow.prototype.initialize = function() {
+      var _this = this;
       this.data = {};
       if (!(this.data.context = this.options.context)) {
         throw new Error('context model required');
@@ -160,7 +162,9 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
       this.areFiltersHidden = false;
       this.on('router:load', this.onRouterLoad);
       this.on('router:unload', this.onRouterUnload);
-      return this.rootUrl = window.location.href.replace(new RegExp('/[^/]*/$'), '/');
+      return c.on('resultRow:click', function(result) {
+        return _this.resultDetailsModal.currentView.update(result);
+      });
     };
 
     ResultsWorkflow.prototype.onRouterUnload = function() {
@@ -435,6 +439,7 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
       this.exportProgress.show(new exporter.ExportProgressCollection({
         collection: this.data.exporters
       }));
+      this.resultDetailsModal.show(new modal.ResultDetails);
       this.saveQueryModal.show(new query.EditQueryDialog({
         header: 'Save Query',
         view: this.data.view,
@@ -448,8 +453,7 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
         fluid: '.tree-region'
       });
       this.table.show(new tables.ResultTable({
-        collection: this.data.results,
-        rootUrl: this.rootUrl
+        collection: this.data.results
       }));
       this.table.currentView.on('render', function() {
         return _this.$('.context').stacked('restack', _this.$el.height());

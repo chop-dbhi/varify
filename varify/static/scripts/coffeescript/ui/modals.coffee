@@ -1,7 +1,6 @@
 define [
     'underscore'
-    './models/result'
-    './models/assessment'
+    './modals/result'
 ], (_, mods...) ->
 
     _.extend {}, mods...

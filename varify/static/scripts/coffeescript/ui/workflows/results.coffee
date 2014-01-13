@@ -12,9 +12,10 @@ define [
     'cilantro/ui/concept'
     'cilantro/ui/exporter'
     'cilantro/ui/query'
+    '../modals'
     'tpl!templates/count.html'
     'tpl!templates/varify/workflows/results.html'
-], (_, Marionette, c, base, paginator, numbers, structs, models, tables, context, concept, exporter, query, templates...) ->
+], (_, Marionette, c, base, paginator, numbers, structs, models, tables, context, concept, exporter, query, modal, templates...) ->
 
     templates = _.object ['count', 'results'], templates
 
@@ -97,6 +98,7 @@ define [
             exportTypes: '.export-options-modal .export-type-region'
             exportProgress: '.export-progress-modal .export-progress-region'
             saveQueryModal: '.save-query-modal'
+            resultDetailsModal: '.result-details-modal'
 
         initialize: ->
             @data = {}
@@ -129,6 +131,8 @@ define [
             @on 'router:load', @onRouterLoad
             @on 'router:unload', @onRouterUnload
 
+            c.on 'resultRow:click', (result) =>
+                @resultDetailsModal.currentView.update(result)
 
         onRouterUnload: =>
             @data.results.trigger('workspace:unload')
@@ -433,6 +437,8 @@ define [
 
             @exportProgress.show new exporter.ExportProgressCollection
                 collection: @data.exporters
+
+            @resultDetailsModal.show new modal.ResultDetails
 
             @saveQueryModal.show new query.EditQueryDialog
                 header: 'Save Query'
