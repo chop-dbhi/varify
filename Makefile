@@ -23,7 +23,8 @@ REQUIRE_OPTIMIZE = `which node` ./bin/r.js -o ${JAVASCRIPT_DIR}/app.build.js
 
 all: setup build collect
 
-build: sass coffee optimize
+# TODO: Add optimize as a build dependency
+build: sass coffee
 
 setup:
 	@if [ ! -f ./varify/conf/local_settings.py ] && [ -f ./varify/conf/local_settings.py.sample ]; then \
