@@ -1,11 +1,12 @@
 define [
     'underscore'
     'marionette'
+    'cilantro'
     'cilantro/ui/base'
     '../../models'
-    './cell'
+    '../../templates'
     'tpl!templates/varify/empty.html'
-], (_, Marionette, base, models, cell, templates...) ->
+], (_, Marionette, c, base, models, Templates, templates...) ->
 
     templates = _.object ['empty'], templates
 
@@ -32,41 +33,38 @@ define [
             variant = @model.get('variant')
             assessment = @model.get('assessment')
 
-            gene = new cell.Gene
-                genes: variant.uniqueGenes
-                collapse: true
+            $gene = $(Templates.geneLinks(variant.uniqueGenes, collapse: true))
+                .addClass('genes')
 
-            hgvsP = new cell.HgvsP
-                effects: variant.effects
+            $hgvsP = $(Templates.hgvsP(variant.effects))
+                .addClass('hgvs-p')
 
-            variantEffects = new cell.VariantEffect
-                effects: variant.effects
-                assessment: assessment
-                collapse: true
+            $variantEffects = $(Templates.variantEffects(variant.effects, true))
+                .addClass('variant-effects')
+                .append($(Templates.pathogenicity(assessment)))
 
-            hgvsC = new cell.HgvsC
-                effects: variant.effects
+            # NOTE: As of Bootstrap 2.3.1 there is still an issue with adding
+            # tooltips to <td> elements directly as the tooltip will be
+            # instered directly into the table, causing the row to be
+            # misaligned. The workaround(added in 2.3.0) is to
+            # set the container to body so that the div is not jammed into the
+            # table all willy-nilly like.
+            $hgvsC = $(Templates.hgvsC(variant.effects))
+                .addClass('hgvs-c')
+                .tooltip({container: 'body'})
 
-            genotype = new cell.Genotype
-                description: @model.get('genotype_description')
-                value: @model.get('genotype_value')
+            $genotype = $(Templates.genotype(@model.get('genotype_value'), @model.get('genotype_description')))
+                .addClass('genotype')
+                .tooltip({container: 'body'})
 
-            genomicPosition = new cell.GenomicPosition
-                chromosome: variant.chr
-                position: variant.chr
-                assessment: assessment
+            $genomicPosition = $(Templates.genomicPosition(variant.chr, variant.pos))
+                .addClass('genomic-position')
+                .append($(Templates.category(assessment)))
 
-            condensedFlags = new cell.CondensedFlags
-                variant: variant
+            $condensedFlags = $(Templates.condensedFlags(variant))
 
             @$el.empty()
-            @$el.append gene.render().el,
-                        hgvsP.render().el,
-                        variantEffects.render().el,
-                        hgvsC.render().el,
-                        genotype.render().el,
-                        genomicPosition.render().el,
-                        condensedFlags.render().el
+            @$el.append $gene, $hgvsP, $variantEffects, $hgvsC, $genotype, $genomicPosition, $condensedFlags
 
         onRender: =>
             @model.fetch()

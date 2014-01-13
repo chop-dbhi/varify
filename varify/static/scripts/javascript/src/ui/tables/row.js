@@ -4,9 +4,9 @@ var __slice = [].slice,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'marionette', 'cilantro/ui/base', '../../models', './cell', 'tpl!templates/varify/empty.html'], function() {
-  var EmptyResultRow, Marionette, ResultRow, base, cell, models, templates, _, _ref, _ref1;
-  _ = arguments[0], Marionette = arguments[1], base = arguments[2], models = arguments[3], cell = arguments[4], templates = 6 <= arguments.length ? __slice.call(arguments, 5) : [];
+define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/base', '../../models', '../../templates', 'tpl!templates/varify/empty.html'], function() {
+  var EmptyResultRow, Marionette, ResultRow, Templates, base, c, models, templates, _, _ref, _ref1;
+  _ = arguments[0], Marionette = arguments[1], c = arguments[2], base = arguments[3], models = arguments[4], Templates = arguments[5], templates = 7 <= arguments.length ? __slice.call(arguments, 6) : [];
   templates = _.object(['empty'], templates);
   ResultRow = (function(_super) {
     __extends(ResultRow, _super);
@@ -14,6 +14,7 @@ define(['underscore', 'marionette', 'cilantro/ui/base', '../../models', './cell'
     function ResultRow() {
       this.onRender = __bind(this.onRender, this);
       this.onSync = __bind(this.onSync, this);
+      this.onClick = __bind(this.onClick, this);
       _ref = ResultRow.__super__.constructor.apply(this, arguments);
       return _ref;
     }
@@ -24,54 +25,44 @@ define(['underscore', 'marionette', 'cilantro/ui/base', '../../models', './cell'
 
     ResultRow.prototype.tagName = 'tr';
 
+    ResultRow.prototype.events = {
+      'click': 'onClick'
+    };
+
+    ResultRow.prototype.onClick = function(events) {
+      return c.trigger('resultRow:click', this.model);
+    };
+
     ResultRow.prototype.initialize = function() {
       this.data = {};
       if (!(this.data.resultPk = this.options.resultPk)) {
         throw new Error('result pk required');
       }
-      if (!(this.data.rootUrl = this.options.rootUrl)) {
-        throw new Error('root url required');
-      }
       this.model = new models.Result({
-        id: this.data.resultPk,
-        rootUrl: this.options.rootUrl
+        id: this.data.resultPk
       });
       return this.model.on('sync', this.onSync);
     };
 
     ResultRow.prototype.onSync = function() {
-      var assessment, condensedFlags, gene, genomicPosition, genotype, hgvsC, hgvsP, variant, variantEffects;
+      var $condensedFlags, $gene, $genomicPosition, $genotype, $hgvsC, $hgvsP, $variantEffects, assessment, variant;
       variant = this.model.get('variant');
       assessment = this.model.get('assessment');
-      gene = new cell.Gene({
-        genes: variant.uniqueGenes,
+      $gene = $(Templates.geneLinks(variant.uniqueGenes, {
         collapse: true
+      })).addClass('genes');
+      $hgvsP = $(Templates.hgvsP(variant.effects)).addClass('hgvs-p');
+      $variantEffects = $(Templates.variantEffects(variant.effects, true)).addClass('variant-effects').append($(Templates.pathogenicity(assessment)));
+      $hgvsC = $(Templates.hgvsC(variant.effects)).addClass('hgvs-c').tooltip({
+        container: 'body'
       });
-      hgvsP = new cell.HgvsP({
-        effects: variant.effects
+      $genotype = $(Templates.genotype(this.model.get('genotype_value'), this.model.get('genotype_description'))).addClass('genotype').tooltip({
+        container: 'body'
       });
-      variantEffects = new cell.VariantEffect({
-        effects: variant.effects,
-        assessment: assessment,
-        collapse: true
-      });
-      hgvsC = new cell.HgvsC({
-        effects: variant.effects
-      });
-      genotype = new cell.Genotype({
-        description: this.model.get('genotype_description'),
-        value: this.model.get('genotype_value')
-      });
-      genomicPosition = new cell.GenomicPosition({
-        chromosome: variant.chr,
-        position: variant.chr,
-        assessment: assessment
-      });
-      condensedFlags = new cell.CondensedFlags({
-        variant: variant
-      });
+      $genomicPosition = $(Templates.genomicPosition(variant.chr, variant.pos)).addClass('genomic-position').append($(Templates.category(assessment)));
+      $condensedFlags = $(Templates.condensedFlags(variant));
       this.$el.empty();
-      return this.$el.append(gene.render().el, hgvsP.render().el, variantEffects.render().el, hgvsC.render().el, genotype.render().el, genomicPosition.render().el, condensedFlags.render().el);
+      return this.$el.append($gene, $hgvsP, $variantEffects, $hgvsC, $genotype, $genomicPosition, $condensedFlags);
     };
 
     ResultRow.prototype.onRender = function() {

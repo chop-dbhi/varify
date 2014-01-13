@@ -1,5 +1,5 @@
 define [
-    'underscore'
+    'underscore',
     './workflows/results'
 ], (_, mods...) ->
 
