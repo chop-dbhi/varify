@@ -13,7 +13,7 @@ define(['underscore', 'backbone', '../utils'], function(_, Backbone, util) {
     }
 
     AssessmentMetrics.prototype.url = function() {
-      return "" + (util.getRootUrl()) + "api/variants/" + this.variant_id + "/assessment-metrics";
+      return "" + (util.getRootUrl()) + "api/variants/" + this.variant_id + "/assessment-metrics/";
     };
 
     AssessmentMetrics.prototype.initialize = function(attrs, options) {

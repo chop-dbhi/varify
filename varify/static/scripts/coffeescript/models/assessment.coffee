@@ -7,7 +7,7 @@ define [
 
     class AssessmentMetrics extends Backbone.Model
         url: ->
-            "#{ util.getRootUrl() }api/variants/#{ @variant_id }/assessment-metrics"
+            "#{ util.getRootUrl() }api/variants/#{ @variant_id }/assessment-metrics/"
 
         initialize: (attrs, options) ->
             if not (@result = options.result_id)
