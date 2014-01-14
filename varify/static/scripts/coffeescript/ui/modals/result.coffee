@@ -288,7 +288,7 @@ define [
             $('#assessment-metrics').html('')
 
             if _.isEmpty(@metrics.get('metrics'))
-                $('#assessment-metrics').html('No assessments have been made on this variant')
+                $('#assessment-metrics').html('<p class=muted>No assessments have been made on this variant</p>')
 
             else
                 metrics = @metrics.get('metrics')
@@ -355,6 +355,8 @@ define [
             @$content.append $row1, $row2, $row3
 
             @$el.find('.cohort-sample-popover').popover()
+
+            @metrics.fetch({success: @fetchMetricsSuccess, error: @fetchMetricsError})
 
             return @$el
 

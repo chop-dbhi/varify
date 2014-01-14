@@ -314,7 +314,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       var content, metrics;
       $('#assessment-metrics').html('');
       if (_.isEmpty(this.metrics.get('metrics'))) {
-        return $('#assessment-metrics').html('No assessments have been made on this variant');
+        return $('#assessment-metrics').html('<p class=muted>No assessments have been made on this variant</p>');
       } else {
         metrics = this.metrics.get('metrics');
         content = [];
@@ -369,6 +369,10 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       $row3.append(this._span(this.renderAssessmentMetricsContainer(), 12));
       this.$content.append($row1, $row2, $row3);
       this.$el.find('.cohort-sample-popover').popover();
+      this.metrics.fetch({
+        success: this.fetchMetricsSuccess,
+        error: this.fetchMetricsError
+      });
       return this.$el;
     };
 
