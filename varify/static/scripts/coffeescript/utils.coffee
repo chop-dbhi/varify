@@ -7,7 +7,7 @@ define [], () ->
         window.location.href.replace(new RegExp('/[^/]*/$'), '/')
 
     toAbsolutePath = (path) ->
-        return "#{ getRootUrl }#{ path}"
+        return "#{ getRootUrl() }#{ path }"
 
     effectImpactPriority = (impact) ->
         switch impact

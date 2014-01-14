@@ -5,7 +5,7 @@ define([], function() {
     return window.location.href.replace(new RegExp('/[^/]*/$'), '/');
   };
   toAbsolutePath = function(path) {
-    return "" + getRootUrl + path;
+    return "" + (getRootUrl()) + path;
   };
   effectImpactPriority = function(impact) {
     switch (impact) {
@@ -51,6 +51,7 @@ define([], function() {
   };
   return {
     getRootUrl: getRootUrl,
+    toAbsolutePath: toAbsolutePath,
     effectImpactPriority: effectImpactPriority,
     priorityClass: priorityClass,
     depthClass: depthClass,
