@@ -179,3 +179,32 @@ body {
 .variant-container:last-child {
     @include border-radius(0 0 3px 3px);
 }
+
+#variant-details-content {
+    margin-right: 30px;
+
+    .assessments-table-container {
+        border-top: 2px solid #eee;
+    }
+}
+
+.assessment-details-table {
+    border: none;
+    margin-bottom: 30px;
+
+    .no-border {
+        border: none;
+    }
+
+    th {
+        text-align: left;
+    }
+
+    th, td {
+        padding-right: 20px;
+    }
+
+    tbody > tr {
+        border-top: 1px solid #eee;
+    }
+}
