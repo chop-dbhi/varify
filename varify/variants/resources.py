@@ -133,34 +133,27 @@ class VariantAssessmentMetricsResource(resources.Resource):
                 .values_list('pk', flat=True)
 
             data['assessments'] = []
-
-            assessment_data = {}
-            for assessment in assessments:
-                assessment_data['id'] = assessment.pk
-                assessment_data['pathogenicity'] = \
-                    assessment.pathogenicity.name
-                assessment_data['category'] = \
-                    getattr(assessment.assessment_category, 'name', '')
-                assessment_data['sanger'] = \
-                    'Yes' if assessment.sanger_requested else 'No'
-                assessment_data['mother_result'] = \
-                    assessment.mother_result.name
-                assessment_data['father_result'] = \
-                    assessment.father_result.name
-                assessment_data['sample'] = {
-                    'id': assessment.sample_result.sample.id,
-                    'name': assessment.sample_result.sample.name,
+            for a in assessments:
+                a_data = {}
+                a_data['id'] = a.pk
+                a_data['pathogenicity'] = a.pathogenicity.name
+                a_data['category'] = getattr(a.assessment_category, 'name', '')
+                a_data['sanger'] = 'Yes' if a.sanger_requested else 'No'
+                a_data['mother_result'] = a.mother_result.name
+                a_data['father_result'] = a.father_result.name
+                a_data['sample'] = {
+                    'id': a.sample_result.sample.id,
+                    'name': a.sample_result.sample.name,
                 }
-                assessment_data['user'] = {
-                    'username': assessment.user.username,
-                    'email': assessment.user.email,
+                a_data['user'] = {
+                    'username': a.user.username,
+                    'email': a.user.email,
                 }
 
-                if assessment.sample_result.sample.project.id \
-                        in user_project_ids:
-                    assessment_data['details'] = assessment.evidence_details
+                if a.sample_result.sample.project.id in user_project_ids:
+                    a_data['details'] = a.evidence_details
 
-                data['assessments'].append(assessment_data)
+                data['assessments'].append(a_data)
 
         return {
             'metrics': data,
