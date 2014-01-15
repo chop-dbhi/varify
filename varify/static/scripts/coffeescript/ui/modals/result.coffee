@@ -6,19 +6,13 @@ define [
     '../../templates'
     'tpl!templates/varify/empty.html'
     'tpl!templates/varify/modals/result.html'
-    'tpl!templates/varify/modals/result/assessment.html'
 ], (_, Marionette, models, utils, Templates, templates...) ->
 
-    templates = _.object ['empty', 'result', 'assessment'], templates
+    templates = _.object ['empty', 'result'], templates
 
 
     class DetailsTab extends Marionette.ItemView
         template: templates.empty
-
-        className: 'tab-pane active'
-
-        ui:
-            assessmentMetrics: '#assessment-metrics'
 
         initialize: ->
             @metrics = @options.metrics
@@ -362,12 +356,119 @@ define [
 
 
     class AssessmentTab extends Marionette.ItemView
-        template: templates.assessment
+        template: templates.empty
 
-        className: 'tab-pane'
+        el: '#knowledge-capture-content'
 
-        initialize: ->
-            @$el.attr('id', 'knowledge-capture-content')
+        events:
+            'change input[name=pathogenicity-radio]': 'pathogenicityRadioChanged'
+            'click .alert-error > .close': 'closeFormErrorsClicked'
+
+        update: (model) ->
+            # If this is the first update call then we need to intialize the UI
+            # elements so we can reference them in the success/error handlers
+            # in the fetch call we are about to make.
+            if not @model?
+                @formContainer = $('#knowledge-capture-form-container')
+                @feedbackContainer = $('#knowledge-capture-feedback-container')
+                @saveButton = $('#save-assessment-button')
+                @auditButton = $('#audit-trail-button')
+                @errorContainer = $('#error-container')
+                @errorMsg = $('#error-message')
+
+            @formContainer.hide()
+            @feedbackContainer.show()
+            @errorContainer.hide()
+
+            @model = model
+            @model.fetch({
+                error: @onAssessmentFetchError
+                success: @onAssessmentFetchSuccess
+            })
+
+        onAssessmentFetchError: =>
+            @formContainer.hide()
+            @feedbackContainer.hide()
+            @errorContainer.show()
+            @errorMsg.html('<h5 class=text-error>Error retrieving knowledge capture data.</h5>')
+            @saveButton.hide()
+            @auditButton.hide()
+
+        onAssessmentFetchSuccess: =>
+            @errorContainer.hide()
+            @feedbackContainer.hide()
+            @formContainer.show()
+            @render()
+
+        closeFormErrorsClicked: (event) ->
+            $(event.target).parent().hide()
+
+        # Enable/disable category radios if the pathogenicity changed
+        pathogenicityRadioChanged: (event) ->
+            if $(event.target).hasClass('requires-category')
+                $('input:radio[name=category-radio]').removeAttr('disabled')
+                $('.assessment-category-label').removeClass('muted')
+                this.setRadioChecked('category-radio', @model.get('assessment_category'))
+            else
+                $('input:radio[name=category-radio]:checked').attr('checked', false)
+                $('input:radio[name=category-radio]').attr('disabled', true)
+                $('.assessment-category-label').addClass('muted')
+
+        isValid: ->
+            # Rather than checking which field changed, just update all fields
+            @model.set({
+                evidence_details: $('#evidence-details').val(),
+                sanger_requested: $('input[name=sanger-radio]:checked').val(),
+                pathogenicity: $('input[name=pathogenicity-radio]:checked').val(),
+                assessment_category: $('input[name=category-radio]:checked').val(),
+                mother_result: $('#mother-results').val(),
+                father_result: $('#father-results').val()
+            })
+
+            valid = true
+
+            @errorContainer.hide()
+            @errorMsg.html('')
+
+            if (@model.get('pathogenicity') >= 2 && @model.get('pathogenicity') <= 4)
+                if !(@model.get('assessment_category')?)
+                    valid = false
+                    @errorMsg.append('<h5>Please select a category.</h5>')
+            if (@model.get('mother_result') == "")
+                valid = false
+                @errorMsg.append('<h5>Please select a result from the &quot;Mother&quot; dropdown.</h5>')
+            if (@model.get('father_result') == "")
+                valid = false
+                @errorMsg.append('<h5>Please select a result from the &quot;Father&quot; dropdown.</h5>')
+            if !(@model.get('sanger_requested')?)
+                valid = false
+                @errorMsg.append('<h5>Please select true or false for the &quot;Sanger Requested&quot; option.</h5>')
+
+            if !valid
+                @errorContainer.show()
+
+            valid
+
+        # Checks the radio button with the supplied name and value(all other
+        # radios with that name are unchecked).
+        setRadioChecked: (name, value) ->
+            # Lookup all the radio buttons using the supplied name
+            radios = $('input:radio[name=' + name + ']')
+            # Uncheck any current selection
+            $ radios.prop('checked', false)
+            # Check the correct radio button based on the supplied value
+            checkedRadio = $(radios.filter('[value=' + value + ']'))
+            $(checkedRadio.prop('checked', true))
+            $(checkedRadio.change())
+
+        render: ->
+            this.setRadioChecked('category-radio', @model.get('assessment_category'))
+            this.setRadioChecked('pathogenicity-radio', @model.get('pathogenicity'))
+            this.setRadioChecked('sanger-radio', @model.get('sanger_requested'))
+
+            $('#mother-results').val(@model.get('mother_result'))
+            $('#father-results').val(@model.get('father_result'))
+            $('#evidence-details').val(@model.get('evidence_details'))
 
 
     class ResultDetails extends Marionette.ItemView
@@ -376,7 +477,7 @@ define [
         template: templates.result
 
         ui:
-            tabContent: '.tab-content'
+            variantDetailsTabContent: '#variant-details-content'
             saveButton: '#save-assessment-button'
             auditTrailButton: '#audit-trail-button'
 
@@ -385,6 +486,9 @@ define [
             'click #save-assessment-button': 'saveAndClose'
             'click #variant-details-link': 'hideButtons'
             'click #knowledge-capture-link': 'showButtons'
+
+        initialize: ->
+            @assessmentTab = new AssessmentTab
 
         hideButtons: ->
             @ui.saveButton.hide()
@@ -404,8 +508,6 @@ define [
                 backdrop: 'static'
 
         update: (result) ->
-            @ui.tabContent.empty()
-
             @model = result
 
             metrics = new models.AssessmentMetrics(
@@ -415,11 +517,16 @@ define [
             @detailsTab = new DetailsTab
                 model: result
                 metrics: metrics
-            @ui.tabContent.append @detailsTab.render
+            @ui.variantDetailsTabContent.html @detailsTab.render
 
-            @assessmentTab = new AssessmentTab
-                result_id: result.id
-            @ui.tabContent.append @assessmentTab.render().el
+            #Create a new view for the knowledge capture form
+            assessmentModel = new models.Assessment
+                sample_result: @model.id
+
+            if @model.get('assessment')?
+                assessmentModel.id = @model.get('assessment').id
+
+            @assessmentTab.update(assessmentModel)
 
             @$el.modal('show')
 

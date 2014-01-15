@@ -4,10 +4,10 @@ var __slice = [].slice,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'marionette', '../../models', '../../utils', '../../templates', 'tpl!templates/varify/empty.html', 'tpl!templates/varify/modals/result.html', 'tpl!templates/varify/modals/result/assessment.html'], function() {
+define(['underscore', 'marionette', '../../models', '../../utils', '../../templates', 'tpl!templates/varify/empty.html', 'tpl!templates/varify/modals/result.html'], function() {
   var AssessmentTab, DetailsTab, Marionette, ResultDetails, Templates, models, templates, utils, _, _ref, _ref1, _ref2;
   _ = arguments[0], Marionette = arguments[1], models = arguments[2], utils = arguments[3], Templates = arguments[4], templates = 6 <= arguments.length ? __slice.call(arguments, 5) : [];
-  templates = _.object(['empty', 'result', 'assessment'], templates);
+  templates = _.object(['empty', 'result'], templates);
   DetailsTab = (function(_super) {
     __extends(DetailsTab, _super);
 
@@ -22,12 +22,6 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     }
 
     DetailsTab.prototype.template = templates.empty;
-
-    DetailsTab.prototype.className = 'tab-pane active';
-
-    DetailsTab.prototype.ui = {
-      assessmentMetrics: '#assessment-metrics'
-    };
 
     DetailsTab.prototype.initialize = function() {
       this.metrics = this.options.metrics;
@@ -383,16 +377,125 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     __extends(AssessmentTab, _super);
 
     function AssessmentTab() {
+      this.onAssessmentFetchSuccess = __bind(this.onAssessmentFetchSuccess, this);
+      this.onAssessmentFetchError = __bind(this.onAssessmentFetchError, this);
       _ref1 = AssessmentTab.__super__.constructor.apply(this, arguments);
       return _ref1;
     }
 
-    AssessmentTab.prototype.template = templates.assessment;
+    AssessmentTab.prototype.template = templates.empty;
 
-    AssessmentTab.prototype.className = 'tab-pane';
+    AssessmentTab.prototype.el = '#knowledge-capture-content';
 
-    AssessmentTab.prototype.initialize = function() {
-      return this.$el.attr('id', 'knowledge-capture-content');
+    AssessmentTab.prototype.events = {
+      'change input[name=pathogenicity-radio]': 'pathogenicityRadioChanged',
+      'click .alert-error > .close': 'closeFormErrorsClicked'
+    };
+
+    AssessmentTab.prototype.update = function(model) {
+      if (this.model == null) {
+        this.formContainer = $('#knowledge-capture-form-container');
+        this.feedbackContainer = $('#knowledge-capture-feedback-container');
+        this.saveButton = $('#save-assessment-button');
+        this.auditButton = $('#audit-trail-button');
+        this.errorContainer = $('#error-container');
+        this.errorMsg = $('#error-message');
+      }
+      this.formContainer.hide();
+      this.feedbackContainer.show();
+      this.errorContainer.hide();
+      this.model = model;
+      return this.model.fetch({
+        error: this.onAssessmentFetchError,
+        success: this.onAssessmentFetchSuccess
+      });
+    };
+
+    AssessmentTab.prototype.onAssessmentFetchError = function() {
+      this.formContainer.hide();
+      this.feedbackContainer.hide();
+      this.errorContainer.show();
+      this.errorMsg.html('<h5 class=text-error>Error retrieving knowledge capture data.</h5>');
+      this.saveButton.hide();
+      return this.auditButton.hide();
+    };
+
+    AssessmentTab.prototype.onAssessmentFetchSuccess = function() {
+      this.errorContainer.hide();
+      this.feedbackContainer.hide();
+      this.formContainer.show();
+      return this.render();
+    };
+
+    AssessmentTab.prototype.closeFormErrorsClicked = function(event) {
+      return $(event.target).parent().hide();
+    };
+
+    AssessmentTab.prototype.pathogenicityRadioChanged = function(event) {
+      if ($(event.target).hasClass('requires-category')) {
+        $('input:radio[name=category-radio]').removeAttr('disabled');
+        $('.assessment-category-label').removeClass('muted');
+        return this.setRadioChecked('category-radio', this.model.get('assessment_category'));
+      } else {
+        $('input:radio[name=category-radio]:checked').attr('checked', false);
+        $('input:radio[name=category-radio]').attr('disabled', true);
+        return $('.assessment-category-label').addClass('muted');
+      }
+    };
+
+    AssessmentTab.prototype.isValid = function() {
+      var valid;
+      this.model.set({
+        evidence_details: $('#evidence-details').val(),
+        sanger_requested: $('input[name=sanger-radio]:checked').val(),
+        pathogenicity: $('input[name=pathogenicity-radio]:checked').val(),
+        assessment_category: $('input[name=category-radio]:checked').val(),
+        mother_result: $('#mother-results').val(),
+        father_result: $('#father-results').val()
+      });
+      valid = true;
+      this.errorContainer.hide();
+      this.errorMsg.html('');
+      if (this.model.get('pathogenicity') >= 2 && this.model.get('pathogenicity') <= 4) {
+        if (!(this.model.get('assessment_category') != null)) {
+          valid = false;
+          this.errorMsg.append('<h5>Please select a category.</h5>');
+        }
+      }
+      if (this.model.get('mother_result') === "") {
+        valid = false;
+        this.errorMsg.append('<h5>Please select a result from the &quot;Mother&quot; dropdown.</h5>');
+      }
+      if (this.model.get('father_result') === "") {
+        valid = false;
+        this.errorMsg.append('<h5>Please select a result from the &quot;Father&quot; dropdown.</h5>');
+      }
+      if (!(this.model.get('sanger_requested') != null)) {
+        valid = false;
+        this.errorMsg.append('<h5>Please select true or false for the &quot;Sanger Requested&quot; option.</h5>');
+      }
+      if (!valid) {
+        this.errorContainer.show();
+      }
+      return valid;
+    };
+
+    AssessmentTab.prototype.setRadioChecked = function(name, value) {
+      var checkedRadio, radios;
+      radios = $('input:radio[name=' + name + ']');
+      $(radios.prop('checked', false));
+      checkedRadio = $(radios.filter('[value=' + value + ']'));
+      $(checkedRadio.prop('checked', true));
+      return $(checkedRadio.change());
+    };
+
+    AssessmentTab.prototype.render = function() {
+      this.setRadioChecked('category-radio', this.model.get('assessment_category'));
+      this.setRadioChecked('pathogenicity-radio', this.model.get('pathogenicity'));
+      this.setRadioChecked('sanger-radio', this.model.get('sanger_requested'));
+      $('#mother-results').val(this.model.get('mother_result'));
+      $('#father-results').val(this.model.get('father_result'));
+      return $('#evidence-details').val(this.model.get('evidence_details'));
     };
 
     return AssessmentTab;
@@ -411,7 +514,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     ResultDetails.prototype.template = templates.result;
 
     ResultDetails.prototype.ui = {
-      tabContent: '.tab-content',
+      variantDetailsTabContent: '#variant-details-content',
       saveButton: '#save-assessment-button',
       auditTrailButton: '#audit-trail-button'
     };
@@ -421,6 +524,10 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       'click #save-assessment-button': 'saveAndClose',
       'click #variant-details-link': 'hideButtons',
       'click #knowledge-capture-link': 'showButtons'
+    };
+
+    ResultDetails.prototype.initialize = function() {
+      return this.assessmentTab = new AssessmentTab;
     };
 
     ResultDetails.prototype.hideButtons = function() {
@@ -446,8 +553,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     };
 
     ResultDetails.prototype.update = function(result) {
-      var metrics;
-      this.ui.tabContent.empty();
+      var assessmentModel, metrics;
       this.model = result;
       metrics = new models.AssessmentMetrics({}, {
         variant_id: result.get('variant').id,
@@ -457,11 +563,14 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
         model: result,
         metrics: metrics
       });
-      this.ui.tabContent.append(this.detailsTab.render);
-      this.assessmentTab = new AssessmentTab({
-        result_id: result.id
+      this.ui.variantDetailsTabContent.html(this.detailsTab.render);
+      assessmentModel = new models.Assessment({
+        sample_result: this.model.id
       });
-      this.ui.tabContent.append(this.assessmentTab.render().el);
+      if (this.model.get('assessment') != null) {
+        assessmentModel.id = this.model.get('assessment').id;
+      }
+      this.assessmentTab.update(assessmentModel);
       return this.$el.modal('show');
     };
 

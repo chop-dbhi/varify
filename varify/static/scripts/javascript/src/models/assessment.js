@@ -2,18 +2,59 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'backbone', '../utils'], function(_, Backbone, util) {
-  var AssessmentMetrics, _ref;
+define(['underscore', 'backbone', '../utils'], function(_, Backbone, utils) {
+  var Assessment, AssessmentMetrics, _ref, _ref1;
+  Assessment = (function(_super) {
+    __extends(Assessment, _super);
+
+    function Assessment() {
+      _ref = Assessment.__super__.constructor.apply(this, arguments);
+      return _ref;
+    }
+
+    Assessment.prototype.urlRoot = function() {
+      return utils.toAbsolutePath('api/assessments/');
+    };
+
+    Assessment.prototype.defaults = {
+      'evidence_details': '',
+      'sanger_requested': 'undefined',
+      'assessment_category': 'undefined',
+      'father_result': 'undefined',
+      'mother_result': 'undefined',
+      'pathogenicity': 1,
+      'created': 'undefined',
+      'modified': 'undefined',
+      'sample_result': 'undefined'
+    };
+
+    Assessment.prototype.parse = function(response) {
+      var data, objFields;
+      if (response != null) {
+        data = response;
+        objFields = ['assessment_category', 'father_result', 'mother_result', 'pathogenicity'];
+        _.each(objFields, function(field) {
+          if (response[field]) {
+            return data[field] = response[field]['id'];
+          }
+        });
+        return data;
+      }
+    };
+
+    return Assessment;
+
+  })(Backbone.Model);
   AssessmentMetrics = (function(_super) {
     __extends(AssessmentMetrics, _super);
 
     function AssessmentMetrics() {
-      _ref = AssessmentMetrics.__super__.constructor.apply(this, arguments);
-      return _ref;
+      _ref1 = AssessmentMetrics.__super__.constructor.apply(this, arguments);
+      return _ref1;
     }
 
     AssessmentMetrics.prototype.url = function() {
-      return "" + (util.getRootUrl()) + "api/variants/" + this.variant_id + "/assessment-metrics/";
+      return "" + (utils.getRootUrl()) + "api/variants/" + this.variant_id + "/assessment-metrics/";
     };
 
     AssessmentMetrics.prototype.initialize = function(attrs, options) {
@@ -29,6 +70,7 @@ define(['underscore', 'backbone', '../utils'], function(_, Backbone, util) {
 
   })(Backbone.Model);
   return {
+    Assessment: Assessment,
     AssessmentMetrics: AssessmentMetrics
   };
 });
