@@ -460,17 +460,17 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
           this.errorMsg.append('<h5>Please select a category.</h5>');
         }
       }
-      if (this.model.get('mother_result') === "") {
+      if (_.isEmpty(this.model.get('mother_result'))) {
         valid = false;
         this.errorMsg.append('<h5>Please select a result from the &quot;Mother&quot; dropdown.</h5>');
       }
-      if (this.model.get('father_result') === "") {
+      if (_.isEmpty(this.model.get('father_result'))) {
         valid = false;
         this.errorMsg.append('<h5>Please select a result from the &quot;Father&quot; dropdown.</h5>');
       }
-      if (!(this.model.get('sanger_requested') != null)) {
+      if (this.model.get('sanger_requested') == null) {
         valid = false;
-        this.errorMsg.append('<h5>Please select true or false for the &quot;Sanger Requested&quot; option.</h5>');
+        this.errorMsg.append('<h5>Please select one of the &quot;Sanger Requested&quot; options.</h5>');
       }
       if (!valid) {
         this.errorContainer.show();
@@ -503,6 +503,8 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     __extends(ResultDetails, _super);
 
     function ResultDetails() {
+      this.onSaveSuccess = __bind(this.onSaveSuccess, this);
+      this.onSaveError = __bind(this.onSaveError, this);
       _ref2 = ResultDetails.__super__.constructor.apply(this, arguments);
       return _ref2;
     }
@@ -524,6 +526,10 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       'click #knowledge-capture-link': 'showButtons'
     };
 
+    ResultDetails.prototype.initialize = function() {
+      return this.assessmentTab = new AssessmentTab;
+    };
+
     ResultDetails.prototype.hideButtons = function() {
       this.ui.saveButton.hide();
       return this.ui.auditTrailButton.hide();
@@ -534,21 +540,54 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return this.ui.auditTrailButton.show();
     };
 
+    ResultDetails.prototype.saveAndClose = function(event) {
+      if (this.assessmentTab.isValid()) {
+        this.assessmentTab.model.save(null, {
+          success: this.onSaveSuccess,
+          error: this.onSaveError
+        });
+        return this.close();
+      }
+    };
+
     ResultDetails.prototype.close = function() {
       return this.$el.modal('hide');
     };
 
+    ResultDetails.prototype.onSaveError = function(model, response) {
+      $('#review-notification').html("Error saving knowledge capture data.");
+      $('#review-notification').addClass('alert-error');
+      return this.showNotification();
+    };
+
+    ResultDetails.prototype.onSaveSuccess = function(model, response) {
+      $('#review-notification').html("Saved changes.");
+      $('#review-notification').addClass('alert-success');
+      this.showNotification();
+      return this.selectedSummaryView.model.fetch();
+    };
+
+    ResultDetails.prototype.showNotification = function() {
+      $('#review-notification').show();
+      return setTimeout(this.hideNotification, 5000);
+    };
+
+    ResultDetails.prototype.hideNotification = function() {
+      $('#review-notification').removeClass('alert-error alert-success');
+      return $('#review-notification').hide();
+    };
+
     ResultDetails.prototype.onRender = function() {
-      this.$el.modal({
+      return this.$el.modal({
         show: false,
         keyboard: false,
         backdrop: 'static'
       });
-      return this.assessmentTab = new AssessmentTab;
     };
 
-    ResultDetails.prototype.update = function(result) {
+    ResultDetails.prototype.update = function(summaryView, result) {
       var assessmentModel, metrics;
+      this.selectedSummaryView = summaryView;
       this.model = result;
       metrics = new models.AssessmentMetrics({}, {
         variant_id: result.get('variant').id,

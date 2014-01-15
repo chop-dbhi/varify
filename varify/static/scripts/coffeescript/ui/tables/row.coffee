@@ -21,7 +21,7 @@ define [
             'click': 'onClick'
 
         onClick: (events) =>
-            c.trigger('resultRow:click', @model)
+            c.trigger('resultRow:click', this, @model)
 
         initialize: ->
             @data = {}

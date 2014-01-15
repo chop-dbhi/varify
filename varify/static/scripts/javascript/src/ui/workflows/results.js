@@ -162,8 +162,8 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
       this.areFiltersHidden = false;
       this.on('router:load', this.onRouterLoad);
       this.on('router:unload', this.onRouterUnload);
-      return c.on('resultRow:click', function(result) {
-        return _this.resultDetailsModal.currentView.update(result);
+      return c.on('resultRow:click', function(view, result) {
+        return _this.resultDetailsModal.currentView.update(view, result);
       });
     };
 

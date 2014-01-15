@@ -131,8 +131,8 @@ define [
             @on 'router:load', @onRouterLoad
             @on 'router:unload', @onRouterUnload
 
-            c.on 'resultRow:click', (result) =>
-                @resultDetailsModal.currentView.update(result)
+            c.on 'resultRow:click', (view, result) =>
+                @resultDetailsModal.currentView.update(view, result)
 
         onRouterUnload: =>
             @data.results.trigger('workspace:unload')

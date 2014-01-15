@@ -30,7 +30,7 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/base', '../../model
     };
 
     ResultRow.prototype.onClick = function(events) {
-      return c.trigger('resultRow:click', this.model);
+      return c.trigger('resultRow:click', this, this.model);
     };
 
     ResultRow.prototype.initialize = function() {

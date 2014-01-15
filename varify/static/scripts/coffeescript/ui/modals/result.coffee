@@ -433,15 +433,15 @@ define [
                 if !(@model.get('assessment_category')?)
                     valid = false
                     @errorMsg.append('<h5>Please select a category.</h5>')
-            if (@model.get('mother_result') == "")
+            if _.isEmpty(@model.get('mother_result'))
                 valid = false
                 @errorMsg.append('<h5>Please select a result from the &quot;Mother&quot; dropdown.</h5>')
-            if (@model.get('father_result') == "")
+            if _.isEmpty(@model.get('father_result'))
                 valid = false
                 @errorMsg.append('<h5>Please select a result from the &quot;Father&quot; dropdown.</h5>')
-            if !(@model.get('sanger_requested')?)
+            if not @model.get('sanger_requested')?
                 valid = false
-                @errorMsg.append('<h5>Please select true or false for the &quot;Sanger Requested&quot; option.</h5>')
+                @errorMsg.append('<h5>Please select one of the &quot;Sanger Requested&quot; options.</h5>')
 
             if !valid
                 @errorContainer.show()
@@ -497,8 +497,32 @@ define [
             @ui.saveButton.show()
             @ui.auditTrailButton.show()
 
+        saveAndClose: (event) ->
+            if @assessmentTab.isValid()
+                @assessmentTab.model.save(null, {success: @onSaveSuccess, error: @onSaveError})
+                @close()
+
         close: ->
             @$el.modal('hide')
+
+        onSaveError: (model, response) =>
+            $('#review-notification').html "Error saving knowledge capture data."
+            $('#review-notification').addClass('alert-error')
+            @showNotification()
+
+        onSaveSuccess: (model, response) =>
+            $('#review-notification').html "Saved changes."
+            $('#review-notification').addClass('alert-success')
+            @showNotification()
+            @selectedSummaryView.model.fetch()
+
+        showNotification: () ->
+            $('#review-notification').show()
+            setTimeout(@hideNotification, 5000)
+
+        hideNotification: () ->
+            $('#review-notification').removeClass('alert-error alert-success')
+            $('#review-notification').hide()
 
         onRender: ->
             @$el.modal
@@ -506,7 +530,8 @@ define [
                 keyboard: false
                 backdrop: 'static'
 
-        update: (result) ->
+        update: (summaryView, result) ->
+            @selectedSummaryView = summaryView
             @model = result
 
             metrics = new models.AssessmentMetrics(
