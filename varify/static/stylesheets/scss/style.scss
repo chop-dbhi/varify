@@ -180,6 +180,14 @@ body {
     @include border-radius(0 0 3px 3px);
 }
 
+#incidental-category-radios {
+    border-right: 1px solid #a9a9a9;
+}
+
+#incidental-findings-label {
+    padding-top: 35px;
+}
+
 #variant-details-content {
     margin-right: 30px;
 
