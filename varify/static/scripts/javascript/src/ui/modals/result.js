@@ -377,6 +377,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     __extends(AssessmentTab, _super);
 
     function AssessmentTab() {
+      this.pathogenicityRadioChanged = __bind(this.pathogenicityRadioChanged, this);
       this.onAssessmentFetchSuccess = __bind(this.onAssessmentFetchSuccess, this);
       this.onAssessmentFetchError = __bind(this.onAssessmentFetchError, this);
       _ref1 = AssessmentTab.__super__.constructor.apply(this, arguments);
@@ -387,11 +388,6 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
 
     AssessmentTab.prototype.el = '#knowledge-capture-content';
 
-    AssessmentTab.prototype.events = {
-      'change input[name=pathogenicity-radio]': 'pathogenicityRadioChanged',
-      'click .alert-error > .close': 'closeFormErrorsClicked'
-    };
-
     AssessmentTab.prototype.update = function(model) {
       if (this.model == null) {
         this.formContainer = $('#knowledge-capture-form-container');
@@ -400,6 +396,8 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
         this.auditButton = $('#audit-trail-button');
         this.errorContainer = $('#error-container');
         this.errorMsg = $('#error-message');
+        $('input[name=pathogenicity-radio]').on('change', this.pathogenicityRadioChanged);
+        $('.alert-error > .close').on('click', this.closeFormErrorsClicked);
       }
       this.formContainer.hide();
       this.feedbackContainer.show();
@@ -526,10 +524,6 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       'click #knowledge-capture-link': 'showButtons'
     };
 
-    ResultDetails.prototype.initialize = function() {
-      return this.assessmentTab = new AssessmentTab;
-    };
-
     ResultDetails.prototype.hideButtons = function() {
       this.ui.saveButton.hide();
       return this.ui.auditTrailButton.hide();
@@ -545,11 +539,12 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     };
 
     ResultDetails.prototype.onRender = function() {
-      return this.$el.modal({
+      this.$el.modal({
         show: false,
         keyboard: false,
         backdrop: 'static'
       });
+      return this.assessmentTab = new AssessmentTab;
     };
 
     ResultDetails.prototype.update = function(result) {

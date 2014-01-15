@@ -360,10 +360,6 @@ define [
 
         el: '#knowledge-capture-content'
 
-        events:
-            'change input[name=pathogenicity-radio]': 'pathogenicityRadioChanged'
-            'click .alert-error > .close': 'closeFormErrorsClicked'
-
         update: (model) ->
             # If this is the first update call then we need to intialize the UI
             # elements so we can reference them in the success/error handlers
@@ -375,6 +371,9 @@ define [
                 @auditButton = $('#audit-trail-button')
                 @errorContainer = $('#error-container')
                 @errorMsg = $('#error-message')
+
+                $('input[name=pathogenicity-radio]').on 'change', @pathogenicityRadioChanged
+                $('.alert-error > .close').on 'click', @closeFormErrorsClicked
 
             @formContainer.hide()
             @feedbackContainer.show()
@@ -404,7 +403,7 @@ define [
             $(event.target).parent().hide()
 
         # Enable/disable category radios if the pathogenicity changed
-        pathogenicityRadioChanged: (event) ->
+        pathogenicityRadioChanged: (event) =>
             if $(event.target).hasClass('requires-category')
                 $('input:radio[name=category-radio]').removeAttr('disabled')
                 $('.assessment-category-label').removeClass('muted')
