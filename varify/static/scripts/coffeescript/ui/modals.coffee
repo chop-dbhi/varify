@@ -1,8 +1,6 @@
 define [
     'underscore'
-    './tables/body'
-    './tables/row'
-    './tables/table'
+    './modals/result'
 ], (_, mods...) ->
 
     _.extend {}, mods...

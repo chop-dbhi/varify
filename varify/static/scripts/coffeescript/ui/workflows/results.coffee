@@ -12,9 +12,10 @@ define [
     'cilantro/ui/concept'
     'cilantro/ui/exporter'
     'cilantro/ui/query'
+    '../modals'
     'tpl!templates/count.html'
     'tpl!templates/varify/workflows/results.html'
-], (_, Marionette, c, base, paginator, numbers, structs, models, tables, context, concept, exporter, query, templates...) ->
+], (_, Marionette, c, base, paginator, numbers, structs, models, tables, context, concept, exporter, query, modal, templates...) ->
 
     templates = _.object ['count', 'results'], templates
 
@@ -97,6 +98,7 @@ define [
             exportTypes: '.export-options-modal .export-type-region'
             exportProgress: '.export-progress-modal .export-progress-region'
             saveQueryModal: '.save-query-modal'
+            resultDetailsModal: '.result-details-modal'
 
         initialize: ->
             @data = {}
@@ -129,10 +131,8 @@ define [
             @on 'router:load', @onRouterLoad
             @on 'router:unload', @onRouterUnload
 
-            # Get the route-free URL. That is, we want to remove the route at
-            # the end of the URL and be left with the root URL so we can use
-            # this to construct the result URLs later on.
-            @rootUrl = window.location.href.replace(new RegExp('/[^/]*/$'), '/')
+            c.on 'resultRow:click', (view, result) =>
+                @resultDetailsModal.currentView.update(view, result)
 
         onRouterUnload: =>
             @data.results.trigger('workspace:unload')
@@ -438,6 +438,8 @@ define [
             @exportProgress.show new exporter.ExportProgressCollection
                 collection: @data.exporters
 
+            @resultDetailsModal.show new modal.ResultDetails
+
             @saveQueryModal.show new query.EditQueryDialog
                 header: 'Save Query'
                 view: @data.view
@@ -452,7 +454,6 @@ define [
 
             @table.show new tables.ResultTable
                 collection: @data.results
-                rootUrl: @rootUrl
 
             @table.currentView.on 'render', () =>
                 @$('.context').stacked('restack', @$el.height())

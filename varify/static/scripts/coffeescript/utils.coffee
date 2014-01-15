@@ -1,5 +1,14 @@
 define [], () ->
 
+    getRootUrl = () ->
+        # Get the route-free URL. That is, we want to remove the route at the
+        # end of the URL and be left with the root URL so we can use this to
+        # construct the result URLs later on.
+        window.location.href.replace(new RegExp('/[^/]*/$'), '/')
+
+    toAbsolutePath = (path) ->
+        return "#{ getRootUrl() }#{ path }"
+
     effectImpactPriority = (impact) ->
         switch impact
             when 'High' then 1
@@ -7,7 +16,6 @@ define [], () ->
             when 'Low' then 3
             when 'Modifier' then 4
             else 5
-
 
     priorityClass = (priority) ->
         switch priority
@@ -31,4 +39,4 @@ define [], () ->
         else
             ''
 
-    { effectImpactPriority, priorityClass, depthClass, qualityClass }
+    { getRootUrl, toAbsolutePath, effectImpactPriority, priorityClass, depthClass, qualityClass }

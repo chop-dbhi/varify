@@ -13,7 +13,7 @@ define(['underscore', 'backbone', '../utils'], function(_, Backbone, utils) {
     }
 
     Result.prototype.url = function() {
-      return "" + (this.get("rootUrl")) + "api/samples/variants/" + this.id + "/";
+      return "" + (utils.getRootUrl()) + "api/samples/variants/" + this.id + "/";
     };
 
     Result.prototype.parse = function(attrs) {

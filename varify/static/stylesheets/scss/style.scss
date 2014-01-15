@@ -4,6 +4,94 @@ body {
     padding-top: 40px;
 }
 
+#review-notification {
+    margin: 0;
+    margin-top: 10px;
+}
+
+// Override Cilantro style
+.table-region {
+    margin-top: 10px !important;
+}
+
+.result-details-modal {
+    .modal {
+        width: 90%;
+        top: 5%;
+        left: 5%;
+        margin: 0;
+        max-height: 800px;
+        bottom: 5%;
+    }
+
+    .tab-content {
+        position: absolute;
+        width: 96.5%;
+        top: 60px;
+        bottom: 60px;
+    }
+
+    .modal-footer {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .modal-header {
+        border: 0px;
+        padding: 0 10px 0 0;
+    }
+
+    .modal-body {
+        position: static;
+    }
+
+    #knowledge-capture-feedback-container {
+        height: 400px;
+        text-align: center;
+    }
+
+    #knowledge-capture-form {
+        margin: 0;
+        .radio {
+            padding-left: 30px;
+        }
+        .nested-radio {
+            padding-left: 60px;
+        }
+        .inline {
+            display: inline;
+        }
+        label.inline {
+            padding-left: 15px;
+        }
+        textarea {
+            width: 75%;
+            resize: none;
+            margin: 0;
+        }
+        select, h4 {
+            margin: 5px 0px 5px 0px;
+        }
+    }
+
+    #error-container {
+        margin: 0;
+        margin-bottom: 10px;
+        padding-top: 5px;
+        padding-bottom: 5px;
+
+        h5 {
+            margin: 0;
+        }
+    }
+
+    #audit-trail-button {
+        float: left;
+    }
+}
+
 .variant-container {
     @include transition((margin, display) 0.6s ease-in-out);
     @include box-shadow(none);
@@ -100,4 +188,41 @@ body {
 
 .variant-container:last-child {
     @include border-radius(0 0 3px 3px);
+}
+
+#incidental-category-radios {
+    border-right: 1px solid #a9a9a9;
+}
+
+#incidental-findings-label {
+    padding-top: 35px;
+}
+
+#variant-details-content {
+    margin-right: 30px;
+
+    .assessments-table-container {
+        border-top: 2px solid #eee;
+    }
+}
+
+.assessment-details-table {
+    border: none;
+    margin-bottom: 30px;
+
+    .no-border {
+        border: none;
+    }
+
+    th {
+        text-align: left;
+    }
+
+    th, td {
+        padding-right: 20px;
+    }
+
+    tbody > tr {
+        border-top: 1px solid #eee;
+    }
 }
