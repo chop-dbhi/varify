@@ -64,6 +64,7 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
 
     function ResultsWorkflow() {
       this.showSaveQuery = __bind(this.showSaveQuery, this);
+      this.exportData = __bind(this.exportData, this);
       this.startExport = __bind(this.startExport, this);
       this.checkExportStatus = __bind(this.checkExportStatus, this);
       this.onExportFinished = __bind(this.onExportFinished, this);
@@ -75,6 +76,8 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
       this.onWindowResize = __bind(this.onWindowResize, this);
       this.hideLoadingOverlay = __bind(this.hideLoadingOverlay, this);
       this.showLoadingOverlay = __bind(this.showLoadingOverlay, this);
+      this.onExportClicked = __bind(this.onExportClicked, this);
+      this.onExportCloseClicked = __bind(this.onExportCloseClicked, this);
       this.onRouterLoad = __bind(this.onRouterLoad, this);
       this.onRouterUnload = __bind(this.onRouterUnload, this);
       _ref1 = ResultsWorkflow.__super__.constructor.apply(this, arguments);
@@ -113,7 +116,8 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
     };
 
     ResultsWorkflow.prototype.events = {
-      'click .export-options-modal [data-save]': 'exportData',
+      'click .export-options-modal [data-save]': 'onExportClicked',
+      'click .export-options-modal [data-dismiss=modal]': 'onExportCloseClicked',
       'click [data-toggle=export-options]': 'showExportOptions',
       'click [data-toggle=export-progress]': 'showExportProgress',
       'click #pages-text-ranges': 'selectPagesOption',
@@ -122,12 +126,13 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
     };
 
     ResultsWorkflow.prototype.regions = {
+      columns: '#export-columns-tab',
       count: '.count-region',
       table: '.table-region',
       paginator: '.paginator-region',
       context: '.context-region',
-      exportTypes: '.export-options-modal .export-type-region',
-      exportProgress: '.export-progress-modal .export-progress-region',
+      exportTypes: '.export-type-region',
+      exportProgress: '.export-progress-region',
       saveQueryModal: '.save-query-modal',
       resultDetailsModal: '.result-details-modal'
     };
@@ -174,6 +179,24 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
     ResultsWorkflow.prototype.onRouterLoad = function() {
       this.data.results.trigger('workspace:load');
       return this.showContextPanel();
+    };
+
+    ResultsWorkflow.prototype.onExportCloseClicked = function() {
+      var _this = this;
+      return _.delay(function() {
+        return _this.columns.currentView.resetFacets();
+      }, 25);
+    };
+
+    ResultsWorkflow.prototype.onExportClicked = function() {
+      if (_.isEqual(_.pluck(this.data.view.facets.models, 'id'), _.pluck(this.columns.currentView.data.facets.models, 'id'))) {
+        return this.exportData();
+      } else {
+        this.data.view.facets.reset(this.columns.currentView.data.facets.toJSON());
+        return this.data.view.save({}, {
+          success: this.exportData
+        });
+      }
     };
 
     ResultsWorkflow.prototype.showLoadingOverlay = function() {
@@ -458,6 +481,10 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
       this.table.currentView.on('render', function() {
         return _this.$('.context').stacked('restack', _this.$el.height());
       });
+      this.columns.show(new concept.ConceptColumns({
+        view: this.data.view,
+        concepts: this.data.concepts
+      }));
       this.ui.navbarButtons.tooltip({
         animation: false,
         placement: 'bottom'
