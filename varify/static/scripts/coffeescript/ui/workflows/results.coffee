@@ -83,7 +83,8 @@ define [
             loadingOverlay: '.loading-overlay'
 
         events:
-            'click .export-options-modal [data-save]': 'exportData'
+            'click .export-options-modal [data-save]': 'onExportClicked'
+            'click .export-options-modal [data-dismiss=modal]': 'onExportCloseClicked'
             'click [data-toggle=export-options]': 'showExportOptions'
             'click [data-toggle=export-progress]': 'showExportProgress'
             'click #pages-text-ranges': 'selectPagesOption'
@@ -91,12 +92,13 @@ define [
             'click [data-toggle=context-panel]': 'toggleContextPanelButtonClicked'
 
         regions:
+            columns: '#export-columns-tab'
             count: '.count-region'
             table: '.table-region'
             paginator: '.paginator-region'
             context: '.context-region'
-            exportTypes: '.export-options-modal .export-type-region'
-            exportProgress: '.export-progress-modal .export-progress-region'
+            exportTypes: '.export-type-region'
+            exportProgress: '.export-progress-region'
             saveQueryModal: '.save-query-modal'
             resultDetailsModal: '.result-details-modal'
 
@@ -140,6 +142,21 @@ define [
         onRouterLoad: =>
             @data.results.trigger('workspace:load')
             @showContextPanel()
+
+        onExportCloseClicked: =>
+            _.delay =>
+                @columns.currentView.resetFacets()
+            , 25
+
+        onExportClicked: =>
+            # Don't update the view if the columns haven't changed
+            if _.isEqual(_.pluck(@data.view.facets.models, 'id'),
+                         _.pluck(@columns.currentView.data.facets.models, 'id'))
+                @exportData()
+            else
+                @data.view.facets.reset(@columns.currentView.data.facets.toJSON())
+                # TODO: Notify user if this fails
+                @data.view.save({}, {success: @exportData})
 
         showLoadingOverlay: =>
             if @isClosed? and not @isClosed
@@ -372,7 +389,7 @@ define [
 
                 return @pageRangePattern.test(pageRange)
 
-        exportData: (event) ->
+        exportData: (event) =>
             # Clear any of the old iframes. If we are exporting again, these
             # downloads should all have finished based on the UI blocking
             # during active exports.
@@ -384,7 +401,7 @@ define [
                 @$('#export-error-message').html('An export type must be selected.')
                 @$('.export-options-modal .alert-block').show()
             else if not @isPageRangeValid()
-                @$('#export-error-message').html('Page range is invalid. Must be a single page(example: 1) or a range of pages(example: 2...5).')
+                @$('#export-error-message').html('Please enter a valid page range. The page range must be a single page(example: 1) or a range of pages(example: 2...5).')
                 @$('.export-options-modal .alert-block').show()
             else
                 @numPendingDownloads = selectedTypes.length
@@ -457,6 +474,10 @@ define [
 
             @table.currentView.on 'render', () =>
                 @$('.context').stacked('restack', @$el.height())
+
+            @columns.show new concept.ConceptColumns
+                view: @data.view
+                concepts: @data.concepts
 
             @ui.navbarButtons.tooltip
                 animation: false

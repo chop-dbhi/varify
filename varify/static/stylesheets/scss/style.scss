@@ -14,6 +14,17 @@ body {
     margin-top: 10px !important;
 }
 
+.export-options-modal {
+    // Override Cilantro styles for modal and modal-body to alow the export
+    // modal to be a little larger than normal.
+    width: 720px !important;
+    margin-left: -360px !important;
+
+    .modal-body {
+        max-height: 500px !important;
+    }
+}
+
 .result-details-modal {
     .modal {
         width: 90%;
