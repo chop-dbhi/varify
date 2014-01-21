@@ -93,6 +93,7 @@ define [
             resultsContainer: '.results-container'
             navbarButtons: '.results-workflow-navbar button'
             loadingOverlay: '.loading-overlay'
+            viewPhenotype: '.phenotype-modal'
 
         events:
             'click .export-options-modal [data-save]': 'onExportClicked'
@@ -102,6 +103,7 @@ define [
             'click #pages-text-ranges': 'selectPagesOption'
             'click [data-toggle=save-query]': 'showSaveQuery'
             'click [data-toggle=context-panel]': 'toggleContextPanelButtonClicked'
+            'show.bs.modal .phenotype-modal': 'retrievePhenotypes'
 
         regions:
             columns: '#export-columns-tab'
@@ -528,5 +530,8 @@ define [
             # Opens the query modal without passing a model which assumes a new one
             # will be created based on the current session
             @saveQueryModal.currentView.open()
+
+        retrievePhenotypes: =>
+            
 
     { ResultsWorkflow }
