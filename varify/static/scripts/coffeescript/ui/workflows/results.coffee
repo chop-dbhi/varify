@@ -34,12 +34,24 @@ define [
         modelEvents:
             'change:objectcount': 'renderCount'
 
+        initialize: ->
+            @data = {}
+            if not (@data.context = @options.context)
+                throw new Error 'context model required'
+
         onRender: =>
             @renderCount(@model, @model.objectCount if @model.objectCount? or '')
 
         renderCount: (model, count, options) ->
+            sample = "various samples"
+
+            if @data.context? and (json = @data.context.get('json'))?
+                _.each json.children, (child) ->
+                    if child.concept? and child.concept == 2
+                        sample = child.children[0].value[0].label
+
             numbers.renderCount(@ui.count, count)
-            @ui.label.text('records')
+            @ui.label.text("records in #{ sample }")
 
 
     ###
@@ -448,6 +460,7 @@ define [
 
             @count.show new ResultCount
                 model: @data.results
+                context: @data.context
 
             @exportTypes.show new exporter.ExportTypeCollection
                 collection: @data.exporters

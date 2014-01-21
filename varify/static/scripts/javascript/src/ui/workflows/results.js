@@ -32,13 +32,29 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
       'change:objectcount': 'renderCount'
     };
 
+    ResultCount.prototype.initialize = function() {
+      this.data = {};
+      if (!(this.data.context = this.options.context)) {
+        throw new Error('context model required');
+      }
+    };
+
     ResultCount.prototype.onRender = function() {
       return this.renderCount(this.model, (this.model.objectCount != null) || '' ? this.model.objectCount : void 0);
     };
 
     ResultCount.prototype.renderCount = function(model, count, options) {
+      var json, sample;
+      sample = "various samples";
+      if ((this.data.context != null) && ((json = this.data.context.get('json')) != null)) {
+        _.each(json.children, function(child) {
+          if ((child.concept != null) && child.concept === 2) {
+            return sample = child.children[0].value[0].label;
+          }
+        });
+      }
       numbers.renderCount(this.ui.count, count);
-      return this.ui.label.text('records');
+      return this.ui.label.text("records in " + sample);
     };
 
     return ResultCount;
@@ -416,7 +432,7 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
         this.$('#export-error-message').html('An export type must be selected.');
         return this.$('.export-options-modal .alert-block').show();
       } else if (!this.isPageRangeValid()) {
-        this.$('#export-error-message').html('Page range is invalid. Must be a single page(example: 1) or a range of pages(example: 2...5).');
+        this.$('#export-error-message').html('Please enter a valid page range. The page range must be a single page(example: 1) or a range of pages(example: 2...5).');
         return this.$('.export-options-modal .alert-block').show();
       } else {
         this.numPendingDownloads = selectedTypes.length;
@@ -454,7 +470,8 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
         model: this.data.results
       }));
       this.count.show(new ResultCount({
-        model: this.data.results
+        model: this.data.results,
+        context: this.data.context
       }));
       this.exportTypes.show(new exporter.ExportTypeCollection({
         collection: this.data.exporters
