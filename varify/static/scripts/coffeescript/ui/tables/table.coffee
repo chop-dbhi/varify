@@ -2,7 +2,8 @@ define [
     'underscore'
     'marionette'
     './body'
-], (_, Marionette, body) ->
+    './header'
+], (_, Marionette, body, header) ->
 
 
     # Renders a table with one or more tbody elements each representing a
@@ -23,6 +24,10 @@ define [
             'change:currentpage': 'showCurentPage'
 
         initialize: ->
+            @header = new header.Header
+
+            @$el.append(@header.render().el)
+
             @collection.on 'reset', =>
                 if @collection.objectCount == 0
                     @$el.hide()
