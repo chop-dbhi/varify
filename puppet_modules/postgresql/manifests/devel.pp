@@ -14,21 +14,21 @@ class postgresql::devel {
 
     package {'postgresql92-libs':
               ensure => 'installed',
-              source => 'http://yum.postgresql.org/9.2/redhat/rhel-6-x86_64/postgresql92-libs-9.2.3-2PGDG.rhel6.x86_64.rpm',
+              source => 'http://yum.postgresql.org/9.2/redhat/rhel-6-x86_64/postgresql92-libs-9.2.6-1PGDG.rhel6.x86_64.rpm',
               provider => 'rpm'
 
     }
             
     package {'postgresql92':
               ensure => 'installed',
-              source => 'http://yum.postgresql.org/9.2/redhat/rhel-6-x86_64/postgresql92-9.2.3-2PGDG.rhel6.x86_64.rpm',
+              source => 'http://yum.postgresql.org/9.2/redhat/rhel-6-x86_64/postgresql92-9.2.6-1PGDG.rhel6.x86_64.rpm',
               provider => 'rpm',
               require => Package['postgresql92-libs']
     }
 
     package {'postgresql92-devel':
               ensure => 'installed',
-              source => "http://yum.postgresql.org/9.2/redhat/rhel-6-x86_64/postgresql92-devel-9.2.3-2PGDG.rhel6.x86_64.rpm",
+              source => 'http://yum.postgresql.org/9.2/redhat/rhel-6-x86_64/postgresql92-devel-9.2.6-1PGDG.rhel6.x86_64.rpm',
               provider => 'rpm',
               require => Package['postgresql92']
               }
