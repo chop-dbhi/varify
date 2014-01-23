@@ -1,9 +1,8 @@
 define [
     'underscore'
     'marionette'
-    './row'
     'tpl!templates/varify/tables/header.html'
-], (_, Marionette, row, templates...) ->
+], (_, Marionette, templates...) ->
 
     templates = _.object ['header'], templates
 
