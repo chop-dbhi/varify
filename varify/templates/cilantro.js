@@ -16,5 +16,6 @@ var csrf_token = '{{ csrf_token }}',
         root: '{{ request.META.SCRIPT_NAME }}',
         url: '{% url serrano:root %}',
         main: '#content',
+        phenotype: true,
         debug: {% if debug %}true{% else %}false{% endif %}
     };

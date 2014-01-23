@@ -13,9 +13,10 @@ define [
     'cilantro/ui/exporter'
     'cilantro/ui/query'
     '../modals'
+    '../../models'
     'tpl!templates/count.html'
     'tpl!templates/varify/workflows/results.html'
-], (_, Marionette, c, base, paginator, numbers, structs, models, tables, context, concept, exporter, query, modal, templates...) ->
+], (_, Marionette, c, base, paginator, numbers, structs, models, tables, context, concept, exporter, query, modal, varify_models, templates...) ->
 
     templates = _.object ['count', 'results'], templates
 
@@ -49,10 +50,10 @@ define [
                 _.each json.children, (child) ->
                     if child.concept? and child.concept == 2
                         sample = child.children[0].value[0].label
-
+                        @sample = sample
+            
             numbers.renderCount(@ui.count, count)
             @ui.label.text("records in #{ sample }")
-
 
     ###
     The ResultsWorkflow provides an interface for previewing tabular data,
@@ -531,7 +532,23 @@ define [
             # will be created based on the current session
             @saveQueryModal.currentView.open()
 
+        renderPhenotypes: (response) =>
+            @viewPhenotype.text(response)
+
         retrievePhenotypes: =>
+            if @sample
+                phenotypes = new varify_models.Phenotype
+                    sample_id: @sample
+                @listenTo(phenotypes, 'reset', @renderPhenotypes)
+                phenotypes.fetch
+                    error: @phenotypesError
+            else
+                @phenotypesError('No sample found')
+
+
+
+            
+
             
 
     { ResultsWorkflow }
