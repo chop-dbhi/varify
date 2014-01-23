@@ -30,7 +30,13 @@ define(['underscore', 'marionette', './body', './header'], function(_, Marionett
 
     ResultTable.prototype.initialize = function() {
       var _this = this;
-      this.header = new header.Header;
+      this.data = {};
+      if (!(this.data.view = this.options.view)) {
+        throw new Error('view model required');
+      }
+      this.header = new header.Header({
+        view: this.data.view
+      });
       this.$el.append(this.header.render().el);
       return this.collection.on('reset', function() {
         if (_this.collection.objectCount === 0) {

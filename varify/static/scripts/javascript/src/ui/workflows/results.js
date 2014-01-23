@@ -493,7 +493,8 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
         fluid: '.tree-region'
       });
       this.table.show(new tables.ResultTable({
-        collection: this.data.results
+        collection: this.data.results,
+        view: this.data.view
       }));
       this.table.currentView.on('render', function() {
         return _this.$('.context').stacked('restack', _this.$el.height());

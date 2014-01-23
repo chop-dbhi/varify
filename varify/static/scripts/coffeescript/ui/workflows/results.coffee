@@ -484,6 +484,7 @@ define [
 
             @table.show new tables.ResultTable
                 collection: @data.results
+                view: @data.view
 
             @table.currentView.on 'render', () =>
                 @$('.context').stacked('restack', @$el.height())

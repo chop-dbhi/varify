@@ -12,5 +12,9 @@ define [
 
         template: templates.header
 
+        initialize: ->
+            @data = {}
+            if not (@data.view = @options.view)
+                throw new Error 'view model required'
 
     { Header }

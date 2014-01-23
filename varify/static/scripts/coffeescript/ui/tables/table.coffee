@@ -24,7 +24,12 @@ define [
             'change:currentpage': 'showCurentPage'
 
         initialize: ->
+            @data = {}
+            if not (@data.view = @options.view)
+                throw new Error 'view model required'
+
             @header = new header.Header
+                view: @data.view
 
             @$el.append(@header.render().el)
 
