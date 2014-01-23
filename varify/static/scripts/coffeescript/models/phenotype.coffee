@@ -7,6 +7,8 @@ define [
 
     class Phenotype extends Backbone.Model
         urlRoot: ->
-            utils.toAbsolutePath('api/samples/#{ @sample_id }/phenotype/')
-
+            sample_id = @get('sample_id')
+            utils.toAbsolutePath("api/samples/#{ sample_id }/phenotypes/")
+        lowestPriority:10
+        highestPriority:1
     { Phenotype }

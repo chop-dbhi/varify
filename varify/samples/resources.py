@@ -230,11 +230,11 @@ class SampleResultResource(resources.Resource):
 
 class PhenotypeResource(resources.Resource):
     
-    def get(self, request, pk):
-        endpoint = "%s%s/" % (settings.PHENOTYPE_ENDPOINT, pk)
+    def get(self, request, sample_id):
+        endpoint = settings.PHENOTYPE_ENDPOINT % sample_id
         
         try:
-           reponse = requests.get(endpoint, cert=(settings.VERIFY_CERT,
+           response = requests.get(endpoint, cert=(settings.VARIFY_CERT,
                 settings.VARIFY_KEY), verify=False)
         except requests.exceptions.SSLError:
             raise PermissionDenied
@@ -245,7 +245,7 @@ class PhenotypeResource(resources.Resource):
         except requests.exceptions.RequestException, e:
             raise Http404
 
-        return response
+        return response.content
 
 
 
@@ -254,7 +254,7 @@ samples_resource = never_cache(SamplesResource())
 named_sample_resource = never_cache(NamedSampleResource())
 sample_results_resource = never_cache(SampleResultsResource())
 sample_result_resource = never_cache(SampleResultResource())
-phenotype_resouce = never_cache(PhenotypeResource())
+phenotype_resource = never_cache(PhenotypeResource())
 
 
 urlpatterns = patterns(
@@ -265,6 +265,6 @@ urlpatterns = patterns(
         named_sample_resource, name='named_sample'),
     url(r'^(?P<pk>\d+)/variants/$', sample_results_resource, name='variants'),
     url(r'^variants/(?P<pk>\d+)/$', sample_result_resource, name='variant'),
-    url(r'^(?P<pk>)/phenotypes/$', phenotype_resource, name='phenotype'),
+    url(r'^(?P<sample_id>[a-zA-Z0-9_-]*)/phenotypes/$', phenotype_resource, name='phenotype'),
 
 )
