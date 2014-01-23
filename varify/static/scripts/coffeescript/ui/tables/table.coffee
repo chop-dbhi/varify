@@ -37,6 +37,7 @@ define [
                 if @collection.objectCount == 0
                     @$el.hide()
                 else
+                    @header.render()
                     @$el.show()
 
         showCurentPage: (model, num, options) ->

@@ -42,6 +42,7 @@ define(['underscore', 'marionette', './body', './header'], function(_, Marionett
         if (_this.collection.objectCount === 0) {
           return _this.$el.hide();
         } else {
+          _this.header.render();
           return _this.$el.show();
         }
       });
