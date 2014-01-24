@@ -9,6 +9,11 @@ body {
     margin-top: 10px;
 }
 
+.unsortable-column {
+    cursor: auto;
+    pointer-events: none;
+}
+
 // Override Cilantro style
 .table-region {
     margin-top: 10px !important;
