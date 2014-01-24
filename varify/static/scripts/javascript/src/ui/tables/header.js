@@ -33,10 +33,19 @@ define(['underscore', 'marionette', 'tpl!templates/varify/tables/header.html'], 
       }
     };
 
+    Header.prototype._getConcept = function(element) {
+      var concept;
+      concept = parseInt(element.getAttribute('data-concept-id'));
+      if ((concept != null) && !isNaN(concept)) {
+        return concept;
+      }
+      return parseInt(element.parentElement.getAttribute('data-concept-id'));
+    };
+
     Header.prototype.onClick = function(event) {
       var concept, model;
-      concept = parseInt(event.target.getAttribute('data-concept-id'));
-      if (concept == null) {
+      concept = this._getConcept(event.target);
+      if ((concept == null) || isNaN(concept)) {
         throw new Error('Unrecognized concept ID on column');
       }
       model = _.find(this.data.view.facets.models, function(f) {

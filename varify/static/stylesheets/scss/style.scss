@@ -17,10 +17,6 @@ body {
 // Override Cilantro style
 .table-region {
     margin-top: 10px !important;
-
-    th > i, span {
-        pointer-events: none !important;
-    }
 }
 
 .export-options-modal {

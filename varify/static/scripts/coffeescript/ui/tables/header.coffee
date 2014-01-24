@@ -19,10 +19,21 @@ define [
             if not (@data.view = @options.view)
                 throw new Error 'view model required'
 
-        onClick: (event) =>
-            concept = parseInt(event.target.getAttribute('data-concept-id'))
+        _getConcept: (element) ->
+            concept = parseInt(element.getAttribute('data-concept-id'))
 
-            if not concept?
+            if concept? and not isNaN(concept)
+                return concept
+
+            # It is possible we registered a click event on a child of the
+            # th element. If that is the case, try to read the concept from
+            # parent of the event target.
+            return parseInt(element.parentElement.getAttribute('data-concept-id'))
+
+        onClick: (event) =>
+            concept = @_getConcept(event.target)
+
+            if not concept? or isNaN(concept)
                 throw new Error 'Unrecognized concept ID on column'
 
             model = _.find @data.view.facets.models, (f) ->
