@@ -47,29 +47,23 @@ define(['underscore', 'marionette', 'tpl!templates/varify/tables/header.html'], 
           concept: concept
         });
       }
-      console.log("Clicked " + concept);
       _.each(this.data.view.facets.models, function(f) {
         var direction;
-        console.log("Comparing against " + (f.get('concept')));
         if (f.get('concept') === concept) {
           direction = f.get('sort');
           if (direction != null) {
             if (direction.toLowerCase() === "asc") {
-              console.log("asc --> desc");
               f.set('sort', "desc");
               return f.set('sort_index', 0);
             } else {
-              console.log("desc --> none");
               f.unset('sort');
               return f.unset('sort_index');
             }
           } else {
-            console.log("none --> asc");
             f.set('sort', "asc");
             return f.set('sort_index', 0);
           }
         } else {
-          console.log("no click match, unsetting");
           f.unset('sort');
           return f.unset('sort_index');
         }

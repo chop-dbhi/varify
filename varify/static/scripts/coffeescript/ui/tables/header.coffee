@@ -33,27 +33,21 @@ define [
             if not model?
                 @data.view.facets.add({concept: concept})
 
-            console.log("Clicked #{ concept }")
             _.each @data.view.facets.models, (f) ->
-                console.log("Comparing against #{ f.get('concept') }")
                 if f.get('concept') == concept
                     direction = f.get('sort')
 
                     if direction?
                         if direction.toLowerCase() == "asc"
-                            console.log("asc --> desc")
                             f.set('sort', "desc")
                             f.set('sort_index', 0)
                         else
-                            console.log("desc --> none")
                             f.unset('sort')
                             f.unset('sort_index')
                     else
-                        console.log("none --> asc")
                         f.set('sort', "asc")
                         f.set('sort_index', 0)
                 else
-                    console.log("no click match, unsetting")
                     f.unset('sort')
                     f.unset('sort_index')
 
