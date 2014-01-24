@@ -34,6 +34,7 @@ define [
 
         onSync: =>
             variant = @model.get('variant')
+            resultScore = @model.get('score')
             assessment = @model.get('assessment')
 
             $gene = $(Templates.geneLinks(variant.uniqueGenes, collapse: true))
@@ -64,10 +65,13 @@ define [
                 .addClass('genomic-position')
                 .append($(Templates.category(assessment)))
 
+            $phenotypeScore = $(Templates.phenotypeScore(resultScore))
+                .addClass('phenotype-score')
+
             $condensedFlags = $(Templates.condensedFlags(variant))
 
             @$el.empty()
-            @$el.append $gene, $hgvsP, $variantEffects, $hgvsC, $genotype, $genomicPosition, $condensedFlags
+            @$el.append $gene, $hgvsP, $variantEffects, $hgvsC, $genotype, $genomicPosition, $phenotypeScore, $condensedFlags
 
         onRender: =>
             @model.fetch()

@@ -45,8 +45,9 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/base', '../../model
     };
 
     ResultRow.prototype.onSync = function() {
-      var $condensedFlags, $gene, $genomicPosition, $genotype, $hgvsC, $hgvsP, $variantEffects, assessment, variant;
+      var $condensedFlags, $gene, $genomicPosition, $genotype, $hgvsC, $hgvsP, $phenotypeScore, $variantEffects, assessment, resultScore, variant;
       variant = this.model.get('variant');
+      resultScore = this.model.get('score');
       assessment = this.model.get('assessment');
       $gene = $(Templates.geneLinks(variant.uniqueGenes, {
         collapse: true
@@ -60,9 +61,10 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/base', '../../model
         container: 'body'
       });
       $genomicPosition = $(Templates.genomicPosition(variant.chr, variant.pos)).addClass('genomic-position').append($(Templates.category(assessment)));
+      $phenotypeScore = $(Templates.phenotypeScore(resultScore)).addClass('phenotype-score');
       $condensedFlags = $(Templates.condensedFlags(variant));
       this.$el.empty();
-      return this.$el.append($gene, $hgvsP, $variantEffects, $hgvsC, $genotype, $genomicPosition, $condensedFlags);
+      return this.$el.append($gene, $hgvsP, $variantEffects, $hgvsC, $genotype, $genomicPosition, $phenotypeScore, $condensedFlags);
     };
 
     ResultRow.prototype.onRender = function() {

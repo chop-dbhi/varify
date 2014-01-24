@@ -9,6 +9,15 @@ define [
         pchr = Numbers.toDelimitedNumber(pos)
         return "<td class=genomic-position><a target=_blank href=\"http://genome.ucsc.edu/cgi-bin/hgTracks?position=chr#{ chr }%3A#{ pos }\">chr#{ chr } <span class=muted>@</span> #{ pchr }</a></td>"
 
+    phenotypeScore = (resultScore) ->
+        if resultScore? and resultScore.rank? and resultScore.score?
+            rank = parseInt(resultScore.rank)
+            score = parseFloat(resultScore.score)
+
+            if not isNaN(rank) and not isNaN(score)
+                return "<td>#{ rank } <small class=muted>(#{ score })</small></td>"
+
+        return "<td></td>"
 
     _renderGene = (gene) ->
         name = gene.name or ''
@@ -216,19 +225,20 @@ define [
         return (p.hgmd_id for p in phenotypes when p.hgmd_id?).join(', ')
 
     {
-        category,
-        pathogenicity,
-        genomicPosition,
-        geneLinks,
-        hgvsP,
-        hgvsC,
-        genotype,
-        variantEffects,
-        condensedFlags,
-        dbSNPLink,
-        cohortVariantDetailList,
         assessmentMetrics,
         assessmentRows,
+        category,
+        cohortVariantDetailList,
+        condensedFlags,
+        dbSNPLink,
         hgmdLinks,
+        hgvsC,
+        hgvsP,
+        geneLinks,
+        genomicPosition,
+        genotype,
+        pathogenicity,
+        phenotypeScore,
+        variantEffects,
     }
 
