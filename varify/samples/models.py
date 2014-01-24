@@ -371,6 +371,15 @@ class Result(TimestampedModel):
                 log.exception(e)
 
 
+class ResultScore(TimestampedModel):
+    result = models.ForeignKey(Result, related_name='score', unique=True)
+    rank = models.IntegerField()
+    score = models.FloatField()
+
+    class Meta(object):
+        db_table = 'result_score'
+
+
 # Load signal receivers. This is imported below to prevent circular imports
 # with the above models.
 from . import receivers     # noqa
