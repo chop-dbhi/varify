@@ -558,12 +558,12 @@ define [
             @ui.viewPhenotype.find(".content").empty()
             @ui.viewPhenotype.find(".loading").show()
             
-        
         phenotypesError: (model, response) =>
             @ui.viewPhenotype.find(".loading").hide()
             @ui.viewPhenotype.find(".content").html("<p>An error was encountered. " +
                 "Unable to retrieve phenotypes for sample #{ model.attributes.sample_id }.</p>")
             @phenotypeXhr = undefined
+            
         sampleID: => 
             sample = "various samples"
 
@@ -585,10 +585,5 @@ define [
             else
                 @phenotypesError(phenotypes, { responseText:'Sample not found' })
 
-
-
-            
-
-            
 
     { ResultsWorkflow }

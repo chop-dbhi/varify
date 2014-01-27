@@ -228,6 +228,7 @@ class SampleResultResource(resources.Resource):
 
         return data
 
+
 class PhenotypeResource(resources.Resource):
     
     def get(self, request, sample_id):
@@ -238,15 +239,12 @@ class PhenotypeResource(resources.Resource):
                 settings.VARIFY_KEY), verify=False)
         except requests.exceptions.SSLError:
             raise PermissionDenied
-       
-        except requests.exceptions.ConnectionError, c:
+        except requests.exceptions.ConnectionError:
             return HttpResponse(status=500)
-
-        except requests.exceptions.RequestException, e:
+        except requests.exceptions.RequestException:
             raise Http404
 
         return response.content
-
 
 
 sample_resource = never_cache(SampleResource())
@@ -255,7 +253,6 @@ named_sample_resource = never_cache(NamedSampleResource())
 sample_results_resource = never_cache(SampleResultsResource())
 sample_result_resource = never_cache(SampleResultResource())
 phenotype_resource = never_cache(PhenotypeResource())
-
 
 urlpatterns = patterns(
     '',
@@ -266,5 +263,4 @@ urlpatterns = patterns(
     url(r'^(?P<pk>\d+)/variants/$', sample_results_resource, name='variants'),
     url(r'^variants/(?P<pk>\d+)/$', sample_result_resource, name='variant'),
     url(r'^(?P<sample_id>[a-zA-Z0-9_-]*)/phenotypes/$', phenotype_resource, name='phenotype'),
-
 )
