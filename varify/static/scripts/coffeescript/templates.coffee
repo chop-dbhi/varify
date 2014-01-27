@@ -10,7 +10,7 @@ define [
         return "<td class=genomic-position><a target=_blank href=\"http://genome.ucsc.edu/cgi-bin/hgTracks?position=chr#{ chr }%3A#{ pos }\">chr#{ chr } <span class=muted>@</span> #{ pchr }</a></td>"
 
     phenotypeScore = (resultScore) ->
-        if resultScore? and resultScore.rank? and resultScore.score?
+        if resultScore?
             rank = parseInt(resultScore.rank)
             score = parseFloat(resultScore.score)
 
