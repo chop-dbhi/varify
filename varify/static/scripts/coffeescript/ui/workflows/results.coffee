@@ -555,10 +555,12 @@ define [
 
         hidePhenotypes: =>
             @phenotypeXhr.abort() if @phenotypeXhr
+            @phenotypeXhr = undefined
             @ui.viewPhenotype.find(".content").empty()
             @ui.viewPhenotype.find(".loading").show()
             
         phenotypesError: (model, response) =>
+            return if response.statusText is "abort" 
             @ui.viewPhenotype.find(".loading").hide()
             @ui.viewPhenotype.find(".content").html("<p>An error was encountered. " +
                 "Unable to retrieve phenotypes for sample #{ model.attributes.sample_id }.</p>")
