@@ -7,8 +7,7 @@ include python
 include gems
 include postgresql::devel
 include nodejs::coffee-script
-
-
+include redis
 
 #Create the virtual environment for varify
 
