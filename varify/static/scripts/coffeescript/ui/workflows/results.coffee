@@ -13,11 +13,13 @@ define [
     'cilantro/ui/exporter'
     'cilantro/ui/query'
     '../modals'
+    '../../models'
     'tpl!templates/count.html'
     'tpl!templates/varify/workflows/results.html'
-], (_, Marionette, c, base, paginator, numbers, structs, models, tables, context, concept, exporter, query, modal, templates...) ->
+    'tpl!templates/varify/modals/phenotypes.html'
+], (_, Marionette, c, base, paginator, numbers, structs, models, tables, context, concept, exporter, query, modal, varify_models, templates...) ->
 
-    templates = _.object ['count', 'results'], templates
+    templates = _.object ['count', 'results', 'phenotypes'], templates
 
 
     class ResultCount extends Marionette.ItemView
@@ -49,10 +51,9 @@ define [
                 _.each json.children, (child) ->
                     if child.concept? and child.concept == 2
                         sample = child.children[0].value[0].label
-
+            
             numbers.renderCount(@ui.count, count)
             @ui.label.text("records in #{ sample }")
-
 
     ###
     The ResultsWorkflow provides an interface for previewing tabular data,
@@ -93,6 +94,7 @@ define [
             resultsContainer: '.results-container'
             navbarButtons: '.results-workflow-navbar button'
             loadingOverlay: '.loading-overlay'
+            viewPhenotype: '.phenotype-modal .modal-body .span12'
 
         events:
             'click .export-options-modal [data-save]': 'onExportClicked'
@@ -102,6 +104,8 @@ define [
             'click #pages-text-ranges': 'selectPagesOption'
             'click [data-toggle=save-query]': 'showSaveQuery'
             'click [data-toggle=context-panel]': 'toggleContextPanelButtonClicked'
+            'show.bs.modal .phenotype-modal': 'retrievePhenotypes'
+            'hidden.bs.modal .phenotype-modal': 'hidePhenotypes'
 
         regions:
             columns: '#export-columns-tab'
@@ -528,5 +532,60 @@ define [
             # Opens the query modal without passing a model which assumes a new one
             # will be created based on the current session
             @saveQueryModal.currentView.open()
+
+        renderPhenotypes: (model, response) =>
+            return if not @ui.viewPhenotype.is(":visible")
+            @ui.viewPhenotype.find(".loading").hide()
+            attr = model.attributes
+            if attr.hpoAnnotations and attr.hpoAnnotations.length
+                attr.hpoAnnotations = _.sortBy(attr.hpoAnnotations, (value) ->
+                    parseInt(value.priority) or model.lowestPriority+1)
+            if attr.confirmedDiagnoses and attr.confirmedDiagnoses.length
+                attr.confirmedDiagnoses = _.sortBy(attr.confirmedDiagnoses, (value) ->
+                    parseInt(value.priority) or model.lowestPriority+1)
+            if attr.suspectedDiagnoses and attr.suspectedDiagnoses.length
+                attr.suspectedDiagnoses = _.sortBy(attr.suspectedDiagnoses, (value) ->
+                    parseInt(value.priority) or model.lowestPriority+1)
+            if attr.ruledOutDiagnoses and attr.ruledOutDiagnoses.length
+                attr.ruledOutDiagnoses = _.sortBy(attr.ruledOutDiagnoses, (value) ->
+                    parseInt(value.priority) or model.lowestPriority+1)     
+
+            @ui.viewPhenotype.find(".content").html(templates.phenotypes(model.attributes))
+            @phenotypeXhr = undefined
+
+        hidePhenotypes: =>
+            @phenotypeXhr.abort() if @phenotypeXhr
+            @phenotypeXhr = undefined
+            @ui.viewPhenotype.find(".content").empty()
+            @ui.viewPhenotype.find(".loading").show()
+            
+        phenotypesError: (model, response) =>
+            return if response.statusText is "abort" 
+            @ui.viewPhenotype.find(".loading").hide()
+            @ui.viewPhenotype.find(".content").html("<p>An error was encountered. " +
+                "Unable to retrieve phenotypes for sample #{ model.attributes.sample_id }.</p>")
+            @phenotypeXhr = undefined
+            
+        sampleID: => 
+            sample = "various samples"
+
+            if @data.context? and (json = @data.context.get('json'))?
+                _.each json.children, (child) ->
+                    if child.concept? and child.concept == 2
+                        sample = child.children[0].value[0].label
+            sample
+
+        retrievePhenotypes: =>
+            sampleID = @sampleID()
+            if sampleID
+                phenotypes = new varify_models.Phenotype
+                    sample_id: sampleID
+               
+                @phenotypeXhr = phenotypes.fetch
+                    success: @renderPhenotypes
+                    error: @phenotypesError
+            else
+                @phenotypesError(phenotypes, { responseText:'Sample not found' })
+
 
     { ResultsWorkflow }

@@ -67,4 +67,14 @@ SECRET_KEY = 'g0u!o7_mw=cfhrgb+#xupma&amp;@99443u06xs19$rlmt#wyt9xve'
 #         'propagate': True,
 #         'level': 'DEBUG',
 #     }
-# })
+# 
+
+
+# Location of the Phenotype system
+PHENOTYPE_ENDPOINT = 'https://localhost/phenotype/sample/'
+
+# TLS certificates used to authenticate against the phenotype system
+# Replace with absolute locations of your certificates
+VARIFY_CERT = '/certs/varify.cert.pem'
+ROOT_CERTIFICATE = '/certs/ca.cert.pem'
+VARIFY_KEY = '/private/varify.key.pem'

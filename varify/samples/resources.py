@@ -1,10 +1,13 @@
 import functools
+import requests
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf.urls import patterns, url
 from django.core.cache import cache
 from django.http import Http404
+from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.views.decorators.cache import never_cache
+from django.conf import settings
 from preserialize.serialize import serialize
 from restlib2 import resources
 from varify.variants.resources import VariantResource
@@ -226,11 +229,30 @@ class SampleResultResource(resources.Resource):
         return data
 
 
+class PhenotypeResource(resources.Resource):
+    
+    def get(self, request, sample_id):
+        endpoint = settings.PHENOTYPE_ENDPOINT % sample_id
+        
+        try:
+           response = requests.get(endpoint, cert=(settings.VARIFY_CERT,
+                settings.VARIFY_KEY), verify=False)
+        except requests.exceptions.SSLError:
+            raise PermissionDenied
+        except requests.exceptions.ConnectionError:
+            return HttpResponse(status=500)
+        except requests.exceptions.RequestException:
+            raise Http404
+
+        return response.content
+
+
 sample_resource = never_cache(SampleResource())
 samples_resource = never_cache(SamplesResource())
 named_sample_resource = never_cache(NamedSampleResource())
 sample_results_resource = never_cache(SampleResultsResource())
 sample_result_resource = never_cache(SampleResultResource())
+phenotype_resource = never_cache(PhenotypeResource())
 
 urlpatterns = patterns(
     '',
@@ -240,4 +262,5 @@ urlpatterns = patterns(
         named_sample_resource, name='named_sample'),
     url(r'^(?P<pk>\d+)/variants/$', sample_results_resource, name='variants'),
     url(r'^variants/(?P<pk>\d+)/$', sample_result_resource, name='variant'),
+    url(r'^(?P<sample_id>[a-zA-Z0-9_-]*)/phenotypes/$', phenotype_resource, name='phenotype'),
 )
