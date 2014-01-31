@@ -3,8 +3,15 @@ include wsgi.py
 include bin/manage.py
 include Makefile
 
-graft _site
-graft server
+recursive-include varify/fixtures *
+recursive-include varify/assessments/fixtures *
+recursive-include varify/genome/fixtures *
+recursive-include varify/variants/fixtures *
+
+recursive-include _site *
+recursive-include varify/static *
+recursive-include server *
+recursive-include varify/templates *
 
 global-exclude .DS_Store
 
