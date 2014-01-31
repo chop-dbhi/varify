@@ -8,7 +8,7 @@ define(['underscore', './utils', 'cilantro/utils/numbers'], function(_, utils, N
   };
   phenotypeScore = function(resultScore) {
     var rank, score;
-    if ((resultScore != null) && (resultScore.rank != null) && (resultScore.score != null)) {
+    if (resultScore != null) {
       rank = parseInt(resultScore.rank);
       score = parseFloat(resultScore.score);
       if (!isNaN(rank) && !isNaN(score)) {

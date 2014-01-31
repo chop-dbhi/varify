@@ -4,10 +4,10 @@ var __slice = [].slice,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cilantro/ui/paginator', 'cilantro/ui/numbers', 'cilantro/structs', 'cilantro/models', '../tables', 'cilantro/ui/context', 'cilantro/ui/concept', 'cilantro/ui/exporter', 'cilantro/ui/query', '../modals', 'tpl!templates/count.html', 'tpl!templates/varify/workflows/results.html'], function() {
-  var Marionette, ResultCount, ResultsWorkflow, base, c, concept, context, exporter, modal, models, numbers, paginator, query, structs, tables, templates, _, _ref, _ref1;
-  _ = arguments[0], Marionette = arguments[1], c = arguments[2], base = arguments[3], paginator = arguments[4], numbers = arguments[5], structs = arguments[6], models = arguments[7], tables = arguments[8], context = arguments[9], concept = arguments[10], exporter = arguments[11], query = arguments[12], modal = arguments[13], templates = 15 <= arguments.length ? __slice.call(arguments, 14) : [];
-  templates = _.object(['count', 'results'], templates);
+define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cilantro/ui/paginator', 'cilantro/ui/numbers', 'cilantro/structs', 'cilantro/models', '../tables', 'cilantro/ui/context', 'cilantro/ui/concept', 'cilantro/ui/exporter', 'cilantro/ui/query', '../modals', '../../models', 'tpl!templates/count.html', 'tpl!templates/varify/workflows/results.html', 'tpl!templates/varify/modals/phenotypes.html'], function() {
+  var Marionette, ResultCount, ResultsWorkflow, base, c, concept, context, exporter, modal, models, numbers, paginator, query, structs, tables, templates, varify_models, _, _ref, _ref1;
+  _ = arguments[0], Marionette = arguments[1], c = arguments[2], base = arguments[3], paginator = arguments[4], numbers = arguments[5], structs = arguments[6], models = arguments[7], tables = arguments[8], context = arguments[9], concept = arguments[10], exporter = arguments[11], query = arguments[12], modal = arguments[13], varify_models = arguments[14], templates = 16 <= arguments.length ? __slice.call(arguments, 15) : [];
+  templates = _.object(['count', 'results', 'phenotypes'], templates);
   ResultCount = (function(_super) {
     __extends(ResultCount, _super);
 
@@ -79,6 +79,11 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
     __extends(ResultsWorkflow, _super);
 
     function ResultsWorkflow() {
+      this.retrievePhenotypes = __bind(this.retrievePhenotypes, this);
+      this.sampleID = __bind(this.sampleID, this);
+      this.phenotypesError = __bind(this.phenotypesError, this);
+      this.hidePhenotypes = __bind(this.hidePhenotypes, this);
+      this.renderPhenotypes = __bind(this.renderPhenotypes, this);
       this.showSaveQuery = __bind(this.showSaveQuery, this);
       this.exportData = __bind(this.exportData, this);
       this.startExport = __bind(this.startExport, this);
@@ -128,7 +133,8 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
       navbar: '.results-workflow-navbar',
       resultsContainer: '.results-container',
       navbarButtons: '.results-workflow-navbar button',
-      loadingOverlay: '.loading-overlay'
+      loadingOverlay: '.loading-overlay',
+      viewPhenotype: '.phenotype-modal .modal-body .span12'
     };
 
     ResultsWorkflow.prototype.events = {
@@ -138,7 +144,9 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
       'click [data-toggle=export-progress]': 'showExportProgress',
       'click #pages-text-ranges': 'selectPagesOption',
       'click [data-toggle=save-query]': 'showSaveQuery',
-      'click [data-toggle=context-panel]': 'toggleContextPanelButtonClicked'
+      'click [data-toggle=context-panel]': 'toggleContextPanelButtonClicked',
+      'show.bs.modal .phenotype-modal': 'retrievePhenotypes',
+      'hidden.bs.modal .phenotype-modal': 'hidePhenotypes'
     };
 
     ResultsWorkflow.prototype.regions = {
@@ -537,6 +545,86 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
 
     ResultsWorkflow.prototype.showSaveQuery = function() {
       return this.saveQueryModal.currentView.open();
+    };
+
+    ResultsWorkflow.prototype.renderPhenotypes = function(model, response) {
+      var attr;
+      if (!this.ui.viewPhenotype.is(":visible")) {
+        return;
+      }
+      this.ui.viewPhenotype.find(".loading").hide();
+      attr = model.attributes;
+      if (attr.hpoAnnotations && attr.hpoAnnotations.length) {
+        attr.hpoAnnotations = _.sortBy(attr.hpoAnnotations, function(value) {
+          return parseInt(value.priority) || model.lowestPriority + 1;
+        });
+      }
+      if (attr.confirmedDiagnoses && attr.confirmedDiagnoses.length) {
+        attr.confirmedDiagnoses = _.sortBy(attr.confirmedDiagnoses, function(value) {
+          return parseInt(value.priority) || model.lowestPriority + 1;
+        });
+      }
+      if (attr.suspectedDiagnoses && attr.suspectedDiagnoses.length) {
+        attr.suspectedDiagnoses = _.sortBy(attr.suspectedDiagnoses, function(value) {
+          return parseInt(value.priority) || model.lowestPriority + 1;
+        });
+      }
+      if (attr.ruledOutDiagnoses && attr.ruledOutDiagnoses.length) {
+        attr.ruledOutDiagnoses = _.sortBy(attr.ruledOutDiagnoses, function(value) {
+          return parseInt(value.priority) || model.lowestPriority + 1;
+        });
+      }
+      this.ui.viewPhenotype.find(".content").html(templates.phenotypes(model.attributes));
+      return this.phenotypeXhr = void 0;
+    };
+
+    ResultsWorkflow.prototype.hidePhenotypes = function() {
+      if (this.phenotypeXhr) {
+        this.phenotypeXhr.abort();
+      }
+      this.phenotypeXhr = void 0;
+      this.ui.viewPhenotype.find(".content").empty();
+      return this.ui.viewPhenotype.find(".loading").show();
+    };
+
+    ResultsWorkflow.prototype.phenotypesError = function(model, response) {
+      if (response.statusText === "abort") {
+        return;
+      }
+      this.ui.viewPhenotype.find(".loading").hide();
+      this.ui.viewPhenotype.find(".content").html("<p>An error was encountered. " + ("Unable to retrieve phenotypes for sample " + model.attributes.sample_id + ".</p>"));
+      return this.phenotypeXhr = void 0;
+    };
+
+    ResultsWorkflow.prototype.sampleID = function() {
+      var json, sample;
+      sample = "various samples";
+      if ((this.data.context != null) && ((json = this.data.context.get('json')) != null)) {
+        _.each(json.children, function(child) {
+          if ((child.concept != null) && child.concept === 2) {
+            return sample = child.children[0].value[0].label;
+          }
+        });
+      }
+      return sample;
+    };
+
+    ResultsWorkflow.prototype.retrievePhenotypes = function() {
+      var phenotypes, sampleID;
+      sampleID = this.sampleID();
+      if (sampleID) {
+        phenotypes = new varify_models.Phenotype({
+          sample_id: sampleID
+        });
+        return this.phenotypeXhr = phenotypes.fetch({
+          success: this.renderPhenotypes,
+          error: this.phenotypesError
+        });
+      } else {
+        return this.phenotypesError(phenotypes, {
+          responseText: 'Sample not found'
+        });
+      }
     };
 
     return ResultsWorkflow;
