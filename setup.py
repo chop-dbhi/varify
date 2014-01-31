@@ -42,6 +42,7 @@ kwargs = {
     'version': VERSION,
     'packages': find_packages(exclude=['tests', '*.tests', '*.tests.*',
                                        'tests.*']),
+    'include_package_data': True,
     'install_requires': install_requires,
     # This is a hack to get setuptools to install the the latest version of
     # PyVCF from the github repo. This version doesn't yet exist on pypi so the
