@@ -206,6 +206,13 @@ VariantEffect = {
 }
 
 
+# Represents the simplest representation of a Sample, that is, the primary key
+# and the Sample name.
+SimpleSample = {
+    'fields': [':pk', 'name'],
+}
+
+
 # Used to augment the variant resource below. This is separate to
 # be able to restrict cohorts for the requesting user
 CohortVariant = {
