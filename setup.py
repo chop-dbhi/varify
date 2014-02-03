@@ -34,7 +34,6 @@ install_requires = [
     'django-reversion==1.6.6',
     'diff-match-patch',
     'vcf==0.6.5',
-    'django-news',
 ]
 
 kwargs = {
