@@ -50,9 +50,6 @@ django-bootstrap-form>=0.5
 # VCF loading
 git+git://github.com/jamescasbon/PyVCF.git
 
-# News
-git+git://github.com/cbmi/django-news.git#egg=django-news
-
 # Permissions
 django-guardian==1.0.4
 

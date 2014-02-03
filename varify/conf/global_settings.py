@@ -47,7 +47,6 @@ INSTALLED_APPS = (
     'siteauth',
     'tracking',
     'bootstrapform',
-    'news',
     'widget_tweaks',
     'django_rq',
     'django_rq_dashboard',
@@ -201,7 +200,6 @@ SITEAUTH_ACCESS_ORDER = 'allow/deny'
 SITEAUTH_ALLOW_URLS = (
     r'^$',
     r'^log(in|out)/',
-    r'^news/',
     r'^password/reset/',
     r'^(static|support|register|verify)/',
     r'^api/samples/(?P<project>.+)/(?P<batch>.+)/(?P<sample>.+)/$',
