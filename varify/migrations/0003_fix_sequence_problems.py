@@ -6,6 +6,7 @@ from django.db import models
 
 
 class Migration(SchemaMigration):
+    no_dry_run = True
 
     def forwards(self, orm):
         # This code is meant to solve the duplicate key exception caused when
