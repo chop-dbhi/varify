@@ -1,4 +1,3 @@
-import sys
 import logging
 import tempfile
 try:
@@ -35,23 +34,24 @@ def _write_tmp(cursor, row_handler=lambda x: x):
 
 
 class Command(BaseCommand):
-    """Cleans and loads genes from various sources into a uniform set of
-    tables.
+    """
+    Cleans and loads genes from various sources into a uniform set of tables.
     """
     option_list = BaseCommand.option_list + (
         make_option('--database', action='store', dest='database',
-            default=DEFAULT_DB_ALIAS, help='Nominates a database to print the '
-                'SQL for.  Defaults to the "default" database.'),
+                    default=DEFAULT_DB_ALIAS,
+                    help='Nominates a database to print the SQL for. Defaults '
+                         'to the "default" database.'),
         make_option('--sift', action='store_true', default=False,
-            help='Reload SIFT annotations'),
+                    help='Reload SIFT annotations'),
         make_option('--polyphen2', action='store_true', default=False,
-            help='Reload PolyPhen2 annotations'),
+                    help='Reload PolyPhen2 annotations'),
         make_option('--1000g', action='store_true', default=False,
-            help='Reload 1000g annotations'),
+                    help='Reload 1000g annotations'),
         make_option('--evs', action='store_true', default=False,
-            help='Reload EVS annotations'),
+                    help='Reload EVS annotations'),
         make_option('--truncate', action='store_true', default=False,
-            help='Truncate tables before reloading'),
+                    help='Truncate tables before reloading'),
     )
 
     def load_1000g(self, cursor, truncate=False):
@@ -59,11 +59,11 @@ class Command(BaseCommand):
 
         if truncate:
             cursor.execute('TRUNCATE "{0}"'.format(db_table))
-            print 'Truncated table "{0}"'.format(db_table)
+            log.debug('Truncated table "{0}"'.format(db_table))
 
         cursor.execute('''
-            SELECT DISTINCT ON (variant.id) variant.id, r.an, r.ac, r.af, r.aa, r.amr_af,
-                r.asn_af, r.afr_af, r.eur_af
+            SELECT DISTINCT ON (variant.id) variant.id, r.an, r.ac, r.af,
+                r.aa, r.amr_af, r.asn_af, r.afr_af, r.eur_af
             FROM "variant"
                 INNER JOIN "raw"."1000g" r ON ("variant".md5 = r."md5")
                 LEFT OUTER JOIN "1000g" ON ("1000g"."variant_id" = "variant"."id")
@@ -72,20 +72,20 @@ class Command(BaseCommand):
         ''')
 
         tmp, count = _write_tmp(cursor)
-        cursor.copy_from(tmp, '"1000g"', columns=['variant_id', 'an', 'ac',
-            'af', 'aa', 'amr_af', 'asn_af', 'afr_af', 'eur_af'])
+        cursor.copy_from(
+            tmp, '"1000g"', columns=['variant_id', 'an', 'ac', 'af', 'aa',
+                                     'amr_af', 'asn_af', 'afr_af', 'eur_af'])
         tmp.close()
         return count
 
     load_1000g.short_name = '1000g'
-
 
     def load_evs(self, cursor, truncate=False):
         db_table = EVS._meta.db_table
 
         if truncate:
             cursor.execute('TRUNCATE "{0}"'.format(db_table))
-            print 'Truncated table "{0}"'.format(db_table)
+            log.debug('Truncated table "{0}"'.format(db_table))
 
         # MAFs are divided by 100 since they are percentages to begin with
         cursor.execute('''
@@ -105,9 +105,9 @@ class Command(BaseCommand):
         # the alternate and sets the AF if the reference count is less than
         # the alternate
         columns = ['variant_id', 'ea_ac_ref', 'ea_ac_alt', 'aa_ac_ref',
-            'aa_ac_alt', 'all_ac_ref', 'all_ac_alt', 'ea_af', 'aa_af',
-            'all_af', 'gts', 'ea_gtc', 'aa_gtc', 'all_gtc',
-            'clinical_association']
+                   'aa_ac_alt', 'all_ac_ref', 'all_ac_alt', 'ea_af', 'aa_af',
+                   'all_af', 'gts', 'ea_gtc', 'aa_gtc', 'all_gtc',
+                   'clinical_association']
 
         def compare_counts(ref, alt):
             "Compares allele counts and handles heterozygotes."
@@ -141,13 +141,12 @@ class Command(BaseCommand):
 
     load_evs.short_name = 'EVS'
 
-
     def load_polyphen2(self, cursor, truncate=False):
         db_table = PolyPhen2._meta.db_table
 
         if truncate:
             cursor.execute('TRUNCATE "{0}"'.format(db_table))
-            print 'Truncated table "{0}"'.format(db_table)
+            log.debug('Truncated table "{0}"'.format(db_table))
 
         cursor.execute('''
             SELECT variant.id, r.score, r.refaa
@@ -158,20 +157,19 @@ class Command(BaseCommand):
         ''')
 
         tmp, count = _write_tmp(cursor)
-        cursor.copy_from(tmp, 'polyphen2', columns=['variant_id', 'score',
-            'refaa'])
+        cursor.copy_from(tmp, 'polyphen2',
+                         columns=['variant_id', 'score', 'refaa'])
         tmp.close()
         return count
 
     load_polyphen2.short_name = 'PolyPhen2'
-
 
     def load_sift(self, cursor, truncate=False):
         db_table = Sift._meta.db_table
 
         if truncate:
             cursor.execute('TRUNCATE "{0}"'.format(db_table))
-            print 'Truncated table "{0}"'.format(db_table)
+            log.debug('Truncated table "{0}"'.format(db_table))
 
         cursor.execute('''
             SELECT variant.id, r.score, r.refaa, r.varaa
@@ -182,19 +180,19 @@ class Command(BaseCommand):
         ''')
 
         tmp, count = _write_tmp(cursor)
-        cursor.copy_from(tmp, 'sift', columns=['variant_id', 'score',
-            'refaa', 'varaa'])
+        cursor.copy_from(tmp, 'sift',
+                         columns=['variant_id', 'score', 'refaa', 'varaa'])
         tmp.close()
         return count
 
     load_sift.short_name = 'SIFT'
 
-
     def handle(self, *args, **options):
         using = options.get('database')
 
         load_1000g = self.load_1000g if options.get('1000g') else None
-        load_polyphen2 = self.load_polyphen2 if options.get('polyphen2') else None
+        load_polyphen2 = \
+            self.load_polyphen2 if options.get('polyphen2') else None
         load_evs = self.load_evs if options.get('evs') else None
         load_sift = self.load_sift if options.get('sift') else None
         truncate = options.get('truncate')
@@ -207,12 +205,10 @@ class Command(BaseCommand):
 
             with transaction.commit_manually(using):
                 try:
-                    print 'Loading {0}...'.format(handler.short_name),
-                    sys.stdout.flush()
+                    log.debug('Loading {0}...'.format(handler.short_name))
                     count = handler(cursor, truncate)
-                    print '{0} rows copied'.format(count)
+                    log.debug('{0} rows copied'.format(count))
                     transaction.commit()
                 except Exception, e:
-                    print 'FAIL'
                     transaction.rollback()
                     log.exception(e.message)

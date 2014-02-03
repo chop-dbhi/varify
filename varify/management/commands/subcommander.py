@@ -1,6 +1,7 @@
 import sys
 from optparse import NO_DEFAULT, OptionParser
-from django.core.management.base import CommandError, BaseCommand, handle_default_options
+from django.core.management.base import CommandError, BaseCommand, \
+    handle_default_options
 from django.utils.importlib import import_module
 
 
@@ -29,20 +30,25 @@ class Subcommander(BaseCommand):
 
     def get_subcommand(self, subcommand):
         try:
-            module = import_module(self.import_template.format(app=self.app_name,
-                module=self.subcommands[subcommand]))
+            module = import_module(self.import_template.format(
+                app=self.app_name, module=self.subcommands[subcommand]))
             return module.Command()
         except KeyError:
-            raise CommandError('Unknown subcommand: {0} {1}'.format(self.app_name, subcommand))
+            raise CommandError('Unknown subcommand: {0} {1}'
+                               .format(self.app_name, subcommand))
 
     def run_from_argv(self, argv):
-        """Set up any environment changes requested (e.g., Python path
-        and Django settings), then run this command.
         """
-        if len(argv) > 2 and not argv[2].startswith('-') and argv[2] in self.subcommands.keys():
+        Set up any environment changes requested (e.g., Python path and Django
+        settings), then run this command.
+        """
+        if (len(argv) > 2 and not argv[2].startswith('-') and
+                argv[2] in self.subcommands.keys()):
             subcommand = argv[2]
             klass = self.get_subcommand(subcommand)
-            parser = OptionParser(prog=argv[0], usage=klass.usage('{0} {1}'.format(argv[1], subcommand)),
+            parser = OptionParser(
+                prog=argv[0],
+                usage=klass.usage('{0} {1}'.format(argv[1], subcommand)),
                 version=klass.get_version(), option_list=klass.option_list)
             options, args = parser.parse_args(argv[3:])
             args = [subcommand] + args

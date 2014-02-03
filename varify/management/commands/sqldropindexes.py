@@ -15,11 +15,14 @@ def sql_drop_indexes_for_field(model, f, style, connection):
     qname = connection.qualified_name(model)
 
     # HACK
-    create_indexes = connection.creation.sql_indexes_for_field(model, f, no_style())
+    create_indexes = \
+        connection.creation.sql_indexes_for_field(model, f, no_style())
     for statement in create_indexes:
         name = re.search(r'CREATE INDEX (.*) ON', statement).groups()[0]
-        name = cqn(QName(schema=qname.schema, table=name, db_format=qname.db_format))
-        output.append(style.SQL_KEYWORD('DROP INDEX IF EXISTS') + ' ' + style.SQL_TABLE(name) + ';')
+        name = cqn(
+            QName(schema=qname.schema, table=name, db_format=qname.db_format))
+        output.append(style.SQL_KEYWORD(
+            'DROP INDEX IF EXISTS') + ' ' + style.SQL_TABLE(name) + ';')
     return output
 
 
@@ -43,15 +46,20 @@ def sql_drop_indexes(app, style, connection):
 
 
 class Command(AppCommand):
-    help = 'Prints the DROP INDEX SQL statements for the given app module name(s).'
+    help = ("Prints the DROP INDEX SQL statements for the given app module "
+            "name(s).")
 
     option_list = AppCommand.option_list + (
         make_option('--database', action='store', dest='database',
-            default=DEFAULT_DB_ALIAS, help='Nominates a database to print the '
-                'SQL for.  Defaults to the "default" database.'),
+                    default=DEFAULT_DB_ALIAS,
+                    help='Nominates a database to print the SQL for. Defaults '
+                         'to the "default" database.'),
     )
 
     output_transaction = True
 
     def handle_app(self, app, **options):
-        return u'\n'.join(sql_drop_indexes(app, self.style, connections[options.get('database')])).encode('utf-8')
+        return u'\n'.join(sql_drop_indexes(
+            app,
+            self.style,
+            connections[options.get('database')])).encode('utf-8')

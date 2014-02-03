@@ -1,3 +1,4 @@
+import logging
 from optparse import make_option
 from django.db import models, transaction
 from django.db.models import loading
@@ -7,16 +8,20 @@ from django.db.utils import DatabaseError
 from django.core.management.base import NoArgsCommand
 from django.template.defaultfilters import filesizeformat
 
+log = logging.getLogger(__name__)
+
 
 class Command(NoArgsCommand):
     help = 'Prints the calculated data size of each table on disk.'
 
     option_list = NoArgsCommand.option_list + (
         make_option('--database', action='store', dest='database',
-            default=DEFAULT_DB_ALIAS, help='Nominates a database to print the '
-                'SQL for.  Defaults to the "default" database.'),
+                    default=DEFAULT_DB_ALIAS,
+                    help='Nominates a database to print the '
+                         'SQL for.  Defaults to the "default" database.'),
         make_option('-s', action='store_true', dest='suffix',
-            help='Prints human-readable sizes with the approiate suffix.'),
+                    help='Prints human-readable sizes with the approiate '
+                         'suffix.'),
     )
 
     def handle_noargs(self, **options):
@@ -34,16 +39,18 @@ class Command(NoArgsCommand):
                     # Some tables may not yet be created in the database, so
                     # this statement will fail
                     try:
-                        cursor.execute("SELECT pg_total_relation_size('{0}')".format(opts.db_table))
+                        cursor.execute("SELECT pg_total_relation_size('{0}')"
+                                       .format(opts.db_table))
                         sizes.append((cursor.fetchone()[0], opts.module_name))
                     except DatabaseError:
                         transaction.rollback()
         for size, name in sorted(sizes):
             if suffix:
                 size = filesizeformat(size)
-            print '{0}\t{1}'.format(size, name)
+            log.debug('{0}\t{1}'.format(size, name))
         if suffix:
-            cursor.execute("SELECT pg_size_pretty(pg_database_size('{0}'))".format(db_name))
+            cursor.execute("SELECT pg_size_pretty(pg_database_size('{0}'))"
+                           .format(db_name))
         else:
             cursor.execute("SELECT pg_database_size('{0}')".format(db_name))
-        print '{0}\tTOTAL'.format(cursor.fetchone()[0])
+        log.debug('{0}\tTOTAL'.format(cursor.fetchone()[0]))
