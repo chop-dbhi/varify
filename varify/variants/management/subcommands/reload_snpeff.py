@@ -1,4 +1,3 @@
-import sys
 import logging
 from optparse import make_option
 from django.db import transaction, connections, DEFAULT_DB_ALIAS
@@ -13,14 +12,17 @@ log = logging.getLogger(__name__)
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--database', action='store', dest='database',
-            default=DEFAULT_DB_ALIAS, help='Nominates a database to print the '
-                'SQL for.  Defaults to the "default" database.'),
+                    default=DEFAULT_DB_ALIAS,
+                    help='Nominates a database to print the SQL for. Defaults '
+                         'to the "default" database.'),
 
         make_option('--transcripts', action='store_true', default=False,
-            help='Causes the transcript table to be truncated prior to reloading.'),
+                    help='Causes the transcript table to be truncated prior '
+                         'to reloading.'),
 
         make_option('--stdout', action='store_true', default=False,
-            help='Writes the stream to stdout rather than to the database'),
+                    help='Writes the stream to stdout rather than to the '
+                         'database'),
     )
 
     def handle(self, path, **options):
@@ -36,18 +38,21 @@ class Command(BaseCommand):
                     line = stream.readline()
                     if line == '':
                         break
-                    sys.stdout.write(line)
+                    log.debug(line)
             else:
                 cursor = connections[database].cursor()
 
                 with transaction.commit_manually(database):
                     try:
-                        cursor.execute('TRUNCATE {0}'.format(VariantEffect._meta.db_table))
+                        cursor.execute('TRUNCATE {0}'.format(
+                            VariantEffect._meta.db_table))
                         if transripts:
-                            cursor.execute('TRUNCATE {0} CASCADE'.format(Transcript._meta.db_table))
+                            cursor.execute('TRUNCATE {0} CASCADE'.format(
+                                Transcript._meta.db_table))
                         columns = stream.output_columns
                         db_table = VariantEffect._meta.db_table
-                        pgcopy_batch(stream, db_table, columns, cursor, database)
+                        pgcopy_batch(stream, db_table, columns, cursor,
+                                     database)
 
                         transaction.commit(database)
                     except Exception as e:

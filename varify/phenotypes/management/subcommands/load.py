@@ -1,5 +1,4 @@
 import re
-import sys
 import logging
 from optparse import make_option
 from django.db import transaction, connections, DEFAULT_DB_ALIAS
@@ -8,7 +7,6 @@ from varify.genes.models import Gene, GenePhenotype
 from varify.literature.models import PubMed
 from varify.phenotypes.models import Phenotype
 from varify.variants.models import Variant, VariantPhenotype
-
 
 BATCH_SIZE = 1000
 
@@ -103,8 +101,7 @@ def load_hgmd_phenotypes(label, keys, cursor, using):
                 if count % BATCH_SIZE == 0:
                     transaction.commit()
 
-        sys.stdout.write('Loading {0}...{1}/{2}\r'.format(label, count, total))
-        sys.stdout.flush()
+        log.debug('Loading {0}...{1}/{2}'.format(label, count, total))
 
     # Print a newline for the terminal prompt
     print
@@ -331,7 +328,7 @@ class Command(BaseCommand):
                 try:
                     handler(cursor, using)
                     transaction.commit()
-                except Exception, e:
-                    print 'Failed to load {0}'.format(handler.short_name)
+                except Exception:
                     transaction.rollback()
-                    log.exception(e)
+                    log.exception(
+                        'Failed to load {0}'.format(handler.short_name))

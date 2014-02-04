@@ -1,15 +1,13 @@
-import re
-import sys
 import logging
-import traceback
+import re
 from optparse import make_option
 try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
-from django.db import transaction, connections, DEFAULT_DB_ALIAS
+from django.db import connections, DEFAULT_DB_ALIAS
 from django.core.management.base import BaseCommand
-from varify.genes.models import GeneFamily, Gene, Synonym, GenePhenotype
+from varify.genes.models import GeneFamily, Gene, Synonym
 from varify.genome.models import Chromosome
 from varify.literature.models import PubMed
 
@@ -17,17 +15,18 @@ log = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
-    """Cleans and loads genes from various sources into a uniform set of
-    tables.
+    """
+    Cleans and loads genes from various sources into a uniform set of tables.
     """
     option_list = BaseCommand.option_list + (
         make_option('--database', action='store', dest='database',
-            default=DEFAULT_DB_ALIAS, help='Nominates a database to print the '
-                'SQL for.  Defaults to the "default" database.'),
+                    default=DEFAULT_DB_ALIAS,
+                    help='Nominates a database to print the SQL for. Defaults '
+                         'to the "default" database.'),
         make_option('--genes', action='store_true', default=False,
-            help='Reload genes, synonyms and PubMed IDs from HGNC'),
+                    help='Reload genes, synonyms and PubMed IDs from HGNC'),
         make_option('--families', action='store_true', default=False,
-            help='Reload gene families provided by HGNC'),
+                    help='Reload gene families provided by HGNC'),
     )
 
     def _get_or_create_gene(self, record):
@@ -44,10 +43,11 @@ class Command(BaseCommand):
         else:
             match = self.chrom_re.match(record['chromosome'])
             if not match:
-                log.warning('unable to match gene chromosome from HGNC', extra={
-                    'hgnc_id': record['hgnc_id'],
-                    'raw_chr': record['chromosome'],
-                })
+                log.warning('unable to match gene chromosome from HGNC',
+                            extra={
+                                'hgnc_id': record['hgnc_id'],
+                                'raw_chr': record['chromosome'],
+                            })
                 return None, False
             target['chr_id'] = self.chromosomes[match.groups()[0]]
 
@@ -87,11 +87,13 @@ class Command(BaseCommand):
     def load_genes(self, cursor):
         # The columns we care about
         keys = ['hgnc_id', 'approved_symbol', 'approved_name',
-            'previous_symbols', 'previous_names', 'synonyms',
-            'name_synonyms', 'chromosome', 'pubmed_ids']
+                'previous_symbols', 'previous_names', 'synonyms',
+                'name_synonyms', 'chromosome', 'pubmed_ids']
 
         cursor.execute('''
-            SELECT DISTINCT "hgnc_id", "approved_symbol", "approved_name", "previous_symbols", "previous_names", "synonyms", "name_synonyms", "chromosome", "pubmed_ids"
+            SELECT DISTINCT "hgnc_id", "approved_symbol", "approved_name",
+                            "previous_symbols", "previous_names", "synonyms",
+                            "name_synonyms", "chromosome", "pubmed_ids"
             FROM "raw"."hgnc"
             WHERE "status" = 'Approved'
                 AND "chromosome" != 'reserved'
@@ -133,8 +135,10 @@ class Command(BaseCommand):
                 # Add approved as aliases for ease of querying a single source
                 approved = [gene.symbol, gene.name]
 
-                for synonym in ', '.join([previous_symbols, previous_names,
-                        synonyms, name_synonyms]).split(', ') + approved:
+                synonyms = ', '.join(
+                    [previous_symbols, previous_names, synonyms,
+                     name_synonyms]).split(', ') + approved
+                for synonym in synonyms:
                     synonym = synonym.strip('" ').encode('utf8')
                     synonym, created = self._get_or_create_synonym(synonym)
                     if created:
@@ -154,8 +158,9 @@ class Command(BaseCommand):
                         new_articles += 1
                     gene.articles.add(article)
 
-                sys.stdout.write('scanned: {0}\tgenes: {1}\tsynonyms: {2}\tarticles: {3}\r'.format(count, new_genes, new_synonyms, new_articles))
-                sys.stdout.flush()
+                log.debug(
+                    'scanned: {0}\tgenes: {1}\tsynonyms: {2}\tarticles: {3}'
+                    .format(count, new_genes, new_synonyms, new_articles))
 
     def load_families(self, cursor):
         cursor.execute('''
@@ -179,7 +184,7 @@ class Command(BaseCommand):
 
                 if record['tag'] not in families:
                     family = GeneFamily(tag=record['tag'],
-                        description=record['description'])
+                                        description=record['description'])
                     family.save()
                     families[family.tag] = family
 
@@ -198,7 +203,7 @@ class Command(BaseCommand):
         cursor = connection.cursor()
 
         if not any([load_genes, load_families]):
-            print 'Nothing to do.'
+            log.debug('Nothing to do.')
             return
 
         if load_genes:

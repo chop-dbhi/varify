@@ -10,7 +10,7 @@ from varify.samples.pipeline.handlers import load_samples
 
 SAMPLE_DIRS = getattr(settings, 'VARIFY_SAMPLE_DIRS', ())
 
-logger = logging.getLogger(__file__)
+log = logging.getLogger(__file__)
 
 
 class Command(BaseCommand):
@@ -31,7 +31,7 @@ class Command(BaseCommand):
         # Walk the directory tree of each sample dirs to find all sample
         # directories with a valid MANIFEST file
         for source in dirs:
-            print('Scanning source directory: {0}'.format(source))
+            log.debug('Scanning source directory: {0}'.format(source))
 
             for root, dirs, files in os.walk(source):
                 if count == max_count:
@@ -45,8 +45,8 @@ class Command(BaseCommand):
                 try:
                     load_dict = load_samples(manifest_path, database)
                 except Exception:
-                    logger.exception('error processing manifest {0}'
-                                     .format(manifest_path))
+                    log.exception('error processing manifest {0}'
+                                  .format(manifest_path))
                     continue
 
                 if not load_dict:
@@ -56,22 +56,21 @@ class Command(BaseCommand):
                 skipped += load_dict['skipped']
                 if load_dict['created'] > 0:
                     if verbosity > 1:
-                        print('Queued sample: "{0}"'.format(root))
+                        log.debug('Queued sample: "{0}"'.format(root))
                 elif verbosity > 2:
                     if load_dict['created'] == 0:
-                        print('Sample already loaded: "{0}"'.format(root))
+                        log.debug('Sample already loaded: "{0}"'.format(root))
                     else:
-                        print('Sample skipped: "{0}"'.format(root))
+                        log.debug('Sample skipped: "{0}"'.format(root))
 
                 scanned += 1
 
                 # Print along the way since this is the only output for this
                 # verbosity level
                 if verbosity == 1:
-                    sys.stdout.write("Queued {0} samples (max {1}) {2} "
-                                     "skipped of {3} scanned\r".format(
-                                         count, max_count, skipped, scanned))
-                    sys.stdout.flush()
+                    log.debug(
+                        "Queued {0} samples (max {1}) {2} skipped of {3} "
+                        "scanned".format(count, max_count, skipped, scanned))
 
         return count, scanned
 
@@ -88,7 +87,7 @@ class Command(BaseCommand):
         count, scanned = self._queue(dirs, max_count, database, verbosity)
 
         if verbosity > 1:
-            print('Queued {0} samples (max {1}) of {2} scanned'.format(
+            log.debug('Queued {0} samples (max {1}) of {2} scanned'.format(
                 count, max_count, scanned))
         else:
             # Add a newline since the verbosity=1 output is written in-place
