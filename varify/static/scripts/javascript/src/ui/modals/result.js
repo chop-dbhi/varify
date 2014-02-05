@@ -4,9 +4,9 @@ var __slice = [].slice,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'marionette', '../../models', '../../utils', '../../templates', 'tpl!templates/varify/empty.html', 'tpl!templates/varify/modals/result.html'], function() {
-  var AssessmentTab, DetailsTab, Marionette, ResultDetails, Templates, models, templates, utils, _, _ref, _ref1, _ref2;
-  _ = arguments[0], Marionette = arguments[1], models = arguments[2], utils = arguments[3], Templates = arguments[4], templates = 6 <= arguments.length ? __slice.call(arguments, 5) : [];
+define(['underscore', 'marionette', '../../models', '../../utils', '../../templates', 'cilantro/utils/numbers', 'tpl!templates/varify/empty.html', 'tpl!templates/varify/modals/result.html'], function() {
+  var AssessmentTab, DetailsTab, Marionette, Numbers, ResultDetails, Templates, models, templates, utils, _, _ref, _ref1, _ref2;
+  _ = arguments[0], Marionette = arguments[1], models = arguments[2], utils = arguments[3], Templates = arguments[4], Numbers = arguments[5], templates = 7 <= arguments.length ? __slice.call(arguments, 6) : [];
   templates = _.object(['empty', 'result'], templates);
   DetailsTab = (function(_super) {
     __extends(DetailsTab, _super);

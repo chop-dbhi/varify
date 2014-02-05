@@ -4,9 +4,10 @@ define [
     '../../models'
     '../../utils'
     '../../templates'
+    'cilantro/utils/numbers'
     'tpl!templates/varify/empty.html'
     'tpl!templates/varify/modals/result.html'
-], (_, Marionette, models, utils, Templates, templates...) ->
+], (_, Marionette, models, utils, Templates, Numbers, templates...) ->
 
     templates = _.object ['empty', 'result'], templates
 
