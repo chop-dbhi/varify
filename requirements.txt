@@ -1,9 +1,3 @@
-# This file collects all required third-party applications that are needed
-# to run this project. Later you can install all these apps in a row
-# using pip. Example::
-#
-#     pip install -U -r requirements.pip
-
 # Core requirements
 django>=1.4.4,<1.5
 markdown==2.1.1
@@ -48,7 +42,7 @@ django-tracking2==0.1.2
 django-bootstrap-form>=0.5
 
 # VCF loading
-git+git://github.com/jamescasbon/PyVCF.git
+pyvcf>=0.6.5
 
 # Permissions
 django-guardian==1.0.4
