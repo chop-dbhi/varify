@@ -199,7 +199,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     };
 
     DetailsTab.prototype.renderEffects = function(attrs) {
-      var change, content, eff, effs, gene, labelClass, transcript, type, valid, _effs, _i, _len, _ref1, _ref2;
+      var content, eff, effs, gene, labelClass, type, valid, _i, _len, _ref1;
       content = [];
       content.push('<h4>Effects</h4>');
       valid = false;
@@ -217,32 +217,26 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
           labelClass = utils.priorityClass(utils.effectImpactPriority(effs[0].impact));
           content.push("<span class=" + labelClass + ">" + type + "</span>");
           content.push('<ul>');
-          _ref2 = _.groupBy(effs, function(eff) {
-            return eff.hgvs_p || eff.amino_acid_change;
-          });
-          for (change in _ref2) {
-            _effs = _ref2[change];
+          for (_i = 0, _len = effs.length; _i < _len; _i++) {
+            eff = effs[_i];
             content.push('<li>');
-            content.push("<small>" + (change || 'Non-coding') + "</small>");
-            content.push('<ul>');
-            for (_i = 0, _len = _effs.length; _i < _len; _i++) {
-              eff = _effs[_i];
-              content.push('<li>');
-              if (eff.hgvs_c) {
-                content.push("" + eff.hgvs_c + " ");
-              }
-              if (eff.segment) {
-                content.push("" + eff.segment + " ");
-              }
-              if ((transcript = eff.transcript) != null) {
-                content.push("<small><a href=\"http://www.ncbi.nlm.nih.gov/nuccore/" + transcript.transcript + "\">" + transcript.transcript + "</a></small> ");
-                if (attrs.uniqueGenes.length > 1 && (gene = transcript.gene) && gene) {
-                  content.push("<small>for <a target=_blank href=\"http://www.genenames.org/data/hgnc_data.php?hgnc_id=" + gene.hgnc_id + "\">" + gene.symbol + "</a></small> ");
-                }
-              }
-              content.push('</li>');
+            content.push("<small><a href=\"http://www.ncbi.nlm.nih.gov/nuccore/" + eff.transcript.transcript + "\">" + eff.transcript.transcript + "</a></small> ");
+            if (attrs.uniqueGenes.length > 1 && (gene = eff.transcript.gene)) {
+              content.push("<small>for <a target=_blank href=\"http://www.genenames.org/data/hgnc_data.php?hgnc_id=" + gene.hgnc_id + "\">" + gene.symbol + "</a></small> ");
             }
-            content.push('</ul></li>');
+            content.push('<ul><li>');
+            if (eff.hgvs_c) {
+              content.push("" + eff.hgvs_c + " ");
+            }
+            if (eff.segment) {
+              content.push("" + eff.segment + " ");
+            }
+            if (eff.hgvs_p || eff.amino_acid_change) {
+              content.push('<ul>');
+              content.push("<li><small>" + (eff.hgvs_p || eff.amino_acid_change) + "</small></li>");
+              content.push('</ul>');
+            }
+            content.push('</li></ul>');
           }
           content.push('</li></ul>');
         }
