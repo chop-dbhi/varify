@@ -215,24 +215,24 @@ define [
 
                     content.push '<ul>'
 
-                    # Group by - amino acid change
-                    for change, _effs of _.groupBy(effs, (eff) -> eff.hgvs_p or eff.amino_acid_change)
+                    for eff in effs
                         content.push '<li>'
-                        content.push "<small>#{ change or 'Non-coding' }</small>"
-                        content.push '<ul>'
+                        content.push "<small><a href=\"http://www.ncbi.nlm.nih.gov/nuccore/#{ eff.transcript.transcript }\">#{ eff.transcript.transcript }</a></small> "
+                        if attrs.uniqueGenes.length > 1 and (gene = eff.transcript.gene)
+                            content.push "<small>for <a target=_blank href=\"http://www.genenames.org/data/hgnc_data.php?hgnc_id=#{ gene.hgnc_id }\">#{ gene.symbol }</a></small> "
 
-                        for eff in _effs
-                            content.push '<li>'
-                            if eff.hgvs_c
-                                content.push "#{ eff.hgvs_c } "
-                            if eff.segment
-                                content.push "#{ eff.segment } "
-                            if (transcript = eff.transcript)?
-                                content.push "<small><a href=\"http://www.ncbi.nlm.nih.gov/nuccore/#{ transcript.transcript }\">#{ transcript.transcript }</a></small> "
-                                if attrs.uniqueGenes.length > 1 and (gene = transcript.gene) and gene
-                                    content.push "<small>for <a target=_blank href=\"http://www.genenames.org/data/hgnc_data.php?hgnc_id=#{ gene.hgnc_id }\">#{ gene.symbol }</a></small> "
-                            content.push '</li>'
-                        content.push '</ul></li>'
+                        content.push '<ul><li>'
+                        if eff.hgvs_c
+                            content.push "#{ eff.hgvs_c } "
+                        if eff.segment
+                            content.push "#{ eff.segment } "
+
+                        if eff.hgvs_p or eff.amino_acid_change
+                            content.push '<ul>'
+                            content.push "<li><small>#{ eff.hgvs_p or eff.amino_acid_change }</small></li>"
+                            content.push '</ul>'
+
+                        content.push '</li></ul>'
                     content.push '</li></ul>'
                 content.push '</ul>'
             else
