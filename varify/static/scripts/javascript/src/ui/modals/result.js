@@ -231,12 +231,11 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
             if (eff.segment) {
               content.push("" + eff.segment + " ");
             }
+            content.push('</li>');
             if (eff.hgvs_p || eff.amino_acid_change) {
-              content.push('<ul>');
-              content.push("<li><small>" + (eff.hgvs_p || eff.amino_acid_change) + "</small></li>");
-              content.push('</ul>');
+              content.push("<li>" + (eff.hgvs_p || eff.amino_acid_change) + "</li>");
             }
-            content.push('</li></ul>');
+            content.push('</ul>');
           }
           content.push('</li></ul>');
         }
