@@ -45,7 +45,7 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
 
     ResultCount.prototype.renderCount = function(model, count, options) {
       var json, sample;
-      sample = "various samples";
+      sample = null;
       if ((this.data.context != null) && ((json = this.data.context.get('json')) != null)) {
         _.each(json.children, function(child) {
           if ((child.concept != null) && child.concept === 2) {
@@ -54,7 +54,18 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
         });
       }
       numbers.renderCount(this.ui.count, count);
-      return this.ui.label.text("records in " + sample);
+      this.ui.label.text("records in " + (sample || "various samples"));
+      this.ui.label.attr('title', sample);
+      if (sample != null) {
+        return this.ui.label.tooltip({
+          animation: false,
+          html: true,
+          placement: 'bottom',
+          container: 'body'
+        });
+      } else {
+        return this.ui.label.tooltip('destroy');
+      }
     };
 
     return ResultCount;
