@@ -45,15 +45,22 @@ define [
             @renderCount(@model, @model.objectCount if @model.objectCount? or '')
 
         renderCount: (model, count, options) ->
-            sample = "various samples"
+            sample = null
 
             if @data.context? and (json = @data.context.get('json'))?
                 _.each json.children, (child) ->
                     if child.concept? and child.concept == 2
                         sample = child.children[0].value[0].label
-            
+
             numbers.renderCount(@ui.count, count)
-            @ui.label.text("records in #{ sample }")
+            @ui.label.text("records in #{ sample or "various samples" }")
+            @ui.label.attr('title', sample)
+
+            if sample?
+                @ui.label.tooltip({animation: false, html: true, placement: 'bottom', container: 'body'})
+            else
+                @ui.label.tooltip('destroy')
+
 
     ###
     The ResultsWorkflow provides an interface for previewing tabular data,
@@ -548,7 +555,7 @@ define [
                     parseInt(value.priority) or model.lowestPriority+1)
             if attr.ruledOutDiagnoses and attr.ruledOutDiagnoses.length
                 attr.ruledOutDiagnoses = _.sortBy(attr.ruledOutDiagnoses, (value) ->
-                    parseInt(value.priority) or model.lowestPriority+1)     
+                    parseInt(value.priority) or model.lowestPriority+1)
 
             @ui.viewPhenotype.find(".content").html(templates.phenotypes(model.attributes))
             @phenotypeXhr = undefined
@@ -558,15 +565,15 @@ define [
             @phenotypeXhr = undefined
             @ui.viewPhenotype.find(".content").empty()
             @ui.viewPhenotype.find(".loading").show()
-            
+
         phenotypesError: (model, response) =>
-            return if response.statusText is "abort" 
+            return if response.statusText is "abort"
             @ui.viewPhenotype.find(".loading").hide()
             @ui.viewPhenotype.find(".content").html("<p>An error was encountered. " +
                 "Unable to retrieve phenotypes for sample #{ model.attributes.sample_id }.</p>")
             @phenotypeXhr = undefined
-            
-        sampleID: => 
+
+        sampleID: =>
             sample = "various samples"
 
             if @data.context? and (json = @data.context.get('json'))?
@@ -580,7 +587,7 @@ define [
             if sampleID
                 phenotypes = new varify_models.Phenotype
                     sample_id: sampleID
-               
+
                 @phenotypeXhr = phenotypes.fetch
                     success: @renderPhenotypes
                     error: @phenotypesError
