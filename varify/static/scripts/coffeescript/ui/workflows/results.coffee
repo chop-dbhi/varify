@@ -569,8 +569,11 @@ define [
         phenotypesError: (model, response) =>
             return if response.statusText is "abort"
             @ui.viewPhenotype.find(".loading").hide()
-            @ui.viewPhenotype.find(".content").html("<p>An error was encountered. " +
-                "Unable to retrieve phenotypes for sample #{ model.attributes.sample_id }.</p>")
+            if model?.attributes?.sample_id?
+                @ui.viewPhenotype.find(".content").html("<p>An error was encountered. " +
+                    "Unable to retrieve phenotypes for sample '#{ model.attributes.sample_id }'.</p>")
+            else
+                @ui.viewPhenotype.find(".content").html("<p>An error was encountered. No sample is selected.</p>")
             @phenotypeXhr = undefined
 
         sampleID: =>
@@ -585,6 +588,10 @@ define [
         retrievePhenotypes: =>
             sampleID = @sampleID()
             if sampleID
+                # Update the title of the phenotype modal window with the
+                # current sample ID
+                $('.phenotype-sample-label').html("(#{ sampleID })")
+
                 phenotypes = new varify_models.Phenotype
                     sample_id: sampleID
 
@@ -592,7 +599,9 @@ define [
                     success: @renderPhenotypes
                     error: @phenotypesError
             else
-                @phenotypesError(phenotypes, { responseText:'Sample not found' })
+                # Clear the sample label since there is no sample selected.
+                $('.phenotype-sample-label').html("")
+                @phenotypesError(phenotypes, {})
 
 
     { ResultsWorkflow }

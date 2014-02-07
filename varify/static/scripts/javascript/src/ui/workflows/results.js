@@ -599,11 +599,16 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
     };
 
     ResultsWorkflow.prototype.phenotypesError = function(model, response) {
+      var _ref2;
       if (response.statusText === "abort") {
         return;
       }
       this.ui.viewPhenotype.find(".loading").hide();
-      this.ui.viewPhenotype.find(".content").html("<p>An error was encountered. " + ("Unable to retrieve phenotypes for sample " + model.attributes.sample_id + ".</p>"));
+      if ((model != null ? (_ref2 = model.attributes) != null ? _ref2.sample_id : void 0 : void 0) != null) {
+        this.ui.viewPhenotype.find(".content").html("<p>An error was encountered. " + ("Unable to retrieve phenotypes for sample '" + model.attributes.sample_id + "'.</p>"));
+      } else {
+        this.ui.viewPhenotype.find(".content").html("<p>An error was encountered. No sample is selected.</p>");
+      }
       return this.phenotypeXhr = void 0;
     };
 
@@ -624,6 +629,7 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
       var phenotypes, sampleID;
       sampleID = this.sampleID();
       if (sampleID) {
+        $('.phenotype-sample-label').html("(" + sampleID + ")");
         phenotypes = new varify_models.Phenotype({
           sample_id: sampleID
         });
@@ -632,9 +638,8 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
           error: this.phenotypesError
         });
       } else {
-        return this.phenotypesError(phenotypes, {
-          responseText: 'Sample not found'
-        });
+        $('.phenotype-sample-label').html("");
+        return this.phenotypesError(phenotypes, {});
       }
     };
 
