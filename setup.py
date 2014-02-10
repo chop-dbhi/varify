@@ -1,3 +1,4 @@
+import sys
 from setuptools import setup, find_packages
 
 PACKAGE = 'varify'
@@ -35,6 +36,9 @@ install_requires = [
     'diff-match-patch',
     'pyvcf>=0.6.5',
 ]
+
+if sys.version_info < (2, 7):
+    install_requires += ['importlib']
 
 kwargs = {
     'name': PACKAGE,
