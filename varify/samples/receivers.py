@@ -12,11 +12,13 @@ AUTO_PUBLISH_BATCH = getattr(settings, 'VARIFY_AUTO_PUBLISH_BATCH', True)
 
 log = logging.getLogger(__name__)
 
+
 @transaction.commit_on_success
 def update_sample_for_autocreated_cohorts(instance, created, **kwargs):
     "Manages adding/removing samples from autocreated cohorts."
     # World
-    lookup = {'batch': None, 'project': None, 'autocreated': True, 'name': 'World'}
+    lookup = {'batch': None, 'project': None, 'autocreated': True,
+              'name': 'World'}
     try:
         world_cohort = Cohort.objects.get(**lookup)
     except Cohort.DoesNotExist:
@@ -66,10 +68,11 @@ def auto_create_project_group(instance, created, **kwargs):
     if created:
         assign('view_project', group, instance)
         kwargs = {
-            'subject': '{0}Project "{1}" Created'.format(settings.EMAIL_SUBJECT_PREFIX, name),
-            'message': 'The "{0}" Project Group has been created. This is a ' \
-                'reminder to setup any permissions for the associated ' \
-                'users.'.format(name),
+            'subject': '{0}Project "{1}" Created'.format(
+                settings.EMAIL_SUBJECT_PREFIX, name),
+            'message': 'The "{0}" Project Group has been created. This is a '
+                       'reminder to setup any permissions for the associated '
+                       'users.'.format(name),
             'from_email': settings.NO_REPLY_EMAIL,
             'recipient_list': [settings.SUPPORT_EMAIL],
         }

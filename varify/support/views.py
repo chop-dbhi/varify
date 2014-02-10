@@ -11,16 +11,18 @@ from varify.support.forms import SupportForm
 
 SUPPORT_EMAIL = getattr(settings, 'SUPPORT_EMAIL', None)
 
+
 def send_support_mail(request, form):
     email = form.cleaned_data['email']
-    subject = '%s%s' % (settings.EMAIL_SUBJECT_PREFIX,
-        form.cleaned_data['subject'])
+    subject = \
+        '%s%s' % (settings.EMAIL_SUBJECT_PREFIX, form.cleaned_data['subject'])
 
     message = 'User-Agent: %s\n\n%s' % (
         request.META['HTTP_USER_AGENT'], form.cleaned_data['message'])
 
     send_mail(subject=subject, message=message,
-        from_email=email, recipient_list=(SUPPORT_EMAIL,))
+              from_email=email, recipient_list=(SUPPORT_EMAIL,))
+
 
 def ajax_form(request):
     if not request.is_ajax():
@@ -39,10 +41,8 @@ def ajax_form(request):
 
     return HttpResponse(simplejson.dumps(json), mimetype='application/json')
 
-def form(request):
-#    if request.is_ajax():
-#        return ajax_form(request)
 
+def form(request):
     error = False
 
     if request.method == 'POST':
@@ -64,4 +64,4 @@ def form(request):
 
 def success(request):
     return render_to_response('support/success.html',
-        context_instance=RequestContext(request))
+                              context_instance=RequestContext(request))

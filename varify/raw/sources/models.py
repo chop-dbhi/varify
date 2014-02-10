@@ -23,7 +23,8 @@ class Source(models.Model):
         if self.version:
             return u'{0} (v{1})'.format(self.name, self.version.lstrip('v'))
         if self.release_date:
-            return u'{0} ({1})'.format(self.name, self.release_date.strftime('%Y-%m-%d'))
+            return u'{0} ({1})'.format(
+                self.name, self.release_date.strftime('%Y-%m-%d'))
         return u'{0}'.format(self.name)
 
 

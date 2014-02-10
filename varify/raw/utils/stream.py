@@ -3,12 +3,14 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 class StreamEditor(object):
     indices = None
 
     output_columns = None
 
-    def __init__(self, fin, indices=None, indel='\t', outdel=None, encoding='utf-8'):
+    def __init__(self, fin, indices=None, indel='\t', outdel=None,
+                 encoding='utf-8'):
         self.fin = fin
 
         # Input delimiter, output delimiter, default to the same output

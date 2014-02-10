@@ -1,7 +1,7 @@
 from django.contrib import admin
 from avocado.lexicon.admin import LexiconAdmin
-from .models import (VariantType, EffectImpact, EffectRegion, Effect,
-    FunctionalClass)
+from .models import VariantType, EffectImpact, EffectRegion, Effect, \
+    FunctionalClass
 
 
 class EffectAdmin(LexiconAdmin):

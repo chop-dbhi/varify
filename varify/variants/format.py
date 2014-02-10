@@ -1,5 +1,5 @@
 from avocado.columns.format import library, AbstractFormatter
-from models import Priority
+
 
 class DbsnpUrlFormatter(AbstractFormatter):
     name = 'dbSNP URL'
@@ -11,7 +11,8 @@ class DbsnpUrlFormatter(AbstractFormatter):
 
 class GeneUrlFormatter(AbstractFormatter):
     name = 'Gene URL'
-    base_url = 'http://www.ncbi.nlm.nih.gov/sites/entrez?term=%s&cmd=search&db=gene'
+    base_url = \
+        'http://www.ncbi.nlm.nih.gov/sites/entrez?term=%s&cmd=search&db=gene'
 
     def html(self, gene, **kwargs):
         return '<a href="%s">%s</a>' % (self.base_url % gene, gene)
@@ -41,7 +42,8 @@ class AminoAcidChangeFormatter(AbstractFormatter):
     def html(self, aachange, **kwargs):
         if aachange:
             nm, part = aachange.split(':', 1)
-            return u'<a href="%s">%s</a> <span class=help>%s</span>' % (self.base_url % nm, nm, part)
+            return u'<a href="%s">%s</a> <span class=help>%s</span>' % \
+                   (self.base_url % nm, nm, part)
 
 
 class RatioFormatter(AbstractFormatter):

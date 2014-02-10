@@ -1,4 +1,4 @@
-import _setenv
+import _setenv  # noqa
 
 
 def main():

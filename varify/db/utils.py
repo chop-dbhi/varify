@@ -1,9 +1,11 @@
 from django.db import connections, DEFAULT_DB_ALIAS
 from django.core.management import color
 
+
 def sequence_reset_sql(model, using=DEFAULT_DB_ALIAS):
     connection = connections[using]
     return connection.ops.sequence_reset_sql(color.no_style(), [model])[0]
+
 
 def table_exists(table, schema='public', using=DEFAULT_DB_ALIAS):
     connection = connections[using]

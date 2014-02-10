@@ -7,11 +7,11 @@ class ThousandGProcessor(VCFPGCopyEditor):
     vcf_fields = ('CHROM', 'POS', 'REF', 'ALT', 'ID')
 
     info_fields = ('AN', 'AC', 'AF', 'AA', 'AMR_AF', 'ASN_AF', 'AFR_AF',
-        'EUR_AF')
+                   'EUR_AF')
 
     # Output column names to match position
-    output_columns = ('chr', 'pos', 'ref', 'alt', 'rsid', 'an', 'ac',
-        'af', 'aa', 'amr_af', 'asn_af', 'afr_af', 'eur_af', 'md5')
+    output_columns = ('chr', 'pos', 'ref', 'alt', 'rsid', 'an', 'ac', 'af',
+                      'aa', 'amr_af', 'asn_af', 'afr_af', 'eur_af', 'md5')
 
     def process_line(self, record):
         cleaned = super(ThousandGProcessor, self).process_line(record)

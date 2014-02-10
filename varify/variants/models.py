@@ -62,8 +62,8 @@ class Variant(models.Model):
     type = models.ForeignKey(VariantType, null=True)
 
     # Track whether this variant has gone through liftover
-    liftover = models.NullBooleanField('has been lifted over?', blank=True,
-        editable=False)
+    liftover = models.NullBooleanField(
+        'has been lifted over?', blank=True, editable=False)
 
     # Literature
     articles = models.ManyToManyField(PubMed, db_table='variant_pubmed')
@@ -86,7 +86,7 @@ class Variant(models.Model):
 
     def ncbi_url(self):
         if self.rsid:
-            return 'http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=' + self.rsid[2:]
+            return 'http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs={}' + self.rsid[2:]     # noqa
 
 
 class VariantPhenotype(PhenotypeThrough):
@@ -100,12 +100,17 @@ class ThousandG(models.Model):
     variant = models.ForeignKey(Variant, related_name='thousandg', unique=True)
     an = models.IntegerField('total allele count', null=True)
     ac = models.IntegerField('alternate allele count', null=True)
-    af = models.FloatField('global allele frequency based on AC/AN', null=True, db_index=True)
+    af = models.FloatField('global allele frequency based on AC/AN',
+                           null=True, db_index=True)
     aa = models.TextField('ancestral allele', null=True)
-    amr_af = models.FloatField('allele frequency for AMR (American)', null=True, db_index=True)
-    asn_af = models.FloatField('allele frequency for ASN (Asian)', null=True, db_index=True)
-    afr_af = models.FloatField('allele frequency for AFR (African)', null=True, db_index=True)
-    eur_af = models.FloatField('allele frequency for EUR (European)', null=True, db_index=True)
+    amr_af = models.FloatField('allele frequency for AMR (American)',
+                               null=True, db_index=True)
+    asn_af = models.FloatField('allele frequency for ASN (Asian)',
+                               null=True, db_index=True)
+    afr_af = models.FloatField('allele frequency for AFR (African)',
+                               null=True, db_index=True)
+    eur_af = models.FloatField('allele frequency for EUR (European)',
+                               null=True, db_index=True)
 
     class Meta(object):
         db_table = '1000g'
@@ -113,20 +118,34 @@ class ThousandG(models.Model):
 
 class EVS(models.Model):
     variant = models.ForeignKey(Variant, related_name='evs', unique=True)
-    ea_ac_ref = models.CharField('reference allele count for EUR (European)', max_length=20, null=True)
-    ea_ac_alt = models.CharField('alternate allele count for EUR (European)', max_length=20, null=True)
-    aa_ac_ref = models.CharField('reference allele count for AFR (African)', max_length=20, null=True)
-    aa_ac_alt = models.CharField('alternate allele count for AFR (African)', max_length=20, null=True)
-    all_ac_ref = models.CharField('reference allele count combined', max_length=20, null=True)
-    all_ac_alt = models.CharField('alternate allele count combined', max_length=20, null=True)
-    ea_af = models.FloatField('allele frequency (AF) for EUR (European)', null=True, db_index=True)
-    aa_af = models.FloatField('allele frequency (AF) for AFR (African)', null=True, db_index=True)
-    all_af = models.FloatField('allele frequency (AF) combined', null=True, db_index=True)
-    gts = models.CharField('observed genotypes', max_length=200, null=True,
-        help_text='For INDELs, A1, A2, or An refers to the N-th alternate allele while R refers to the reference allele.')
-    ea_gtc = models.CharField('genotype counts for EUR (European)', max_length=200, null=True)
-    aa_gtc = models.CharField('genotype counts for AFR (African)', max_length=200, null=True)
-    all_gtc = models.CharField('genotype counts combined', max_length=200, null=True)
+    ea_ac_ref = models.CharField('reference allele count for EUR (European)',
+                                 max_length=20, null=True)
+    ea_ac_alt = models.CharField('alternate allele count for EUR (European)',
+                                 max_length=20, null=True)
+    aa_ac_ref = models.CharField('reference allele count for AFR (African)',
+                                 max_length=20, null=True)
+    aa_ac_alt = models.CharField('alternate allele count for AFR (African)',
+                                 max_length=20, null=True)
+    all_ac_ref = models.CharField('reference allele count combined',
+                                  max_length=20, null=True)
+    all_ac_alt = models.CharField('alternate allele count combined',
+                                  max_length=20, null=True)
+    ea_af = models.FloatField('allele frequency (AF) for EUR (European)',
+                              null=True, db_index=True)
+    aa_af = models.FloatField('allele frequency (AF) for AFR (African)',
+                              null=True, db_index=True)
+    all_af = models.FloatField('allele frequency (AF) combined', null=True,
+                               db_index=True)
+    gts = models.CharField(
+        'observed genotypes', max_length=200, null=True,
+        help_text='For INDELs, A1, A2, or An refers to the N-th alternate '
+                  'allele while R refers to the reference allele.')
+    ea_gtc = models.CharField('genotype counts for EUR (European)',
+                              max_length=200, null=True)
+    aa_gtc = models.CharField('genotype counts for AFR (African)',
+                              max_length=200, null=True)
+    all_gtc = models.CharField('genotype counts combined', max_length=200,
+                               null=True)
     read_depth = models.IntegerField('read depth', null=True)
     clinical_association = models.TextField(null=True)
 
@@ -158,7 +177,6 @@ class PolyPhen2(models.Model):
         return self.get_prediction(self.score)
 
 
-
 class Sift(models.Model):
     variant = models.ForeignKey(Variant, related_name='sift')
     score = models.FloatField('SIFT score', null=True, db_index=True)
@@ -182,7 +200,6 @@ class Sift(models.Model):
         return self.get_prediction(self.score)
 
 
-
 class FunctionalClass(Lexicon):
     label = models.CharField(max_length=100)
     value = models.CharField(max_length=100)
@@ -195,7 +212,7 @@ class FunctionalClass(Lexicon):
 class VariantEffect(models.Model):
     "A variant may have one or more effects associated."
     variant = models.ForeignKey(Variant, null=True, blank=True,
-        related_name='effects')
+                                related_name='effects')
 
     codon_change = models.TextField(null=True, blank=True)
     amino_acid_change = models.TextField(null=True, blank=True)
@@ -207,10 +224,13 @@ class VariantEffect(models.Model):
     transcript = models.ForeignKey(Transcript, null=True, blank=True)
     gene = models.ForeignKey(Gene, null=True, blank=True)
     effect = models.ForeignKey(Effect, null=True, blank=True)
-    functional_class = models.ForeignKey(FunctionalClass, null=True, blank=True)
+    functional_class = models.ForeignKey(FunctionalClass, null=True,
+                                         blank=True)
 
-    hgvs_c = models.CharField('HGVS Coding DNA', max_length=200, null=True, blank=True, db_index=True)
-    hgvs_p = models.CharField('HGVS Protein', max_length=200, null=True, blank=True, db_index=True)
+    hgvs_c = models.CharField('HGVS Coding DNA', max_length=200, null=True,
+                              blank=True, db_index=True)
+    hgvs_p = models.CharField('HGVS Protein', max_length=200, null=True,
+                              blank=True, db_index=True)
     segment = models.CharField(max_length=200, null=True, blank=True)
 
     class Meta(object):

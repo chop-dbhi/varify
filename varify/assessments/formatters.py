@@ -1,9 +1,10 @@
 from avocado.formatters import registry as formatters
 from serrano.formatters import HTMLFormatter
 
+
 class Pathogenicity(HTMLFormatter):
     def to_html(self, value, **context):
-        from .models import Pathogenicity 
+        from .models import Pathogenicity
 
         try:
             pathogenicity = Pathogenicity.objects.get(pk=value)

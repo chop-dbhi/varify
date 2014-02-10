@@ -15,7 +15,8 @@ class CCDSExonsParser(PGCopyEditor):
 
 class Command(LoadCommand):
 
-    targets = ['knownGene', 'kgAlias', 'refGene', 'ccdsKgMap', 'ccdsExons', 'knownToRefSeq']
+    targets = ['knownGene', 'kgAlias', 'refGene', 'ccdsKgMap', 'ccdsExons',
+               'knownToRefSeq']
 
     qualified_names = {
         'knownGene': '"raw"."ucsc_known_gene"',
@@ -111,12 +112,12 @@ class Command(LoadCommand):
         '',
         'Available targets include: {0}'.format(', '.join(targets)),
         '',
-        '[1]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=knownGene',
-        '[2]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=kgAlias',
-        '[3]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=refGene',
-        '[4]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=ccdsKgMap',
+        '[1]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=knownGene',   # noqa
+        '[2]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=kgAlias',   # noqa
+        '[3]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=refGene',   # noqa
+        '[4]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=ccdsKgMap',   # noqa
         '[5]: File on variome.. /nas/is1/MFalk/framework/ccds_hg19_exons.bed',
-        '[6]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=knownToRefSeq',
+        '[6]: http://genome.ucsc.edu/cgi-bin/hgTables?hgta_doSchemaDb=hg19&hgta_doSchemaTable=knownToRefSeq',   # noqa
     ])
 
     processors = {

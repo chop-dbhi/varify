@@ -22,9 +22,8 @@ class ManifestReader(object):
     def option(self, section, option, default=None):
         if self.config.has_option(section, option):
             return self.config.get(section, option)
-        log.warning('No manifest option: {0}.{1}'.format(section, option), extra={
-            'path': self.path,
-        })
+        log.warning('No manifest option: {0}.{1}'.format(section, option),
+                    extra={'path': self.path})
         return default
 
     def has_section(self, section):
@@ -115,5 +114,6 @@ class Channel(object):
 
     def subscribe(self, receiver):
         "Subscribes an external handler to this channel."
-        log.debug('{0}.{1} subscribe to {2}'.format(receiver.__module__, receiver.__name__, self))
+        log.debug('{0}.{1} subscribe to {2}'
+                  .format(receiver.__module__, receiver.__name__, self))
         self.signal.connect(receiver)

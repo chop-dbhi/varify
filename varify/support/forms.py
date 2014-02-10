@@ -1,15 +1,20 @@
 from django import forms
 
+
 class SupportForm(forms.Form):
 
     def __init__(self, user, *args, **kwargs):
         self.user = user
         super(SupportForm, self).__init__(*args, **kwargs)
 
-    email = forms.EmailField(widget=forms.TextInput(attrs={'placeholder': 'Required'}),
+    email = forms.EmailField(
+        widget=forms.TextInput(attrs={'placeholder': 'Required'}),
         required=False)
-    subject = forms.CharField(initial='New Support Message', widget=forms.TextInput(attrs={'placeholder': 'Required'}))
-    message = forms.CharField(widget=forms.Textarea(attrs={'placeholder': 'Required'}))
+    subject = forms.CharField(
+        initial='New Support Message',
+        widget=forms.TextInput(attrs={'placeholder': 'Required'}))
+    message = forms.CharField(
+        widget=forms.Textarea(attrs={'placeholder': 'Required'}))
 
     def clean_email(self):
         email = self.cleaned_data['email']

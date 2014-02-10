@@ -1,9 +1,9 @@
-import _setenv
-
+import _setenv  # noqa
 from varify.variants.models import Variant
 
 ITERATIONS = 1
 MAX_COUNTS = [pow(10, 2), pow(10, 3), pow(10, 4), pow(10, 5)]
+
 
 def memcache_bench(max_count):
     from django.core.cache import get_cache
@@ -14,7 +14,7 @@ def memcache_bench(max_count):
 
 
 def memory_bench(max_count):
-     dict(Variant.objects.values_list('md5', 'id')[:max_count])
+    dict(Variant.objects.values_list('md5', 'id')[:max_count])
 
 
 if __name__ == '__main__':
@@ -30,12 +30,13 @@ if __name__ == '__main__':
         print 'N: {0}'.format(count)
 
         t1 = min(timeit.repeat('memory_bench({0})'.format(count),
-            setup='from __main__ import memory_bench', number=ITERATIONS))
+                 setup='from __main__ import memory_bench', number=ITERATIONS))
 
         print 'In-memory dict:', t1
 
         t2 = min(timeit.repeat('memcache_bench({0})'.format(count),
-            setup='from __main__ import memcache_bench', number=ITERATIONS))
+                 setup='from __main__ import memcache_bench',
+                 number=ITERATIONS))
         print 'Memcache:', t2
 
         print 'Diff:', round(t2 / t1, 1), 'x'

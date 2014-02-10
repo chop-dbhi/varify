@@ -2,6 +2,7 @@ from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
 from .models import Project, Cohort, Batch, Sample, SampleManifest
 
+
 class ProjectAdmin(GuardedModelAdmin):
     list_display = ('__unicode__', 'label', 'name')
     list_editable = ('label',)
@@ -24,13 +25,14 @@ class BatchAdmin(GuardedModelAdmin):
 
 class CohortAdmin(GuardedModelAdmin):
     list_display = ('__unicode__', 'name', 'published', 'project', 'batch',
-        'count', 'autocreated', 'user')
+                    'count', 'autocreated', 'user')
     list_editable = ('published',)
     list_filter = ('published', 'project', 'batch', 'autocreated', 'user')
 
     search_fields = ('name', 'batch__label', 'project__label')
 
-    fields = ('name', 'batch', 'project', 'user', 'count', 'autocreated', 'published')
+    fields = ('name', 'batch', 'project', 'user', 'count', 'autocreated',
+              'published')
     readonly_fields = ('batch', 'project', 'count', 'autocreated')
 
     ordering = ('project', 'batch', 'user', 'name')
@@ -38,7 +40,7 @@ class CohortAdmin(GuardedModelAdmin):
 
 class SampleAdmin(admin.ModelAdmin):
     list_display = ('__unicode__', 'label', 'published', 'project',
-        'batch', 'count')
+                    'batch', 'count')
     list_editable = ('label', 'published')
     list_filter = ('published', 'project', 'batch')
 
@@ -50,16 +52,17 @@ class SampleAdmin(admin.ModelAdmin):
 
 class SampleManifestAdmin(admin.ModelAdmin):
     list_display = ('sample', 'path')
-    readonly_fields = ('sample', 'path', 'formatted_content', 'created', 'modified')
+    readonly_fields = ('sample', 'path', 'formatted_content', 'created',
+                       'modified')
     fieldsets = (
         (None, {
             'fields': ['sample'],
         }),
         ('File', {
             'fields': ['path', 'formatted_content'],
-            'description': ('The indent on the first line is a side effect '
-                'of how the admin site template is structured. The actual '
-                'content does not have an indent.')
+            'description': 'The indent on the first line is a side effect '
+                           'of how the admin site template is structured. The '
+                           'actual content does not have an indent.'
         }),
         ('Other', {
             'fields': ['created', 'modified', 'notes'],

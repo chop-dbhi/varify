@@ -1,1 +1,1 @@
-from .subcommander import Subcommander
+from .subcommander import Subcommander  # noqa

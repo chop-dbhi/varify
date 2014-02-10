@@ -12,9 +12,10 @@ MAX_LOGIN_ATTEMPTS_SUBJECT = 'Failed Login Attempt'
 
 IP_RE = re.compile('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}')
 
+
 def get_ip_address(request):
     ip_address = request.META.get('HTTP_X_FORWARDED_FOR',
-        request.META.get('REMOTE_ADDR', None))
+                                  request.META.get('REMOTE_ADDR', None))
 
     if ip_address:
         ip_match = IP_RE.match(ip_address)
@@ -23,6 +24,7 @@ def get_ip_address(request):
         else:
             ip_address = None
     return ip_address
+
 
 def throttle_login(request):
     """Throttles a client by keeping track of the number of failed login
@@ -96,6 +98,7 @@ def throttle_login(request):
 
     return login_allowed
 
+
 def clear_throttled_login(request):
     ip_address = get_ip_address(request)
 
@@ -110,4 +113,3 @@ def clear_throttled_login(request):
 
     if 'login_allowed' in request.session:
         del request.session['login_allowed']
-

@@ -8,6 +8,7 @@ from django.views.decorators.cache import never_cache
 from varify.accounts.utils import throttle_login, clear_throttled_login
 from registration.forms import EmailAuthenticationForm
 
+
 @never_cache
 def throttled_login(request):
     "Displays the login form and handles the login action."
@@ -18,8 +19,8 @@ def throttled_login(request):
     login_allowed = request.session.get('login_allowed', True)
 
     if request.method == 'POST':
-        # if the session has already been flagged to not allow login attempts, then
-        # simply redirect back to the login page 
+        # If the session has already been flagged to not allow login attempts,
+        # then simply redirect back to the login page.
         if not login_allowed:
             return HttpResponseRedirect(settings.LOGIN_URL)
 
