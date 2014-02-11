@@ -11,7 +11,7 @@ class Pathogenicity(models.Model):
     class Meta(object):
         db_table = 'pathogenicity'
         verbose_name_plural = 'pathogenicities'
-    
+
     def __unicode__(self):
         return self.name
 
@@ -22,7 +22,7 @@ class AssessmentCategory(models.Model):
     class Meta(object):
         db_table = 'assessment_category'
         verbose_name_plural = 'assessment categories'
-    
+
     def __unicode__(self):
         return self.name
 
@@ -32,7 +32,7 @@ class ParentalResult(models.Model):
 
     class Meta(object):
         db_table = 'parental_result'
- 
+
     def __unicode__(self):
         return self.name
 
@@ -48,7 +48,7 @@ class Assessment(TimestampedModel):
     evidence_details = models.TextField(null=True, blank=True)
     sanger_requested = models.BooleanField()
 
-    assessment_category = models.ForeignKey(AssessmentCategory, null=True, blank=True)
+    assessment_category = models.ForeignKey(AssessmentCategory)
     father_result = models.ForeignKey(ParentalResult, related_name='father')
     mother_result = models.ForeignKey(ParentalResult, related_name='mother')
     pathogenicity = models.ForeignKey(Pathogenicity)
@@ -65,4 +65,6 @@ reversion.register(Pathogenicity)
 reversion.register(AssessmentCategory)
 reversion.register(ParentalResult)
 reversion.register(SangerResult)
-reversion.register(Assessment, follow=["assessment_category", "father_result", "mother_result", "pathogenicity", "sanger_result"])
+reversion.register(Assessment,
+                   follow=["assessment_category", "father_result",
+                           "mother_result", "pathogenicity", "sanger_result"])

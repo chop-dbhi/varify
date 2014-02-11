@@ -3,7 +3,8 @@ from django.contrib.auth.models import User
 from django.core import management
 from django.test.utils import override_settings
 from django_rq import get_worker
-from varify.assessments.models import Assessment, Pathogenicity, ParentalResult
+from varify.assessments.models import Assessment, Pathogenicity, \
+    ParentalResult, AssessmentCategory
 from varify.samples.models import Sample, CohortSample, Result, SampleRun, \
     SampleManifest, Project, Cohort, Batch, CohortVariant
 from ..sample_load_process.tests import QueueTestCase
@@ -36,6 +37,8 @@ class DeleteTestCase(QueueTestCase):
         self.pathogenicity.save()
         self.parental_result = ParentalResult(name='heterozygous')
         self.parental_result.save()
+        self.category = AssessmentCategory(name='other')
+        self.category.save()
         self.user = User.objects.all()[0]
 
     def test_delete(self):
@@ -45,6 +48,7 @@ class DeleteTestCase(QueueTestCase):
         # we are trying to delete.
         sample_result = Result.objects.filter(sample_id=sample_id)[0]
         assessment = Assessment(sample_result=sample_result, user=self.user,
+                                assessment_category=self.category,
                                 sanger_requested=True,
                                 pathogenicity=self.pathogenicity,
                                 father_result=self.parental_result,
@@ -111,6 +115,7 @@ class DeleteTestCase(QueueTestCase):
         # within the project we are trying to delete.
         sample_result = Result.objects.filter(sample__project_id=project_id)[0]
         assessment = Assessment(sample_result=sample_result, user=self.user,
+                                assessment_category=self.category,
                                 sanger_requested=True,
                                 pathogenicity=self.pathogenicity,
                                 father_result=self.parental_result,
