@@ -372,7 +372,6 @@ define [
                 @errorContainer = $('#error-container')
                 @errorMsg = $('#error-message')
 
-                $('input[name=pathogenicity-radio]').on 'change', @pathogenicityRadioChanged
                 $('.alert-error > .close').on 'click', @closeFormErrorsClicked
 
             @formContainer.hide()
@@ -402,17 +401,6 @@ define [
         closeFormErrorsClicked: (event) ->
             $(event.target).parent().hide()
 
-        # Enable/disable category radios if the pathogenicity changed
-        pathogenicityRadioChanged: (event) =>
-            if $(event.target).hasClass('requires-category')
-                $('input:radio[name=category-radio]').removeAttr('disabled')
-                $('.assessment-category-label').removeClass('muted')
-                this.setRadioChecked('category-radio', @model.get('assessment_category'))
-            else
-                $('input:radio[name=category-radio]:checked').attr('checked', false)
-                $('input:radio[name=category-radio]').attr('disabled', true)
-                $('.assessment-category-label').addClass('muted')
-
         isValid: ->
             # Rather than checking which field changed, just update all fields
             @model.set({
@@ -429,10 +417,10 @@ define [
             @errorContainer.hide()
             @errorMsg.html('')
 
-            if (@model.get('pathogenicity') >= 2 && @model.get('pathogenicity') <= 4)
-                if !(@model.get('assessment_category')?)
-                    valid = false
-                    @errorMsg.append('<h5>Please select a category.</h5>')
+            if _.isEmpty(@model.get('pathogenicity'))
+                @errorMsg.append('<h5>Please select a pathogenicity.</h5>')
+            if _.isEmpty(@model.get('assessment_category'))
+                @errorMsg.append('<h5>Please select a category.</h5>')
             if _.isEmpty(@model.get('mother_result'))
                 valid = false
                 @errorMsg.append('<h5>Please select a result from the &quot;Mother&quot; dropdown.</h5>')

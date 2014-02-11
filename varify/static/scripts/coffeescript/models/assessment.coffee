@@ -12,7 +12,7 @@ define [
         defaults:
             'evidence_details': ''
             'sanger_requested': 'undefined'
-            'assessment_category': 'undefined'
+            'assessment_category': 1
             'father_result': 'undefined'
             'mother_result': 'undefined'
             'pathogenicity': 1
