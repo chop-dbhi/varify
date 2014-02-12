@@ -172,7 +172,7 @@ class Command(BaseCommand):
 
         keys = ['tag', 'description', 'gene_id']
 
-        families = {f.tag: f for f in GeneFamily.objects.all()}
+        families = dict((f.tag, f) for f in GeneFamily.objects.all())
 
         while True:
             rows = cursor.fetchmany(100)
