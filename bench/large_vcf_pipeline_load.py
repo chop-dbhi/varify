@@ -1,10 +1,9 @@
+import _setenv  # noqa
 import sys
 import time
 import vcf
 from memory_profiler import profile
 from cStringIO import StringIO
-
-import _setenv
 from varify.variants.pipeline.utils import VariantStream
 from varify.pipeline.load import batch_stream
 
@@ -37,6 +36,7 @@ def baseline():
                 sys.stdout.write('{0} complete\r'.format(count))
                 sys.stdout.flush()
 
+
 @profile
 def vcf_baseline():
     max_count = 20
@@ -51,6 +51,7 @@ def vcf_baseline():
                 if count == max_count:
                     break
 
+
 @profile
 def main_no_cache():
     main(cache=False)
@@ -64,7 +65,6 @@ def main_with_cache_10():
 @profile
 def main_with_cache_100():
     main(cache=True, cache_size=100)
-
 
 
 @profile
@@ -92,7 +92,6 @@ if __name__ == '__main__':
     vcf_baseline()
     print 'Time:', round(time.time() - t0, 1), 'seconds'
 
-
     print 'No cache'
     t0 = time.time()
     main_no_cache()
@@ -103,12 +102,10 @@ if __name__ == '__main__':
     main_with_cache_10()
     print 'Time:', round(time.time() - t0, 1), 'seconds'
 
-
     print 'Cache: 100'
     t0 = time.time()
     main_with_cache_100()
     print 'Time:', round(time.time() - t0, 1), 'seconds'
-
 
     print 'Cache: 1000'
     t0 = time.time()

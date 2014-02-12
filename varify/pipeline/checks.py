@@ -1,5 +1,6 @@
 import hashlib
 
+
 def record_is_valid(record):
     "Checks if a record is valid for processing."
 
@@ -12,6 +13,7 @@ def record_is_valid(record):
         return False
 
     return True
+
 
 def file_md5(filename, block_size=2**16):
     md5 = hashlib.md5()

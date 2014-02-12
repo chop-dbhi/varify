@@ -7,9 +7,11 @@ class AllowNullsTranslator(Translator):
     SNPs are filtered down and not other types of variants.
     """
     def translate(self, field, roperator, rvalue, tree, **kwargs):
-        output = super(AllowNullsTranslator, self).translate(field, roperator, rvalue, tree, **kwargs)
+        output = super(AllowNullsTranslator, self).translate(
+            field, roperator, rvalue, tree, **kwargs)
         # Create a null condition for this field
-        null_condition = trees[tree].query_condition(field.field, 'isnull', True)
+        null_condition = trees[tree].query_condition(
+            field.field, 'isnull', True)
         # Allow the null condition
         output['query_modifiers']['condition'] |= null_condition
         return output

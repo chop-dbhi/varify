@@ -11,11 +11,12 @@ def geneset_form(request, pk=None):
         geneset = get_object_or_404(GeneSet, pk=pk) if pk else None
     else:
         genesets = GeneSet.objects.filter(user=request.user)
-        geneset = get_object_or_404(GeneSet, pk=pk, user=request.user) if pk else None
+        geneset = get_object_or_404(
+            GeneSet, pk=pk, user=request.user) if pk else None
 
     if request.method == 'POST':
         form = GeneSetBulkForm(request.POST, initial={'user': request.user},
-            instance=geneset)
+                               instance=geneset)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('genesets'))

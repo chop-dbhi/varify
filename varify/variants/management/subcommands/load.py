@@ -66,7 +66,8 @@ class Command(BaseCommand):
                 r.aa, r.amr_af, r.asn_af, r.afr_af, r.eur_af
             FROM "variant"
                 INNER JOIN "raw"."1000g" r ON ("variant".md5 = r."md5")
-                LEFT OUTER JOIN "1000g" ON ("1000g"."variant_id" = "variant"."id")
+                LEFT OUTER JOIN "1000g" ON
+                    ("1000g"."variant_id" = "variant"."id")
             WHERE "1000g"."id" IS NULL
             ORDER BY variant.id
         ''')
@@ -89,9 +90,10 @@ class Command(BaseCommand):
 
         # MAFs are divided by 100 since they are percentages to begin with
         cursor.execute('''
-            SELECT DISTINCT ON (variant.id) variant.id, r.ea_ac_ref, r.ea_ac_alt, r.aa_ac_ref,
-                r.aa_ac_alt, r.all_ac_ref, r.all_ac_alt, r.ea_maf / 100.0,
-                r.aa_maf / 100.0, r.all_maf / 100.0, r.gts, r.ea_gtc, r.aa_gtc, r.all_gtc,
+            SELECT DISTINCT ON (variant.id) variant.id, r.ea_ac_ref,
+                r.ea_ac_alt, r.aa_ac_ref, r.aa_ac_alt, r.all_ac_ref,
+                r.all_ac_alt, r.ea_maf / 100.0, r.aa_maf / 100.0,
+                r.all_maf / 100.0, r.gts, r.ea_gtc, r.aa_gtc, r.all_gtc,
                 r.clinical_association
             FROM "variant"
                 INNER JOIN "raw"."evs" r ON ("variant".md5 = r."md5")
@@ -152,7 +154,8 @@ class Command(BaseCommand):
             SELECT variant.id, r.score, r.refaa
             FROM "variant"
                 INNER JOIN "raw"."polyphen2" r ON ("variant".md5 = r."md5")
-                LEFT OUTER JOIN "polyphen2" ON ("polyphen2"."variant_id" = "variant"."id")
+                LEFT OUTER JOIN "polyphen2" ON
+                    ("polyphen2"."variant_id" = "variant"."id")
             WHERE "polyphen2"."id" IS NULL
         ''')
 
@@ -175,7 +178,8 @@ class Command(BaseCommand):
             SELECT variant.id, r.score, r.refaa, r.varaa
             FROM "variant"
                 INNER JOIN "raw"."sift" r ON ("variant".md5 = r."md5")
-                LEFT OUTER JOIN "sift" ON ("sift"."variant_id" = "variant"."id")
+                LEFT OUTER JOIN "sift" ON
+                    ("sift"."variant_id" = "variant"."id")
             WHERE "sift"."id" IS NULL
         ''')
 

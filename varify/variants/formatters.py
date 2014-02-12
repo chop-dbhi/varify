@@ -2,7 +2,7 @@ try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
-from avocado.formatters import registry as formatters, Formatter
+from avocado.formatters import registry as formatters
 from serrano.formatters import HTMLFormatter
 
 
@@ -11,7 +11,8 @@ class GenomicCoordinate(HTMLFormatter):
 
     def to_html(self, values, **context):
         href = self.href.format(**values)
-        return '<a target=_blank href="{href}">chr{chr}:{pos:,}</a>'.format(href=href, **values)
+        return '<a target=_blank href="{href}">chr{chr}:{pos:,}</a>'.format(
+            href=href, **values)
     to_html.process_multiple = True
 
 
@@ -21,12 +22,14 @@ class dbSNP(HTMLFormatter):
     def to_html(self, rsid, **context):
         if rsid:
             href = self.href.format(rsid[2:])
-            return '<a target=_blank href="{href}">{rsid}</a>'.format(href=href, rsid=rsid)
+            return '<a target=_blank href="{href}">{rsid}</a>'.format(
+                href=href, rsid=rsid)
 
     def to_excel(self, rsid, **context):
         if rsid:
             href = self.href.format(rsid[2:])
-            return '=HYPERLINK("{href}", "{label}")'.format(href=href, label=rsid)
+            return '=HYPERLINK("{href}", "{label}")'.format(
+                href=href, label=rsid)
         return ''
 
 
@@ -54,7 +57,8 @@ class AlleleFrequency(HTMLFormatter):
                 # off the _af
                 key = key.split('_')[0]
 
-            toks.append('<li><small>{0}</small> {1}</li>'.format(key.title(), tok))
+            toks.append('<li><small>{0}</small> {1}</li>'.format(
+                key.title(), tok))
         return '<ul class=unstyled>{0}</ul>'.format(''.join(toks))
 
     to_html.process_multiple = True

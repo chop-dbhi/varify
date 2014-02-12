@@ -15,9 +15,10 @@ def registry(request):
 
     # Distinct count on batch necessary since the join inflates the numbers
     projects = projects.annotate(sample_count=sample_count,
-        batch_count=batch_count)
+                                 batch_count=batch_count)
 
-    staged_samples = Sample.objects.filter(published=False, project__in=projects)\
+    staged_samples = \
+        Sample.objects.filter(published=False, project__in=projects) \
         .select_related('batch', 'project')
 
     return render(request, 'samples/registry.html', {
@@ -35,11 +36,11 @@ def project_registry(request, pk):
     # Distinct count on batch necessary since the join inflates the numbers
     try:
         project = projects.annotate(sample_count=sample_count,
-            batch_count=batch_count).get(pk=pk)
+                                    batch_count=batch_count).get(pk=pk)
     except Project.DoesNotExist:
         raise Http404
 
-    batches = Batch.objects.filter(project=project)\
+    batches = Batch.objects.filter(project=project) \
         .annotate(sample_count=Count('samples'))
 
     return render(request, 'samples/project.html', {
@@ -54,7 +55,7 @@ def batch_registry(request, pk):
     sample_count = Count('samples', distinct=True)
 
     try:
-        batch = Batch.objects.annotate(sample_count=sample_count)\
+        batch = Batch.objects.annotate(sample_count=sample_count) \
             .filter(project__in=projects).select_related('project').get(pk=pk)
     except Batch.DoesNotExist:
         raise Http404
@@ -72,7 +73,7 @@ def sample_registry(request, pk):
     projects = get_objects_for_user(request.user, 'samples.view_project')
 
     try:
-        sample = Sample.objects.filter(project__in=projects)\
+        sample = Sample.objects.filter(project__in=projects) \
             .select_related('batch', 'project').get(pk=pk)
     except Sample.DoesNotExist:
         raise Http404
@@ -90,14 +91,15 @@ def cohort_form(request, pk=None):
         cohort = get_object_or_404(Cohort, pk=pk) if pk else None
     else:
         cohorts = Cohort.objects.filter(user=request.user)
-        cohort = get_object_or_404(Cohort, pk=pk, user=request.user) if pk else None
+        cohort = \
+            get_object_or_404(Cohort, pk=pk, user=request.user) if pk else None
 
     # Apply permissions..
     samples = Sample.objects.all()
 
     if request.method == 'POST':
         form = CohortForm(samples, data=request.POST, instance=cohort,
-            initial={'user': request.user})
+                          initial={'user': request.user})
         if form.is_valid():
             form.save()
             return HttpResponseRedirect(reverse('cohorts'))

@@ -12,6 +12,7 @@ PRIORITY_FEATURE_WEIGHTS = {
 
 PRIORITY_FEATURES = sorted(PRIORITY_FEATURE_WEIGHTS.keys())
 
+
 def calculate_priority(ratios=None, **kwargs):
     "Calculates a priority score based on a number of attributes."
     if not ratios:
@@ -19,8 +20,8 @@ def calculate_priority(ratios=None, **kwargs):
     scores = [DEFAULT_PRIORITY_SCORE]
     for key, value in kwargs.items():
         if key not in PRIORITY_FEATURE_WEIGHTS:
-            raise KeyError('The following keyword arguments are supported: {keys}'.format(keys=PRIORITY_FEATURES))
+            raise KeyError('The following keyword arguments are supported: '
+                           '{keys}'.format(keys=PRIORITY_FEATURES))
         if value is True:
             scores.append(PRIORITY_FEATURE_WEIGHTS[key])
     return float(sum(scores)) / len(scores)
-

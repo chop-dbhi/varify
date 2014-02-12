@@ -8,30 +8,35 @@ from sts.contextmanagers import transition
 from varify.pipeline import job, ManifestReader
 from varify.pipeline.load import pgcopy_batch
 from varify.pipeline import checks
-from varify.samples.models import Result, Project, Batch, Sample, SampleManifest, DEFAULT_PROJECT_NAME
+from varify.samples.models import Result, Project, Batch, Sample, \
+    SampleManifest, DEFAULT_PROJECT_NAME
 from . import SAMPLE_CHANNEL
 from .utils import ResultStream
 
 log = logging.getLogger(__name__)
 
+
 @transaction.commit_on_success
-def create_sample(sample_name, vcf_colname, batch_name, project_name=None, version=0):
+def create_sample(sample_name, vcf_colname, batch_name, project_name=None,
+                  version=0):
     version = int(version)
 
     if project_name:
         # Ensure a project is available for the sample
-        project, created = Project.objects.get_or_create(name__iexact=project_name,
-                defaults={'label': project_name, 'name': project_name})
+        project, created = Project.objects.get_or_create(
+            name__iexact=project_name,
+            defaults={'label': project_name, 'name': project_name})
     else:
         project = Project.objects.get(name=DEFAULT_PROJECT_NAME)
 
-    batch, created = Batch.objects.get_or_create(name__iexact=batch_name,
-        project=project, defaults={'label': batch_name, 'name': batch_name})
+    batch, created = Batch.objects.get_or_create(
+        name__iexact=batch_name, project=project,
+        defaults={'label': batch_name, 'name': batch_name})
 
-    sample, created = Sample.objects.get_or_create(name__iexact=sample_name,
-        project=project, batch=batch, version=version,
-        defaults={'label': sample_name, 'name': sample_name,
-        'vcf_colname': vcf_colname})
+    sample, created = Sample.objects.get_or_create(
+        name__iexact=sample_name, project=project, batch=batch,
+        version=version, defaults={'label': sample_name, 'name': sample_name,
+                                   'vcf_colname': vcf_colname})
 
     return sample, created
 
@@ -146,7 +151,8 @@ def load_results(manifest_path, database, **kwargs):
 
     sample_info = manifest.section('sample')
     vcf_info = manifest.section('vcf')
-    # ignore whatever sample is listed in the manifest and scan the vcf for samples
+    # Ignore whatever sample is listed in the manifest and scan the vcf for
+    # samples.
     vcf_path = os.path.join(os.path.dirname(manifest_path), vcf_info['file'])
     with open(vcf_path) as file_obj:
         log.debug("opening {0} in load_samples".format(vcf_path))
@@ -159,9 +165,11 @@ def load_results(manifest_path, database, **kwargs):
 
     for pretty_name, vcf_sample in zip(pretty_names, samples):
         try:
-            sample = Sample.objects.get(name__iexact=pretty_name,
+            sample = Sample.objects.get(
+                name__iexact=pretty_name,
                 batch__name__iexact=sample_info['batch'],
-                project__name__iexact=sample_info['project'], version=sample_info['version'])
+                project__name__iexact=sample_info['project'],
+                version=sample_info['version'])
         except Sample.DoesNotExist:
             log.error('Sample does not exist', extra=sample_info)
             return
@@ -176,15 +184,18 @@ def load_results(manifest_path, database, **kwargs):
             successful = False
             while not successful:
                 try:
-                    with transition(sample, 'Sample Published', event='Loading Results'):
+                    with transition(sample, 'Sample Published',
+                                    event='Loading Results'):
                         connection = connections[database]
                         cursor = connection.cursor()
 
                         with open(vcf_path) as fin:
-                            stream = ResultStream(fin, sample_id=sample.id, vcf_sample=vcf_sample)
+                            stream = ResultStream(fin, sample_id=sample.id,
+                                                  vcf_sample=vcf_sample)
                             columns = stream.output_columns
                             db_table = Result._meta.db_table
-                            pgcopy_batch(stream, db_table, columns, cursor, database)
+                            pgcopy_batch(stream, db_table, columns, cursor,
+                                         database)
 
                         # Update result count
                         sample.count = sample.results.count()
@@ -205,16 +216,15 @@ def load_results(manifest_path, database, **kwargs):
         vcf_md5 = checks.file_md5(vcf_path)
 
         if vcf_md5 != vcf_info['md5']:
-            log.error('VCF file MD5 does not match expected in manifest', extra={
-                'manifest_path': manifest_path,
-            })
-
-
+            log.error('VCF file MD5 does not match expected in manifest',
+                      extra={'manifest_path': manifest_path})
 
     # Existing samples by the same name of a previous version are unpublished
     # now that is is ready to be published.
-    count = Sample.objects.filter(name__iexact=sample.name, project=sample.project,
-        batch=sample.batch, version__lt=sample.version).update(published=False)
+    count = Sample.objects.filter(
+        name__iexact=sample.name, project=sample.project, batch=sample.batch,
+        version__lt=sample.version).update(published=False)
 
     if count:
-        log.info('{0} previous versions unpublished for {1}'.format(count, sample))
+        log.info('{0} previous versions unpublished for {1}'
+                 .format(count, sample))

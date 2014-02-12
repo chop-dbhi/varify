@@ -251,11 +251,14 @@ class Cohort(ObjectSet):
                     # Calculate frequencies for all variants associated with
                     # all samples in this cohort
                     cursor.execute('''
-                        INSERT INTO cohort_variant (cohort_id, variant_id, af) (
-                            SELECT c.id, r.variant_id, COUNT(r.id) / c."count"::float
+                        INSERT INTO cohort_variant (cohort_id, variant_id, af)
+                        (
+                            SELECT c.id, r.variant_id,
+                                COUNT(r.id) / c."count"::float
                             FROM sample_result r
                                 INNER JOIN sample s ON (r.sample_id = s.id)
-                                INNER JOIN cohort_sample cs ON (cs.sample_id = s.id)
+                                INNER JOIN cohort_sample cs ON
+                                    (cs.sample_id = s.id)
                                 INNER JOIN cohort c ON (cs.cohort_id = c.id)
                             WHERE c.id = %s
                             GROUP BY c.id, r.variant_id, c."count"

@@ -15,7 +15,8 @@ class Phenotype(models.Model):
 
 class PhenotypeThrough(models.Model):
     phenotype = models.ForeignKey(Phenotype)
-    hgmd_id = models.CharField(max_length=30, null=True, blank=True, db_index=True)
+    hgmd_id = models.CharField(max_length=30, null=True, blank=True,
+                               db_index=True)
 
     class Meta(object):
         abstract = True

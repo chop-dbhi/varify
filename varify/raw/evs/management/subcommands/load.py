@@ -5,14 +5,15 @@ from varify.variants.utils import calculate_md5
 
 class EVSProcessor(VCFPGCopyEditor):
     output_columns = ('chr', 'pos', 'ref', 'alt', 'rsid', 'ea_ac_alt',
-        'ea_ac_ref', 'aa_ac_alt', 'aa_ac_ref', 'all_ac_alt', 'all_ac_ref',
-        'ea_maf', 'aa_maf', 'all_maf', 'gts', 'ea_gtc', 'aa_gtc', 'all_gtc',
-        'read_depth', 'clinical_association', 'md5')
+                      'ea_ac_ref', 'aa_ac_alt', 'aa_ac_ref', 'all_ac_alt',
+                      'all_ac_ref', 'ea_maf', 'aa_maf', 'all_maf', 'gts',
+                      'ea_gtc', 'aa_gtc', 'all_gtc', 'read_depth',
+                      'clinical_association', 'md5')
 
     vcf_fields = ('CHROM', 'POS', 'REF', 'ALT', 'ID')
 
-    info_fields = ('EA_AC', 'AA_AC', 'TAC', 'MAF', 'GTS', 'EA_GTC',
-        'AA_GTC', 'GTC', 'DP', 'CA')
+    info_fields = ('EA_AC', 'AA_AC', 'TAC', 'MAF', 'GTS', 'EA_GTC', 'AA_GTC',
+                   'GTC', 'DP', 'CA')
 
     def process_column(self, key, value):
         # *AC => allele counts. The format is "alt,ref"

@@ -7,6 +7,7 @@ from avocado.formatters import registry as formatters
 from serrano.formatters import HTMLFormatter
 from django.conf import settings
 
+
 class AlamutFormatter(HTMLFormatter):
     href = settings.ALAMUT_URL + '/show?request={0}'
     request = 'chr{chr}:g.{pos}{ref}>{alt}'
@@ -14,15 +15,18 @@ class AlamutFormatter(HTMLFormatter):
     def to_html(self, values, **context):
         request = self.request.format(**values)
         href = self.href.format(request)
-        return '<a target=_blank href="{href}">{label}</a>'.format(href=href, label=request)
+        return '<a target=_blank href="{href}">{label}</a>'.format(
+            href=href, label=request)
     to_html.process_multiple = True
 
     def to_excel(self, values, **context):
         request = self.request.format(**values)
         href = self.href.format(request)
 
-        return '=HYPERLINK("{href}", "{label}")'.format(href=href, label=request)
+        return '=HYPERLINK("{href}", "{label}")'.format(
+            href=href, label=request)
     to_excel.process_multiple = True
+
 
 class SampleFormatter(HTMLFormatter):
     def to_html(self, values, **kwargs):
@@ -52,14 +56,15 @@ class CohortsFormatter(HTMLFormatter):
     def _get_cohorts(self, **context):
         if not hasattr(self, '_cohorts'):
             from .models import Cohort
-            # Augment resource with cohort-related details (e.g. allele frequencies)
+            # Augment resource with cohort-related details
+            # (e.g. allele frequencies).
             perms = Q(user=None, published=True)
 
             if 'request' in context:
                 perms |= Q(user=context['request'].user)
 
             # All cohorts this user has permission to
-            self._cohorts = list(Cohort.objects.filter(perms, batch=None)\
+            self._cohorts = list(Cohort.objects.filter(perms, batch=None)
                 .only('name', 'count').order_by('order', 'name'))
         return self._cohorts
 
@@ -68,7 +73,9 @@ class CohortsFormatter(HTMLFormatter):
         cohorts = self._get_cohorts(**context)
 
         # All cohort variants for the above cohorts
-        variants = dict(CohortVariant.objects.filter(variant__pk=value, cohort__in=cohorts)\
+        variants = dict(
+            CohortVariant.objects.filter(
+                variant__pk=value, cohort__in=cohorts)
             .values_list('cohort__pk', 'af').distinct())
         output = []
         for c in cohorts:
@@ -80,7 +87,8 @@ class CohortsFormatter(HTMLFormatter):
 
         html = ['<ul class=unstyled>']
         for name, af, count in variants:
-            html.append('<li><small>{0}</small> {1}% <span class=muted>({2})</span></li>'.format(name, str(af * 100), count))
+            html.append('<li><small>{0}</small> {1}% <span class=muted>({2})'
+                        '</span></li>'.format(name, str(af * 100), count))
         html.append('</ul>')
 
         return ''.join(html)

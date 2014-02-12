@@ -7,6 +7,7 @@ log = logging.getLogger(__name__)
 
 DEFAULT_BATCH_SIZE = 1000
 
+
 def writetmp(stream):
     tmp = tempfile.NamedTemporaryFile()
     while True:
@@ -28,6 +29,7 @@ def pgcopy(stream, db_table, columns, cursor, database):
         except Exception as e:
             log.exception(e)
             raise
+
 
 def batch_stream(buff, stream, size=DEFAULT_BATCH_SIZE):
     """Writes a batch of `size` lines to `buff`.
@@ -53,7 +55,8 @@ def batch_stream(buff, stream, size=DEFAULT_BATCH_SIZE):
     return False
 
 
-def pgcopy_batch(stream, db_table, columns, cursor, database, batch_size=DEFAULT_BATCH_SIZE):
+def pgcopy_batch(stream, db_table, columns, cursor, database,
+                 batch_size=DEFAULT_BATCH_SIZE):
     buff = StringIO()
     try:
         while True:

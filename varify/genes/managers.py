@@ -1,10 +1,10 @@
 from django.db import models, IntegrityError
-from varify.genome.models import Chromosome
 
 
 class GeneManager(models.Manager):
     def find(self, symbol, chrom=None, create=False):
-        """Find a gene based on the symbol or disambiguate using synonyms.
+        """
+        Find a gene based on the symbol or disambiguate using synonyms.
         If no gene is found, if the create is True, a new instance will be
         created with that symbol.
         """
@@ -24,7 +24,8 @@ class GeneManager(models.Manager):
 
         # Attempt to disambiguate, only if this is the only synonym may it be
         # associated
-        potential = list(queryset.filter(synonyms__label__iexact=symbol).distinct())
+        potential = list(
+            queryset.filter(synonyms__label__iexact=symbol).distinct())
 
         if len(potential) == 1:
             return potential[0]

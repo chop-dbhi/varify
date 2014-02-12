@@ -5,8 +5,8 @@ from .models import Cohort, Sample
 
 class CohortForm(forms.ModelForm):
     name = forms.CharField(required=True)
-    samples = forms.ModelMultipleChoiceField(queryset=Sample.objects.all(),
-        widget=forms.CheckboxSelectMultiple)
+    samples = forms.ModelMultipleChoiceField(
+        queryset=Sample.objects.all(), widget=forms.CheckboxSelectMultiple)
 
     def __init__(self, queryset=None, *args, **kwargs):
         if kwargs.get('instance', None) and kwargs['instance'].pk:
