@@ -23,6 +23,13 @@ require
     # Globally disable stats on all fields
     c.config.set('fields.defaults.form.stats', false)
 
+    # Disable charts for all the types they are enabled for in the default
+    # Cilantro config.
+    c.config.set('fields.types.number.form.chart', false)
+    c.config.set('fields.types.date.form.chart', false)
+    c.config.set('fields.types.time.form.chart', false)
+    c.config.set('fields.types.datetime.form.chart', false)
+
     # Open the default session defined in the pre-defined configuration.
     # Initialize routes once data is confirmed to be available
     c.sessions.open(options).then ->

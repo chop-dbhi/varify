@@ -20,6 +20,10 @@ require({
   c.templates.set('varify/empty', 'tpl!templates/varify/empty.html');
   c.templates.set('varify/modals/result', 'tpl!templates/varify/modals/result.html');
   c.config.set('fields.defaults.form.stats', false);
+  c.config.set('fields.types.number.form.chart', false);
+  c.config.set('fields.types.date.form.chart', false);
+  c.config.set('fields.types.time.form.chart', false);
+  c.config.set('fields.types.datetime.form.chart', false);
   return c.sessions.open(options).then(function() {
     var data, routes;
     routes = [
