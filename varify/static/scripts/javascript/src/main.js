@@ -19,6 +19,7 @@ require({
   c.templates.set('varify/tables/header', 'tpl!templates/varify/tables/header.html');
   c.templates.set('varify/empty', 'tpl!templates/varify/empty.html');
   c.templates.set('varify/modals/result', 'tpl!templates/varify/modals/result.html');
+  c.config.set('fields.defaults.form.stats', false);
   return c.sessions.open(options).then(function() {
     var data, routes;
     routes = [

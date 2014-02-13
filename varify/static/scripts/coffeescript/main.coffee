@@ -20,6 +20,9 @@ require
     c.templates.set('varify/empty', 'tpl!templates/varify/empty.html')
     c.templates.set('varify/modals/result', 'tpl!templates/varify/modals/result.html')
 
+    # Globally disable stats on all fields
+    c.config.set('fields.defaults.form.stats', false)
+
     # Open the default session defined in the pre-defined configuration.
     # Initialize routes once data is confirmed to be available
     c.sessions.open(options).then ->
