@@ -1,15 +1,12 @@
 define [
     'underscore'
     'marionette'
-    'tpl!templates/varify/tables/header.html'
-], (_, Marionette, templates...) ->
-
-    templates = _.object ['header'], templates
+], (_, Marionette) ->
 
     class Header extends Marionette.ItemView
         tagName: 'thead'
 
-        template: templates.header
+        template: 'varify/tables/header'
 
         events:
             'click th': 'onClick'
