@@ -10,15 +10,15 @@ require({
       variable: 'data'
     }
   }
-}, ['cilantro', '../../scripts/javascript/src/ui', 'project/csrf'], function(c, ui, csrf) {
+}, ['cilantro', '../../scripts/javascript/src/ui', 'project/csrf', 'tpl!templates/varify/tables/header.html', 'tpl!templates/varify/empty.html', 'tpl!templates/varify/modals/result.html'], function(c, ui, csrf, header, empty, result) {
   var options;
   options = {
     url: c.config.get('url'),
     credentials: c.config.get('credentials')
   };
-  c.templates.set('varify/tables/header', 'tpl!templates/varify/tables/header.html');
-  c.templates.set('varify/empty', 'tpl!templates/varify/empty.html');
-  c.templates.set('varify/modals/result', 'tpl!templates/varify/modals/result.html');
+  c.templates.set('varify/tables/header', header);
+  c.templates.set('varify/empty', empty);
+  c.templates.set('varify/modals/result', result);
   c.config.set('fields.defaults.form.stats', false);
   c.config.set('fields.types.number.form.chart', false);
   c.config.set('fields.types.date.form.chart', false);

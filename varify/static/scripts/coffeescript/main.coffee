@@ -8,7 +8,14 @@ require
         tpl:
             variable: 'data'
 
-, ['cilantro', '../../scripts/javascript/src/ui', 'project/csrf'], (c, ui, csrf) ->
+, [
+    'cilantro',
+    '../../scripts/javascript/src/ui',
+    'project/csrf',
+    'tpl!templates/varify/tables/header.html',
+    'tpl!templates/varify/empty.html',
+    'tpl!templates/varify/modals/result.html'
+], (c, ui, csrf, header, empty, result) ->
 
     # Session options
     options =
@@ -16,9 +23,9 @@ require
         credentials: c.config.get('credentials')
 
     # Define custom templates
-    c.templates.set('varify/tables/header', 'tpl!templates/varify/tables/header.html')
-    c.templates.set('varify/empty', 'tpl!templates/varify/empty.html')
-    c.templates.set('varify/modals/result', 'tpl!templates/varify/modals/result.html')
+    c.templates.set('varify/tables/header', header)
+    c.templates.set('varify/empty', empty)
+    c.templates.set('varify/modals/result', result)
 
     # Globally disable stats on all fields
     c.config.set('fields.defaults.form.stats', false)
