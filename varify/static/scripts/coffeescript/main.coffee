@@ -15,6 +15,11 @@ require
         url: c.config.get('url')
         credentials: c.config.get('credentials')
 
+    # Define custom templates
+    c.templates.set('varify/tables/header', 'tpl!templates/varify/tables/header.html')
+    c.templates.set('varify/empty', 'tpl!templates/varify/empty.html')
+    c.templates.set('varify/modals/result', 'tpl!templates/varify/modals/result.html')
+
     # Open the default session defined in the pre-defined configuration.
     # Initialize routes once data is confirmed to be available
     c.sessions.open(options).then ->
