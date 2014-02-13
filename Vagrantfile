@@ -14,11 +14,11 @@ Vagrant::Config.run do |config|
   config.vm.box_url = "http://developer.nrel.gov/downloads/vagrant-boxes/CentOS-6.5-x86_64-v20140110.box"
 
   #This is needed to speed DNS lookups from CentOS which really wants to use IPv6
-  config.vm.customize ["modifyvm", :id, "--natdnsproxy1", "off"]
-  config.vm.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
+  # config.vm.customize ["modifyvm", :id, "--natdnsproxy1", "off"]
+  # config.vm.customize ["modifyvm", :id, "--natdnshostresolver1", "off"]
 
   # Allow symlinks
-  config.vm.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
+  # config.vm.customize ["setextradata", :id, "VBoxInternal2/SharedFoldersEnableSymlinksCreate/v-root", "1"]
 
   # Boot with a GUI so you can see the screen. (Default is headless)
   # config.vm.boot_mode = :gui
