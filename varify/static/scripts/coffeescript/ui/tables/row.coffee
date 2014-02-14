@@ -5,15 +5,12 @@ define [
     'cilantro/ui/base'
     '../../models'
     '../../templates'
-    'tpl!templates/varify/empty.html'
-], (_, Marionette, c, base, models, Templates, templates...) ->
-
-    templates = _.object ['empty'], templates
+], (_, Marionette, c, base, models, Templates) ->
 
     class ResultRow extends Marionette.ItemView
         className: 'area-container variant-container'
 
-        template: templates.empty
+        template: 'varify/empty'
 
         tagName: 'tr'
 

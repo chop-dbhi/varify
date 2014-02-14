@@ -5,15 +5,10 @@ define [
     '../../utils'
     '../../templates'
     'cilantro/utils/numbers'
-    'tpl!templates/varify/empty.html'
-    'tpl!templates/varify/modals/result.html'
-], (_, Marionette, models, utils, Templates, Numbers, templates...) ->
-
-    templates = _.object ['empty', 'result'], templates
-
+], (_, Marionette, models, utils, Templates, Numbers) ->
 
     class DetailsTab extends Marionette.ItemView
-        template: templates.empty
+        template: 'varify/empty'
 
         initialize: ->
             @metrics = @options.metrics
@@ -356,7 +351,7 @@ define [
 
 
     class AssessmentTab extends Marionette.ItemView
-        template: templates.empty
+        template: 'varify/empty'
 
         el: '#knowledge-capture-content'
 
@@ -461,7 +456,7 @@ define [
     class ResultDetails extends Marionette.ItemView
         className: 'modal hide'
 
-        template: templates.result
+        template: 'varify/modals/result'
 
         ui:
             variantDetailsTabContent: '#variant-details-content'
