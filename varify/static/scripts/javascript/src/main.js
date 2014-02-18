@@ -24,6 +24,8 @@ require({
   c.config.set('fields.types.date.form.chart', false);
   c.config.set('fields.types.time.form.chart', false);
   c.config.set('fields.types.datetime.form.chart', false);
+  c.config.set('fields.instances.28.form.controls', ['multiSelectionList']);
+  c.config.set('fields.instances.29.form.controls', ['multiSelectionList']);
   return c.ready(function() {
     return c.sessions.open(options).then(function() {
       var data, routes;
