@@ -1,21 +1,25 @@
 # -*- coding: utf-8 -*-
 import datetime
 from south.db import db
-from south.v2 import SchemaMigration
+from south.v2 import DataMigration
 from django.db import models
 
-
-class Migration(SchemaMigration):
+class Migration(DataMigration):
+    no_dry_run = True
 
     def forwards(self, orm):
-
-        # Changing field 'Assessment.assessment_category'
-        db.alter_column('assessment', 'assessment_category_id', self.gf('django.db.models.fields.related.ForeignKey')(default=lambda: orm['assessments.AssessmentCategory'].objects.get(id=7), to=orm['assessments.AssessmentCategory']))
+        "Write your forwards methods here."
+        # Note: Don't use "from appname.models import ModelName".
+        # Use orm.ModelName to refer to models in this application,
+        # and orm['appname.ModelName'] for models in other applications.
+        other = orm['assessments.AssessmentCategory'].objects.get(id=7)
+        for assessment in orm['assessments.Assessment'].objects.filter(
+                assessment_category__isnull=True):
+            assessment.assessment_category = other
+            assessment.save()
 
     def backwards(self, orm):
-
-        # Changing field 'Assessment.assessment_category'
-        db.alter_column('assessment', 'assessment_category_id', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['assessments.AssessmentCategory'], null=True))
+        "Write your backwards methods here."
 
     models = {
         'assessments.assessment': {
@@ -243,3 +247,4 @@ class Migration(SchemaMigration):
     }
 
     complete_apps = ['assessments']
+    symmetrical = True
