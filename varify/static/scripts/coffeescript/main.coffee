@@ -37,8 +37,9 @@ require
     c.config.set('fields.types.time.form.chart', false)
     c.config.set('fields.types.datetime.form.chart', false)
 
-    # Convert the Effect and Effect region fields to be multi-selection drop
-    # down lists.
+    # Convert the Effect, Effect Region, and Effect Impact fields to be
+    # multi-selection drop down lists.
+    c.config.set('fields.instances.27.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.28.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.29.form.controls', ['multiSelectionList'])
 
