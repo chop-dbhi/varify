@@ -4,9 +4,9 @@ var __slice = [].slice,
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cilantro/ui/paginator', 'cilantro/ui/numbers', 'cilantro/structs', 'cilantro/models', '../tables', 'cilantro/ui/context', 'cilantro/ui/concept', 'cilantro/ui/exporter', 'cilantro/ui/query', '../modals', '../../models', 'tpl!templates/count.html', 'tpl!templates/varify/workflows/results.html', 'tpl!templates/varify/modals/phenotypes.html'], function() {
-  var Marionette, ResultCount, ResultsWorkflow, base, c, concept, context, exporter, modal, models, numbers, paginator, query, structs, tables, templates, varify_models, _;
-  _ = arguments[0], Marionette = arguments[1], c = arguments[2], base = arguments[3], paginator = arguments[4], numbers = arguments[5], structs = arguments[6], models = arguments[7], tables = arguments[8], context = arguments[9], concept = arguments[10], exporter = arguments[11], query = arguments[12], modal = arguments[13], varify_models = arguments[14], templates = 16 <= arguments.length ? __slice.call(arguments, 15) : [];
+define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../tables', '../modals', '../../models', 'tpl!templates/count.html', 'tpl!templates/varify/workflows/results.html', 'tpl!templates/varify/modals/phenotypes.html'], function() {
+  var Marionette, ResultCount, ResultsWorkflow, c, modal, models, numbers, tables, templates, _;
+  _ = arguments[0], Marionette = arguments[1], c = arguments[2], numbers = arguments[3], tables = arguments[4], modal = arguments[5], models = arguments[6], templates = 8 <= arguments.length ? __slice.call(arguments, 7) : [];
   templates = _.object(['count', 'results', 'phenotypes'], templates);
   ResultCount = (function(_super) {
     __extends(ResultCount, _super);
@@ -484,27 +484,27 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
         this.ui.saveQueryToggle.remove();
         this.ui.saveQuery.remove();
       }
-      this.paginator.show(new paginator.Paginator({
+      this.paginator.show(new c.ui.Paginator({
         model: this.data.results
       }));
       this.count.show(new ResultCount({
         model: this.data.results,
         context: this.data.context
       }));
-      this.exportTypes.show(new exporter.ExportTypeCollection({
+      this.exportTypes.show(new c.ui.ExportTypeCollection({
         collection: this.data.exporters
       }));
-      this.exportProgress.show(new exporter.ExportProgressCollection({
+      this.exportProgress.show(new c.ui.ExportProgressCollection({
         collection: this.data.exporters
       }));
       this.resultDetailsModal.show(new modal.ResultDetails);
-      this.saveQueryModal.show(new query.EditQueryDialog({
+      this.saveQueryModal.show(new c.ui.EditQueryDialog({
         header: 'Save Query',
         view: this.data.view,
         context: this.data.context,
         collection: this.data.queries
       }));
-      this.context.show(new context.ContextPanel({
+      this.context.show(new c.ui.ContextPanel({
         model: this.data.context
       }));
       this.context.currentView.$el.stacked({
@@ -519,7 +519,7 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
           return _this.$('.context').stacked('restack', _this.$el.height());
         };
       })(this));
-      this.columns.show(new concept.ConceptColumns({
+      this.columns.show(new c.ui.ConceptColumns({
         view: this.data.view,
         concepts: this.data.concepts
       }));
@@ -631,7 +631,7 @@ define(['underscore', 'marionette', 'cilantro/ui/core', 'cilantro/ui/base', 'cil
       sampleID = this.sampleID();
       if (sampleID) {
         $('.phenotype-sample-label').html("(" + sampleID + ")");
-        phenotypes = new varify_models.Phenotype({
+        phenotypes = new models.Phenotype({
           sample_id: sampleID
         });
         return this.phenotypeXhr = phenotypes.fetch({

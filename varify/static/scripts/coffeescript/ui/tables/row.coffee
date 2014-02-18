@@ -2,10 +2,9 @@ define [
     'underscore'
     'marionette'
     'cilantro'
-    'cilantro/ui/base'
     '../../models'
     '../../templates'
-], (_, Marionette, c, base, models, Templates) ->
+], (_, Marionette, c, models, Templates) ->
 
     class ResultRow extends Marionette.ItemView
         className: 'area-container variant-container'
@@ -74,7 +73,7 @@ define [
             @model.fetch()
 
 
-    class EmptyResultRow extends base.LoadView
+    class EmptyResultRow extends c.ui.LoadView
         align: 'left'
 
         tagName: 'tr'

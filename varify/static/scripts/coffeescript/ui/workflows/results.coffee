@@ -1,23 +1,15 @@
 define [
     'underscore'
     'marionette'
-    'cilantro/ui/core'
-    'cilantro/ui/base'
-    'cilantro/ui/paginator'
+    'cilantro'
     'cilantro/ui/numbers'
-    'cilantro/structs'
-    'cilantro/models'
     '../tables'
-    'cilantro/ui/context'
-    'cilantro/ui/concept'
-    'cilantro/ui/exporter'
-    'cilantro/ui/query'
     '../modals'
     '../../models'
     'tpl!templates/count.html'
     'tpl!templates/varify/workflows/results.html'
     'tpl!templates/varify/modals/phenotypes.html'
-], (_, Marionette, c, base, paginator, numbers, structs, models, tables, context, concept, exporter, query, modal, varify_models, templates...) ->
+], (_, Marionette, c, numbers, tables, modal, models, templates...) ->
 
     templates = _.object ['count', 'results', 'phenotypes'], templates
 
@@ -466,28 +458,28 @@ define [
                 @ui.saveQueryToggle.remove()
                 @ui.saveQuery.remove()
 
-            @paginator.show new paginator.Paginator
+            @paginator.show new c.ui.Paginator
                 model: @data.results
 
             @count.show new ResultCount
                 model: @data.results
                 context: @data.context
 
-            @exportTypes.show new exporter.ExportTypeCollection
+            @exportTypes.show new c.ui.ExportTypeCollection
                 collection: @data.exporters
 
-            @exportProgress.show new exporter.ExportProgressCollection
+            @exportProgress.show new c.ui.ExportProgressCollection
                 collection: @data.exporters
 
             @resultDetailsModal.show new modal.ResultDetails
 
-            @saveQueryModal.show new query.EditQueryDialog
+            @saveQueryModal.show new c.ui.EditQueryDialog
                 header: 'Save Query'
                 view: @data.view
                 context: @data.context
                 collection: @data.queries
 
-            @context.show new context.ContextPanel
+            @context.show new c.ui.ContextPanel
                 model: @data.context
 
             @context.currentView.$el.stacked
@@ -500,7 +492,7 @@ define [
             @table.currentView.on 'render', () =>
                 @$('.context').stacked('restack', @$el.height())
 
-            @columns.show new concept.ConceptColumns
+            @columns.show new c.ui.ConceptColumns
                 view: @data.view
                 concepts: @data.concepts
 
@@ -592,7 +584,7 @@ define [
                 # current sample ID
                 $('.phenotype-sample-label').html("(#{ sampleID })")
 
-                phenotypes = new varify_models.Phenotype
+                phenotypes = new models.Phenotype
                     sample_id: sampleID
 
                 @phenotypeXhr = phenotypes.fetch
