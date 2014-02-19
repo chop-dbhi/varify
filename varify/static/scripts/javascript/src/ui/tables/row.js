@@ -48,9 +48,9 @@ define(['underscore', 'marionette', 'cilantro', '../../models', '../../templates
       $gene = $(Templates.geneLinks(variant.uniqueGenes, {
         collapse: true
       })).addClass('genes');
-      $hgvsP = $(Templates.hgvsP(variant.effects)).addClass('hgvs-p');
+      $hgvsP = $(Templates.hgvsP(variant.effects[0])).addClass('hgvs-p');
       $variantEffects = $(Templates.variantEffects(variant.effects, true)).addClass('variant-effects').append($(Templates.pathogenicity(assessment)));
-      $hgvsC = $(Templates.hgvsC(variant.effects)).addClass('hgvs-c').tooltip({
+      $hgvsC = $(Templates.hgvsC(variant.effects[0])).addClass('hgvs-c').tooltip({
         container: 'body'
       });
       $genotype = $(Templates.genotype(this.model.get('genotype_value'), this.model.get('genotype_description'))).addClass('genotype').tooltip({

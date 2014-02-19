@@ -36,7 +36,7 @@ define [
             $gene = $(Templates.geneLinks(variant.uniqueGenes, collapse: true))
                 .addClass('genes')
 
-            $hgvsP = $(Templates.hgvsP(variant.effects))
+            $hgvsP = $(Templates.hgvsP(variant.effects[0]))
                 .addClass('hgvs-p')
 
             $variantEffects = $(Templates.variantEffects(variant.effects, true))
@@ -49,7 +49,7 @@ define [
             # misaligned. The workaround(added in 2.3.0) is to
             # set the container to body so that the div is not jammed into the
             # table all willy-nilly like.
-            $hgvsC = $(Templates.hgvsC(variant.effects))
+            $hgvsC = $(Templates.hgvsC(variant.effects[0]))
                 .addClass('hgvs-c')
                 .tooltip({container: 'body'})
 
