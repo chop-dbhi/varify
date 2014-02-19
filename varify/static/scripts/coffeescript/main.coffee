@@ -16,7 +16,9 @@ require
     'tpl!templates/varify/empty.html',
     'tpl!templates/varify/modals/result.html'
     'tpl!templates/varify/controls/hgmd.html'
-], (c, ui, csrf, header, empty, result, hgmd) ->
+    'tpl!templates/varify/controls/sift.html'
+    'tpl!templates/varify/controls/polyphen.html'
+], (c, ui, csrf, header, empty, result, hgmd, sift, polyphen) ->
 
     # Session options
     options =
@@ -28,6 +30,8 @@ require
     c.templates.set('varify/empty', empty)
     c.templates.set('varify/modals/result', result)
     c.templates.set('varify/controls/hgmd', hgmd)
+    c.templates.set('varify/controls/sift', sift)
+    c.templates.set('varify/controls/polyphen', polyphen)
 
     # Globally disable stats on all fields
     c.config.set('fields.defaults.form.stats', false)
@@ -45,14 +49,18 @@ require
     c.config.set('fields.instances.28.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.29.form.controls', ['multiSelectionList'])
 
-    # Set the custom control for the HGMD field. We use c.ui.set instead of
-    # c.ui.controls.set because of a bug in Cilantro where the controls
-    # properties get mixed in with ui instead of controls itself.
+    # Set the custom control for the HGMD, Sift, and PolyPhen2 fields. We use
+    # c.ui.set instead of c.ui.controls.set because of a bug in Cilantro where
+    # the controls properties get mixed in with ui instead of controls itself.
     #
     # XXX: This will need to be updated when the bug is fixed in Cilantro and
     # that version of Cilantro is added to Varify.
     c.ui.set('Hgmd', ui.HgmdSelector)
+    c.ui.set('Sift', ui.SiftSelector)
+    c.ui.set('PolyPhen', ui.PolyPhenSelector)
     c.config.set('fields.instances.110.form.controls', ['Hgmd'])
+    c.config.set('fields.instances.58.form.controls', ['Sift'])
+    c.config.set('fields.instances.56.form.controls', ['PolyPhen'])
 
     c.ready ->
 

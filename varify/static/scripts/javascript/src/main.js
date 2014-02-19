@@ -10,7 +10,7 @@ require({
       variable: 'data'
     }
   }
-}, ['cilantro', 'project/ui', 'project/csrf', 'tpl!templates/varify/tables/header.html', 'tpl!templates/varify/empty.html', 'tpl!templates/varify/modals/result.html', 'tpl!templates/varify/controls/hgmd.html'], function(c, ui, csrf, header, empty, result, hgmd) {
+}, ['cilantro', 'project/ui', 'project/csrf', 'tpl!templates/varify/tables/header.html', 'tpl!templates/varify/empty.html', 'tpl!templates/varify/modals/result.html', 'tpl!templates/varify/controls/hgmd.html', 'tpl!templates/varify/controls/sift.html', 'tpl!templates/varify/controls/polyphen.html'], function(c, ui, csrf, header, empty, result, hgmd, sift, polyphen) {
   var options;
   options = {
     url: c.config.get('url'),
@@ -20,6 +20,8 @@ require({
   c.templates.set('varify/empty', empty);
   c.templates.set('varify/modals/result', result);
   c.templates.set('varify/controls/hgmd', hgmd);
+  c.templates.set('varify/controls/sift', sift);
+  c.templates.set('varify/controls/polyphen', polyphen);
   c.config.set('fields.defaults.form.stats', false);
   c.config.set('fields.types.number.form.chart', false);
   c.config.set('fields.types.date.form.chart', false);
@@ -29,7 +31,11 @@ require({
   c.config.set('fields.instances.28.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.29.form.controls', ['multiSelectionList']);
   c.ui.set('Hgmd', ui.HgmdSelector);
+  c.ui.set('Sift', ui.SiftSelector);
+  c.ui.set('PolyPhen', ui.PolyPhenSelector);
   c.config.set('fields.instances.110.form.controls', ['Hgmd']);
+  c.config.set('fields.instances.58.form.controls', ['Sift']);
+  c.config.set('fields.instances.56.form.controls', ['PolyPhen']);
   return c.ready(function() {
     return c.sessions.open(options).then(function() {
       var data, routes;
