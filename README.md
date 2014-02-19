@@ -36,6 +36,12 @@ Install the Sass gem:
 gem install sass
 ```
 
+Install the Bourbon gem:
+
+```bash
+gem install bourbon
+```
+
 ### Deployment Dependencies
 
 Note, the `INSTALL` file contains instructions for setting up a server running
