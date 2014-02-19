@@ -73,9 +73,9 @@ require
 
         names = _.map concepts || [], (concept) ->
             if typeof concept is 'object'
-                return c.data.concepts.get(concept.concept).get('name')
+                return c.data.concepts.get(concept.concept)?.get('name')
             else
-                return c.data.concepts.get(concept).get('name')
+                return c.data.concepts.get(concept)?.get('name')
 
         # If we could not get the names of the required concepts then alter the
         # error message to be more generic

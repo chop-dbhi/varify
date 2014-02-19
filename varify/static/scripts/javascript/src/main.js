@@ -44,10 +44,11 @@ require({
         return;
       }
       names = _.map(concepts || [], function(concept) {
+        var _ref, _ref1;
         if (typeof concept === 'object') {
-          return c.data.concepts.get(concept.concept).get('name');
+          return (_ref = c.data.concepts.get(concept.concept)) != null ? _ref.get('name') : void 0;
         } else {
-          return c.data.concepts.get(concept).get('name');
+          return (_ref1 = c.data.concepts.get(concept)) != null ? _ref1.get('name') : void 0;
         }
       });
       if (names) {
