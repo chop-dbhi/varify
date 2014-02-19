@@ -62,6 +62,18 @@ require
     c.config.set('fields.instances.58.form.controls', ['Sift'])
     c.config.set('fields.instances.56.form.controls', ['PolyPhen'])
 
+    # Mark the Sample concept as required and display a notification to the
+    # user when it is not populated.
+    c.config.set('query.concepts.required', [2])
+    c.on c.CONTEXT_INVALID, (concepts) ->
+        names = _.map concepts || [], (concept) ->
+            return c.data.concepts.get(concept.concept).get('name')
+
+        c.notify
+            level: 'error',
+            message: 'The following concepts are required: ' + names.join(', ')
+            timeout: 5000
+
     c.ready ->
 
         # Open the default session defined in the pre-defined configuration.

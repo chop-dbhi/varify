@@ -36,6 +36,18 @@ require({
   c.config.set('fields.instances.110.form.controls', ['Hgmd']);
   c.config.set('fields.instances.58.form.controls', ['Sift']);
   c.config.set('fields.instances.56.form.controls', ['PolyPhen']);
+  c.config.set('query.concepts.required', [2]);
+  c.on(c.CONTEXT_INVALID, function(concepts) {
+    var names;
+    names = _.map(concepts || [], function(concept) {
+      return c.data.concepts.get(concept.concept).get('name');
+    });
+    return c.notify({
+      level: 'error',
+      message: 'The following concepts are required: ' + names.join(', '),
+      timeout: 5000
+    });
+  });
   return c.ready(function() {
     return c.sessions.open(options).then(function() {
       var data, routes;
