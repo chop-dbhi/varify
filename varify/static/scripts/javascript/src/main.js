@@ -11,7 +11,7 @@ require({
     }
   }
 }, ['cilantro', 'project/ui', 'project/csrf', 'tpl!templates/varify/tables/header.html', 'tpl!templates/varify/empty.html', 'tpl!templates/varify/modals/result.html', 'tpl!templates/varify/controls/hgmd.html', 'tpl!templates/varify/controls/sift.html', 'tpl!templates/varify/controls/polyphen.html'], function(c, ui, csrf, header, empty, result, hgmd, sift, polyphen) {
-  var options;
+  var notify_required, options;
   options = {
     url: c.config.get('url'),
     credentials: c.config.get('credentials')
@@ -30,12 +30,39 @@ require({
   c.config.set('fields.instances.27.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.28.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.29.form.controls', ['multiSelectionList']);
-  c.ui.set('Hgmd', ui.HgmdSelector);
-  c.ui.set('Sift', ui.SiftSelector);
-  c.ui.set('PolyPhen', ui.PolyPhenSelector);
+  c.controls.set('Hgmd', ui.HgmdSelector);
+  c.controls.set('Sift', ui.SiftSelector);
+  c.controls.set('PolyPhen', ui.PolyPhenSelector);
   c.config.set('fields.instances.110.form.controls', ['Hgmd']);
   c.config.set('fields.instances.58.form.controls', ['Sift']);
   c.config.set('fields.instances.56.form.controls', ['PolyPhen']);
+  notify_required = (function(_this) {
+    return function(concepts) {
+      var message, names;
+      if (c.data == null) {
+        return;
+      }
+      names = _.map(concepts || [], function(concept) {
+        if (typeof concept === 'object') {
+          return c.data.concepts.get(concept.concept).get('name');
+        } else {
+          return c.data.concepts.get(concept).get('name');
+        }
+      });
+      if (names) {
+        message = 'The following concepts are required: ' + names.join(', ');
+      } else {
+        message = 'There are 1 or more required concepts';
+      }
+      return c.notify({
+        level: 'error',
+        message: message
+      });
+    };
+  })(this);
+  c.config.set('query.concepts.required', [2]);
+  c.on(c.CONTEXT_INVALID, notify_required);
+  c.on(c.CONTEXT_REQUIRED, notify_required);
   return c.ready(function() {
     return c.sessions.open(options).then(function() {
       var data, routes;

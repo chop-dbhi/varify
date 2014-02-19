@@ -49,18 +49,49 @@ require
     c.config.set('fields.instances.28.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.29.form.controls', ['multiSelectionList'])
 
-    # Set the custom control for the HGMD, Sift, and PolyPhen2 fields. We use
-    # c.ui.set instead of c.ui.controls.set because of a bug in Cilantro where
-    # the controls properties get mixed in with ui instead of controls itself.
-    #
-    # XXX: This will need to be updated when the bug is fixed in Cilantro and
-    # that version of Cilantro is added to Varify.
-    c.ui.set('Hgmd', ui.HgmdSelector)
-    c.ui.set('Sift', ui.SiftSelector)
-    c.ui.set('PolyPhen', ui.PolyPhenSelector)
+    # Set the custom control for the HGMD, Sift, and PolyPhen2 fields.
+    c.controls.set('Hgmd', ui.HgmdSelector)
+    c.controls.set('Sift', ui.SiftSelector)
+    c.controls.set('PolyPhen', ui.PolyPhenSelector)
     c.config.set('fields.instances.110.form.controls', ['Hgmd'])
     c.config.set('fields.instances.58.form.controls', ['Sift'])
     c.config.set('fields.instances.56.form.controls', ['PolyPhen'])
+
+    # A simple handler for CONTEXT_REQUIRED and CONTEXT_INVALID events that
+    # tells the user which concept is required(when possible) or prints a
+    # generic message in the case the concept name could not be found.
+    #
+    # XXX: This can be updated when Cilantro is updated to 2.2.12 as both
+    # CONTEXT_REQUIRED and CONTEXT_INVALID will return objects.
+    notify_required = (concepts) =>
+        # It is possible to update the configuration before a session
+        # is opened so we only try to generate the concept names and notify
+        # the user if there is any session data available for us to query.
+        if not c.data?
+            return
+
+        names = _.map concepts || [], (concept) ->
+            if typeof concept is 'object'
+                return c.data.concepts.get(concept.concept).get('name')
+            else
+                return c.data.concepts.get(concept).get('name')
+
+        # If we could not get the names of the required concepts then alter the
+        # error message to be more generic
+        if names
+            message = 'The following concepts are required: ' + names.join(', ')
+        else
+            message = 'There are 1 or more required concepts'
+
+        c.notify
+            level: 'error',
+            message: message
+
+    # Mark the Sample concept as required and display a notification to the
+    # user when it is not populated.
+    c.config.set('query.concepts.required', [2])
+    c.on c.CONTEXT_INVALID, notify_required
+    c.on c.CONTEXT_REQUIRED, notify_required
 
     c.ready ->
 
