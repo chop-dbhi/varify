@@ -49,15 +49,10 @@ require
     c.config.set('fields.instances.28.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.29.form.controls', ['multiSelectionList'])
 
-    # Set the custom control for the HGMD, Sift, and PolyPhen2 fields. We use
-    # c.ui.set instead of c.ui.controls.set because of a bug in Cilantro where
-    # the controls properties get mixed in with ui instead of controls itself.
-    #
-    # XXX: This will need to be updated when the bug is fixed in Cilantro and
-    # that version of Cilantro is added to Varify.
-    c.ui.set('Hgmd', ui.HgmdSelector)
-    c.ui.set('Sift', ui.SiftSelector)
-    c.ui.set('PolyPhen', ui.PolyPhenSelector)
+    # Set the custom control for the HGMD, Sift, and PolyPhen2 fields.
+    c.controls.set('Hgmd', ui.HgmdSelector)
+    c.controls.set('Sift', ui.SiftSelector)
+    c.controls.set('PolyPhen', ui.PolyPhenSelector)
     c.config.set('fields.instances.110.form.controls', ['Hgmd'])
     c.config.set('fields.instances.58.form.controls', ['Sift'])
     c.config.set('fields.instances.56.form.controls', ['PolyPhen'])
