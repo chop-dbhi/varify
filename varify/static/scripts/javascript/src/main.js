@@ -30,6 +30,7 @@ require({
   c.config.set('fields.instances.27.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.28.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.29.form.controls', ['multiSelectionList']);
+  c.config.set('fields.instances.61.form.controls', ['multiSelectionList']);
   c.controls.set('Hgmd', ui.HgmdSelector);
   c.controls.set('Sift', ui.SiftSelector);
   c.controls.set('PolyPhen', ui.PolyPhenSelector);
