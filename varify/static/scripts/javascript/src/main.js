@@ -10,7 +10,7 @@ require({
       variable: 'data'
     }
   }
-}, ['cilantro', 'project/ui', 'project/csrf', 'tpl!templates/varify/tables/header.html', 'tpl!templates/varify/empty.html', 'tpl!templates/varify/modals/result.html'], function(c, ui, csrf, header, empty, result) {
+}, ['cilantro', 'project/ui', 'project/csrf', 'tpl!templates/varify/tables/header.html', 'tpl!templates/varify/empty.html', 'tpl!templates/varify/modals/result.html', 'tpl!templates/varify/controls/hgmd.html'], function(c, ui, csrf, header, empty, result, hgmd) {
   var options;
   options = {
     url: c.config.get('url'),
@@ -19,6 +19,7 @@ require({
   c.templates.set('varify/tables/header', header);
   c.templates.set('varify/empty', empty);
   c.templates.set('varify/modals/result', result);
+  c.templates.set('varify/controls/hgmd', hgmd);
   c.config.set('fields.defaults.form.stats', false);
   c.config.set('fields.types.number.form.chart', false);
   c.config.set('fields.types.date.form.chart', false);
@@ -27,6 +28,8 @@ require({
   c.config.set('fields.instances.27.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.28.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.29.form.controls', ['multiSelectionList']);
+  c.ui.set('Hgmd', ui.HgmdSelector);
+  c.config.set('fields.instances.110.form.controls', ['Hgmd']);
   return c.ready(function() {
     return c.sessions.open(options).then(function() {
       var data, routes;

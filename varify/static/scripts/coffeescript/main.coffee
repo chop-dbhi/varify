@@ -15,7 +15,8 @@ require
     'tpl!templates/varify/tables/header.html',
     'tpl!templates/varify/empty.html',
     'tpl!templates/varify/modals/result.html'
-], (c, ui, csrf, header, empty, result) ->
+    'tpl!templates/varify/controls/hgmd.html'
+], (c, ui, csrf, header, empty, result, hgmd) ->
 
     # Session options
     options =
@@ -26,6 +27,7 @@ require
     c.templates.set('varify/tables/header', header)
     c.templates.set('varify/empty', empty)
     c.templates.set('varify/modals/result', result)
+    c.templates.set('varify/controls/hgmd', hgmd)
 
     # Globally disable stats on all fields
     c.config.set('fields.defaults.form.stats', false)
@@ -42,6 +44,15 @@ require
     c.config.set('fields.instances.27.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.28.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.29.form.controls', ['multiSelectionList'])
+
+    # Set the custom control for the HGMD field. We use c.ui.set instead of
+    # c.ui.controls.set because of a bug in Cilantro where the controls
+    # properties get mixed in with ui instead of controls itself.
+    #
+    # XXX: This will need to be updated when the bug is fixed in Cilantro and
+    # that version of Cilantro is added to Varify.
+    c.ui.set('Hgmd', ui.HgmdSelector)
+    c.config.set('fields.instances.110.form.controls', ['Hgmd'])
 
     c.ready ->
 
