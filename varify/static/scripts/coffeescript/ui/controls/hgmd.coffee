@@ -1,8 +1,7 @@
 define [
     'underscore'
-    'marionette'
     'cilantro'
-], (_, Marionette, c) ->
+], (_, c) ->
 
     # XXX: This should be a isnull selector generic control in Cilantro. Until
     # Cilantro supports custom options for controls, we will continue to use
