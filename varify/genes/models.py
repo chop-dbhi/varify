@@ -127,6 +127,7 @@ class GeneSet(ObjectSet):
     published = models.BooleanField(default=True)
 
     set_object_rel = 'genes'
+    label_field = 'name'
 
     def __unicode__(self):
         return unicode(self.name)
