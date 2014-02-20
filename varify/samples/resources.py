@@ -13,7 +13,7 @@ from restlib2 import resources
 from varify.variants.resources import VariantResource
 from varify import api
 from varify.assessments.models import Assessment
-from .models import Sample, Result
+from .models import Sample, Result, ResultScore
 
 
 def sample_posthook(instance, data, request):
@@ -177,7 +177,7 @@ class SampleResultResource(resources.Resource):
         return not self.model.objects.filter(pk=pk).exists()
 
     def _cache_data(self, request, pk, key):
-        related = ['sample', 'variant', 'genotype']
+        related = ['sample', 'variant', 'genotype', 'score']
 
         try:
             result = self.model.objects.select_related(*related).get(pk=pk)
@@ -207,6 +207,15 @@ class SampleResultResource(resources.Resource):
         # Integrate the Variant resource data
         data['variant'] = VariantResource.get(request, data['variant_id'])
         data.pop('variant_id')
+
+        try:
+            score = ResultScore.objects.get(result=result)
+            data['score'] = {
+                'score': score.score,
+                'rank': score.rank,
+            }
+        except ResultScore.DoesNotExist:
+            pass
 
         cache.set(key, data, timeout=api.CACHE_TIMEOUT)
         return data
