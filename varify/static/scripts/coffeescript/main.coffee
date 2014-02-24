@@ -51,6 +51,9 @@ require
     c.config.set('fields.instances.61.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.64.form.controls', ['multiSelectionList'])
 
+    # Convert the Genotype field to be a single selection drop down.
+    c.config.set('fields.instances.68.form.controls', ['singleSelectionList'])
+
     # Set the custom control for the HGMD, Sift, and PolyPhen2 fields.
     c.controls.set('Hgmd', ui.HgmdSelector)
     c.controls.set('Sift', ui.SiftSelector)
