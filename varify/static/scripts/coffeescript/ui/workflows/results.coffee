@@ -220,7 +220,7 @@ define [
 
             @ui.toggleFiltersIcon.removeClass('icon-collapse-alt')
             @ui.toggleFiltersIcon.addClass('icon-expand-alt')
-            @ui.toggleFiltersText.html('Hide Filters...')
+            @ui.toggleFiltersText.html('Hide Filters')
             @updateContextPanelOffsets()
             @$('.context').stacked('restack', @$el.height())
 
@@ -240,7 +240,7 @@ define [
 
             @ui.toggleFiltersIcon.addClass('icon-collapse-alt')
             @ui.toggleFiltersIcon.removeClass('icon-expand-alt')
-            @ui.toggleFiltersText.html('Show Filters...')
+            @ui.toggleFiltersText.html('Show Filters')
 
         onPageScroll: =>
             # If the view isn't rendered yet, then don't bother

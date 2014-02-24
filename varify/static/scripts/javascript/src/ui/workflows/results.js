@@ -277,7 +277,7 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       this.ui.toggleFiltersButton.tooltip('hide').attr('data-original-title', 'Hide Filter Panel').tooltip('fixTitle');
       this.ui.toggleFiltersIcon.removeClass('icon-collapse-alt');
       this.ui.toggleFiltersIcon.addClass('icon-expand-alt');
-      this.ui.toggleFiltersText.html('Hide Filters...');
+      this.ui.toggleFiltersText.html('Hide Filters');
       this.updateContextPanelOffsets();
       return this.$('.context').stacked('restack', this.$el.height());
     };
@@ -289,7 +289,7 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       this.ui.toggleFiltersButton.tooltip('hide').attr('data-original-title', 'Show Filter Panel').tooltip('fixTitle');
       this.ui.toggleFiltersIcon.addClass('icon-collapse-alt');
       this.ui.toggleFiltersIcon.removeClass('icon-expand-alt');
-      return this.ui.toggleFiltersText.html('Show Filters...');
+      return this.ui.toggleFiltersText.html('Show Filters');
     };
 
     ResultsWorkflow.prototype.onPageScroll = function() {
