@@ -31,6 +31,7 @@ require({
   c.config.set('fields.instances.28.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.29.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.61.form.controls', ['multiSelectionList']);
+  c.config.set('fields.instances.64.form.controls', ['multiSelectionList']);
   c.controls.set('Hgmd', ui.HgmdSelector);
   c.controls.set('Sift', ui.SiftSelector);
   c.controls.set('PolyPhen', ui.PolyPhenSelector);
@@ -44,12 +45,8 @@ require({
         return;
       }
       names = _.map(concepts || [], function(concept) {
-        var _ref, _ref1;
-        if (typeof concept === 'object') {
-          return (_ref = c.data.concepts.get(concept.concept)) != null ? _ref.get('name') : void 0;
-        } else {
-          return (_ref1 = c.data.concepts.get(concept)) != null ? _ref1.get('name') : void 0;
-        }
+        var _ref;
+        return (_ref = c.data.concepts.get(concept.concept)) != null ? _ref.get('name') : void 0;
       });
       if (names) {
         message = 'The following concepts are required: ' + names.join(', ');

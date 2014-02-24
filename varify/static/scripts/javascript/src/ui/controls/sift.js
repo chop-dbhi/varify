@@ -21,9 +21,10 @@ define(['underscore', 'cilantro'], function(_, c) {
       'change .sift-selector': 'change'
     };
 
-    SiftSelector.prototype.onRender = function() {
-      this.set(this.context);
-      return this.change();
+    SiftSelector.prototype.initialize = function() {
+      return this.on('ready', function() {
+        return this.change();
+      });
     };
 
     SiftSelector.prototype.getOperator = function() {
@@ -48,7 +49,7 @@ define(['underscore', 'cilantro'], function(_, c) {
 
     return SiftSelector;
 
-  })(c.ui.Control);
+  })(c.ui.ControlItemView);
   return {
     SiftSelector: SiftSelector
   };

@@ -43,12 +43,13 @@ require
     c.config.set('fields.types.time.form.chart', false)
     c.config.set('fields.types.datetime.form.chart', false)
 
-    # Convert the Effect, Effect Region, Effect Impact, and Functional Class
-    # fields to be multi-selection drop down lists.
+    # Convert the Chromosome, Effect, Effect Region, Effect Impact, and
+    # Functional Class fields to be multi-selection drop down lists.
     c.config.set('fields.instances.27.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.28.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.29.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.61.form.controls', ['multiSelectionList'])
+    c.config.set('fields.instances.64.form.controls', ['multiSelectionList'])
 
     # Set the custom control for the HGMD, Sift, and PolyPhen2 fields.
     c.controls.set('Hgmd', ui.HgmdSelector)
@@ -61,9 +62,6 @@ require
     # A simple handler for CONTEXT_REQUIRED and CONTEXT_INVALID events that
     # tells the user which concept is required(when possible) or prints a
     # generic message in the case the concept name could not be found.
-    #
-    # XXX: This can be updated when Cilantro is updated to 2.2.12 as both
-    # CONTEXT_REQUIRED and CONTEXT_INVALID will return objects.
     notify_required = (concepts) =>
         # It is possible to update the configuration before a session
         # is opened so we only try to generate the concept names and notify
@@ -72,10 +70,7 @@ require
             return
 
         names = _.map concepts || [], (concept) ->
-            if typeof concept is 'object'
-                return c.data.concepts.get(concept.concept)?.get('name')
-            else
-                return c.data.concepts.get(concept)?.get('name')
+            return c.data.concepts.get(concept.concept)?.get('name')
 
         # If we could not get the names of the required concepts then alter the
         # error message to be more generic
