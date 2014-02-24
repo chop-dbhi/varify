@@ -21,9 +21,10 @@ define(['underscore', 'cilantro'], function(_, c) {
       'change .hgmd-selector': 'change'
     };
 
-    HgmdSelector.prototype.onRender = function() {
-      this.set(this.context);
-      return this.change();
+    HgmdSelector.prototype.initialize = function() {
+      return this.on('ready', function() {
+        return this.change();
+      });
     };
 
     HgmdSelector.prototype.getOperator = function() {
@@ -40,7 +41,7 @@ define(['underscore', 'cilantro'], function(_, c) {
 
     return HgmdSelector;
 
-  })(c.ui.Control);
+  })(c.ui.ControlItemView);
   return {
     HgmdSelector: HgmdSelector
   };

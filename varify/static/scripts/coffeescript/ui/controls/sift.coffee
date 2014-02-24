@@ -10,7 +10,7 @@ define [
     # will be a need for this type of control going forward so it might be
     # wise to genericize this after Cilantro gains support for passing custom
     # options to controls.
-    class SiftSelector extends c.ui.Control
+    class SiftSelector extends c.ui.ControlItemView
         template: 'varify/controls/sift'
 
         ui:
@@ -19,14 +19,13 @@ define [
         events:
             'change .sift-selector': 'change'
 
-        onRender: ->
-            @set(@context)
-
-            # Since there is no "empty" option in the list, we need to call
-            # the change method when the control originally renders so the
-            # value is set to the default selected option in the dropdown and
-            # the apply(or update) filter button becomes activated.
-            @change()
+        initialize: ->
+            @on 'ready', ->
+                # Since there is no "empty" option in the list, we need to call
+                # the change method when the control originally renders so the
+                # value is set to the default selected option in the dropdown
+                # and the apply(or update) filter button becomes activated.
+                @change()
 
         getOperator: ->
             if @ui.select.val() == 'damaging'

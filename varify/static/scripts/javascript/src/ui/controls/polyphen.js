@@ -21,9 +21,10 @@ define(['underscore', 'cilantro'], function(_, c) {
       'change .polyphen-selector': 'change'
     };
 
-    PolyPhenSelector.prototype.onRender = function() {
-      this.set(this.context);
-      return this.change();
+    PolyPhenSelector.prototype.initialize = function() {
+      return this.on('ready', function() {
+        return this.change();
+      });
     };
 
     PolyPhenSelector.prototype.getOperator = function() {
@@ -58,7 +59,7 @@ define(['underscore', 'cilantro'], function(_, c) {
 
     return PolyPhenSelector;
 
-  })(c.ui.Control);
+  })(c.ui.ControlItemView);
   return {
     PolyPhenSelector: PolyPhenSelector
   };
