@@ -62,9 +62,6 @@ require
     # A simple handler for CONTEXT_REQUIRED and CONTEXT_INVALID events that
     # tells the user which concept is required(when possible) or prints a
     # generic message in the case the concept name could not be found.
-    #
-    # XXX: This can be updated when Cilantro is updated to 2.2.12 as both
-    # CONTEXT_REQUIRED and CONTEXT_INVALID will return objects.
     notify_required = (concepts) =>
         # It is possible to update the configuration before a session
         # is opened so we only try to generate the concept names and notify
@@ -73,10 +70,7 @@ require
             return
 
         names = _.map concepts || [], (concept) ->
-            if typeof concept is 'object'
-                return c.data.concepts.get(concept.concept)?.get('name')
-            else
-                return c.data.concepts.get(concept)?.get('name')
+            return c.data.concepts.get(concept.concept)?.get('name')
 
         # If we could not get the names of the required concepts then alter the
         # error message to be more generic
