@@ -212,6 +212,7 @@ class Cohort(ObjectSet):
     allele_freq_modified = models.DateTimeField(null=True)
 
     set_object_rel = 'samples'
+    label_field = 'name'
 
     def __unicode__(self):
         return unicode(self.name)
