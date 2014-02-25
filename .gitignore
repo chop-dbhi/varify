@@ -23,9 +23,6 @@ profiled_tests.txt
 settings
 local_settings.py
 
-# ignore optimized javascript
-varify/static/scripts/javascript/min
-
 # all Sass files will be compiled into this directory
 varify/static/stylesheets/css
 
