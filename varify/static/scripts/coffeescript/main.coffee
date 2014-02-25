@@ -51,6 +51,8 @@ require
     c.config.set('fields.instances.61.form.controls', ['multiSelectionList'])
     c.config.set('fields.instances.64.form.controls', ['multiSelectionList'])
 
+    c.config.set('fields.instances.75.form.controls', ['search'])
+
     # Convert the Genotype field to be a single selection drop down.
     c.config.set('fields.instances.68.form.controls', ['singleSelectionList'])
 
