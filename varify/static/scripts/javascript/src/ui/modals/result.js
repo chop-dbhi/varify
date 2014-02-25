@@ -69,34 +69,33 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       content = [];
       content.push('<h4>Prediction Scores</h4>');
       content.push('<ul class=unstyled>');
-      if ((sift = attrs.sift[0]) || (pp2 = attrs.polyphen2[0])) {
-        if (sift) {
-          labelClass = '';
-          switch (sift.prediction) {
-            case 'Damaging':
-              labelClass = 'text-error';
-              break;
-            default:
-              labelClass = 'muted';
-          }
-          content.push("<li><small>SIFT</small> <span class=" + labelClass + ">" + sift.prediction + "</span></li>");
+      if ((sift = attrs.sift[0])) {
+        labelClass = '';
+        switch (sift.prediction) {
+          case 'Damaging':
+            labelClass = 'text-error';
+            break;
+          default:
+            labelClass = 'muted';
         }
-        if (pp2) {
-          labelClass = '';
-          switch (pp2.prediction) {
-            case 'Probably Damaging':
-              labelClass = 'text-error';
-              break;
-            case 'Possibly Damaging':
-              labelClass = 'text-warning';
-              break;
-            default:
-              labelClass = 'muted';
-          }
-          content.push("<li><small>PolyPhen2</small> <span class=" + labelClass + ">" + pp2.prediction + "</span></li>");
+        content.push("<li><small>SIFT</small> <span class=" + labelClass + ">" + sift.prediction + "</span></li>");
+      }
+      if ((pp2 = attrs.polyphen2[0])) {
+        labelClass = '';
+        switch (pp2.prediction) {
+          case 'Probably Damaging':
+            labelClass = 'text-error';
+            break;
+          case 'Possibly Damaging':
+            labelClass = 'text-warning';
+            break;
+          default:
+            labelClass = 'muted';
         }
-        content.push('</ul>');
-      } else {
+        content.push("<li><small>PolyPhen2</small> <span class=" + labelClass + ">" + pp2.prediction + "</span></li>");
+      }
+      content.push('</ul>');
+      if (!(sift || pp2)) {
         content.push('<p class=muted>No predictions scores</p>');
       }
       return content.join('');

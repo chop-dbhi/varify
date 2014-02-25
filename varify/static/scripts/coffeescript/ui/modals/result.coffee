@@ -65,25 +65,25 @@ define [
             content.push '<h4>Prediction Scores</h4>'
             content.push '<ul class=unstyled>'
 
-            if (sift = attrs.sift[0]) or (pp2 = attrs.polyphen2[0])
-                # SIFT
-                if sift
-                    labelClass = ''
-                    switch sift.prediction
-                        when 'Damaging' then labelClass = 'text-error'
-                        else labelClass = 'muted'
-                    content.push "<li><small>SIFT</small> <span class=#{ labelClass }>#{ sift.prediction }</span></li>"
+            # SIFT
+            if (sift = attrs.sift[0])
+                labelClass = ''
+                switch sift.prediction
+                    when 'Damaging' then labelClass = 'text-error'
+                    else labelClass = 'muted'
+                content.push "<li><small>SIFT</small> <span class=#{ labelClass }>#{ sift.prediction }</span></li>"
 
-                # PolyPhen2
-                if pp2
-                    labelClass = ''
-                    switch pp2.prediction
-                        when 'Probably Damaging' then labelClass = 'text-error'
-                        when 'Possibly Damaging' then labelClass = 'text-warning'
-                        else labelClass = 'muted'
-                    content.push "<li><small>PolyPhen2</small> <span class=#{ labelClass }>#{ pp2.prediction }</span></li>"
-                content.push '</ul>'
-            else
+            # PolyPhen2
+            if (pp2 = attrs.polyphen2[0])
+                labelClass = ''
+                switch pp2.prediction
+                    when 'Probably Damaging' then labelClass = 'text-error'
+                    when 'Possibly Damaging' then labelClass = 'text-warning'
+                    else labelClass = 'muted'
+                content.push "<li><small>PolyPhen2</small> <span class=#{ labelClass }>#{ pp2.prediction }</span></li>"
+
+            content.push '</ul>'
+            if not (sift or pp2)
                 content.push '<p class=muted>No predictions scores</p>'
 
             return content.join ''
