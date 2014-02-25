@@ -32,6 +32,7 @@ require({
   c.config.set('fields.instances.29.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.61.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.64.form.controls', ['multiSelectionList']);
+  c.config.set('fields.instances.75.form.controls', ['search']);
   c.config.set('fields.instances.68.form.controls', ['singleSelectionList']);
   c.controls.set('Hgmd', ui.HgmdSelector);
   c.controls.set('Sift', ui.SiftSelector);
