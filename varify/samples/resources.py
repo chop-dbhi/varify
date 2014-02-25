@@ -270,6 +270,6 @@ urlpatterns = patterns(
         named_sample_resource, name='named_sample'),
     url(r'^(?P<pk>\d+)/variants/$', sample_results_resource, name='variants'),
     url(r'^variants/(?P<pk>\d+)/$', sample_result_resource, name='variant'),
-    url(r'^(?P<sample_id>[a-zA-Z0-9_-]*)/phenotypes/$', phenotype_resource,
+    url(r'^(?P<sample_id>.+)/phenotypes/$', phenotype_resource,
         name='phenotype'),
 )
