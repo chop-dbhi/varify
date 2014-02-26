@@ -1,0 +1,1 @@
+var __slice=[].slice;define(["underscore","./modals/result"],function(){var e,t;return t=arguments[0],e=2<=arguments.length?__slice.call(arguments,1):[],t.extend.apply(t,[{}].concat(__slice.call(e)))})
