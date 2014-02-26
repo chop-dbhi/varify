@@ -13,6 +13,7 @@ log = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
+    args = '<sample_label sample_label ...>'
     option_list = BaseCommand.option_list + (
         make_option('--database', action='store', dest='database',
                     default=DEFAULT_DB_ALIAS,
@@ -22,7 +23,7 @@ class Command(BaseCommand):
                     help='Forces recomputation of all gene rankings')
     )
 
-    def handle(self, **options):
+    def handle(self, *args, **options):
         if not settings.PHENOTYPE_ENDPOINT:
             log.error('PHENOTYPE_ENDPOINT must be defined in settings for '
                       'gene rankings to be updated.')
@@ -46,8 +47,13 @@ class Command(BaseCommand):
         cert = (settings.VARIFY_CERT, settings.VARIFY_KEY)
 
         # We ignore all the samples that aren't published. They aren't visible
-        # to the user so we don't bother updating related scores.
+        # to the user so we don't bother updating related scores. If there
+        # were sample labels supplied as arguments then we limit the rankings
+        # updates to those samples, otherwise we process all samples.
         samples = Sample.objects.filter(published=True)
+
+        if args:
+            samples = samples.filter(label__in=args)
 
         updated_samples = 0
         total_samples = 0
