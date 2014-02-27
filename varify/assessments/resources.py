@@ -3,14 +3,14 @@ from django.http import HttpResponse
 from django.views.decorators.cache import never_cache
 from django.utils import simplejson
 from preserialize.serialize import serialize
-from restlib2 import resources
 from restlib2.http import codes
+from serrano.resources.base import ThrottledResource
 from varify import api
 from .models import Assessment
 from .forms import AssessmentForm
 
 
-class AssessmentResourceBase(resources.Resource):
+class AssessmentResourceBase(ThrottledResource):
     model = Assessment
     template = api.templates.Assessment
 

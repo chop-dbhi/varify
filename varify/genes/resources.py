@@ -4,12 +4,12 @@ from django.http import Http404
 from django.views.decorators.cache import never_cache
 from django.core.urlresolvers import reverse
 from preserialize.serialize import serialize
-from restlib2 import resources
+from serrano.resources.base import ThrottledResource
 from varify import api
 from .models import Gene
 
 
-class GeneResource(resources.Resource):
+class GeneResource(ThrottledResource):
     model = Gene
 
     template = api.templates.Gene
@@ -33,7 +33,7 @@ class GeneResource(resources.Resource):
         return data
 
 
-class GeneSearchResource(resources.Resource):
+class GeneSearchResource(ThrottledResource):
     model = Gene
 
     template = api.templates.GeneSearch

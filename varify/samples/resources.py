@@ -10,6 +10,7 @@ from django.views.decorators.cache import never_cache
 from django.conf import settings
 from preserialize.serialize import serialize
 from restlib2 import resources
+from serrano.resources.base import ThrottledResource
 from varify.variants.resources import VariantResource
 from varify import api
 from varify.assessments.models import Assessment
@@ -32,7 +33,7 @@ def sample_posthook(instance, data, request):
     return data
 
 
-class SampleResource(resources.Resource):
+class SampleResource(ThrottledResource):
     model = Sample
 
     template = api.templates.Sample
@@ -52,7 +53,7 @@ class SampleResource(resources.Resource):
         return serialize(sample, posthook=posthook, **self.template)
 
 
-class SamplesResource(resources.Resource):
+class SamplesResource(ThrottledResource):
     model = Sample
 
     template = api.templates.Sample
@@ -63,11 +64,15 @@ class SamplesResource(resources.Resource):
         return serialize(samples, posthook=posthook, **self.template)
 
 
-class NamedSampleResource(resources.Resource):
+class NamedSampleResource(ThrottledResource):
     "Resource for looking up a sample by project, batch, and sample name"
     model = Sample
 
     template = api.templates.Sample
+
+    # Bypass authorization check imposed by Serrano's AUTH_REQUIRED setting
+    def __call__(self, *args, **kwargs):
+        return resources.Resource.__call__(self, *args, **kwargs)
 
     def is_not_found(self, request, response, project, batch, sample):
         try:
@@ -96,7 +101,7 @@ class NamedSampleResource(resources.Resource):
         return data
 
 
-class SampleResultsResource(resources.Resource):
+class SampleResultsResource(ThrottledResource):
     "Paginated view of results for a sample."
     model = Result
 
@@ -168,7 +173,7 @@ class SampleResultsResource(resources.Resource):
         return resp
 
 
-class SampleResultResource(resources.Resource):
+class SampleResultResource(ThrottledResource):
     model = Result
 
     template = api.templates.SampleResultVariant
@@ -238,7 +243,7 @@ class SampleResultResource(resources.Resource):
         return data
 
 
-class PhenotypeResource(resources.Resource):
+class PhenotypeResource(ThrottledResource):
     def get(self, request, sample_id):
         endpoint = settings.PHENOTYPE_ENDPOINT % sample_id
 

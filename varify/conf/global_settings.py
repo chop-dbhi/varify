@@ -1,11 +1,12 @@
 import os
 
 # Import global settings to make it easier to extend settings.
-from django.conf.global_settings import *
+from django.conf.global_settings import *  # noqa
 
 # Import the project module to calculate directories relative to the module
 # location.
-PROJECT_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
+PROJECT_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                            '../..')
 
 # List all Django apps here. Note that standard Python libraries should not
 # be added to this list since Django will not recognize them as apps anyway.
@@ -89,8 +90,8 @@ DATABASES = {}
 # to different databases depending on what data is being acted on. For Harvest
 # instances that make use of an existing database, it is typically never
 # desirable to create all the Harvest application tables in this database, but
-# rather have a separate database for this purpose. That way the "data" database
-# does not need to be changed.
+# rather have a separate database for this purpose. That way the "data"
+# database does not need to be changed.
 
 DATABASE_ROUTERS = {}
 
@@ -202,7 +203,7 @@ SITEAUTH_ALLOW_URLS = (
     r'^log(in|out)/',
     r'^password/reset/',
     r'^(static|support|register|verify)/',
-    r'^api/samples/(?P<project>.+)/(?P<batch>.+)/(?P<sample>.+)/$',
+    r'^api/',
 )
 
 #
@@ -308,7 +309,7 @@ REGISTRATION_MODERATION = True
 CSRF_COOKIE_NAME = 'varify_csrftoken'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_COOKIE_AGE = 60 * 60 # 1 hour
+SESSION_COOKIE_AGE = 60 * 60  # 1 hour
 SESSION_COOKIE_NAME = 'varify_sessionid'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = False
@@ -379,5 +380,8 @@ AVOCADO = {
     'METADATA_MIGRATION_APP': 'varify',
 }
 
+SERRANO = {
+    'AUTH_REQUIRED': True,
+}
 
 VARIFY_SAMPLE_DIRS = ()
