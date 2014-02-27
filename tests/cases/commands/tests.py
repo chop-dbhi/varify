@@ -1,16 +1,121 @@
+import httpretty
+import logging
 import os
+import re
 from django.contrib.auth.models import User
 from django.core import management
+from django.test import TestCase
 from django.test.utils import override_settings
 from django_rq import get_worker
+from requests.exceptions import ConnectionError, RequestException, SSLError
 from varify.assessments.models import Assessment, Pathogenicity, \
     ParentalResult, AssessmentCategory
 from varify.samples.models import Sample, CohortSample, Result, SampleRun, \
     SampleManifest, Project, Cohort, Batch, CohortVariant
+from varify.samples.management.subcommands import gene_ranks
 from ..sample_load_process.tests import QueueTestCase
+from ...models import MockHandler
 
 TESTS_DIR = os.path.join(os.path.dirname(__file__), '../..')
 SAMPLE_DIRS = [os.path.join(TESTS_DIR, 'samples', 'batch1')]
+
+
+class GeneRanksTestCase(TestCase):
+    fixtures = ['test_data.json']
+
+    def setUp(self):
+        # Setup a mock handler
+        logger = logging.getLogger(gene_ranks.__name__)
+        self.mock_handler = MockHandler()
+        logger.addHandler(self.mock_handler)
+
+    def mock_ssl_error(self, request, uri, headers):
+        raise SSLError
+
+    def mock_connection_error(self, request, uri, headers):
+        raise ConnectionError
+
+    def mock_request_exception(self, request, uri, headers):
+        raise RequestException
+
+    def test_missing_settings(self):
+        error_log_count = len(self.mock_handler.messages['error'])
+
+        with self.settings(PHENOTYPE_ENDPOINT=None):
+            management.call_command('samples', 'gene-ranks')
+            self.assertEqual(error_log_count + 1,
+                             len(self.mock_handler.messages['error']))
+
+        with self.settings(GENE_RANK_BASE_URL=None):
+            management.call_command('samples', 'gene-ranks')
+            self.assertEqual(error_log_count + 2,
+                             len(self.mock_handler.messages['error']))
+
+        with self.settings(VARIFY_CERT=None):
+            management.call_command('samples', 'gene-ranks')
+            self.assertEqual(error_log_count + 3,
+                             len(self.mock_handler.messages['error']))
+
+        with self.settings(VARIFY_KEY=None):
+            management.call_command('samples', 'gene-ranks')
+            self.assertEqual(error_log_count + 4,
+                             len(self.mock_handler.messages['error']))
+
+    @httpretty.activate
+    def test_sample_label_args(self):
+        # Assert that all the samples we expect to be in the DB are there
+        self.assertSequenceEqual(
+            Sample.objects.all().values_list('label', flat=True),
+            ['NA12878', 'NA12891', 'VPseq004-P-A'])
+
+        management.call_command('samples', 'gene-ranks', 'FAKE')
+
+        # There should be info log messages and the last one should be a
+        # report that 0 samples were loaded and 0 were skipped meaning that we
+        # didn't do anything because the sample label we passed in was bogus.
+        self.assertTrue(self.mock_handler.messages['info'])
+        self.assertEqual(self.mock_handler.messages['info'][-1],
+                         "Updated 0 and skipped 0 samples")
+
+        # Setup patches for the mock error responses
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/connection_error/(.*)/"),
+            body=self.mock_connection_error)
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/request_exception/(.*)/"),
+            body=self.mock_request_exception)
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/ssl_error/(.*)/"),
+            body=self.mock_ssl_error)
+
+        # Use a sample we now is present but account for all the possible
+        # error results from the real endpoint by using mock error resources.
+        with self.settings(PHENOTYPE_ENDPOINT=
+                           'http://localhost/api/tests/connection_error/%s/'):
+            management.call_command('samples', 'gene-ranks', 'NA12878')
+
+            self.assertTrue(self.mock_handler.messages['error'])
+            self.assertTrue("A ConnectionError occurred" in
+                            self.mock_handler.messages['error'][-1])
+
+        with self.settings(PHENOTYPE_ENDPOINT=
+                           'http://localhost/api/tests/request_exception/%s/'):
+            management.call_command('samples', 'gene-ranks', 'NA12878')
+
+            self.assertTrue(self.mock_handler.messages['error'])
+            self.assertTrue("The sample has no phenotype data associated" in
+                            self.mock_handler.messages['error'][-1])
+
+        with self.settings(PHENOTYPE_ENDPOINT=
+                           'http://localhost/api/tests/ssl_error/%s/'):
+            management.call_command('samples', 'gene-ranks', 'NA12878')
+
+            self.assertTrue(self.mock_handler.messages['error'])
+            self.assertTrue("An SSLError occurred" in
+                            self.mock_handler.messages['error'][-1])
 
 
 @override_settings(VARIFY_SAMPLE_DIRS=SAMPLE_DIRS)
