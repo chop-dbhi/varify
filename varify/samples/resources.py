@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.cache import never_cache
 from django.conf import settings
 from preserialize.serialize import serialize
+from restlib2 import resources
 from serrano.resources.base import ThrottledResource
 from varify.variants.resources import VariantResource
 from varify import api
@@ -68,6 +69,10 @@ class NamedSampleResource(ThrottledResource):
     model = Sample
 
     template = api.templates.Sample
+
+    # Bypass authorization check imposed by Serrano's AUTH_REQUIRED setting
+    def __call__(self, *args, **kwargs):
+        return resources.Resource.__call__(self, *args, **kwargs)
 
     def is_not_found(self, request, response, project, batch, sample):
         try:
