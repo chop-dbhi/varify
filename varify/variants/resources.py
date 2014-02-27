@@ -4,7 +4,7 @@ from django.http import Http404
 from django.views.decorators.cache import never_cache
 from guardian.shortcuts import get_objects_for_user
 from preserialize.serialize import serialize
-from restlib2 import resources
+from serrano.resources.base import ThrottledResource
 from varify import api
 from varify.samples.models import CohortVariant
 from varify.assessments.models import Assessment, Pathogenicity, \
@@ -12,7 +12,7 @@ from varify.assessments.models import Assessment, Pathogenicity, \
 from .models import Variant
 
 
-class VariantResource(resources.Resource):
+class VariantResource(ThrottledResource):
     model = Variant
 
     template = api.templates.Variant
@@ -72,7 +72,7 @@ class VariantResource(resources.Resource):
         return data
 
 
-class VariantAssessmentMetricsResource(resources.Resource):
+class VariantAssessmentMetricsResource(ThrottledResource):
     model = Variant
 
     def is_not_found(self, request, response, pk):

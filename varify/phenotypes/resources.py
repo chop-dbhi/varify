@@ -3,13 +3,13 @@ from django.conf.urls import patterns, url
 from django.http import Http404
 from django.views.decorators.cache import never_cache
 from django.core.urlresolvers import reverse
-from restlib2 import resources
+from serrano.resources.base import ThrottledResource
 from varify import api
 from .models import Phenotype
 from preserialize.serialize import serialize
 
 
-class PhenotypeResource(resources.Resource):
+class PhenotypeResource(ThrottledResource):
     model = Phenotype
 
     template = api.templates.Phenotype
@@ -26,7 +26,7 @@ class PhenotypeResource(resources.Resource):
         return serialize(phenotype, **self.template)
 
 
-class PhenotypeSearchResource(resources.Resource):
+class PhenotypeSearchResource(ThrottledResource):
     model = Phenotype
 
     template = api.templates.PhenotypeSearch
