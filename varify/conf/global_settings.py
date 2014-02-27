@@ -202,7 +202,7 @@ SITEAUTH_ALLOW_URLS = (
     r'^log(in|out)/',
     r'^password/reset/',
     r'^(static|support|register|verify)/',
-    r'^api/samples/(?P<project>.+)/(?P<batch>.+)/(?P<sample>.+)/$',
+    r'^api/',
 )
 
 #
@@ -379,5 +379,8 @@ AVOCADO = {
     'METADATA_MIGRATION_APP': 'varify',
 }
 
+SERRANO = {
+    'AUTH_REQUIRED': True,
+}
 
 VARIFY_SAMPLE_DIRS = ()
