@@ -11,7 +11,7 @@ from requests.exceptions import ConnectionError, RequestException, SSLError
 from varify.assessments.models import Assessment, Pathogenicity, \
     ParentalResult, AssessmentCategory
 from varify.samples.models import Sample, CohortSample, Result, SampleRun, \
-    SampleManifest, Project, Cohort, Batch, CohortVariant
+    SampleManifest, Project, Cohort, Batch, CohortVariant, ResultScore
 from varify.samples.management.subcommands import gene_ranks
 from ..sample_load_process.tests import QueueTestCase
 from ...models import MockHandler
@@ -38,6 +38,14 @@ class GeneRanksTestCase(TestCase):
     def mock_request_exception(self, request, uri, headers):
         raise RequestException
 
+    def mock_unparseable_terms(self, request, uri, headers):
+        json = """{
+            "last_modified": "2014-02-27T16:48:39.743363",
+            "hpoAnnotations": ["HPO:1", "HPO:2"]
+        }"""
+
+        return (200, headers, json)
+
     def test_missing_settings(self):
         error_log_count = len(self.mock_handler.messages['error'])
 
@@ -61,22 +69,10 @@ class GeneRanksTestCase(TestCase):
             self.assertEqual(error_log_count + 4,
                              len(self.mock_handler.messages['error']))
 
+        self.assertEqual(ResultScore.objects.count(), 0)
+
     @httpretty.activate
-    def test_sample_label_args(self):
-        # Assert that all the samples we expect to be in the DB are there
-        self.assertSequenceEqual(
-            Sample.objects.all().values_list('label', flat=True),
-            ['NA12878', 'NA12891', 'VPseq004-P-A'])
-
-        management.call_command('samples', 'gene-ranks', 'FAKE')
-
-        # There should be info log messages and the last one should be a
-        # report that 0 samples were loaded and 0 were skipped meaning that we
-        # didn't do anything because the sample label we passed in was bogus.
-        self.assertTrue(self.mock_handler.messages['info'])
-        self.assertEqual(self.mock_handler.messages['info'][-1],
-                         "Updated 0 and skipped 0 samples")
-
+    def test_url_and_data_errors(self):
         # Setup patches for the mock error responses
         httpretty.register_uri(
             httpretty.GET,
@@ -90,6 +86,20 @@ class GeneRanksTestCase(TestCase):
             httpretty.GET,
             re.compile("http://localhost/api/tests/ssl_error/(.*)/"),
             body=self.mock_ssl_error)
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/unparseable_data/(.*)/"),
+            body="UNPARSEABLE RESPONSE BODY, JSON EXPECTED")
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/unparseable_date/(.*)/"),
+            body='{"last_modified": "half past noon"}',
+            content_type="application/json")
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/unparseable_terms/(.*)/"),
+            body=self.mock_unparseable_terms,
+            content_type="application/json")
 
         # Use a sample we now is present but account for all the possible
         # error results from the real endpoint by using mock error resources.
@@ -116,6 +126,54 @@ class GeneRanksTestCase(TestCase):
             self.assertTrue(self.mock_handler.messages['error'])
             self.assertTrue("An SSLError occurred" in
                             self.mock_handler.messages['error'][-1])
+
+        with self.settings(PHENOTYPE_ENDPOINT=
+                           'http://localhost/api/tests/unparseable_data/%s/'):
+            management.call_command('samples', 'gene-ranks', 'NA12878')
+
+            self.assertTrue(self.mock_handler.messages['error'])
+            self.assertTrue("Could not parse response" in
+                            self.mock_handler.messages['error'][-1])
+
+        with self.settings(PHENOTYPE_ENDPOINT=
+                           'http://localhost/api/tests/unparseable_date/%s/'):
+            management.call_command('samples', 'gene-ranks', 'NA12878')
+
+            self.assertTrue(self.mock_handler.messages['warning'])
+            self.assertTrue("Could not parse 'last_modified'" in
+                            self.mock_handler.messages['warning'][-1])
+            self.assertTrue(self.mock_handler.messages['error'])
+            self.assertTrue("Response from phenotype missing HPO Annotations"
+                            in self.mock_handler.messages['error'][-1])
+
+        with self.settings(PHENOTYPE_ENDPOINT=
+                           'http://localhost/api/tests/unparseable_terms/%s/'):
+            management.call_command('samples', 'gene-ranks', 'NA12878')
+
+            self.assertTrue(self.mock_handler.messages['warning'])
+            self.assertTrue("because it has no HPO terms" in
+                            self.mock_handler.messages['warning'][-1])
+
+        # We still shouldn't have any ResultScores as we've been nothing but a
+        # failure to this point.
+        self.assertEqual(ResultScore.objects.count(), 0)
+
+    def test_load(self):
+        # Assert that all the samples we expect to be in the DB are there
+        self.assertSequenceEqual(
+            Sample.objects.all().values_list('label', flat=True),
+            ['NA12878', 'NA12891', 'VPseq004-P-A'])
+
+        management.call_command('samples', 'gene-ranks', 'FAKE')
+
+        # There should be info log messages and the last one should be a
+        # report that 0 samples were loaded and 0 were skipped meaning that we
+        # didn't do anything because the sample label we passed in was bogus.
+        self.assertTrue(self.mock_handler.messages['info'])
+        self.assertEqual(self.mock_handler.messages['info'][-1],
+                         "Updated 0 and skipped 0 samples")
+
+        self.assertEqual(ResultScore.objects.count(), 0)
 
 
 @override_settings(VARIFY_SAMPLE_DIRS=SAMPLE_DIRS)
