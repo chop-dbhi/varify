@@ -122,7 +122,10 @@ class Command(BaseCommand):
             # enpoint expects them to be of the form 'HP:0011263'.
             hpo_terms = []
             for hpo_annotation in phenotype_data['hpoAnnotations']:
-                hpo_id = str(hpo_annotation.get('hpo_id', ''))
+                try:
+                    hpo_id = str(hpo_annotation.get('hpo_id', ''))
+                except AttributeError:
+                    continue
 
                 if hpo_id:
                     hpo_terms.append(hpo_id.replace('_', ':'))
