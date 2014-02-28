@@ -103,6 +103,13 @@ class Command(BaseCommand):
                          "used then all samples will be updated despite this "
                          "parsing failure.")
 
+            # If the parsed response doesn't contain any HPO terms then we can
+            # skip this sample since we cannot rank genes without HPO terms.
+            if not phenotype_data.get('hpoAnnotations', []):
+                log.error("Response from phenotype missing HPO Annotations, "
+                          "skipping '{0}'.".format(sample.label))
+                continue
+
             if (not force and sample.phenotype_modified and
                     sample.phenotype_modified < phenotype_modified):
                 log.debug("Sample '{0}' is already up to date, skipping it."
