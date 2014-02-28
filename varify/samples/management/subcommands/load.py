@@ -183,22 +183,24 @@ class Command(BaseCommand):
         variant = self.get_variant(record)
         info = record.INFO
 
-        genotype = self.get_genotype(call['GT'])
+        genotype = self.get_genotype(getattr(call.data, 'GT', None))
+
+        ad = getattr(call.data, 'AD', None)
 
         # Create result
         result = Result(
             quality=record.QUAL,
 
-            read_depth=getattr(call, 'DP', None),
+            read_depth=getattr(call.data, 'DP', None),
 
             genotype=genotype,
-            genotype_quality=getattr(call, 'GQ', None),
+            genotype_quality=getattr(call.data, 'GQ', None),
 
-            coverage_ref=call['AD'][0] if getattr(call, 'AD') else None,
-            coverage_alt=call['AD'][1] if getattr(call, 'AD') else None,
+            coverage_ref=ad[0] if ad and len(ad) > 0 else None,
+            coverage_alt=ad[1] if ad and len(ad) > 1 else None,
 
             phred_scaled_likelihood=','.join(
-                [str(x) for x in getattr(call, 'PL', [])]),
+                [str(x) for x in getattr(call.data, 'PL', [])]),
 
             in_dbsnp=bool(self.clean_value(info, 'DB')),
 

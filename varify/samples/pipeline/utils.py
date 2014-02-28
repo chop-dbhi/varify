@@ -65,7 +65,7 @@ class ResultStream(VCFPGCopyEditor):
         # The possibility for multiple alleles in these wide vcfs is almost
         # infinite so we need to triage the really weird ones into having a
         # reference allele "0/#" or being off the map entirely "#/#"".
-        gt = getattr(call, 'GT', None)
+        gt = getattr(call.data, 'GT', None)
         if gt:
             try:
                 keyed_geno = self.genotypes[gt]
@@ -77,16 +77,16 @@ class ResultStream(VCFPGCopyEditor):
         else:
             keyed_geno = None
 
-        dp = getattr(call, 'DP', None)
-        gq = getattr(call, 'GQ', None)
-        ad = getattr(call, 'AD', None)
+        dp = getattr(call.data, 'DP', None)
+        gq = getattr(call.data, 'GQ', None)
+        ad = getattr(call.data, 'AD', None)
         if ad and len(ad) > 1:
             ad0 = ad[0]
             ad1 = ad[1]
         else:
             ad0 = None
             ad1 = None
-        pl = getattr(call, 'PL', None)
+        pl = getattr(call.data, 'PL', None)
         if pl:
             pl = ','.join([str(x) for x in pl])
 

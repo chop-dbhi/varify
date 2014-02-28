@@ -203,7 +203,7 @@ def load_results(manifest_path, database, **kwargs):
                         sample.save()
                         successful = True
                 except:
-                    log.error('STS errors')
+                    log.exception('STS errors')
                     time.sleep(10)
 
     vcf_info = manifest.section('vcf')

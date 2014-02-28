@@ -309,5 +309,45 @@
             "order": 4,
             "code": 4
         }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 5,
+        "fields": {
+            "label": "Het Ref",
+            "value": "0/2",
+            "order": 5,
+            "code": 5
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 6,
+        "fields": {
+            "label": "Hom Alt",
+            "value": "2/2",
+            "order": 6,
+            "code": 6
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 7,
+        "fields": {
+            "label": "Het Mult Ref",
+            "value": "0/#",
+            "order": 7,
+            "code": 7
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 8,
+        "fields": {
+            "label": "Hom Mult Alle",
+            "value": "#/#",
+            "order": 8,
+            "code": 8
+        }
     }
 ]
