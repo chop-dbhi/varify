@@ -144,12 +144,14 @@ class Command(BaseCommand):
             # Obviously, if there are no genes then the gene ranking endpoint
             # will have nothing to do so we can safely skip this sample.
             if not genes:
+                log.warning('Skipping "{0}" because it has no genes '
+                            'associated with it.'.format(sample.label))
                 continue
 
             # We need to convert the genes to strings because the ranking
             # service is no prepared to handle the unicode format that the
             # gene symbols are in when we retrieve them from the models.
-            gene_rank_url = "http://{0}?hpo={1}&genes={2}".format(
+            gene_rank_url = "{0}?hpo={1}&genes={2}".format(
                 settings.GENE_RANK_BASE_URL, ",".join(hpo_terms),
                 ",".join([str(g) for g in genes]))
 
