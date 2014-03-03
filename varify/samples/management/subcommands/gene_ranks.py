@@ -111,7 +111,7 @@ class Command(BaseCommand):
                 continue
 
             if (not force and sample.phenotype_modified and
-                    sample.phenotype_modified < phenotype_modified):
+                    sample.phenotype_modified > phenotype_modified):
                 log.debug("Sample '{0}' is already up to date, skipping it."
                           .format(sample.label))
                 continue
