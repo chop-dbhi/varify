@@ -74,6 +74,70 @@ class GeneRanksTestCase(TestCase):
 
         return (200, headers, json)
 
+    def mock_gene_rank(self, request, uri, headers):
+        """
+        Mocks an actual, valid response as seen from the live gene rank
+        endpoint. This response should be fully parseable and understood
+        by the gene ranking command code.
+        """
+
+        json = """{
+            "ranked_genes": [
+                {
+                    "symbol": "RBM8A",
+                    "score": 3.196735916182328,
+                    "rank": 1
+                },
+                {
+                    "symbol": "PEX11B",
+                    "score": 2.967686462072098,
+                    "rank": 2
+                },
+                {
+                    "symbol": "HFE2",
+                    "score": 0.615416141739313,
+                    "rank": 3
+                }
+            ],
+            "unranked_genes": [
+                "LINC00875",
+                "GPR89A",
+                "CD160",
+                "POLR3C",
+                "NBPF12",
+                "SEC22B",
+                "NOTCH2NL",
+                "GNRHR2",
+                "LOC100288142",
+                "PDE4DIP",
+                "LOC100130000",
+                "LOC728875",
+                "NUDT17",
+                "PIAS3",
+                "RNF115",
+                "NBPF10",
+                "NBPF9",
+                "FLJ39739",
+                "None",
+                "LIX1L",
+                "PDZK1",
+                "ITGA10",
+                "TXNIP",
+                "ANKRD34A",
+                "LINC00623",
+                "POLR3GL",
+                "ANKRD35"
+            ],
+            "hpo_valid": [
+                "HP:0000407",
+                "HP:0001263",
+                "HP:0000175"
+            ],
+            "hpo_invalid": [ ]
+        }"""
+
+        return (200, headers, json)
+
     def mock_phenotype(self, request, uri, headers):
         """
         Mocks an actual, valid response as seen from the live phenotype
@@ -127,6 +191,13 @@ class GeneRanksTestCase(TestCase):
         return (200, headers, json)
 
     def register_patches(self):
+        """
+        Registers all the shared(or potentially common) uri patches to
+        intercept requests from the individual tests. Any test-specific
+        patches can be applied within the test so they don't conflict with
+        other tests.
+        """
+
         httpretty.register_uri(
             httpretty.GET,
             re.compile("http://localhost/api/tests/connection_error/(.*)/"),
@@ -158,11 +229,6 @@ class GeneRanksTestCase(TestCase):
             re.compile("http://localhost/api/tests/phenotype/(.*)/"),
             body=self.mock_phenotype,
             content_type="application/json")
-        httpretty.register_uri(
-            httpretty.GET,
-            re.compile(
-                "http://localhost/api/tests/genotype_exception(.*)"),
-            body=self.mock_request_exception)
 
     def test_missing_settings(self):
         error_log_count = len(self.mock_handler.messages['error'])
@@ -192,6 +258,11 @@ class GeneRanksTestCase(TestCase):
     @httpretty.activate
     def test_url_and_data_errors(self):
         self.register_patches()
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile(
+                "http://localhost/api/tests/gene_rank_exception(.*)"),
+            body=self.mock_request_exception)
 
         # Use a sample we now is present but account for all the possible
         # error results from the real endpoint by using mock error resources.
@@ -249,7 +320,7 @@ class GeneRanksTestCase(TestCase):
         with self.settings(PHENOTYPE_ENDPOINT=
                            'http://localhost/api/tests/phenotype/%s/',
                            GENE_RANK_BASE_URL=
-                           'http://localhost/api/tests/genotype_exception'):
+                           'http://localhost/api/tests/gene_rank_exception'):
             management.call_command('samples', 'gene-ranks', 'NA12878')
 
             self.assertTrue(self.mock_handler.messages['error'])
@@ -263,6 +334,11 @@ class GeneRanksTestCase(TestCase):
     @httpretty.activate
     def test_load(self):
         self.register_patches()
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile(
+                "http://localhost/api/tests/gene_rank(.*)"),
+            body=self.mock_gene_rank)
 
         # Assert that all the samples we expect to be in the DB are there
         self.assertSequenceEqual(
@@ -281,7 +357,9 @@ class GeneRanksTestCase(TestCase):
         self.assertEqual(ResultScore.objects.count(), 0)
 
         with self.settings(PHENOTYPE_ENDPOINT=
-                           'http://localhost/api/tests/phenotype/%s/'):
+                           'http://localhost/api/tests/phenotype/%s/',
+                           GENE_RANK_BASE_URL=
+                           'http://localhost/api/tests/gene_rank'):
             management.call_command('samples', 'gene-ranks')
 
             # We should be error free. A few samples will have been skipped but
