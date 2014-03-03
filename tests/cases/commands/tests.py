@@ -106,6 +106,11 @@ class GeneRanksTestCase(TestCase):
                     "hpo_id": "HP_0000175",
                     "name": "Cleft palate",
                     "priority": null
+                },
+                {
+                    "hpo_id": "",
+                    "name": "Empty term",
+                    "priority": null
                 }
             ],
             "last_modified": "2014-03-01T09:41:13.719",
@@ -120,6 +125,39 @@ class GeneRanksTestCase(TestCase):
         }"""
 
         return (200, headers, json)
+
+    def register_patches(self):
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/connection_error/(.*)/"),
+            body=self.mock_connection_error)
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/request_exception/(.*)/"),
+            body=self.mock_request_exception)
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/ssl_error/(.*)/"),
+            body=self.mock_ssl_error)
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/unparseable_data/(.*)/"),
+            body="UNPARSEABLE RESPONSE BODY, JSON EXPECTED")
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/unparseable_date/(.*)/"),
+            body='{"last_modified": "half past noon"}',
+            content_type="application/json")
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/unparseable_terms/(.*)/"),
+            body=self.mock_unparseable_terms,
+            content_type="application/json")
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/phenotype/(.*)/"),
+            body=self.mock_phenotype,
+            content_type="application/json")
 
     def test_missing_settings(self):
         error_log_count = len(self.mock_handler.messages['error'])
@@ -148,33 +186,7 @@ class GeneRanksTestCase(TestCase):
 
     @httpretty.activate
     def test_url_and_data_errors(self):
-        # Setup patches for the mock error responses
-        httpretty.register_uri(
-            httpretty.GET,
-            re.compile("http://localhost/api/tests/connection_error/(.*)/"),
-            body=self.mock_connection_error)
-        httpretty.register_uri(
-            httpretty.GET,
-            re.compile("http://localhost/api/tests/request_exception/(.*)/"),
-            body=self.mock_request_exception)
-        httpretty.register_uri(
-            httpretty.GET,
-            re.compile("http://localhost/api/tests/ssl_error/(.*)/"),
-            body=self.mock_ssl_error)
-        httpretty.register_uri(
-            httpretty.GET,
-            re.compile("http://localhost/api/tests/unparseable_data/(.*)/"),
-            body="UNPARSEABLE RESPONSE BODY, JSON EXPECTED")
-        httpretty.register_uri(
-            httpretty.GET,
-            re.compile("http://localhost/api/tests/unparseable_date/(.*)/"),
-            body='{"last_modified": "half past noon"}',
-            content_type="application/json")
-        httpretty.register_uri(
-            httpretty.GET,
-            re.compile("http://localhost/api/tests/unparseable_terms/(.*)/"),
-            body=self.mock_unparseable_terms,
-            content_type="application/json")
+        self.register_patches()
 
         # Use a sample we now is present but account for all the possible
         # error results from the real endpoint by using mock error resources.
@@ -235,6 +247,8 @@ class GeneRanksTestCase(TestCase):
 
     @httpretty.activate
     def test_load(self):
+        self.register_patches()
+
         # Assert that all the samples we expect to be in the DB are there
         self.assertSequenceEqual(
             Sample.objects.all().values_list('label', flat=True),
@@ -250,13 +264,6 @@ class GeneRanksTestCase(TestCase):
                          "Updated 0 and skipped 0 samples")
 
         self.assertEqual(ResultScore.objects.count(), 0)
-
-        # Setup patches for the mock responses
-        httpretty.register_uri(
-            httpretty.GET,
-            re.compile("http://localhost/api/tests/phenotype/(.*)/"),
-            body=self.mock_phenotype,
-            content_type="application/json")
 
         with self.settings(PHENOTYPE_ENDPOINT=
                            'http://localhost/api/tests/phenotype/%s/'):
