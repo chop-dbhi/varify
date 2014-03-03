@@ -20,6 +20,7 @@ TESTS_DIR = os.path.join(os.path.dirname(__file__), '../..')
 SAMPLE_DIRS = [os.path.join(TESTS_DIR, 'samples', 'batch1')]
 
 
+@override_settings(VARIFY_AUTO_CREATE_COHORT=False)
 class GeneRanksTestCase(TestCase):
     fixtures = ['test_data.json']
 
