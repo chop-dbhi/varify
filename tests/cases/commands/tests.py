@@ -25,24 +25,98 @@ class GeneRanksTestCase(TestCase):
     fixtures = ['test_data.json']
 
     def setUp(self):
-        # Setup a mock handler
+        """
+        Setup a mock log handler for cataloging log messages generated during
+        the run of this individual test."
+        """
+
         logger = logging.getLogger(gene_ranks.__name__)
         self.mock_handler = MockHandler()
         logger.addHandler(self.mock_handler)
 
     def mock_ssl_error(self, request, uri, headers):
+        """
+        Mocks the occurrence of an SSLError when accessing an endpoint.
+        """
+
         raise SSLError
 
     def mock_connection_error(self, request, uri, headers):
+        """
+        Mocks the occurrence of a ConnectionError when accessing an endpoint.
+        """
+
         raise ConnectionError
 
     def mock_request_exception(self, request, uri, headers):
+        """
+        Mocks the occurrence of a RequestException when accessing an endpoint.
+        """
+
         raise RequestException
 
     def mock_unparseable_terms(self, request, uri, headers):
+        """
+        Mocks a partially valid response from the phenotype endpoint. In this
+        case, the hpoAnnotations key is present but the value is a collection
+        of hpo terms rather than a collection of objects of the form:
+            {
+                "hpo_id": "HP_0000407",
+                "name": "Sensorineural hearing impairment",
+                "priority": null
+            }
+        """
+
         json = """{
             "last_modified": "2014-02-27T16:48:39.743363",
             "hpoAnnotations": ["HPO:1", "HPO:2"]
+        }"""
+
+        return (200, headers, json)
+
+    def mock_phenotype(self, request, uri, headers):
+        """
+        Mocks an actual, valid response as seen from the live phenotype
+        endpoint. This response should be fully parseable and understood
+        completely by the gene ranking code.
+        """
+        json = """{
+            "birth_day": null,
+            "birth_hc": null,
+            "birth_length": null,
+            "birth_month": null,
+            "birth_weight": null,
+            "birth_year": null,
+            "confirmedDiagnoses": [],
+            "created": "2014-02-14T12:06:30.657",
+            "gest_days": null,
+            "gest_weeks": null,
+            "hpoAnnotations": [
+                {
+                    "hpo_id": "HP_0000407",
+                    "name": "Sensorineural hearing impairment",
+                    "priority": null
+                },
+                {
+                    "hpo_id": "HP_0001263",
+                    "name": "Global developmental delay",
+                    "priority": null
+                },
+                {
+                    "hpo_id": "HP_0000175",
+                    "name": "Cleft palate",
+                    "priority": null
+                }
+            ],
+            "last_modified": "2014-03-01T09:41:13.719",
+            "notes": [
+                {
+                    "note": ""
+                }
+            ],
+            "ruledOutDiagnoses": [],
+            "sex": null,
+            "suspectedDiagnoses": []
         }"""
 
         return (200, headers, json)
@@ -159,6 +233,7 @@ class GeneRanksTestCase(TestCase):
         # failure to this point.
         self.assertEqual(ResultScore.objects.count(), 0)
 
+    @httpretty.activate
     def test_load(self):
         # Assert that all the samples we expect to be in the DB are there
         self.assertSequenceEqual(
@@ -175,6 +250,43 @@ class GeneRanksTestCase(TestCase):
                          "Updated 0 and skipped 0 samples")
 
         self.assertEqual(ResultScore.objects.count(), 0)
+
+        # Setup patches for the mock responses
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile("http://localhost/api/tests/phenotype/(.*)/"),
+            body=self.mock_phenotype,
+            content_type="application/json")
+
+        with self.settings(PHENOTYPE_ENDPOINT=
+                           'http://localhost/api/tests/phenotype/%s/'):
+            management.call_command('samples', 'gene-ranks')
+
+            # We should be error free. A few samples will have been skipped but
+            # nothing should have caused an error.
+            self.assertFalse(self.mock_handler.messages['error'])
+
+            # Make sure the samples were updated by checking the log
+            # and verifying the timestamps.
+            self.assertTrue(self.mock_handler.messages['info'])
+            self.assertEqual(self.mock_handler.messages['info'][-1],
+                             "Updated 3 and skipped 0 samples")
+            self.assertTrue(Sample.objects.filter(
+                phenotype_modified__isnull=False).count(), 3)
+
+            # Calling the gene-rank command again should skip all of the
+            # samples because they were just updated and the newer phenotyope
+            # modified time should cause them to be skipped.
+            management.call_command('samples', 'gene-ranks')
+            self.assertEqual(self.mock_handler.messages['info'][-1],
+                             "Updated 0 and skipped 3 samples")
+
+            # Now, check to make sure that the force flag works by forcing
+            # reloading of the samples that we just confirmed get skipped
+            # because they are already up-to-date.
+            management.call_command('samples', 'gene-ranks', force=True)
+            self.assertEqual(self.mock_handler.messages['info'][-1],
+                             "Updated 3 and skipped 0 samples")
 
 
 @override_settings(VARIFY_SAMPLE_DIRS=SAMPLE_DIRS)
