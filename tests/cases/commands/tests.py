@@ -74,6 +74,69 @@ class GeneRanksTestCase(TestCase):
 
         return (200, headers, json)
 
+    def mock_malformed_gene_rank(self, request, uri, headers):
+        """
+        Mocks a partially valid gene rank endpoint response where a score and
+        a rank is not of the correct type.
+        """
+
+        json = """{
+            "ranked_genes": [
+                {
+                    "symbol": "CD160",
+                    "score": 3.196735916182328,
+                    "rank": 1
+                },
+                {
+                    "symbol": "PEX11B",
+                    "score": "BAD_SCORE",
+                    "rank": 2
+                },
+                {
+                    "symbol": "HFE2",
+                    "score": 0.615416141739313,
+                    "rank": "BAD_RANK"
+                }
+            ],
+            "unranked_genes": [
+                "LINC00875",
+                "GPR89A",
+                "CD160",
+                "POLR3C",
+                "NBPF12",
+                "SEC22B",
+                "NOTCH2NL",
+                "GNRHR2",
+                "LOC100288142",
+                "PDE4DIP",
+                "LOC100130000",
+                "LOC728875",
+                "NUDT17",
+                "PIAS3",
+                "RNF115",
+                "NBPF10",
+                "NBPF9",
+                "FLJ39739",
+                "None",
+                "LIX1L",
+                "PDZK1",
+                "ITGA10",
+                "TXNIP",
+                "ANKRD34A",
+                "LINC00623",
+                "POLR3GL",
+                "ANKRD35"
+            ],
+            "hpo_valid": [
+                "HP:0000407",
+                "HP:0001263",
+                "HP:0000175"
+            ],
+            "hpo_invalid": [ ]
+        }"""
+
+        return (200, headers, json)
+
     def mock_gene_rank(self, request, uri, headers):
         """
         Mocks an actual, valid response as seen from the live gene rank
@@ -339,7 +402,13 @@ class GeneRanksTestCase(TestCase):
             re.compile(
                 "http://localhost/api/tests/gene_rank(.*)"),
             body=self.mock_gene_rank)
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile(
+                "http://localhost/api/tests/malformed_gene_rank(.*)"),
+            body=self.mock_malformed_gene_rank)
 
+        initial_score_count = ResultScore.objects.count()
         # Assert that all the samples we expect to be in the DB are there
         self.assertSequenceEqual(
             Sample.objects.all().values_list('label', flat=True),
@@ -354,7 +423,7 @@ class GeneRanksTestCase(TestCase):
         self.assertEqual(self.mock_handler.messages['info'][-1],
                          "Updated 0 and skipped 0 samples")
 
-        self.assertEqual(ResultScore.objects.count(), 0)
+        self.assertEqual(ResultScore.objects.count(), initial_score_count)
 
         with self.settings(PHENOTYPE_ENDPOINT=
                            'http://localhost/api/tests/phenotype/%s/',
@@ -374,6 +443,14 @@ class GeneRanksTestCase(TestCase):
             self.assertTrue(Sample.objects.filter(
                 phenotype_modified__isnull=False).count(), 3)
 
+            # Check that the result count is what we expect. Each sample is
+            # knows to have 18 results associated with one or more of the three
+            # ranked genes in the mock data and there are 3 samples so we
+            # expect 54 new result scores.
+            self.assertEqual(ResultScore.objects.count(),
+                             initial_score_count + 54)
+            initial_score_count = ResultScore.objects.count()
+
             # Calling the gene-rank command again should skip all of the
             # samples because they were just updated and the newer phenotyope
             # modified time should cause them to be skipped.
@@ -381,12 +458,60 @@ class GeneRanksTestCase(TestCase):
             self.assertEqual(self.mock_handler.messages['info'][-1],
                              "Updated 0 and skipped 3 samples")
 
+            # No new result scores should be created when the samples are
+            # not updated.
+            self.assertEqual(ResultScore.objects.count(), initial_score_count)
+
             # Now, check to make sure that the force flag works by forcing
             # reloading of the samples that we just confirmed get skipped
             # because they are already up-to-date.
             management.call_command('samples', 'gene-ranks', force=True)
             self.assertEqual(self.mock_handler.messages['info'][-1],
                              "Updated 3 and skipped 0 samples")
+
+            # No new result scores should be created when the samples are
+            # updated(given the same mock data as the initial scoring).
+            self.assertEqual(ResultScore.objects.count(), initial_score_count)
+
+        with self.settings(PHENOTYPE_ENDPOINT=
+                           'http://localhost/api/tests/phenotype/%s/',
+                           GENE_RANK_BASE_URL=
+                           'http://localhost/api/tests/malformed_gene_rank'):
+            initial_score_count = ResultScore.objects.count()
+
+            # Force update to guarantee that all samples are updated regardless
+            # of timestamps and just use a single sample here to save time.
+            management.call_command('samples', 'gene-ranks', 'VPseq004-P-A',
+                                    force=True)
+
+            # There should be errors that occurred when trying to save result
+            # scores with poorly typed scores and ranks so check for those
+            # first before making sure the results were updated.
+            self.assertTrue(self.mock_handler.messages['error'])
+            self.assertTrue("Error saving gene ranks and scores " in
+                            self.mock_handler.messages['error'][-1])
+
+            # We know that the gene CD160 appears in 4 results but shares 3
+            # results with the ranked genes loaded in the previous step so we
+            # expect 1 new result scores in this case since we are only loading
+            # 1 samples here.
+            self.assertTrue(ResultScore.objects.count(),
+                            initial_score_count + 1)
+
+        with self.settings(PHENOTYPE_ENDPOINT=
+                           'http://localhost/api/tests/phenotype/%s/',
+                           GENE_RANK_BASE_URL=
+                           'http://localhost/api/tests/gene_rank'):
+            # Delete all the results for a sample(which means it has no genes)
+            # and make sure that the sample is skipped.
+            Result.objects.filter(sample__label='VPseq004-P-A').delete()
+
+            management.call_command('samples', 'gene-ranks', 'VPseq004-P-A',
+                                    force=True)
+
+            self.assertTrue(self.mock_handler.messages['warning'])
+            self.assertTrue('because it has no genes associated' in
+                            self.mock_handler.messages['warning'][-1])
 
 
 @override_settings(VARIFY_SAMPLE_DIRS=SAMPLE_DIRS)
