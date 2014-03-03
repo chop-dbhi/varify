@@ -7,7 +7,7 @@ from optparse import make_option
 from django.db import transaction, DEFAULT_DB_ALIAS
 from django.core.management.base import BaseCommand
 from requests.exceptions import SSLError, ConnectionError, RequestException
-from varify.samples.models import Sample
+from varify.samples.models import Sample, ResultScore
 
 log = logging.getLogger(__name__)
 
@@ -207,9 +207,16 @@ class Command(BaseCommand):
                             transaction.rollback()
                             continue
 
-                        result.score.rank = ranked_gene.get('rank', None)
-                        result.score.score = ranked_gene.get('score', None)
-                        result.save()
+                        try:
+                            rs = ResultScore.objects.get(result=result)
+                            rs.rank = ranked_gene.get('rank', None)
+                            rs.score = ranked_gene.get('score', None)
+                        except ResultScore.DoesNotExist:
+                            rs = ResultScore(
+                                result=result,
+                                rank=ranked_gene.get('rank', None),
+                                score=ranked_gene.get('score', None))
+                        rs.save()
 
                         updated_results += 1
 
