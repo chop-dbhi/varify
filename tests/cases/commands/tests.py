@@ -158,6 +158,11 @@ class GeneRanksTestCase(TestCase):
             re.compile("http://localhost/api/tests/phenotype/(.*)/"),
             body=self.mock_phenotype,
             content_type="application/json")
+        httpretty.register_uri(
+            httpretty.GET,
+            re.compile(
+                "http://localhost/api/tests/genotype_exception(.*)"),
+            body=self.mock_request_exception)
 
     def test_missing_settings(self):
         error_log_count = len(self.mock_handler.messages['error'])
@@ -240,6 +245,16 @@ class GeneRanksTestCase(TestCase):
             self.assertTrue(self.mock_handler.messages['warning'])
             self.assertTrue("because it has no HPO terms" in
                             self.mock_handler.messages['warning'][-1])
+
+        with self.settings(PHENOTYPE_ENDPOINT=
+                           'http://localhost/api/tests/phenotype/%s/',
+                           GENE_RANK_BASE_URL=
+                           'http://localhost/api/tests/genotype_exception'):
+            management.call_command('samples', 'gene-ranks', 'NA12878')
+
+            self.assertTrue(self.mock_handler.messages['error'])
+            self.assertTrue('Error retrieving gene rankings' in
+                            self.mock_handler.messages['error'][-1])
 
         # We still shouldn't have any ResultScores as we've been nothing but a
         # failure to this point.

@@ -158,7 +158,8 @@ class Command(BaseCommand):
             try:
                 gene_response = requests.get(gene_rank_url)
             except Exception:
-                log.exception('Error retrieving gene rankings')
+                log.exception('Error retrieving gene rankings, skipping '
+                              'sample "{0}".'.format(sample.label))
                 continue
 
             gene_data = json.loads(gene_response.content)
