@@ -28,7 +28,7 @@ def update_sample_for_autocreated_cohorts(instance, created, **kwargs):
             world_cohort.save()
         else:
             log.info("World cohort was not found and was not created because "
-                     "VARIFY_AUTO_CREATE_WORLD_COHORT setting is False.")
+                     "VARIFY_AUTO_CREATE_COHORT setting is False.")
             return
 
     project = instance.project
