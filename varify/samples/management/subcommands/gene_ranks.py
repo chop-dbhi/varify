@@ -222,6 +222,7 @@ class Command(BaseCommand):
                         log.exception("Error saving gene ranks and scores for "
                                       "sample '{0}'".format(sample.label))
                         transaction.rollback()
+                        continue
 
                     transaction.commit()
 
