@@ -20,7 +20,8 @@ TESTS_DIR = os.path.join(os.path.dirname(__file__), '../..')
 SAMPLE_DIRS = [os.path.join(TESTS_DIR, 'samples', 'batch1')]
 
 
-@override_settings(VARIFY_AUTO_CREATE_COHORT=False)
+@override_settings(VARIFY_AUTO_CREATE_COHORT=False, VARIFY_CERT='cert.pem',
+                   VARIFY_KEY='key.pem')
 class GeneRanksTestCase(TestCase):
     fixtures = ['test_data.json']
 
@@ -301,17 +302,22 @@ class GeneRanksTestCase(TestCase):
             self.assertEqual(error_log_count + 1,
                              len(self.mock_handler.messages['error']))
 
-        with self.settings(GENE_RANK_BASE_URL=None):
+        with self.settings(PHENOTYPE_ENDPOINT='api/tests/phenotype',
+                           GENE_RANK_BASE_URL=None):
             management.call_command('samples', 'gene-ranks')
             self.assertEqual(error_log_count + 2,
                              len(self.mock_handler.messages['error']))
 
-        with self.settings(VARIFY_CERT=None):
+        with self.settings(PHENOTYPE_ENDPOINT='api/tests/phenotype',
+                           GENE_RANK_BASE_URL='api/tests/gene_rank',
+                           VARIFY_CERT=None):
             management.call_command('samples', 'gene-ranks')
             self.assertEqual(error_log_count + 3,
                              len(self.mock_handler.messages['error']))
 
-        with self.settings(VARIFY_KEY=None):
+        with self.settings(PHENOTYPE_ENDPOINT='api/tests/phenotype',
+                           GENE_RANK_BASE_URL='api/tests/gene_rank',
+                           VARIFY_KEY=None):
             management.call_command('samples', 'gene-ranks')
             self.assertEqual(error_log_count + 4,
                              len(self.mock_handler.messages['error']))
@@ -330,7 +336,8 @@ class GeneRanksTestCase(TestCase):
         # Use a sample we now is present but account for all the possible
         # error results from the real endpoint by using mock error resources.
         with self.settings(PHENOTYPE_ENDPOINT=
-                           'http://localhost/api/tests/connection_error/%s/'):
+                           'http://localhost/api/tests/connection_error/%s/',
+                           GENE_RANK_BASE_URL='api/tests/gene_rank'):
             management.call_command('samples', 'gene-ranks', 'NA12878')
 
             self.assertTrue(self.mock_handler.messages['error'])
@@ -338,7 +345,8 @@ class GeneRanksTestCase(TestCase):
                             self.mock_handler.messages['error'][-1])
 
         with self.settings(PHENOTYPE_ENDPOINT=
-                           'http://localhost/api/tests/request_exception/%s/'):
+                           'http://localhost/api/tests/request_exception/%s/',
+                           GENE_RANK_BASE_URL='api/tests/gene_rank'):
             management.call_command('samples', 'gene-ranks', 'NA12878')
 
             self.assertTrue(self.mock_handler.messages['error'])
@@ -346,7 +354,8 @@ class GeneRanksTestCase(TestCase):
                             self.mock_handler.messages['error'][-1])
 
         with self.settings(PHENOTYPE_ENDPOINT=
-                           'http://localhost/api/tests/ssl_error/%s/'):
+                           'http://localhost/api/tests/ssl_error/%s/',
+                           GENE_RANK_BASE_URL='api/tests/gene_rank'):
             management.call_command('samples', 'gene-ranks', 'NA12878')
 
             self.assertTrue(self.mock_handler.messages['error'])
@@ -354,7 +363,8 @@ class GeneRanksTestCase(TestCase):
                             self.mock_handler.messages['error'][-1])
 
         with self.settings(PHENOTYPE_ENDPOINT=
-                           'http://localhost/api/tests/unparseable_data/%s/'):
+                           'http://localhost/api/tests/unparseable_data/%s/',
+                           GENE_RANK_BASE_URL='api/tests/gene_rank'):
             management.call_command('samples', 'gene-ranks', 'NA12878')
 
             self.assertTrue(self.mock_handler.messages['error'])
@@ -362,7 +372,8 @@ class GeneRanksTestCase(TestCase):
                             self.mock_handler.messages['error'][-1])
 
         with self.settings(PHENOTYPE_ENDPOINT=
-                           'http://localhost/api/tests/unparseable_date/%s/'):
+                           'http://localhost/api/tests/unparseable_date/%s/',
+                           GENE_RANK_BASE_URL='api/tests/gene_rank'):
             management.call_command('samples', 'gene-ranks', 'NA12878')
 
             self.assertTrue(self.mock_handler.messages['warning'])
@@ -373,7 +384,8 @@ class GeneRanksTestCase(TestCase):
                             in self.mock_handler.messages['error'][-1])
 
         with self.settings(PHENOTYPE_ENDPOINT=
-                           'http://localhost/api/tests/unparseable_terms/%s/'):
+                           'http://localhost/api/tests/unparseable_terms/%s/',
+                           GENE_RANK_BASE_URL='api/tests/gene_rank'):
             management.call_command('samples', 'gene-ranks', 'NA12878')
 
             self.assertTrue(self.mock_handler.messages['warning'])
@@ -414,21 +426,22 @@ class GeneRanksTestCase(TestCase):
             Sample.objects.all().values_list('label', flat=True),
             ['NA12878', 'NA12891', 'VPseq004-P-A'])
 
-        management.call_command('samples', 'gene-ranks', 'FAKE')
-
-        # There should be info log messages and the last one should be a
-        # report that 0 samples were loaded and 0 were skipped meaning that we
-        # didn't do anything because the sample label we passed in was bogus.
-        self.assertTrue(self.mock_handler.messages['info'])
-        self.assertEqual(self.mock_handler.messages['info'][-1],
-                         "Updated 0 and skipped 0 samples")
-
-        self.assertEqual(ResultScore.objects.count(), initial_score_count)
-
         with self.settings(PHENOTYPE_ENDPOINT=
                            'http://localhost/api/tests/phenotype/%s/',
                            GENE_RANK_BASE_URL=
                            'http://localhost/api/tests/gene_rank'):
+            management.call_command('samples', 'gene-ranks', 'FAKE')
+
+            # There should be info log messages and the last one should be a
+            # report that 0 samples were loaded and 0 were skipped meaning
+            # that we didn't do anything because the sample label we passed in
+            # was bogus.
+            self.assertTrue(self.mock_handler.messages['info'])
+            self.assertEqual(self.mock_handler.messages['info'][-1],
+                             "Updated 0 and skipped 0 samples")
+
+            self.assertEqual(ResultScore.objects.count(), initial_score_count)
+
             management.call_command('samples', 'gene-ranks')
 
             # We should be error free. A few samples will have been skipped but
