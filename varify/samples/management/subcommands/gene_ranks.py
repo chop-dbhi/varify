@@ -24,18 +24,18 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        if getattr(settings, 'PHENOTYPE_ENDPOINT', None):
+        if not getattr(settings, 'PHENOTYPE_ENDPOINT', None):
             log.error('PHENOTYPE_ENDPOINT must be defined in settings for '
                       'gene rankings to be updated.')
             return
 
-        if getattr(settings, 'GENE_RANK_BASE_URL', None):
+        if not getattr(settings, 'GENE_RANK_BASE_URL', None):
             log.error('GENE_RANK_BASE_URL must be defined in settings for '
                       'gene rankings to be updated.')
             return
 
-        if (getattr(settings, 'VARIFY_CERT', None) or not
-                getattr(settings, 'VARIFY_KEY', None)):
+        if (not getattr(settings, 'VARIFY_CERT', None) or
+                not getattr(settings, 'VARIFY_KEY', None)):
             log.error('VARIFY_CERT and VARIFY_KEY must be defined in settings '
                       'for gene rankings to be updated.')
             return
@@ -65,7 +65,7 @@ class Command(BaseCommand):
             # Construct the URL from the setting and the sample label. The
             # sample label is used to retrieve the phenotype info on the remote
             # endpoint.
-            url = settings.PHENOTYPE_ENDPOINT % sample.label
+            url = settings.PHENOTYPE_ENDPOINT.format(sample.label)
 
             # Get the phenotype information for this sample. If the
             # phenotype is unavailable then we can skip this sample.
