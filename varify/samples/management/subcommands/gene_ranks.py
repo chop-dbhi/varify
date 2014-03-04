@@ -175,6 +175,9 @@ class Command(BaseCommand):
 
                 with transaction.commit_manually(database):
                     try:
+                        # Instead of trying to remove None from the returned
+                        # values list we just exclude them from the query
+                        # itself.
                         genes = result.variant.effects\
                             .exclude(transcript__gene__symbol__isnull=True)\
                             .values_list('transcript__gene__symbol', flat=True)
@@ -198,10 +201,14 @@ class Command(BaseCommand):
                         # Get the first item in the ranked gene list with a
                         # symbol matching the gene we looked up above for this
                         # result.
-                        ranked_gene = next(
-                            (r for r in ranked_genes if
-                             r.get('symbol').lower() == gene.lower()),
-                            None)
+                        ranked_gene = None
+
+                        for ranked_gene in ranked_genes:
+                            if (ranked_gene.get('symbol', '').lower() ==
+                                    gene.lower()):
+                                break
+                            else:
+                                ranked_gene = None
 
                         if not ranked_gene:
                             log.debug("Could not find '{0}' in ranked gene "
