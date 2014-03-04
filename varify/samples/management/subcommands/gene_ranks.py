@@ -107,7 +107,7 @@ class Command(BaseCommand):
 
             # If the parsed response doesn't contain any HPO terms then we can
             # skip this sample since we cannot rank genes without HPO terms.
-            if not phenotype_data.get('hpoAnnotations', []):
+            if not phenotype_data.get('hpoAnnotations'):
                 log.error("Response from phenotype missing HPO Annotations, "
                           "skipping '{0}'.".format(sample.label))
                 continue
@@ -125,7 +125,7 @@ class Command(BaseCommand):
             hpo_terms = []
             for hpo_annotation in phenotype_data['hpoAnnotations']:
                 try:
-                    hpo_id = str(hpo_annotation.get('hpo_id', ''))
+                    hpo_id = str(hpo_annotation.get('hpo_id'))
                 except AttributeError:
                     continue
 
@@ -196,7 +196,7 @@ class Command(BaseCommand):
                         # result.
                         ranked_gene = next(
                             (r for r in ranked_genes if
-                             r.get('symbol', '').lower() == gene.lower()),
+                             r.get('symbol').lower() == gene.lower()),
                             None)
 
                         if not ranked_gene:
@@ -207,13 +207,13 @@ class Command(BaseCommand):
 
                         try:
                             rs = ResultScore.objects.get(result=result)
-                            rs.rank = ranked_gene.get('rank', None)
-                            rs.score = ranked_gene.get('score', None)
+                            rs.rank = ranked_gene.get('rank')
+                            rs.score = ranked_gene.get('score')
                         except ResultScore.DoesNotExist:
                             rs = ResultScore(
                                 result=result,
-                                rank=ranked_gene.get('rank', None),
-                                score=ranked_gene.get('score', None))
+                                rank=ranked_gene.get('rank'),
+                                score=ranked_gene.get('score'))
                         rs.save()
 
                         updated_results += 1
