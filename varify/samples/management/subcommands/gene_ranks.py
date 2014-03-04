@@ -125,7 +125,7 @@ class Command(BaseCommand):
             hpo_terms = []
             for hpo_annotation in phenotype_data['hpoAnnotations']:
                 try:
-                    hpo_id = str(hpo_annotation.get('hpo_id'))
+                    hpo_id = hpo_annotation.get('hpo_id')
                 except AttributeError:
                     continue
 
@@ -169,27 +169,31 @@ class Command(BaseCommand):
 
             updated_results = 0
             total_results = 0
+
             for result in sample.results.all():
                 total_results += 1
 
                 with transaction.commit_manually(database):
                     try:
-                        # Get the gene for this result. Since a result can
-                        # have more than one gene associated with it, we
-                        # return the first gene symbol in the list. This is
-                        # the same one that will be shown in the collapsed
-                        # gene list on the variant row in the results table.
-                        gene = result.variant.effects.values_list(
-                            'transcript__gene__symbol', flat=True)[0]
+                        genes = result.variant.effects\
+                            .exclude(transcript__gene__symbol__isnull=True)\
+                            .values_list('transcript__gene__symbol', flat=True)
 
                         # If there is no gene on this result or the gene is
                         # not found in the list of ranked genes then skip this
                         # result.
-                        if not gene:
+                        if not genes:
                             log.debug("Result with id {0} has no gene, "
                                       "skipping result.".format(result.id))
                             transaction.rollback()
                             continue
+
+                        # Use the first gene from the list since a result can
+                        # have more than one gene associated with it, we
+                        # return the first gene symbol in the list. This is
+                        # the same one that will be shown in the collapsed
+                        # gene list on the variant row in the results table.
+                        gene = genes[0]
 
                         # Get the first item in the ranked gene list with a
                         # symbol matching the gene we looked up above for this
