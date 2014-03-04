@@ -165,10 +165,6 @@ class Command(BaseCommand):
             gene_data = json.loads(gene_response.content)
             ranked_genes = gene_data['ranked_genes']
 
-            # While all the results should have been updated at the
-            # same time, we cannot guarantee that so we check if each
-            # is stale or the force flag is on before updating the
-            # results gene rank.
             updated_results = 0
             total_results = 0
             for result in sample.results.all():
