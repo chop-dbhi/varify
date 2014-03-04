@@ -24,17 +24,18 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        if not settings.PHENOTYPE_ENDPOINT:
+        if getattr(settings, 'PHENOTYPE_ENDPOINT', None):
             log.error('PHENOTYPE_ENDPOINT must be defined in settings for '
                       'gene rankings to be updated.')
             return
 
-        if not settings.GENE_RANK_BASE_URL:
+        if getattr(settings, 'GENE_RANK_BASE_URL', None):
             log.error('GENE_RANK_BASE_URL must be defined in settings for '
                       'gene rankings to be updated.')
             return
 
-        if not settings.VARIFY_CERT or not settings.VARIFY_KEY:
+        if (getattr(settings, 'VARIFY_CERT', None) or not
+                getattr(settings, 'VARIFY_KEY', None)):
             log.error('VARIFY_CERT and VARIFY_KEY must be defined in settings '
                       'for gene rankings to be updated.')
             return
@@ -57,6 +58,7 @@ class Command(BaseCommand):
 
         updated_samples = 0
         total_samples = 0
+
         for sample in samples:
             total_samples += 1
 
