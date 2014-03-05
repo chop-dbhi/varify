@@ -1,6 +1,10 @@
 from global_settings import  INSTALLED_APPS
 import os, sys
 
+#This is configured for varify project.  Replace varify with 
+#specific/correct project name and if neccessary remove 
+#varify loading setup
+
 # Uncomment to put the application in non-debug mode. This is useful
 # for testing error handling and messages.
 DEBUG = True
@@ -11,16 +15,16 @@ TEMPLATE_DEBUG = DEBUG
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'varifydb',
-        'USER': 'varify',
-        'PASSWORD': 'varify',
+        'NAME': '',
+        'USER': '',
+        'PASSWORD': '',
         'HOST': 'localhost',
     },
 }
 
 # Non-restricted email port for development, run in a terminal:
 # python -m smtpd -n -c DebuggingServer localhost:1025
-EMAIL_SUBJECT_PREFIX = '[Varify Headless Testing] '
+EMAIL_SUBJECT_PREFIX = '[<Project Name> Headless Testing] '
 
 # This is used as a "seed" for various hashing algorithms. This must be set to
 # a very long random string (40+ characters)
@@ -29,7 +33,7 @@ SECRET_KEY = '1234536yskkshkka9937745204981921jhkkakis992763yhahha'
 
 # Sentry is collating the error messages..
 ADMINS = (
-    ('Le Mar Davidson', 'davidsonl2@email.chop.edu'),
+    ('FirstName LastName ', 'put@your_email_address.com'),
 )
 
 RQ_QUEUES = {
@@ -58,7 +62,7 @@ LOGGING = {
         'file': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': './headless_tests/test/log/varify.log',
+            'filename': './headless_tests/test/log/project.log',
         },
         'console':{
             'level': 'DEBUG',
@@ -109,5 +113,5 @@ LOGGING = {
 }
             
 VARIFY_SAMPLE_DIRS = (
-    './headless_tests/samples',
+    './headless_tests/data_setup/samples',
 )

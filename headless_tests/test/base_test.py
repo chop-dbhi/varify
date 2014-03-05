@@ -57,7 +57,7 @@ class BaseTest(unittest.TestCase):
             self.driver = webdriver.Firefox()
         else:
             self.driver = webdriver.Remote(
-                command_executor="http://{0}:{1}/wd/hub".format(DEVELOPMENT_SERVER_HOST,PHANTOMJS_GHOSTDRIVER_PORT),
+                command_executor="http://{0}:{1}/wd/hub".format(DEVELOPMENT_SERVER_HOST,PHANTOMJS_PORT),
 		desired_capabilities=self.caps)
             
         
