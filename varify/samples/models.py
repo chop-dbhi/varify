@@ -140,6 +140,12 @@ class Sample(LabeledModel, TimestampedModel):
     md5 = models.CharField(max_length=32, null=True, blank=True,
                            editable=False)
 
+    # This indicates the last time(if any) that this sample had its gene
+    # rankings updated using its associated phenotype terms. Since there is
+    # no guarantee that this sample has been ranked or that it even has
+    # phenotype data, we allow this field to be null.
+    phenotype_modified = models.DateTimeField(null=True, blank=True)
+
     class Meta(LabeledModel.Meta):
         db_table = 'sample'
         unique_together = ('batch', 'name', 'version')

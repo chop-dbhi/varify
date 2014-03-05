@@ -6,6 +6,7 @@ class Command(Subcommander):
 
     subcommands = {
         'allele-freqs': 'allele_freqs',
+        'gene-ranks': 'gene_ranks',
         'queue': 'queue',
         'delete-sample': 'delete_sample',
         'delete-project': 'delete_project',

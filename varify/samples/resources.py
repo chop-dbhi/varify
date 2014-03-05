@@ -1,4 +1,5 @@
 import functools
+import logging
 import requests
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf.urls import patterns, url
@@ -15,6 +16,8 @@ from varify.variants.resources import VariantResource
 from varify import api
 from varify.assessments.models import Assessment
 from .models import Sample, Result, ResultScore
+
+log = logging.getLogger(__name__)
 
 
 def sample_posthook(instance, data, request):
@@ -245,7 +248,13 @@ class SampleResultResource(ThrottledResource):
 
 class PhenotypeResource(ThrottledResource):
     def get(self, request, sample_id):
-        endpoint = settings.PHENOTYPE_ENDPOINT % sample_id
+        endpoint = getattr(settings, 'PHENOTYPE_ENDPOINT', None)
+
+        if not endpoint:
+            log.error("PHENOTYPE_ENDPOINT setting could not be found.")
+            return HttpResponse(status=500)
+
+        endpoint = endpoint.format(sample_id)
 
         try:
             response = requests.get(endpoint, cert=(settings.VARIFY_CERT,

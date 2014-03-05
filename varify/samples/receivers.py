@@ -16,14 +16,20 @@ log = logging.getLogger(__name__)
 @transaction.commit_on_success
 def update_sample_for_autocreated_cohorts(instance, created, **kwargs):
     "Manages adding/removing samples from autocreated cohorts."
+
     # World
     lookup = {'batch': None, 'project': None, 'autocreated': True,
               'name': 'World'}
     try:
         world_cohort = Cohort.objects.get(**lookup)
     except Cohort.DoesNotExist:
-        world_cohort = Cohort(**lookup)
-        world_cohort.save()
+        if getattr(settings, 'VARIFY_AUTO_CREATE_COHORT', True):
+            world_cohort = Cohort(**lookup)
+            world_cohort.save()
+        else:
+            log.info("World cohort was not found and was not created because "
+                     "VARIFY_AUTO_CREATE_COHORT setting is False.")
+            return
 
     project = instance.project
 

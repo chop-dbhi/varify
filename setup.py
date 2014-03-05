@@ -48,6 +48,7 @@ kwargs = {
     'include_package_data': True,
     'install_requires': install_requires,
     'test_suite': 'test_suite',
+    'tests_require': ['httpretty'],
     'author': '',
     'author_email': '',
     'description': '',
