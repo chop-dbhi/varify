@@ -140,7 +140,8 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       resultsContainer: '.results-container',
       navbarButtons: '.results-workflow-navbar button',
       loadingOverlay: '.loading-overlay',
-      viewPhenotype: '.phenotype-modal .modal-body .span12'
+      viewPhenotype: '.phenotype-modal .modal-body .span12',
+      recalculateButton: '[data-target=recalculate-rankings]'
     };
 
     ResultsWorkflow.prototype.events = {
@@ -562,6 +563,7 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
         return;
       }
       this.ui.viewPhenotype.find(".loading").hide();
+      this.ui.recalculateButton.prop('disabled', false);
       attr = model.attributes;
       if (attr.hpoAnnotations && attr.hpoAnnotations.length) {
         attr.hpoAnnotations = _.sortBy(attr.hpoAnnotations, function(value) {
@@ -625,6 +627,7 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
 
     ResultsWorkflow.prototype.retrievePhenotypes = function() {
       var phenotypes, sampleID;
+      this.ui.recalculateButton.prop('disabled', true);
       sampleID = this.sampleID();
       if (sampleID) {
         $('.phenotype-sample-label').html("(" + sampleID + ")");

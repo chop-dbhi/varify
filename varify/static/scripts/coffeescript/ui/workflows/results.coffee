@@ -89,6 +89,7 @@ define [
             navbarButtons: '.results-workflow-navbar button'
             loadingOverlay: '.loading-overlay'
             viewPhenotype: '.phenotype-modal .modal-body .span12'
+            recalculateButton: '[data-target=recalculate-rankings]'
 
         events:
             'click .export-options-modal [data-save]': 'onExportClicked'
@@ -530,6 +531,7 @@ define [
         renderPhenotypes: (model, response) =>
             return if not @ui.viewPhenotype.is(":visible")
             @ui.viewPhenotype.find(".loading").hide()
+            @ui.recalculateButton.prop('disabled', false)
             attr = model.attributes
             if attr.hpoAnnotations and attr.hpoAnnotations.length
                 attr.hpoAnnotations = _.sortBy(attr.hpoAnnotations, (value) ->
@@ -573,6 +575,8 @@ define [
             sample
 
         retrievePhenotypes: =>
+            @ui.recalculateButton.prop('disabled', true)
+
             sampleID = @sampleID()
             if sampleID
                 # Update the title of the phenotype modal window with the
