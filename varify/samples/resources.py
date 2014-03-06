@@ -266,6 +266,17 @@ class PhenotypeResource(ThrottledResource):
         except requests.exceptions.RequestException:
             raise Http404
 
+        # If anything at all goes wrong in the sample lookup or json parsing
+        # then just abandon all hope and return the content from the orignal
+        # response.
+        try:
+            sample = Sample.objects.get(label=sample_id)
+            data = response.json()
+            data['phenotype_modified'] = sample.phenotype_modified
+            return data
+        except Exception:
+            pass
+
         return response.content
 
 
