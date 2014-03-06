@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.template.loader import add_to_builtins
 from django.views.generic import RedirectView, TemplateView
+from varify.export.resources import VcfExporterResource
 
 add_to_builtins('bootstrapform.templatetags.bootstrap')
 add_to_builtins('avocado.templatetags.avocado_tags')
