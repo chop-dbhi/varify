@@ -27,6 +27,9 @@ urlpatterns = patterns(
     url(r'^analysis/', TemplateView.as_view(template_name='index.html'),
         name='analysis'),
 
+    #VCF export endpoint
+    url(r'^api/data/export/vcf/$', VcfExporterResource(), name='vcf'),
+
     # Serrano provides the REST API
     url(r'^api/', include('serrano.urls')),
 
