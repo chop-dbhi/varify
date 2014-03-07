@@ -164,7 +164,13 @@ class Command(BaseCommand):
                               'sample "{0}".'.format(sample.label))
                 continue
 
-            gene_data = json.loads(gene_response.content)
+            try:
+                gene_data = json.loads(gene_response.content)
+            except ValueError:
+                log.error("Could not parse response from {0}, skipping '{1}'."
+                          .format(url, sample.label))
+                continue
+
             ranked_genes = gene_data['ranked_genes']
 
             updated_results = 0
