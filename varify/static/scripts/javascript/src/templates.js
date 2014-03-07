@@ -15,7 +15,7 @@ define(['underscore', './utils', 'cilantro/utils/numbers'], function(_, utils, N
         return "<td>" + rank + " <small class=muted>(" + score + ")</small></td>";
       }
     }
-    return "<td></td>";
+    return "<td><small class=muted>unranked</small></td>";
   };
   _renderGene = function(gene) {
     var name;

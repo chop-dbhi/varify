@@ -17,7 +17,7 @@ define [
             if not isNaN(rank) and not isNaN(score)
                 return "<td>#{ rank } <small class=muted>(#{ score })</small></td>"
 
-        return "<td></td>"
+        return "<td><small class=muted>unranked</small></td>"
 
     _renderGene = (gene) ->
         name = gene.name or ''
