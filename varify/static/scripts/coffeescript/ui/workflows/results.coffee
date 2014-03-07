@@ -6,7 +6,8 @@ define [
     '../tables'
     '../modals'
     '../../models'
-], (_, Marionette, c, numbers, tables, modal, models) ->
+    '../../utils'
+], (_, Marionette, c, numbers, tables, modal, models, utils) ->
 
 
     class ResultCount extends Marionette.ItemView
@@ -90,6 +91,7 @@ define [
             loadingOverlay: '.loading-overlay'
             viewPhenotype: '.phenotype-modal .modal-body .span12'
             recalculateButton: '[data-target=recalculate-rankings]'
+            phenotypeWarning: '[data-target=phenotype-warning]'
 
         events:
             'click .export-options-modal [data-save]': 'onExportClicked'
@@ -549,6 +551,27 @@ define [
                 attr.ruledOutDiagnoses = _.sortBy(attr.ruledOutDiagnoses, (value) ->
                     parseInt(value.priority) or model.lowestPriority+1)
 
+            # Format the date properties if they are present
+            last_modified = utils.parseISO8601UTC(attr.last_modified)
+            if last_modified?
+                attr.last_modified = last_modified.toLocaleString()
+            else
+                attr.last_modified = "N/A"
+
+            phenotype_modified = utils.parseISO8601UTC(attr.phenotype_modified)
+            if phenotype_modified?
+                attr.phenotype_modified = phenotype_modified.toLocaleString()
+
+                if last_modified? and last_modified > phenotype_modified
+                    @ui.phenotypeWarning.text("The phenotypes for this sample have been updated recently and the gene rankings may be out of date. You can update these ranking based on the latest phenotypes by clicking on the 'Recalculate Rankings' button below.")
+                    @ui.phenotypeWarning.show()
+            else
+                attr.phenotype_modified = "N/A"
+
+                if last_modified?
+                    @ui.phenotypeWarning.show()
+                    @ui.phenotypeWarning.text("This sample has phenotype data but has not yet had gene rankings calculated based on the associated phenotype. You can update these rankings now by clicking on the 'Recalculate Rankings' button below.")
+
             @ui.viewPhenotype.find(".content").html(
                 c.templates.get('varify/modals/phenotype')(model.attributes))
             @phenotypeXhr = undefined
@@ -597,6 +620,7 @@ define [
 
         retrievePhenotypes: (recalculate_rankings=false) =>
             @ui.recalculateButton.prop('disabled', true)
+            @ui.phenotypeWarning.hide()
 
             sampleID = @sampleID()
             if sampleID

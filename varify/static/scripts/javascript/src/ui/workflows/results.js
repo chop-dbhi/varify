@@ -3,7 +3,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../tables', '../modals', '../../models'], function(_, Marionette, c, numbers, tables, modal, models) {
+define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../tables', '../modals', '../../models', '../../utils'], function(_, Marionette, c, numbers, tables, modal, models, utils) {
   var ResultCount, ResultsWorkflow;
   ResultCount = (function(_super) {
     __extends(ResultCount, _super);
@@ -143,7 +143,8 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       navbarButtons: '.results-workflow-navbar button',
       loadingOverlay: '.loading-overlay',
       viewPhenotype: '.phenotype-modal .modal-body .span12',
-      recalculateButton: '[data-target=recalculate-rankings]'
+      recalculateButton: '[data-target=recalculate-rankings]',
+      phenotypeWarning: '[data-target=phenotype-warning]'
     };
 
     ResultsWorkflow.prototype.events = {
@@ -561,7 +562,7 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
     };
 
     ResultsWorkflow.prototype.renderPhenotypes = function(model, response, update_results) {
-      var attr;
+      var attr, last_modified, phenotype_modified;
       if (!this.ui.viewPhenotype.is(":visible")) {
         return;
       }
@@ -587,6 +588,26 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
         attr.ruledOutDiagnoses = _.sortBy(attr.ruledOutDiagnoses, function(value) {
           return parseInt(value.priority) || model.lowestPriority + 1;
         });
+      }
+      last_modified = utils.parseISO8601UTC(attr.last_modified);
+      if (last_modified != null) {
+        attr.last_modified = last_modified.toLocaleString();
+      } else {
+        attr.last_modified = "N/A";
+      }
+      phenotype_modified = utils.parseISO8601UTC(attr.phenotype_modified);
+      if (phenotype_modified != null) {
+        attr.phenotype_modified = phenotype_modified.toLocaleString();
+        if ((last_modified != null) && last_modified > phenotype_modified) {
+          this.ui.phenotypeWarning.text("The phenotypes for this sample have been updated recently and the gene rankings may be out of date. You can update these ranking based on the latest phenotypes by clicking on the 'Recalculate Rankings' button below.");
+          this.ui.phenotypeWarning.show();
+        }
+      } else {
+        attr.phenotype_modified = "N/A";
+        if (last_modified != null) {
+          this.ui.phenotypeWarning.show();
+          this.ui.phenotypeWarning.text("This sample has phenotype data but has not yet had gene rankings calculated based on the associated phenotype. You can update these rankings now by clicking on the 'Recalculate Rankings' button below.");
+        }
       }
       this.ui.viewPhenotype.find(".content").html(c.templates.get('varify/modals/phenotype')(model.attributes));
       this.phenotypeXhr = void 0;
@@ -651,6 +672,7 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
         recalculate_rankings = false;
       }
       this.ui.recalculateButton.prop('disabled', true);
+      this.ui.phenotypeWarning.hide();
       sampleID = this.sampleID();
       if (sampleID) {
         $('.phenotype-sample-label').html("(" + sampleID + ")");
