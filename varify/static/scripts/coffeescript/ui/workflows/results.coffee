@@ -549,7 +549,8 @@ define [
                 attr.ruledOutDiagnoses = _.sortBy(attr.ruledOutDiagnoses, (value) ->
                     parseInt(value.priority) or model.lowestPriority+1)
 
-            @ui.viewPhenotype.find(".content").html(templates.phenotypes(model.attributes))
+            @ui.viewPhenotype.find(".content").html(
+                c.templates.get('varify/modals/phenotype')(model.attributes))
             @phenotypeXhr = undefined
 
         hidePhenotypes: =>
