@@ -99,8 +99,9 @@ define [
             'click #pages-text-ranges': 'selectPagesOption'
             'click [data-toggle=save-query]': 'showSaveQuery'
             'click [data-toggle=context-panel]': 'toggleContextPanelButtonClicked'
-            'show.bs.modal .phenotype-modal': 'retrievePhenotypes'
+            'show.bs.modal .phenotype-modal': 'viewPhenotypesClicked'
             'hidden.bs.modal .phenotype-modal': 'hidePhenotypes'
+            'click [data-target=recalculate-rankings]': 'recalculateRankingsClicked'
 
         regions:
             columns: '#export-columns-tab'
@@ -530,8 +531,10 @@ define [
 
         renderPhenotypes: (model, response) =>
             return if not @ui.viewPhenotype.is(":visible")
+
             @ui.viewPhenotype.find(".loading").hide()
             @ui.recalculateButton.prop('disabled', false)
+
             attr = model.attributes
             if attr.hpoAnnotations and attr.hpoAnnotations.length
                 attr.hpoAnnotations = _.sortBy(attr.hpoAnnotations, (value) ->
@@ -574,7 +577,21 @@ define [
                         sample = child.children[0].value[0].label
             sample
 
-        retrievePhenotypes: =>
+        viewPhenotypesClicked: =>
+            @retrievePhenotypes()
+
+        recalculateRankingsClicked: =>
+            # While we should never have an active request while also letting
+            # the user click the button, we account for it here just in case
+            # it happens by some other worldly set of circumstances.
+            @phenotypeXhr.abort() if @phenotypeXhr
+            @phenotypeXhr = undefined
+            @ui.viewPhenotype.find(".content").empty()
+            @ui.viewPhenotype.find(".loading").show()
+
+            @retrievePhenotypes(true)
+
+        retrievePhenotypes: (recalculate_rankings=false) =>
             @ui.recalculateButton.prop('disabled', true)
 
             sampleID = @sampleID()
@@ -587,6 +604,9 @@ define [
                     sample_id: sampleID
 
                 @phenotypeXhr = phenotypes.fetch
+                    data:
+                        recalculate_rankings: recalculate_rankings
+                    processData: true
                     success: @renderPhenotypes
                     error: @phenotypesError
             else

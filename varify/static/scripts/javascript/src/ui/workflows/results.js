@@ -87,6 +87,8 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
 
     function ResultsWorkflow() {
       this.retrievePhenotypes = __bind(this.retrievePhenotypes, this);
+      this.recalculateRankingsClicked = __bind(this.recalculateRankingsClicked, this);
+      this.viewPhenotypesClicked = __bind(this.viewPhenotypesClicked, this);
       this.sampleID = __bind(this.sampleID, this);
       this.phenotypesError = __bind(this.phenotypesError, this);
       this.hidePhenotypes = __bind(this.hidePhenotypes, this);
@@ -152,8 +154,9 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       'click #pages-text-ranges': 'selectPagesOption',
       'click [data-toggle=save-query]': 'showSaveQuery',
       'click [data-toggle=context-panel]': 'toggleContextPanelButtonClicked',
-      'show.bs.modal .phenotype-modal': 'retrievePhenotypes',
-      'hidden.bs.modal .phenotype-modal': 'hidePhenotypes'
+      'show.bs.modal .phenotype-modal': 'viewPhenotypesClicked',
+      'hidden.bs.modal .phenotype-modal': 'hidePhenotypes',
+      'click [data-target=recalculate-rankings]': 'recalculateRankingsClicked'
     };
 
     ResultsWorkflow.prototype.regions = {
@@ -625,8 +628,25 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       return sample;
     };
 
-    ResultsWorkflow.prototype.retrievePhenotypes = function() {
+    ResultsWorkflow.prototype.viewPhenotypesClicked = function() {
+      return this.retrievePhenotypes();
+    };
+
+    ResultsWorkflow.prototype.recalculateRankingsClicked = function() {
+      if (this.phenotypeXhr) {
+        this.phenotypeXhr.abort();
+      }
+      this.phenotypeXhr = void 0;
+      this.ui.viewPhenotype.find(".content").empty();
+      this.ui.viewPhenotype.find(".loading").show();
+      return this.retrievePhenotypes(true);
+    };
+
+    ResultsWorkflow.prototype.retrievePhenotypes = function(recalculate_rankings) {
       var phenotypes, sampleID;
+      if (recalculate_rankings == null) {
+        recalculate_rankings = false;
+      }
       this.ui.recalculateButton.prop('disabled', true);
       sampleID = this.sampleID();
       if (sampleID) {
@@ -635,6 +655,10 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
           sample_id: sampleID
         });
         return this.phenotypeXhr = phenotypes.fetch({
+          data: {
+            recalculate_rankings: recalculate_rankings
+          },
+          processData: true,
           success: this.renderPhenotypes,
           error: this.phenotypesError
         });
