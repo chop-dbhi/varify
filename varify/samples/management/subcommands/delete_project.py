@@ -74,6 +74,15 @@ class Command(BaseCommand):
                         )
                     ''', [project_id])
 
+                # Remove result scores of samples
+                cursor.execute('''
+                    DELETE FROM result_score WHERE result_id IN (
+                        SELECT id from sample_result WHERE sample_id IN (
+                            SELECT id FROM sample WHERE project_id = %s
+                        )
+                    )
+                ''', [project_id])
+
                 # Remove results of samples
                 cursor.execute('''
                     DELETE FROM sample_result WHERE sample_id IN (
