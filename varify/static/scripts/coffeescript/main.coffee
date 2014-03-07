@@ -9,16 +9,17 @@ require
             variable: 'data'
 
 , [
-    'cilantro',
-    'project/ui',
-    'project/csrf',
-    'tpl!templates/varify/tables/header.html',
-    'tpl!templates/varify/empty.html',
-    'tpl!templates/varify/modals/result.html'
-    'tpl!templates/varify/controls/hgmd.html'
-    'tpl!templates/varify/controls/sift.html'
-    'tpl!templates/varify/controls/polyphen.html'
-], (c, ui, csrf, header, empty, result, hgmd, sift, polyphen) ->
+    'cilantro'
+    'project/ui'
+    'project/csrf'
+    'tpl!project/templates/tables/header.html'
+    'tpl!project/templates/empty.html'
+    'tpl!project/templates/modals/result.html'
+    'tpl!project/templates/controls/hgmd.html'
+    'tpl!project/templates/controls/sift.html'
+    'tpl!project/templates/controls/polyphen.html'
+    'tpl!project/templates/workflows/results.html'
+], (c, ui, csrf, header, empty, result, hgmd, sift, polyphen, results) ->
 
     # Session options
     options =
@@ -32,6 +33,7 @@ require
     c.templates.set('varify/controls/hgmd', hgmd)
     c.templates.set('varify/controls/sift', sift)
     c.templates.set('varify/controls/polyphen', polyphen)
+    c.templates.set('varify/workflows/results', results)
 
     # Globally disable stats on all fields
     c.config.set('fields.defaults.form.stats', false)

@@ -1,0 +1,69 @@
+<span class=span12>
+<span class=span6>
+<h6>HPO</h6>
+<ul style="list-style-type: none;">
+<% for (var index in data.hpoAnnotations) { %>
+   <li><a href="http://www.human-phenotype-ontology.org/hpoweb/showterm?id=<%= data.hpoAnnotations[index].hpo_id %>" target="_blank"><%= data.hpoAnnotations[index].name %></a>
+   <% if (data.hpoAnnotations[index].priority) { %>
+       <span class="badge badge-important"><%= data.hpoAnnotations[index].priority %></span>
+   <% } %>
+   </li>
+<% } %>
+</ul>
+<% if (data.hpoAnnotations.length == 0) { %>
+<span class="label label-warning">No annotations for this patient</span>
+<% } %>
+</span>
+<span class=span6>
+<h6>Note</h6>
+<% if (data.notes && data.notes.length) { %>
+<p><%= data.notes[0].note %></p>
+<% } %>
+</span>
+</span>
+<span class=span12>
+<span class=span6>
+<% if (data.confirmedDiagnoses && data.confirmedDiagnoses.length) { %>
+<h6>Confirmed Diagnoses</h6>
+<ul style="list-style-type: none;">
+<% for (var index in data.confirmedDiagnoses) { %>
+   <li><a href="http://purl.bioontology.org/ontology/OMIM/<%= data.confirmedDiagnoses[index].omim_id %>" target="_blank"><%= data.confirmedDiagnoses[index].name %></a>
+   <% if (data.confirmedDiagnoses[index].priority) { %>
+       <span class="badge badge-important"><%= data.confirmedDiagnoses[index].priority %></span>
+   <% } %>
+   </li>
+<% } %>
+</ul>
+<% } %>
+</span>
+<span class=span6>
+<% if (data.suspectedDiagnoses && data.suspectedDiagnoses.length) { %>
+<h6>Suspected Diagnoses</h6>
+<ul style="list-style-type: none;">
+<% for (var index in data.suspectedDiagnoses) { %>
+   <li><a href="http://purl.bioontology.org/ontology/OMIM/<%= data.suspectedDiagnoses[index].omim_id %>" target="_blank"><%= data.suspectedDiagnoses[index].name %></a>
+   <% if (data.suspectedDiagnoses[index].priority) { %>
+       <span class="badge badge-important"><%= data.suspectedDiagnoses[index].priority %></span>
+   <% } %>
+   </li>
+<% } %>
+</ul>
+<% } %>
+</span>
+</span>
+<span class=span12>
+<span class=span6>
+<% if (data.ruledOutDiagnoses && data.ruledOutDiagnoses.length) { %>
+<h6>Ruled Out Diagnoses</h6>
+<ul style="list-style-type: none;">
+<% for (var index in data.ruledOutDiagnoses) { %>
+   <li><a href="http://purl.bioontology.org/ontology/OMIM/<%= data.ruledOutDiagnoses[index].omim_id %>" target="_blank"><%= data.ruledOutDiagnoses[index].name %></a>
+   <% if (data.ruledOutDiagnoses[index].priority) { %>
+       <span class="badge badge-important"><%= data.ruledOutDiagnoses[index].priority %></span>
+   <% } %>
+   </li>
+<% } %>
+</ul>
+<% } %>
+</span>
+</span>

@@ -6,12 +6,7 @@ define [
     '../tables'
     '../modals'
     '../../models'
-    'tpl!templates/count.html'
-    'tpl!templates/varify/workflows/results.html'
-    'tpl!templates/varify/modals/phenotypes.html'
-], (_, Marionette, c, numbers, tables, modal, models, templates...) ->
-
-    templates = _.object ['count', 'results', 'phenotypes'], templates
+], (_, Marionette, c, numbers, tables, modal, models) ->
 
 
     class ResultCount extends Marionette.ItemView
@@ -19,7 +14,7 @@ define [
 
         className: 'result-count'
 
-        template: templates.count
+        template: 'count'
 
         ui:
             count: '.count'
@@ -71,7 +66,7 @@ define [
     class ResultsWorkflow extends Marionette.Layout
         className: 'results-workflow'
 
-        template: templates.results
+        template: 'varify/workflows/results'
 
         requestDelay: 2500       # In milliseconds
         requestTimeout: 60000    # Max time(ms) for unmonitored exports, 1 minute
