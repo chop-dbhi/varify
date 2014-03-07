@@ -3,7 +3,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../tables', '../modals', '../../models'], function(_, Marionette, c, numbers, tables, modal, models) {
+define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../tables', '../modals', '../../models', '../../utils'], function(_, Marionette, c, numbers, tables, modal, models, utils) {
   var ResultCount, ResultsWorkflow;
   ResultCount = (function(_super) {
     __extends(ResultCount, _super);
@@ -87,6 +87,8 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
 
     function ResultsWorkflow() {
       this.retrievePhenotypes = __bind(this.retrievePhenotypes, this);
+      this.recalculateRankingsClicked = __bind(this.recalculateRankingsClicked, this);
+      this.viewPhenotypesClicked = __bind(this.viewPhenotypesClicked, this);
       this.sampleID = __bind(this.sampleID, this);
       this.phenotypesError = __bind(this.phenotypesError, this);
       this.hidePhenotypes = __bind(this.hidePhenotypes, this);
@@ -140,7 +142,9 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       resultsContainer: '.results-container',
       navbarButtons: '.results-workflow-navbar button',
       loadingOverlay: '.loading-overlay',
-      viewPhenotype: '.phenotype-modal .modal-body .span12'
+      viewPhenotype: '.phenotype-modal .modal-body .span12',
+      recalculateButton: '[data-target=recalculate-rankings]',
+      phenotypeWarning: '[data-target=phenotype-warning]'
     };
 
     ResultsWorkflow.prototype.events = {
@@ -151,8 +155,9 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       'click #pages-text-ranges': 'selectPagesOption',
       'click [data-toggle=save-query]': 'showSaveQuery',
       'click [data-toggle=context-panel]': 'toggleContextPanelButtonClicked',
-      'show.bs.modal .phenotype-modal': 'retrievePhenotypes',
-      'hidden.bs.modal .phenotype-modal': 'hidePhenotypes'
+      'show.bs.modal .phenotype-modal': 'viewPhenotypesClicked',
+      'hidden.bs.modal .phenotype-modal': 'hidePhenotypes',
+      'click [data-target=recalculate-rankings]': 'recalculateRankingsClicked'
     };
 
     ResultsWorkflow.prototype.regions = {
@@ -556,12 +561,13 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       return this.saveQueryModal.currentView.open();
     };
 
-    ResultsWorkflow.prototype.renderPhenotypes = function(model, response) {
-      var attr;
+    ResultsWorkflow.prototype.renderPhenotypes = function(model, response, update_results) {
+      var attr, last_modified, phenotype_modified;
       if (!this.ui.viewPhenotype.is(":visible")) {
         return;
       }
       this.ui.viewPhenotype.find(".loading").hide();
+      this.ui.recalculateButton.prop('disabled', false);
       attr = model.attributes;
       if (attr.hpoAnnotations && attr.hpoAnnotations.length) {
         attr.hpoAnnotations = _.sortBy(attr.hpoAnnotations, function(value) {
@@ -583,8 +589,31 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
           return parseInt(value.priority) || model.lowestPriority + 1;
         });
       }
-      this.ui.viewPhenotype.find(".content").html(templates.phenotypes(model.attributes));
-      return this.phenotypeXhr = void 0;
+      last_modified = utils.parseISO8601UTC(attr.last_modified);
+      if (last_modified != null) {
+        attr.last_modified = last_modified.toLocaleString();
+      } else {
+        attr.last_modified = "N/A";
+      }
+      phenotype_modified = utils.parseISO8601UTC(attr.phenotype_modified);
+      if (phenotype_modified != null) {
+        attr.phenotype_modified = phenotype_modified.toLocaleString();
+        if ((last_modified != null) && last_modified > phenotype_modified) {
+          this.ui.phenotypeWarning.text("The phenotypes for this sample have been updated recently and the gene rankings may be out of date. You can update these ranking based on the latest phenotypes by clicking on the 'Recalculate Rankings' button below.");
+          this.ui.phenotypeWarning.show();
+        }
+      } else {
+        attr.phenotype_modified = "N/A";
+        if (last_modified != null) {
+          this.ui.phenotypeWarning.show();
+          this.ui.phenotypeWarning.text("This sample has phenotype data but has not yet had gene rankings calculated based on the associated phenotype. You can update these rankings now by clicking on the 'Recalculate Rankings' button below.");
+        }
+      }
+      this.ui.viewPhenotype.find(".content").html(c.templates.get('varify/modals/phenotype')(model.attributes));
+      this.phenotypeXhr = void 0;
+      if (update_results === true) {
+        return c.trigger(c.VIEW_SYNCED);
+      }
     };
 
     ResultsWorkflow.prototype.hidePhenotypes = function() {
@@ -623,8 +652,27 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       return sample;
     };
 
-    ResultsWorkflow.prototype.retrievePhenotypes = function() {
+    ResultsWorkflow.prototype.viewPhenotypesClicked = function() {
+      return this.retrievePhenotypes();
+    };
+
+    ResultsWorkflow.prototype.recalculateRankingsClicked = function() {
+      if (this.phenotypeXhr) {
+        this.phenotypeXhr.abort();
+      }
+      this.phenotypeXhr = void 0;
+      this.ui.viewPhenotype.find(".content").empty();
+      this.ui.viewPhenotype.find(".loading").show();
+      return this.retrievePhenotypes(true);
+    };
+
+    ResultsWorkflow.prototype.retrievePhenotypes = function(recalculate_rankings) {
       var phenotypes, sampleID;
+      if (recalculate_rankings == null) {
+        recalculate_rankings = false;
+      }
+      this.ui.recalculateButton.prop('disabled', true);
+      this.ui.phenotypeWarning.hide();
       sampleID = this.sampleID();
       if (sampleID) {
         $('.phenotype-sample-label').html("(" + sampleID + ")");
@@ -632,7 +680,15 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
           sample_id: sampleID
         });
         return this.phenotypeXhr = phenotypes.fetch({
-          success: this.renderPhenotypes,
+          data: {
+            recalculate_rankings: recalculate_rankings
+          },
+          processData: true,
+          success: (function(_this) {
+            return function(model, response) {
+              return _this.renderPhenotypes(model, response, recalculate_rankings);
+            };
+          })(this),
           error: this.phenotypesError
         });
       } else {

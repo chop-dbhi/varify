@@ -1,8 +1,3 @@
-###
-The 'main' script for bootstrapping the default Cilantro client. Projects can
-use this directly or emulate the functionality in their own script.
-###
-
 require
     config:
         tpl:
@@ -15,11 +10,12 @@ require
     'tpl!project/templates/tables/header.html'
     'tpl!project/templates/empty.html'
     'tpl!project/templates/modals/result.html'
+    'tpl!project/templates/modals/phenotypes.html'
     'tpl!project/templates/controls/hgmd.html'
     'tpl!project/templates/controls/sift.html'
     'tpl!project/templates/controls/polyphen.html'
     'tpl!project/templates/workflows/results.html'
-], (c, ui, csrf, header, empty, result, hgmd, sift, polyphen, results) ->
+], (c, ui, csrf, header, empty, result, phenotype, hgmd, sift, polyphen, results) ->
 
     # Session options
     options =
@@ -30,6 +26,7 @@ require
     c.templates.set('varify/tables/header', header)
     c.templates.set('varify/empty', empty)
     c.templates.set('varify/modals/result', result)
+    c.templates.set('varify/modals/phenotype', phenotype)
     c.templates.set('varify/controls/hgmd', hgmd)
     c.templates.set('varify/controls/sift', sift)
     c.templates.set('varify/controls/polyphen', polyphen)
