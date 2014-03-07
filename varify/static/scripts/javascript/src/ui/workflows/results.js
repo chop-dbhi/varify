@@ -560,7 +560,7 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       return this.saveQueryModal.currentView.open();
     };
 
-    ResultsWorkflow.prototype.renderPhenotypes = function(model, response) {
+    ResultsWorkflow.prototype.renderPhenotypes = function(model, response, update_results) {
       var attr;
       if (!this.ui.viewPhenotype.is(":visible")) {
         return;
@@ -588,8 +588,11 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
           return parseInt(value.priority) || model.lowestPriority + 1;
         });
       }
-      this.ui.viewPhenotype.find(".content").html(templates.phenotypes(model.attributes));
-      return this.phenotypeXhr = void 0;
+      this.ui.viewPhenotype.find(".content").html(c.templates.get('varify/modals/phenotype')(model.attributes));
+      this.phenotypeXhr = void 0;
+      if (update_results === true) {
+        return c.trigger(c.VIEW_SYNCED);
+      }
     };
 
     ResultsWorkflow.prototype.hidePhenotypes = function() {
@@ -659,7 +662,11 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
             recalculate_rankings: recalculate_rankings
           },
           processData: true,
-          success: this.renderPhenotypes,
+          success: (function(_this) {
+            return function(model, response) {
+              return _this.renderPhenotypes(model, response, recalculate_rankings);
+            };
+          })(this),
           error: this.phenotypesError
         });
       } else {

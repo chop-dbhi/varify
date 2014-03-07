@@ -529,7 +529,7 @@ define [
             # will be created based on the current session
             @saveQueryModal.currentView.open()
 
-        renderPhenotypes: (model, response) =>
+        renderPhenotypes: (model, response, update_results) =>
             return if not @ui.viewPhenotype.is(":visible")
 
             @ui.viewPhenotype.find(".loading").hide()
@@ -552,6 +552,9 @@ define [
             @ui.viewPhenotype.find(".content").html(
                 c.templates.get('varify/modals/phenotype')(model.attributes))
             @phenotypeXhr = undefined
+
+            if update_results == true
+                c.trigger c.VIEW_SYNCED
 
         hidePhenotypes: =>
             @phenotypeXhr.abort() if @phenotypeXhr
@@ -608,7 +611,8 @@ define [
                     data:
                         recalculate_rankings: recalculate_rankings
                     processData: true
-                    success: @renderPhenotypes
+                    success: (model, response) =>
+                        @renderPhenotypes(model, response, recalculate_rankings)
                     error: @phenotypesError
             else
                 # Clear the sample label since there is no sample selected.
