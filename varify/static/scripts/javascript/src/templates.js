@@ -12,7 +12,7 @@ define(['underscore', './utils', 'cilantro/utils/numbers'], function(_, utils, N
       rank = parseInt(resultScore.rank);
       score = parseFloat(resultScore.score);
       if (!isNaN(rank) && !isNaN(score)) {
-        return "<td>" + rank + " <small class=muted>(" + score + ")</small></td>";
+        return "<td>" + rank + " <small class=muted>(" + (Numbers.prettyNumber(score)) + ")</small></td>";
       }
     }
     return "<td><small class=muted>unranked</small></td>";

@@ -15,7 +15,7 @@ define [
             score = parseFloat(resultScore.score)
 
             if not isNaN(rank) and not isNaN(score)
-                return "<td>#{ rank } <small class=muted>(#{ score })</small></td>"
+                return "<td>#{ rank } <small class=muted>(#{ Numbers.prettyNumber(score) })</small></td>"
 
         return "<td><small class=muted>unranked</small></td>"
 
