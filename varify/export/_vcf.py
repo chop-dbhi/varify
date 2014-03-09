@@ -1,14 +1,10 @@
 import logging
-from datetime import datetime
-from django.http import HttpResponse
 import vcf
-from restlib2.http import codes
 from avocado.export._base import BaseExporter
-from serrano.resources.base import get_request_context
-from varify.samples.models import Cohort, CohortVariant, Result, Sample
-from varify.assessments.models import Assessment
 from django.conf import settings
+from varify.variants.models import Variant
 import os
+import sys
 
 log = logging.getLogger(__name__)
 
@@ -45,9 +41,17 @@ class VcfExporter(BaseExporter):
                 if i == 0:
                     header.extend(data.keys())
                 row.extend(data.values())
-            if i == 0:
-                writer.writerow(header)
-            writer.writerow(row)
+            raw_row_params = {key:value for key, value in zip(header, row)}
+            variant_id = raw_row_params[u'id']
+            selectedVariant = Variant.objects.get(pk=variant_id)
+            next_row = vcf.model._Record(ID=variant_id, CHROM=selectedVariant.chr, POS=selectedVariant.pos,
+                                         REF=selectedVariant.ref, ALT=selectedVariant.alt,
+                                         #replace the following stubs:
+                                         QUAL=0, FILTER=None, INFO=None, FORMAT=None, sample_indexes=None, samples=None)
+
+                                         # )
+            writer.write_record(next_row)
+
         return buff
 
 
