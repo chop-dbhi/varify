@@ -12,7 +12,7 @@ INSTALLED_APPS = (
     'tests.cases.south_tests',
     'tests.cases.geneset_form',
     'tests.cases.sample_load_process',
-    'tests.cases.exporting'
+    'tests.cases.exporting',
     'tests.cases.commands',
 
     'varify',
