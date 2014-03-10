@@ -6,12 +6,8 @@ define [
     '../tables'
     '../modals'
     '../../models'
-    'tpl!templates/count.html'
-    'tpl!templates/varify/workflows/results.html'
-    'tpl!templates/varify/modals/phenotypes.html'
-], (_, Marionette, c, numbers, tables, modal, models, templates...) ->
-
-    templates = _.object ['count', 'results', 'phenotypes'], templates
+    '../../utils'
+], (_, Marionette, c, numbers, tables, modal, models, utils) ->
 
 
     class ResultCount extends Marionette.ItemView
@@ -19,7 +15,7 @@ define [
 
         className: 'result-count'
 
-        template: templates.count
+        template: 'count'
 
         ui:
             count: '.count'
@@ -71,7 +67,7 @@ define [
     class ResultsWorkflow extends Marionette.Layout
         className: 'results-workflow'
 
-        template: templates.results
+        template: 'varify/workflows/results'
 
         requestDelay: 2500       # In milliseconds
         requestTimeout: 60000    # Max time(ms) for unmonitored exports, 1 minute
@@ -94,6 +90,8 @@ define [
             navbarButtons: '.results-workflow-navbar button'
             loadingOverlay: '.loading-overlay'
             viewPhenotype: '.phenotype-modal .modal-body .span12'
+            recalculateButton: '[data-target=recalculate-rankings]'
+            phenotypeWarning: '[data-target=phenotype-warning]'
 
         events:
             'click .export-options-modal [data-save]': 'onExportClicked'
@@ -103,8 +101,9 @@ define [
             'click #pages-text-ranges': 'selectPagesOption'
             'click [data-toggle=save-query]': 'showSaveQuery'
             'click [data-toggle=context-panel]': 'toggleContextPanelButtonClicked'
-            'show.bs.modal .phenotype-modal': 'retrievePhenotypes'
+            'show.bs.modal .phenotype-modal': 'viewPhenotypesClicked'
             'hidden.bs.modal .phenotype-modal': 'hidePhenotypes'
+            'click [data-target=recalculate-rankings]': 'recalculateRankingsClicked'
 
         regions:
             columns: '#export-columns-tab'
@@ -164,9 +163,15 @@ define [
             , 25
 
         onExportClicked: =>
+            # If there are no columns selected then we should not try to
+            # export since the user will just get an empty file or empty
+            # template. Show an error with instructions on adding a column.
+            if @columns.currentView.data.facets.length == 0
+                @$('#export-error-message').html('One or more columns must be selected. Click the &quot;Columns&quot; tab, add at least one column using the green &quot;plus&quot; buttons next to the column names, and click &quot;Export&quot; to try again.')
+                @$('.export-options-modal .alert-block').show()
             # Don't update the view if the columns haven't changed
-            if _.isEqual(_.pluck(@data.view.facets.models, 'id'),
-                         _.pluck(@columns.currentView.data.facets.models, 'id'))
+            else if _.isEqual(_.pluck(@data.view.facets.models, 'id'),
+                              _.pluck(@columns.currentView.data.facets.models, 'id'))
                 @exportData()
             else
                 @data.view.facets.reset(@columns.currentView.data.facets.toJSON())
@@ -419,6 +424,7 @@ define [
                 @$('#export-error-message').html('Please enter a valid page range. The page range must be a single page(example: 1) or a range of pages(example: 2...5).')
                 @$('.export-options-modal .alert-block').show()
             else
+                @$('.export-options-modal .alert-block').hide()
                 @numPendingDownloads = selectedTypes.length
 
                 pagesSuffix = ""
@@ -532,9 +538,12 @@ define [
             # will be created based on the current session
             @saveQueryModal.currentView.open()
 
-        renderPhenotypes: (model, response) =>
+        renderPhenotypes: (model, response, update_results) =>
             return if not @ui.viewPhenotype.is(":visible")
+
             @ui.viewPhenotype.find(".loading").hide()
+            @ui.recalculateButton.prop('disabled', false)
+
             attr = model.attributes
             if attr.hpoAnnotations and attr.hpoAnnotations.length
                 attr.hpoAnnotations = _.sortBy(attr.hpoAnnotations, (value) ->
@@ -549,8 +558,33 @@ define [
                 attr.ruledOutDiagnoses = _.sortBy(attr.ruledOutDiagnoses, (value) ->
                     parseInt(value.priority) or model.lowestPriority+1)
 
-            @ui.viewPhenotype.find(".content").html(templates.phenotypes(model.attributes))
+            # Format the date properties if they are present
+            last_modified = utils.parseISO8601UTC(attr.last_modified)
+            if last_modified?
+                attr.last_modified = last_modified.toLocaleString()
+            else
+                attr.last_modified = "N/A"
+
+            phenotype_modified = utils.parseISO8601UTC(attr.phenotype_modified)
+            if phenotype_modified?
+                attr.phenotype_modified = phenotype_modified.toLocaleString()
+
+                if last_modified? and last_modified > phenotype_modified
+                    @ui.phenotypeWarning.text("The phenotypes for this sample have been updated recently and the gene rankings may be out of date. You can update these ranking based on the latest phenotypes by clicking on the 'Recalculate Rankings' button below.")
+                    @ui.phenotypeWarning.show()
+            else
+                attr.phenotype_modified = "N/A"
+
+                if last_modified?
+                    @ui.phenotypeWarning.show()
+                    @ui.phenotypeWarning.text("This sample has phenotype data but has not yet had gene rankings calculated based on the associated phenotype. You can update these rankings now by clicking on the 'Recalculate Rankings' button below.")
+
+            @ui.viewPhenotype.find(".content").html(
+                c.templates.get('varify/modals/phenotype')(model.attributes))
             @phenotypeXhr = undefined
+
+            if update_results == true
+                c.trigger c.VIEW_SYNCED
 
         hidePhenotypes: =>
             @phenotypeXhr.abort() if @phenotypeXhr
@@ -577,7 +611,24 @@ define [
                         sample = child.children[0].value[0].label
             sample
 
-        retrievePhenotypes: =>
+        viewPhenotypesClicked: =>
+            @retrievePhenotypes()
+
+        recalculateRankingsClicked: =>
+            # While we should never have an active request while also letting
+            # the user click the button, we account for it here just in case
+            # it happens by some other worldly set of circumstances.
+            @phenotypeXhr.abort() if @phenotypeXhr
+            @phenotypeXhr = undefined
+            @ui.viewPhenotype.find(".content").empty()
+            @ui.viewPhenotype.find(".loading").show()
+
+            @retrievePhenotypes(true)
+
+        retrievePhenotypes: (recalculate_rankings=false) =>
+            @ui.recalculateButton.prop('disabled', true)
+            @ui.phenotypeWarning.hide()
+
             sampleID = @sampleID()
             if sampleID
                 # Update the title of the phenotype modal window with the
@@ -588,7 +639,11 @@ define [
                     sample_id: sampleID
 
                 @phenotypeXhr = phenotypes.fetch
-                    success: @renderPhenotypes
+                    data:
+                        recalculate_rankings: recalculate_rankings
+                    processData: true
+                    success: (model, response) =>
+                        @renderPhenotypes(model, response, recalculate_rankings)
                     error: @phenotypesError
             else
                 # Clear the sample label since there is no sample selected.

@@ -40,6 +40,12 @@ class Command(BaseCommand):
                     DELETE FROM cohort_sample WHERE sample_id = %s
                 ''', [sample_id])
 
+                # Remove result scores
+                cursor.execute('''
+                    DELETE FROM result_score WHERE result_id IN
+                        (SELECT id from sample_result WHERE sample_id = %s)
+                ''', [sample_id])
+
                 # Remove results of sample
                 cursor.execute('''
                     DELETE FROM sample_result WHERE sample_id = %s

@@ -19,8 +19,8 @@ django-widget-tweaks
 psycopg2==2.4.4
 
 # Harvest stack
-avocado>=2.1,<3.0
-serrano>=2.1,<3.0
+avocado>=2.3,<3.0
+serrano>=2.3,<3.0
 modeltree>=1.1.7
 
 # Harvest extensions

@@ -1,6 +1,7 @@
 import functools
 import logging
 import requests
+from django.core import management
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf.urls import patterns, url
 from django.core.cache import cache
@@ -248,6 +249,17 @@ class SampleResultResource(ThrottledResource):
 
 class PhenotypeResource(ThrottledResource):
     def get(self, request, sample_id):
+        recalculate = request.GET.get('recalculate_rankings')
+
+        if recalculate == "true":
+            try:
+                management.call_command('samples', 'gene-ranks', sample_id,
+                                        force=True)
+            except Exception:
+                log.exception("Error recalculating gene rankings")
+                return HttpResponse("Error recalculating gene rankings",
+                                    status=500)
+
         endpoint = getattr(settings, 'PHENOTYPE_ENDPOINT', None)
 
         if not endpoint:
@@ -265,6 +277,17 @@ class PhenotypeResource(ThrottledResource):
             return HttpResponse(status=500)
         except requests.exceptions.RequestException:
             raise Http404
+
+        # If anything at all goes wrong in the sample lookup or json parsing
+        # then just abandon all hope and return the content from the orignal
+        # response.
+        try:
+            sample = Sample.objects.get(label=sample_id)
+            data = response.json()
+            data['phenotype_modified'] = sample.phenotype_modified
+            return data
+        except Exception:
+            pass
 
         return response.content
 
