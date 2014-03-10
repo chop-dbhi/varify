@@ -41,7 +41,7 @@ class VcfExporter(BaseExporter):
                 if i == 0:
                     header.extend(data.keys())
                 row.extend(data.values())
-            raw_row_params = {key: value for key, value in zip(header, row)}
+            raw_row_params = dict(zip(header, row))
             variant_id = raw_row_params[u'id']
             selectedVariant = Variant.objects.get(pk=variant_id)
             next_row = vcf.model._Record(ID=variant_id,
