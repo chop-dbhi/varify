@@ -1,4 +1,6 @@
 from serrano.resources.exporter import ExporterResource
+from avocado.models import DataView
+
 
 class VcfExporterResource(ExporterResource):
     def get_view(self, request, attrs=None):
