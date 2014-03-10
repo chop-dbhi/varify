@@ -226,7 +226,10 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
     };
 
     ResultsWorkflow.prototype.onExportClicked = function() {
-      if (_.isEqual(_.pluck(this.data.view.facets.models, 'id'), _.pluck(this.columns.currentView.data.facets.models, 'id'))) {
+      if (this.columns.currentView.data.facets.length === 0) {
+        this.$('#export-error-message').html('One or more columns must be selected. Click the &quot;Columns&quot; tab, add at least one column using the green &quot;plus&quot; buttons next to the column names, and click &quot;Export&quot; to try again.');
+        return this.$('.export-options-modal .alert-block').show();
+      } else if (_.isEqual(_.pluck(this.data.view.facets.models, 'id'), _.pluck(this.columns.currentView.data.facets.models, 'id'))) {
         return this.exportData();
       } else {
         this.data.view.facets.reset(this.columns.currentView.data.facets.toJSON());
@@ -456,6 +459,7 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
         this.$('#export-error-message').html('Please enter a valid page range. The page range must be a single page(example: 1) or a range of pages(example: 2...5).');
         return this.$('.export-options-modal .alert-block').show();
       } else {
+        this.$('.export-options-modal .alert-block').hide();
         this.numPendingDownloads = selectedTypes.length;
         pagesSuffix = "";
         if (this.$('input[name=pages-radio]:checked').val() !== "all") {
