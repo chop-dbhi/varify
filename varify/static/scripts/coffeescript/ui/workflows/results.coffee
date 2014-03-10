@@ -163,9 +163,15 @@ define [
             , 25
 
         onExportClicked: =>
+            # If there are no columns selected then we should not try to
+            # export since the user will just get an empty file or empty
+            # template. Show an error with instructions on adding a column.
+            if @columns.currentView.data.facets.length == 0
+                @$('#export-error-message').html('One or more columns must be selected. Click the &quot;Columns&quot; tab, add at least one column using the green &quot;plus&quot; buttons next to the column names, and click &quot;Export&quot; to try again.')
+                @$('.export-options-modal .alert-block').show()
             # Don't update the view if the columns haven't changed
-            if _.isEqual(_.pluck(@data.view.facets.models, 'id'),
-                         _.pluck(@columns.currentView.data.facets.models, 'id'))
+            else if _.isEqual(_.pluck(@data.view.facets.models, 'id'),
+                              _.pluck(@columns.currentView.data.facets.models, 'id'))
                 @exportData()
             else
                 @data.view.facets.reset(@columns.currentView.data.facets.toJSON())
@@ -418,6 +424,7 @@ define [
                 @$('#export-error-message').html('Please enter a valid page range. The page range must be a single page(example: 1) or a range of pages(example: 2...5).')
                 @$('.export-options-modal .alert-block').show()
             else
+                @$('.export-options-modal .alert-block').hide()
                 @numPendingDownloads = selectedTypes.length
 
                 pagesSuffix = ""
