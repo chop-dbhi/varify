@@ -150,15 +150,17 @@ class Command(BaseCommand):
                             'associated with it.'.format(sample.label))
                 continue
 
-            # We need to convert the genes to strings because the ranking
-            # service is no prepared to handle the unicode format that the
-            # gene symbols are in when we retrieve them from the models.
-            gene_rank_url = "{0}?hpo={1}&genes={2}".format(
-                settings.GENE_RANK_BASE_URL, ",".join(hpo_terms),
-                ",".join([str(g) for g in genes]))
+            # Convert genes to a list so it is serializeable in the json.dumps
+            # call below when making the request to the ranking service.
+            data = {
+                'hpo': hpo_terms,
+                'genes': list(genes)
+            }
 
             try:
-                gene_response = requests.get(gene_rank_url)
+                gene_response = requests.post(
+                    settings.GENE_RANK_BASE_URL, data=json.dumps(data),
+                    headers={'content-type': 'application/json'})
             except Exception:
                 log.exception('Error retrieving gene rankings, skipping '
                               'sample "{0}".'.format(sample.label))
