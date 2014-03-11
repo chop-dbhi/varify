@@ -37,6 +37,11 @@ require({
   c.config.set('fields.instances.110.form.controls', ['Hgmd']);
   c.config.set('fields.instances.58.form.controls', ['Sift']);
   c.config.set('fields.instances.56.form.controls', ['PolyPhen']);
+  c.config.set('session.defaults.data.preview', {
+    view: {
+      columns: [2]
+    }
+  });
   notify_required = (function(_this) {
     return function(concepts) {
       var message, names;
