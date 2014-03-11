@@ -293,6 +293,18 @@ class GeneRanksTestCase(TestCase):
             re.compile("http://localhost/api/tests/phenotype/(.*)/"),
             body=self.mock_phenotype,
             content_type="application/json")
+        httpretty.register_uri(
+            httpretty.POST,
+            "http://localhost/api/tests/gene_rank_exception",
+            body=self.mock_request_exception)
+        httpretty.register_uri(
+            httpretty.POST,
+            "http://localhost/api/tests/gene_rank",
+            body=self.mock_gene_rank)
+        httpretty.register_uri(
+            httpretty.POST,
+            "http://localhost/api/tests/malformed_gene_rank",
+            body=self.mock_malformed_gene_rank)
 
     def test_missing_settings(self):
         error_log_count = len(self.mock_handler.messages['error'])
@@ -327,11 +339,6 @@ class GeneRanksTestCase(TestCase):
     @httpretty.activate
     def test_url_and_data_errors(self):
         self.register_patches()
-        httpretty.register_uri(
-            httpretty.GET,
-            re.compile(
-                "http://localhost/api/tests/gene_rank_exception(.*)"),
-            body=self.mock_request_exception)
 
         # Use a sample we now is present but account for all the possible
         # error results from the real endpoint by using mock error resources.
@@ -409,16 +416,6 @@ class GeneRanksTestCase(TestCase):
     @httpretty.activate
     def test_load(self):
         self.register_patches()
-        httpretty.register_uri(
-            httpretty.GET,
-            re.compile(
-                "http://localhost/api/tests/gene_rank(.*)"),
-            body=self.mock_gene_rank)
-        httpretty.register_uri(
-            httpretty.GET,
-            re.compile(
-                "http://localhost/api/tests/malformed_gene_rank(.*)"),
-            body=self.mock_malformed_gene_rank)
 
         initial_score_count = ResultScore.objects.count()
         # Assert that all the samples we expect to be in the DB are there
