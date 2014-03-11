@@ -63,6 +63,12 @@ require
     c.config.set('fields.instances.58.form.controls', ['Sift'])
     c.config.set('fields.instances.56.form.controls', ['PolyPhen'])
 
+    # Force calls to the preview endpoint to use a fixed view composed solely
+    # of the sample concept. This will have the intended result of removing
+    # "duplicate" rows in the results table that sometimes occured due to
+    # the user's view.
+    c.config.set('session.defaults.data.preview', {view: {columns: [2]}})
+
     # A simple handler for CONTEXT_REQUIRED and CONTEXT_INVALID events that
     # tells the user which concept is required(when possible) or prints a
     # generic message in the case the concept name could not be found.
