@@ -3,7 +3,7 @@
 First off, thank you for considering a contribution! Before you submit any code, please read the following Developer's Certificate of Origin (DCO):
 
 ```
-By making a contribution to the Cilantro project ("Project"),
+By making a contribution to the Varify project ("Project"),
 I represent and warrant that:
 
 a. The contribution was created in whole or in part by me and I have the right
