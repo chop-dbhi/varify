@@ -277,6 +277,10 @@ You can technically start as many of each type for loading data in parallel, but
 
 Note, these workers will run forever, if there is only a single sample being loaded, the `--burst` argument can be used to terminate the worker when there are no more items left in the queue.
 
+#### Monitor Workers
+
+You can monitor the workers and the queues using the `rq-dashboard` or `rqinfo`. Information on setting up and using those services can be found [here](http://python-rq.org/docs/monitoring/).
+
 #### Post-Load
 
 After the batch of samples have been loaded, a two more commands need to be executed to update the annotations and cohort frequencies. These are performed _post-load_ for performance reasons.
