@@ -17,7 +17,7 @@ class Command(BaseCommand):
         make_option('--database', action='store', dest='database',
                     default=DEFAULT_DB_ALIAS,
                     help='Specifies the target database loading results.'),
-        make_option('--max', action='store', dest='max', default=50,
+        make_option('--max', action='store', dest='max', default=None,
                     type='int',
                     help='Specifies the maximum number of samples to queue.'),
     )
@@ -33,7 +33,7 @@ class Command(BaseCommand):
             log.debug('Scanning source directory: {0}'.format(source))
 
             for root, dirs, files in os.walk(source):
-                if count == max_count:
+                if max_count and count == max_count:
                     return count, scanned
 
                 if 'MANIFEST' not in files:
