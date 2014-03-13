@@ -22,6 +22,14 @@ require
         url: c.config.get('url')
         credentials: c.config.get('credentials')
 
+    augmentFixedView = () ->
+        new_view = {view: {columns: [2]}}
+
+        if (json = c.session.data.views.session.get('json'))?
+            new_view['view']['ordering'] = json['ordering']
+
+        return new_view
+
     # Define custom templates
     c.templates.set('varify/tables/header', header)
     c.templates.set('varify/empty', empty)
@@ -67,7 +75,7 @@ require
     # of the sample concept. This will have the intended result of removing
     # "duplicate" rows in the results table that sometimes occured due to
     # the user's view.
-    c.config.set('session.defaults.data.preview', {view: {columns: [2]}})
+    c.config.set('session.defaults.data.preview', augmentFixedView)
 
     # A simple handler for CONTEXT_REQUIRED and CONTEXT_INVALID events that
     # tells the user which concept is required(when possible) or prints a
