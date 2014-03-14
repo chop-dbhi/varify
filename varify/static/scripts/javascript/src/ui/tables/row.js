@@ -3,7 +3,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'marionette', 'cilantro', '../../models', '../../templates'], function(_, Marionette, c, models, Templates) {
+define(['marionette', 'cilantro', '../../models', '../../templates'], function(Marionette, c, models, Templates) {
   var EmptyResultRow, ResultRow;
   ResultRow = (function(_super) {
     __extends(ResultRow, _super);
@@ -17,7 +17,7 @@ define(['underscore', 'marionette', 'cilantro', '../../models', '../../templates
 
     ResultRow.prototype.className = 'area-container variant-container';
 
-    ResultRow.prototype.template = 'varify/empty';
+    ResultRow.prototype.template = function() {};
 
     ResultRow.prototype.tagName = 'tr';
 

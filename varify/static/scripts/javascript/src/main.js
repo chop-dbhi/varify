@@ -5,7 +5,7 @@ require({
       variable: 'data'
     }
   }
-}, ['cilantro', 'project/ui', 'project/csrf', 'tpl!project/templates/tables/header.html', 'tpl!project/templates/empty.html', 'tpl!project/templates/modals/result.html', 'tpl!project/templates/modals/phenotypes.html', 'tpl!project/templates/controls/sift.html', 'tpl!project/templates/controls/polyphen.html', 'tpl!project/templates/workflows/results.html'], function(c, ui, csrf, header, empty, result, phenotype, sift, polyphen, results) {
+}, ['cilantro', 'project/ui', 'project/csrf', 'tpl!project/templates/tables/header.html', 'tpl!project/templates/modals/result.html', 'tpl!project/templates/modals/phenotypes.html', 'tpl!project/templates/controls/sift.html', 'tpl!project/templates/controls/polyphen.html', 'tpl!project/templates/workflows/results.html'], function(c, ui, csrf, header, result, phenotype, sift, polyphen, results) {
   var augmentFixedView, notify_required, options;
   options = {
     url: c.config.get('url'),
@@ -24,7 +24,6 @@ require({
     return new_view;
   };
   c.templates.set('varify/tables/header', header);
-  c.templates.set('varify/empty', empty);
   c.templates.set('varify/modals/result', result);
   c.templates.set('varify/modals/phenotype', phenotype);
   c.templates.set('varify/controls/sift', sift);

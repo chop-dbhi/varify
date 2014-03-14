@@ -17,7 +17,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return DetailsTab.__super__.constructor.apply(this, arguments);
     }
 
-    DetailsTab.prototype.template = 'varify/empty';
+    DetailsTab.prototype.template = function() {};
 
     DetailsTab.prototype.initialize = function() {
       this.metrics = this.options.metrics;
@@ -370,7 +370,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return AssessmentTab.__super__.constructor.apply(this, arguments);
     }
 
-    AssessmentTab.prototype.template = 'varify/empty';
+    AssessmentTab.prototype.template = function() {};
 
     AssessmentTab.prototype.el = '#knowledge-capture-content';
 

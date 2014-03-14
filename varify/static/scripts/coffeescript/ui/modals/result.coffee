@@ -8,7 +8,7 @@ define [
 ], (_, Marionette, models, utils, Templates, Numbers) ->
 
     class DetailsTab extends Marionette.ItemView
-        template: 'varify/empty'
+        template: ->
 
         initialize: ->
             @metrics = @options.metrics
@@ -351,7 +351,7 @@ define [
 
 
     class AssessmentTab extends Marionette.ItemView
-        template: 'varify/empty'
+        template: ->
 
         el: '#knowledge-capture-content'
 
