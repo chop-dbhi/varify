@@ -149,7 +149,7 @@ define [
             content.push "<a href='http://localhost:10000/show?request=chr#{ variant_attrs.chr }:g.#{ variant_attrs.pos }#{ variant_attrs.ref }>#{ variant_attrs.alt }' target=_blank class='btn btn-primary btn-small alamut-button'>Query Alamut</a>"
             return content.join ''
 
-        render1000g: (attrs) ->
+        renderFrequencies: (attrs) ->
             content = []
             content.push '<h4>1000 Genomes</h4>'
 
@@ -168,10 +168,6 @@ define [
             else
                 content.push '<p class=muted>No 1000G frequencies</p>'
 
-            return content.join ''
-
-        renderEvs: (attrs) ->
-            content = []
             content.push '<h4 title="Exome Variant Server">EVS</h4>'
 
             # EVS allele frequencies
@@ -335,8 +331,7 @@ define [
             $row1.append @_span @renderPredictions(attrs), 3
 
             $row2.append @_span @renderCohorts(attrs), 3
-            $row2.append @_span @render1000g(attrs), 3
-            $row2.append @_span @renderEvs(attrs), 3
+            $row2.append @_span @renderFrequencies(attrs), 3
             $row2.append @_span @renderPubmed(attrs), 3
 
             $row3.append @_span @renderAssessmentMetricsContainer(), 12

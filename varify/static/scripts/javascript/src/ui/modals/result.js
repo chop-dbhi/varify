@@ -146,8 +146,8 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return content.join('');
     };
 
-    DetailsTab.prototype.render1000g = function(attrs) {
-      var content, tg;
+    DetailsTab.prototype.renderFrequencies = function(attrs) {
+      var content, evs, tg;
       content = [];
       content.push('<h4>1000 Genomes</h4>');
       if ((tg = attrs['1000g'][0])) {
@@ -168,12 +168,6 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       } else {
         content.push('<p class=muted>No 1000G frequencies</p>');
       }
-      return content.join('');
-    };
-
-    DetailsTab.prototype.renderEvs = function(attrs) {
-      var content, evs;
-      content = [];
       content.push('<h4 title="Exome Variant Server">EVS</h4>');
       if ((evs = attrs.evs[0])) {
         content.push('<ul class=unstyled>');
@@ -345,8 +339,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       $row1.append(this._span(this.renderPhenotypes(attrs), 3));
       $row1.append(this._span(this.renderPredictions(attrs), 3));
       $row2.append(this._span(this.renderCohorts(attrs), 3));
-      $row2.append(this._span(this.render1000g(attrs), 3));
-      $row2.append(this._span(this.renderEvs(attrs), 3));
+      $row2.append(this._span(this.renderFrequencies(attrs), 3));
       $row2.append(this._span(this.renderPubmed(attrs), 3));
       $row3.append(this._span(this.renderAssessmentMetricsContainer(), 12));
       this.$content.append($row1, $row2, $row3);
