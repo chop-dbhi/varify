@@ -15,17 +15,6 @@ class VcfExporter(BaseExporter):
     file_extension = 'vcf'
     content_type = 'text/variant-call-format'
 
-    ci_categories = ['Definitive cause of phenotype',
-                     'Possibly linked to clinical indication']
-    # We include None in the list here because assessment category is nullable.
-    if_categories = ['Immediately medically actionable', 'Childhood onset',
-                     'Adult onset', 'Recessive carrier', None]
-
-    pathogenicities = ['Unreviewed', 'Pathogenic', 'Likely pathogenic',
-                       'Variant of unknown significance', 'Likely benign',
-                       'Benign',
-                       'Exclude for technical reasons related to sequencing']
-
     def write(self, iterable, buff=None, *args, **kwargs):
         header = []
         buff = self.get_file_obj(buff)
