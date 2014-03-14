@@ -259,7 +259,30 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
         }
         content.push('</ul>');
       } else {
-        content.push('<p class=muted>No associated phenotypes</p>');
+        content.push('<p class=muted>No associated variant phenotypes</p>');
+      }
+      if (attrs.uniqueGenes[0]) {
+        content.push('<ul class=unstyled>');
+        _.each(attrs.uniqueGenes, function(gene) {
+          var _j, _len1, _ref1;
+          content.push("<li>" + gene.symbol + "</li>");
+          if (gene.phenotypes[0]) {
+            content.push('<ul class=unstyled>');
+            _ref1 = gene.phenotypes;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              phenotype = _ref1[_j];
+              content.push("<li>" + phenotype.term);
+              if (phenotype.hpo_id) {
+                content.push("<small>(HPO" + phenotype.hpo_id + ")</small>");
+              }
+              content.push("</li>");
+            }
+            return content.push('</ul>');
+          } else {
+            return content.push('<p class=muted>No phenotypes for this gene</p>');
+          }
+        });
+        content.push('</ul>');
       }
       return content.join('');
     };
@@ -277,7 +300,26 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
         }
         content.push('</ul>');
       } else {
-        content.push('<p class=muted>No PubMed articles associated</p>');
+        content.push('<p class=muted>No PubMed articles for this variant</p>');
+      }
+      if (attrs.uniqueGenes[0]) {
+        content.push('<ul class=unstyled>');
+        _.each(attrs.uniqueGenes, function(gene) {
+          var _j, _len1, _ref1;
+          content.push("<li>" + gene.symbol + "</li>");
+          if (gene.articles[0]) {
+            content.push('<ul class=unstyled>');
+            _ref1 = gene.articles;
+            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+              pmid = _ref1[_j];
+              content.push("<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/" + pmid + "\">" + pmid + "</a></li>");
+            }
+            return content.push('</ul>');
+          } else {
+            return content.push('<p class=muted>No PubMed articles for this gene</p>');
+          }
+        });
+        content.push('</ul>');
       }
       return content.join('');
     };

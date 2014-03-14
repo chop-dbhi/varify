@@ -31,7 +31,9 @@ define([
                 return genes.push({
                     symbol: gene.symbol,
                     hgnc_id: gene.hgnc_id,
-                    name: gene.name
+                    name: gene.name,
+                    articles: gene.articles,
+                    phenotypes: gene.phenotypes
                 });
             });
 
