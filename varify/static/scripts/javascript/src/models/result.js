@@ -28,12 +28,14 @@ define([
                 if (/^LOC\d+/.test(gene.symbol) || (uniqueGenes[gene.symbol] != null)) return;
 
                 uniqueGenes[gene.symbol] = true;
-                return genes.push({
+                genes.push({
                     symbol: gene.symbol,
                     hgnc_id: gene.hgnc_id,
                     name: gene.name,
-                    articles: gene.articles,
-                    phenotypes: gene.phenotypes
+                    articles: _.uniq(gene.articles),
+                    phenotypes: _.uniq(gene.phenotypes, false, function(item) {
+                        return item.hpo_id;
+                    })
                 });
             });
 
