@@ -236,7 +236,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     };
 
     DetailsTab.prototype._renderPhenotypeCollection = function(phenotypes) {
-      var content, phenotype, sorted, _i, _len;
+      var content, phenotype, sorted, zpad, _i, _len;
       content = [];
       sorted = _.sortBy(phenotypes, function(item) {
         return item.term;
@@ -246,14 +246,13 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
         phenotype = sorted[_i];
         content.push("<li>" + phenotype.term);
         if (phenotype.hpo_id || phenotype.hgmd_id) {
-          content.push('<ul>');
           if (phenotype.hgmd_id) {
-            content.push("<li><small>HGMD</small> " + phenotype.hgmd_id + "</li>");
+            content.push(" (HGMD: " + phenotype.hgmd_id + ")");
           }
           if (phenotype.hpo_id) {
-            content.push("<li><small>HPO</small> " + phenotype.hpo_id + "</li>");
+            zpad = String("0000000" + phenotype.hpo_id).slice(-7);
+            content.push(" (<a href=\"http://www.human-phenotype-ontology.org/hpoweb/showterm?id=HP_" + zpad + "\">HPO: " + zpad + "</a>)");
           }
-          content.push('</ul>');
         }
         content.push('</li>');
       }

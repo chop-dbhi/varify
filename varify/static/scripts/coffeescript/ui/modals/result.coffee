@@ -240,12 +240,14 @@ define [
             for phenotype in sorted
                 content.push "<li>#{ phenotype.term }"
                 if phenotype.hpo_id or phenotype.hgmd_id
-                    content.push '<ul>'
                     if phenotype.hgmd_id
-                        content.push "<li><small>HGMD</small> #{ phenotype.hgmd_id }</li>"
+                        content.push " (HGMD: #{ phenotype.hgmd_id })"
                     if phenotype.hpo_id
-                        content.push "<li><small>HPO</small> #{ phenotype.hpo_id }</li>"
-                    content.push '</ul>'
+                        # Zero-pad the HPO ID to force it to be 7 digits. This
+                        # trick is from:
+                        #       http://dev.enekoalonso.com/2010/07/20/little-tricks-string-padding-in-javascript/
+                        zpad = String("0000000" + phenotype.hpo_id).slice(-7)
+                        content.push " (<a href=\"http://www.human-phenotype-ontology.org/hpoweb/showterm?id=HP_#{ zpad }\">HPO: #{ zpad }</a>)"
                 content.push '</li>'
             content.push '</ul>'
 
