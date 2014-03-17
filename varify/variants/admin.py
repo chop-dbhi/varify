@@ -1,7 +1,12 @@
 from django.contrib import admin
-from avocado.lexicon.admin import LexiconAdmin
 from .models import VariantType, EffectImpact, EffectRegion, Effect, \
     FunctionalClass
+
+
+class LexiconAdmin(admin.ModelAdmin):
+    fields = ['label', 'value', 'code', 'order']
+    list_display = ['pk'] + fields
+    list_editable = fields
 
 
 class EffectAdmin(LexiconAdmin):
