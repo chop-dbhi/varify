@@ -230,22 +230,35 @@ define [
 
             return content.join ''
 
+        _renderPhenotypeCollection: (phenotypes) ->
+            content = []
+
+            sorted = _.sortBy phenotypes, (item) ->
+                return item.term
+
+            content.push '<ul>'
+            for phenotype in sorted
+                content.push "<li>#{ phenotype.term }"
+                if phenotype.hpo_id or phenotype.hgmd_id
+                    content.push '<ul>'
+                    if phenotype.hgmd_id
+                        content.push "<li><small>HGMD</small> #{ phenotype.hgmd_id }</li>"
+                    if phenotype.hpo_id
+                        content.push "<li><small>HPO</small> #{ phenotype.hpo_id }</li>"
+                    content.push '</ul>'
+                content.push '</li>'
+            content.push '</ul>'
+
+            return content
+
         renderPhenotypes: (attrs) ->
             content = []
             content.push '<h4>Phenotypes</h4>'
 
             if attrs.phenotypes[0]
                 content.push '<ul class=unstyled>'
-                for phenotype in attrs.phenotypes
-                    content.push "<li>#{ phenotype.term }"
-                    if phenotype.hpo_id or phenotype.hgmd_id
-                        content.push '<ul>'
-                        if phenotype.hgmd_id
-                            content.push "<li><small>HGMD</small> #{ phenotype.hgmd_id }</li>"
-                        if phenotype.hpo_id
-                            content.push "<li><small>HPO</small> #{ phenotype.hpo_id }</li>"
-                        content.push '</ul>'
-                    content.push '</li>'
+                content.push '<li>Variant:</li>'
+                content = content.concat(@_renderPhenotypeCollection(attrs.phenotypes))
                 content.push '</ul>'
             else
                 content.push '<p class=muted>No associated variant phenotypes</p>'
@@ -254,24 +267,30 @@ define [
                 content.push '<ul class=unstyled>'
 
                 _.each attrs.uniqueGenes, (gene) ->
-                    content.push "<li>#{ gene.symbol }</li>"
+                    content.push "<li>#{ gene.symbol }:</li>"
 
                     if gene.phenotypes[0]
-                        content.push '<ul class=unstyled>'
-                        for phenotype in gene.phenotypes
-                            content.push "<li>#{ phenotype.term }"
-
-                            if phenotype.hpo_id
-                                content.push "<small>(HPO#{ phenotype.hpo_id })</small>"
-
-                            content.push "</li>"
-                        content.push '</ul>'
+                        content = content.concat(@_renderPhenotypeCollection(gene.phenotypes))
                     else
                         content.push '<p class=muted>No phenotypes for this gene</p>'
+                , this
 
                 content.push '</ul>'
 
             return content.join ''
+
+        _renderArticleCollection: (articles) ->
+            content = []
+
+            sorted =  _.sortBy articles, (item) ->
+                return item
+
+            content.push '<ul>'
+            for pmid in sorted
+                content.push "<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/#{ pmid }\">#{ pmid }</a></li>"
+            content.push '</ul>'
+
+            return content
 
         renderPubmed: (attrs) ->
             content = []
@@ -279,8 +298,8 @@ define [
 
             if attrs.articles[0]
                 content.push '<ul class=unstyled>'
-                for pmid in attrs.articles
-                    content.push "<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/#{ pmid }\">#{ pmid }</a></li>"
+                content.push '<li>Variant:</li>'
+                content = content.concat(@_renderArticleCollection(attrs.articles))
                 content.push '</ul>'
             else
                 content.push '<p class=muted>No PubMed articles for this variant</p>'
@@ -289,15 +308,13 @@ define [
                 content.push '<ul class=unstyled>'
 
                 _.each attrs.uniqueGenes, (gene) ->
-                    content.push "<li>#{ gene.symbol }</li>"
+                    content.push "<li>#{ gene.symbol }:</li>"
 
                     if gene.articles[0]
-                        content.push '<ul class=unstyled>'
-                        for pmid in gene.articles
-                            content.push "<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/#{ pmid }\">#{ pmid }</a></li>"
-                        content.push '</ul>'
+                        content = content.concat(@_renderArticleCollection(gene.articles))
                     else
                         content.push '<p class=muted>No PubMed articles for this gene</p>'
+                , this
 
                 content.push '</ul>'
 

@@ -235,28 +235,40 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return content.join('');
     };
 
+    DetailsTab.prototype._renderPhenotypeCollection = function(phenotypes) {
+      var content, phenotype, sorted, _i, _len;
+      content = [];
+      sorted = _.sortBy(phenotypes, function(item) {
+        return item.term;
+      });
+      content.push('<ul>');
+      for (_i = 0, _len = sorted.length; _i < _len; _i++) {
+        phenotype = sorted[_i];
+        content.push("<li>" + phenotype.term);
+        if (phenotype.hpo_id || phenotype.hgmd_id) {
+          content.push('<ul>');
+          if (phenotype.hgmd_id) {
+            content.push("<li><small>HGMD</small> " + phenotype.hgmd_id + "</li>");
+          }
+          if (phenotype.hpo_id) {
+            content.push("<li><small>HPO</small> " + phenotype.hpo_id + "</li>");
+          }
+          content.push('</ul>');
+        }
+        content.push('</li>');
+      }
+      content.push('</ul>');
+      return content;
+    };
+
     DetailsTab.prototype.renderPhenotypes = function(attrs) {
-      var content, phenotype, _i, _len, _ref;
+      var content;
       content = [];
       content.push('<h4>Phenotypes</h4>');
       if (attrs.phenotypes[0]) {
         content.push('<ul class=unstyled>');
-        _ref = attrs.phenotypes;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          phenotype = _ref[_i];
-          content.push("<li>" + phenotype.term);
-          if (phenotype.hpo_id || phenotype.hgmd_id) {
-            content.push('<ul>');
-            if (phenotype.hgmd_id) {
-              content.push("<li><small>HGMD</small> " + phenotype.hgmd_id + "</li>");
-            }
-            if (phenotype.hpo_id) {
-              content.push("<li><small>HPO</small> " + phenotype.hpo_id + "</li>");
-            }
-            content.push('</ul>');
-          }
-          content.push('</li>');
-        }
+        content.push('<li>Variant:</li>');
+        content = content.concat(this._renderPhenotypeCollection(attrs.phenotypes));
         content.push('</ul>');
       } else {
         content.push('<p class=muted>No associated variant phenotypes</p>');
@@ -264,40 +276,41 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       if (attrs.uniqueGenes[0]) {
         content.push('<ul class=unstyled>');
         _.each(attrs.uniqueGenes, function(gene) {
-          var _j, _len1, _ref1;
-          content.push("<li>" + gene.symbol + "</li>");
+          content.push("<li>" + gene.symbol + ":</li>");
           if (gene.phenotypes[0]) {
-            content.push('<ul class=unstyled>');
-            _ref1 = gene.phenotypes;
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              phenotype = _ref1[_j];
-              content.push("<li>" + phenotype.term);
-              if (phenotype.hpo_id) {
-                content.push("<small>(HPO" + phenotype.hpo_id + ")</small>");
-              }
-              content.push("</li>");
-            }
-            return content.push('</ul>');
+            return content = content.concat(this._renderPhenotypeCollection(gene.phenotypes));
           } else {
             return content.push('<p class=muted>No phenotypes for this gene</p>');
           }
-        });
+        }, this);
         content.push('</ul>');
       }
       return content.join('');
     };
 
+    DetailsTab.prototype._renderArticleCollection = function(articles) {
+      var content, pmid, sorted, _i, _len;
+      content = [];
+      sorted = _.sortBy(articles, function(item) {
+        return item;
+      });
+      content.push('<ul>');
+      for (_i = 0, _len = sorted.length; _i < _len; _i++) {
+        pmid = sorted[_i];
+        content.push("<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/" + pmid + "\">" + pmid + "</a></li>");
+      }
+      content.push('</ul>');
+      return content;
+    };
+
     DetailsTab.prototype.renderPubmed = function(attrs) {
-      var content, pmid, _i, _len, _ref;
+      var content;
       content = [];
       content.push('<h4>Articles</h4>');
       if (attrs.articles[0]) {
         content.push('<ul class=unstyled>');
-        _ref = attrs.articles;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          pmid = _ref[_i];
-          content.push("<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/" + pmid + "\">" + pmid + "</a></li>");
-        }
+        content.push('<li>Variant:</li>');
+        content = content.concat(this._renderArticleCollection(attrs.articles));
         content.push('</ul>');
       } else {
         content.push('<p class=muted>No PubMed articles for this variant</p>');
@@ -305,20 +318,13 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       if (attrs.uniqueGenes[0]) {
         content.push('<ul class=unstyled>');
         _.each(attrs.uniqueGenes, function(gene) {
-          var _j, _len1, _ref1;
-          content.push("<li>" + gene.symbol + "</li>");
+          content.push("<li>" + gene.symbol + ":</li>");
           if (gene.articles[0]) {
-            content.push('<ul class=unstyled>');
-            _ref1 = gene.articles;
-            for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-              pmid = _ref1[_j];
-              content.push("<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/" + pmid + "\">" + pmid + "</a></li>");
-            }
-            return content.push('</ul>');
+            return content = content.concat(this._renderArticleCollection(gene.articles));
           } else {
             return content.push('<p class=muted>No PubMed articles for this gene</p>');
           }
-        });
+        }, this);
         content.push('</ul>');
       }
       return content.join('');
