@@ -8,13 +8,12 @@ require
     'project/ui'
     'project/csrf'
     'tpl!project/templates/tables/header.html'
-    'tpl!project/templates/empty.html'
     'tpl!project/templates/modals/result.html'
     'tpl!project/templates/modals/phenotypes.html'
     'tpl!project/templates/controls/sift.html'
     'tpl!project/templates/controls/polyphen.html'
     'tpl!project/templates/workflows/results.html'
-], (c, ui, csrf, header, empty, result, phenotype, sift, polyphen, results) ->
+], (c, ui, csrf, header, result, phenotype, sift, polyphen, results) ->
 
     # Session options
     options =
@@ -31,7 +30,6 @@ require
 
     # Define custom templates
     c.templates.set('varify/tables/header', header)
-    c.templates.set('varify/empty', empty)
     c.templates.set('varify/modals/result', result)
     c.templates.set('varify/modals/phenotype', phenotype)
     c.templates.set('varify/controls/sift', sift)

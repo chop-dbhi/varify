@@ -8,7 +8,7 @@ define [
 ], (_, Marionette, models, utils, Templates, Numbers) ->
 
     class DetailsTab extends Marionette.ItemView
-        template: 'varify/empty'
+        template: ->
 
         initialize: ->
             @metrics = @options.metrics
@@ -149,7 +149,7 @@ define [
             content.push "<a href='http://localhost:10000/show?request=chr#{ variant_attrs.chr }:g.#{ variant_attrs.pos }#{ variant_attrs.ref }>#{ variant_attrs.alt }' target=_blank class='btn btn-primary btn-small alamut-button'>Query Alamut</a>"
             return content.join ''
 
-        render1000g: (attrs) ->
+        renderFrequencies: (attrs) ->
             content = []
             content.push '<h4>1000 Genomes</h4>'
 
@@ -168,10 +168,6 @@ define [
             else
                 content.push '<p class=muted>No 1000G frequencies</p>'
 
-            return content.join ''
-
-        renderEvs: (attrs) ->
-            content = []
             content.push '<h4 title="Exome Variant Server">EVS</h4>'
 
             # EVS allele frequencies
@@ -234,27 +230,69 @@ define [
 
             return content.join ''
 
+        _renderPhenotypeCollection: (phenotypes) ->
+            content = []
+
+            sorted = _.sortBy phenotypes, (item) ->
+                return item.term
+
+            content.push '<ul>'
+            for phenotype in sorted
+                content.push "<li>#{ phenotype.term }"
+                if phenotype.hpo_id or phenotype.hgmd_id
+                    if phenotype.hgmd_id
+                        content.push " (HGMD: #{ phenotype.hgmd_id })"
+                    if phenotype.hpo_id
+                        # Zero-pad the HPO ID to force it to be 7 digits. This
+                        # trick is from:
+                        #       http://dev.enekoalonso.com/2010/07/20/little-tricks-string-padding-in-javascript/
+                        zpad = String("0000000" + phenotype.hpo_id).slice(-7)
+                        content.push " (<a href=\"http://www.human-phenotype-ontology.org/hpoweb/showterm?id=HP_#{ zpad }\">HPO: #{ zpad }</a>)"
+                content.push '</li>'
+            content.push '</ul>'
+
+            return content
+
         renderPhenotypes: (attrs) ->
             content = []
             content.push '<h4>Phenotypes</h4>'
 
             if attrs.phenotypes[0]
                 content.push '<ul class=unstyled>'
-                for phenotype in attrs.phenotypes
-                    content.push "<li>#{ phenotype.term }"
-                    if phenotype.hpo_id or phenotype.hgmd_id
-                        content.push '<ul>'
-                        if phenotype.hgmd_id
-                            content.push "<li><small>HGMD</small> #{ phenotype.hgmd_id }</li>"
-                        if phenotype.hpo_id
-                            content.push "<li><small>HPO</small> #{ phenotype.hpo_id }</li>"
-                        content.push '</ul>'
-                    content.push '</li>'
+                content.push '<li>Variant:</li>'
+                content = content.concat(@_renderPhenotypeCollection(attrs.phenotypes))
                 content.push '</ul>'
             else
-                content.push '<p class=muted>No associated phenotypes</p>'
+                content.push '<p class=muted>No associated variant phenotypes</p>'
+
+            if attrs.uniqueGenes[0]
+                content.push '<ul class=unstyled>'
+
+                _.each attrs.uniqueGenes, (gene) ->
+                    content.push "<li>#{ gene.symbol }:</li>"
+
+                    if gene.phenotypes[0]
+                        content = content.concat(@_renderPhenotypeCollection(gene.phenotypes))
+                    else
+                        content.push '<p class=muted>No phenotypes for this gene</p>'
+                , this
+
+                content.push '</ul>'
 
             return content.join ''
+
+        _renderArticleCollection: (articles) ->
+            content = []
+
+            sorted =  _.sortBy articles, (item) ->
+                return item
+
+            content.push '<ul>'
+            for pmid in sorted
+                content.push "<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/#{ pmid }\">#{ pmid }</a></li>"
+            content.push '</ul>'
+
+            return content
 
         renderPubmed: (attrs) ->
             content = []
@@ -262,11 +300,25 @@ define [
 
             if attrs.articles[0]
                 content.push '<ul class=unstyled>'
-                for pmid in attrs.articles
-                    content.push "<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/#{ pmid }\">#{ pmid }</a></li>"
+                content.push '<li>Variant:</li>'
+                content = content.concat(@_renderArticleCollection(attrs.articles))
                 content.push '</ul>'
             else
-                content.push '<p class=muted>No PubMed articles associated</p>'
+                content.push '<p class=muted>No PubMed articles for this variant</p>'
+
+            if attrs.uniqueGenes[0]
+                content.push '<ul class=unstyled>'
+
+                _.each attrs.uniqueGenes, (gene) ->
+                    content.push "<li>#{ gene.symbol }:</li>"
+
+                    if gene.articles[0]
+                        content = content.concat(@_renderArticleCollection(gene.articles))
+                    else
+                        content.push '<p class=muted>No PubMed articles for this gene</p>'
+                , this
+
+                content.push '</ul>'
 
             return content.join ''
 
@@ -335,8 +387,7 @@ define [
             $row1.append @_span @renderPredictions(attrs), 3
 
             $row2.append @_span @renderCohorts(attrs), 3
-            $row2.append @_span @render1000g(attrs), 3
-            $row2.append @_span @renderEvs(attrs), 3
+            $row2.append @_span @renderFrequencies(attrs), 3
             $row2.append @_span @renderPubmed(attrs), 3
 
             $row3.append @_span @renderAssessmentMetricsContainer(), 12
@@ -351,7 +402,7 @@ define [
 
 
     class AssessmentTab extends Marionette.ItemView
-        template: 'varify/empty'
+        template: ->
 
         el: '#knowledge-capture-content'
 

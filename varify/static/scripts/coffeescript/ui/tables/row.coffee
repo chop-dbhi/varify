@@ -1,15 +1,14 @@
 define [
-    'underscore'
     'marionette'
     'cilantro'
     '../../models'
     '../../templates'
-], (_, Marionette, c, models, Templates) ->
+], (Marionette, c, models, Templates) ->
 
     class ResultRow extends Marionette.ItemView
         className: 'area-container variant-container'
 
-        template: 'varify/empty'
+        template: ->
 
         tagName: 'tr'
 
