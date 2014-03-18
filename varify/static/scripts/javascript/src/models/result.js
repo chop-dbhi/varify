@@ -23,13 +23,9 @@ define([
                 genes = [];
 
             _.each(variant.effects, function(eff) {
-                if (!eff.transcript || !(gene = eff.transcript.gene)) {
-                    return;
-                }
+                if (!eff.transcript || !(gene = eff.transcript.gene)) return;
 
-                if (/^LOC\d+/.test(gene.symbol) || (uniqueGenes[gene.symbol] != null)) {
-                    return;
-                }
+                if (/^LOC\d+/.test(gene.symbol) || (uniqueGenes[gene.symbol] != null)) return;
 
                 uniqueGenes[gene.symbol] = true;
                 return genes.push({

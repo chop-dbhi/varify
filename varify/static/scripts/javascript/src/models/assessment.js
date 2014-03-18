@@ -36,7 +36,7 @@ define([
 
                 _.each(objFields, function(field) {
                     if (response[field]) {
-                        return data[field] = response[field]['id'];
+                        data[field] = response[field]['id'];
                     }
                 });
 

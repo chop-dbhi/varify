@@ -10,5 +10,5 @@ define([
     // Modules to be mixed-in with exports
     var mods = Array.prototype.slice.call(arguments, 1);
 
-    return $.extend.apply(null, mods);
+    return _.extend.apply(null, mods);
 });
