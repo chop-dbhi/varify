@@ -1,1 +1,1 @@
-var __slice=[].slice;define(["underscore","./models/result","./models/assessment","./models/phenotype"],function(){var e,t;return t=arguments[0],e=2<=arguments.length?__slice.call(arguments,1):[],t.extend.apply(t,[{}].concat(__slice.call(e)))})
+define(["underscore","./models/result","./models/assessment","./models/phenotype"],function(e){var t=Array.prototype.slice.call(arguments,1);return e.extend.apply(null,t)})

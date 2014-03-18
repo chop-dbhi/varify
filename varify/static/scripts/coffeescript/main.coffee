@@ -11,23 +11,29 @@ require
     'tpl!project/templates/empty.html'
     'tpl!project/templates/modals/result.html'
     'tpl!project/templates/modals/phenotypes.html'
-    'tpl!project/templates/controls/hgmd.html'
     'tpl!project/templates/controls/sift.html'
     'tpl!project/templates/controls/polyphen.html'
     'tpl!project/templates/workflows/results.html'
-], (c, ui, csrf, header, empty, result, phenotype, hgmd, sift, polyphen, results) ->
+], (c, ui, csrf, header, empty, result, phenotype, sift, polyphen, results) ->
 
     # Session options
     options =
         url: c.config.get('url')
         credentials: c.config.get('credentials')
 
+    augmentFixedView = () ->
+        new_view = {view: {columns: [2]}}
+
+        if (json = c.session.data.views.session.get('json'))?
+            new_view['view']['ordering'] = json['ordering']
+
+        return new_view
+
     # Define custom templates
     c.templates.set('varify/tables/header', header)
     c.templates.set('varify/empty', empty)
     c.templates.set('varify/modals/result', result)
     c.templates.set('varify/modals/phenotype', phenotype)
-    c.templates.set('varify/controls/hgmd', hgmd)
     c.templates.set('varify/controls/sift', sift)
     c.templates.set('varify/controls/polyphen', polyphen)
     c.templates.set('varify/workflows/results', results)
@@ -55,13 +61,24 @@ require
     # Convert the Genotype field to be a single selection drop down.
     c.config.set('fields.instances.68.form.controls', ['singleSelectionList'])
 
-    # Set the custom control for the HGMD, Sift, and PolyPhen2 fields.
-    c.controls.set('Hgmd', ui.HgmdSelector)
+    # Set the custom control for the Sift and PolyPhen2 fields.
     c.controls.set('Sift', ui.SiftSelector)
     c.controls.set('PolyPhen', ui.PolyPhenSelector)
-    c.config.set('fields.instances.110.form.controls', ['Hgmd'])
+    c.config.set('fields.instances.110.form.controls', [{
+        options: {
+            'isNullLabel': 'Not In HGMD',
+            'isNotNullLabel': 'In HGMD'
+        },
+        control: 'nullSelector'
+    }])
     c.config.set('fields.instances.58.form.controls', ['Sift'])
     c.config.set('fields.instances.56.form.controls', ['PolyPhen'])
+
+    # Force calls to the preview endpoint to use a fixed view composed solely
+    # of the sample concept. This will have the intended result of removing
+    # "duplicate" rows in the results table that sometimes occured due to
+    # the user's view.
+    c.config.set('session.defaults.data.preview', augmentFixedView)
 
     # A simple handler for CONTEXT_REQUIRED and CONTEXT_INVALID events that
     # tells the user which concept is required(when possible) or prints a

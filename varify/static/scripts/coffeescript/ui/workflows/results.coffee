@@ -54,7 +54,6 @@ define [
     The ResultsWorkflow provides an interface for previewing tabular data,
     mechanisms for customizing the view, and a method for exporting data
     to alternate formats.
-    TODO: break out context panel as standalone view
 
     This view requires the following options:
     - concepts: a collection of concepts that are deemed viewable
@@ -326,9 +325,9 @@ define [
             cookieName = "export-type-#{ exportTypeTitle.toLowerCase() }"
 
             # Check if the download finished and the cookie was set
-            if @getCookie(cookieName) == "complete"
+            if c.utils.getCookie(cookieName) == "complete"
                 clearInterval(@monitors[exportTypeTitle]["interval"])
-                @setCookie(cookieName, null)
+                c.utils.setCookie(cookieName, null)
                 @onExportFinished(exportTypeTitle)
 
             # Check for a timeout, if we reached this point, we don't really
@@ -341,29 +340,6 @@ define [
                 clearInterval(@monitors[exportTypeTitle]["interval"])
                 @onExportFinished(exportTypeTitle)
 
-        setCookie: (name, value) ->
-            document.cookie= "#{ name }=#{ escape(value) }; path=/"
-
-        getCookie: (name) ->
-            # Code adapted from JS on this page:
-            #   http://www.w3schools.com/js/js_cookies.asp
-            value = document.cookie
-            startIndex = value.indexOf(" #{ name }=")
-
-            if startIndex == -1
-                startIndex = value.indexOf("#{ name }=")
-
-            if startIndex == -1
-                value = null
-            else
-                startIndex = value.indexOf("=", startIndex) + 1
-                endIndex = value.indexOf(";", startIndex)
-                if endIndex == -1
-                    endIndex = value.length
-                value = unescape(value.substring(startIndex, endIndex))
-
-            return value
-
         startExport: (exportType, pages) =>
             title = @$(exportType).attr('title')
             @changeExportStatus(title, "downloading")
@@ -371,7 +347,7 @@ define [
             # Clear the cookie in case the Serrano version is new enough
             # to be setting the cookie in response.
             cookieName = "export-type-#{ title.toLowerCase() }"
-            @setCookie(cookieName, null)
+            c.utils.setCookie(cookieName, null)
 
             url = @$(exportType).attr('href')
             if url[url.length-1] != "/"
@@ -381,18 +357,10 @@ define [
             iframe = "<iframe id=export-download-#{ title } src=#{ url } style='display: none'></iframe>"
             @$('.export-iframe-container').append(iframe)
 
-            if @data.exporters.notifiesOnComplete()
-                @monitors[title] = {}
-                @monitors[title]["execution_time"] = 0
-                @monitors[title]["interval"] = setInterval(
-                    @checkExportStatus,
-                    @monitorDelay,
-                    title)
-            else
-                setTimeout(
-                    @onExportFinished,
-                    @requestTimeout,
-                    title)
+            @monitors[title] =
+                'execution_time': 0
+                'interval': setInterval(
+                    @checkExportStatus, @monitorDelay, title)
 
         initializeExportStatusIndicators: (selectedTypes) ->
             # Start by hiding all of them
@@ -444,15 +412,8 @@ define [
 
                 # Introduce an artificial delay in between download requests
                 # to keep the browser from freaking out about too many
-                # simultaneous download requests. We go slower for unmonitored
-                # downloads because we don't know for sure when a download
-                # completes so we need to give it plenty of time to finish
-                # before we make a judgement call on the download. Essentially
-                # if the server notifies on complete, we use parallel(to a
-                # degree) downloads, otherwise, we take a more serial approach.
+                # simultaneous download requests.
                 delay = @requestDelay
-                if not @data.exporters.notifiesOnComplete()
-                    delay = @requestTimeout
                 for i in [0..selectedTypes.length-1] by 1
                     @changeExportStatus(@$(selectedTypes[i]).attr('title'), "pending")
 

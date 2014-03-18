@@ -96,7 +96,8 @@ class Command(BaseCommand):
 
             try:
                 phenotype_modified = datetime.strptime(
-                    phenotype_data['last_modified'], "%Y-%m-%dT%H:%M:%S.%f")
+                    phenotype_data['last_modified'] or '',
+                    "%Y-%m-%dT%H:%M:%S.%f")
             except ValueError:
                 phenotype_modified = datetime.min
                 log.warn("Could not parse 'last_modified' field on phenotype "
@@ -150,15 +151,17 @@ class Command(BaseCommand):
                             'associated with it.'.format(sample.label))
                 continue
 
-            # We need to convert the genes to strings because the ranking
-            # service is no prepared to handle the unicode format that the
-            # gene symbols are in when we retrieve them from the models.
-            gene_rank_url = "{0}?hpo={1}&genes={2}".format(
-                settings.GENE_RANK_BASE_URL, ",".join(hpo_terms),
-                ",".join([str(g) for g in genes]))
+            # Convert genes to a list so it is serializeable in the json.dumps
+            # call below when making the request to the ranking service.
+            data = {
+                'hpo': hpo_terms,
+                'genes': [g for g in genes if g]
+            }
 
             try:
-                gene_response = requests.get(gene_rank_url)
+                gene_response = requests.post(
+                    settings.GENE_RANK_BASE_URL, data=json.dumps(data),
+                    headers={'content-type': 'application/json'})
             except Exception:
                 log.exception('Error retrieving gene rankings, skipping '
                               'sample "{0}".'.format(sample.label))
@@ -168,7 +171,7 @@ class Command(BaseCommand):
                 gene_data = json.loads(gene_response.content)
             except ValueError:
                 log.error("Could not parse response from {0}, skipping '{1}'."
-                          .format(url, sample.label))
+                          .format(settings.GENE_RANK_BASE_URL, sample.label))
                 continue
 
             ranked_genes = gene_data['ranked_genes']

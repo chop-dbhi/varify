@@ -5,17 +5,28 @@ require({
       variable: 'data'
     }
   }
-}, ['cilantro', 'project/ui', 'project/csrf', 'tpl!project/templates/tables/header.html', 'tpl!project/templates/empty.html', 'tpl!project/templates/modals/result.html', 'tpl!project/templates/modals/phenotypes.html', 'tpl!project/templates/controls/hgmd.html', 'tpl!project/templates/controls/sift.html', 'tpl!project/templates/controls/polyphen.html', 'tpl!project/templates/workflows/results.html'], function(c, ui, csrf, header, empty, result, phenotype, hgmd, sift, polyphen, results) {
-  var notify_required, options;
+}, ['cilantro', 'project/ui', 'project/csrf', 'tpl!project/templates/tables/header.html', 'tpl!project/templates/empty.html', 'tpl!project/templates/modals/result.html', 'tpl!project/templates/modals/phenotypes.html', 'tpl!project/templates/controls/sift.html', 'tpl!project/templates/controls/polyphen.html', 'tpl!project/templates/workflows/results.html'], function(c, ui, csrf, header, empty, result, phenotype, sift, polyphen, results) {
+  var augmentFixedView, notify_required, options;
   options = {
     url: c.config.get('url'),
     credentials: c.config.get('credentials')
+  };
+  augmentFixedView = function() {
+    var json, new_view;
+    new_view = {
+      view: {
+        columns: [2]
+      }
+    };
+    if ((json = c.session.data.views.session.get('json')) != null) {
+      new_view['view']['ordering'] = json['ordering'];
+    }
+    return new_view;
   };
   c.templates.set('varify/tables/header', header);
   c.templates.set('varify/empty', empty);
   c.templates.set('varify/modals/result', result);
   c.templates.set('varify/modals/phenotype', phenotype);
-  c.templates.set('varify/controls/hgmd', hgmd);
   c.templates.set('varify/controls/sift', sift);
   c.templates.set('varify/controls/polyphen', polyphen);
   c.templates.set('varify/workflows/results', results);
@@ -31,12 +42,20 @@ require({
   c.config.set('fields.instances.64.form.controls', ['multiSelectionList']);
   c.config.set('fields.instances.75.form.controls', ['search']);
   c.config.set('fields.instances.68.form.controls', ['singleSelectionList']);
-  c.controls.set('Hgmd', ui.HgmdSelector);
   c.controls.set('Sift', ui.SiftSelector);
   c.controls.set('PolyPhen', ui.PolyPhenSelector);
-  c.config.set('fields.instances.110.form.controls', ['Hgmd']);
+  c.config.set('fields.instances.110.form.controls', [
+    {
+      options: {
+        'isNullLabel': 'Not In HGMD',
+        'isNotNullLabel': 'In HGMD'
+      },
+      control: 'nullSelector'
+    }
+  ]);
   c.config.set('fields.instances.58.form.controls', ['Sift']);
   c.config.set('fields.instances.56.form.controls', ['PolyPhen']);
+  c.config.set('session.defaults.data.preview', augmentFixedView);
   notify_required = (function(_this) {
     return function(concepts) {
       var message, names;

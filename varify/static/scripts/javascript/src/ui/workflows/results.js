@@ -72,7 +72,6 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
   The ResultsWorkflow provides an interface for previewing tabular data,
   mechanisms for customizing the view, and a method for exporting data
   to alternate formats.
-  TODO: break out context panel as standalone view
   
   This view requires the following options:
   - concepts: a collection of concepts that are deemed viewable
@@ -371,9 +370,9 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       var cookieName;
       this.monitors[exportTypeTitle]["execution_time"] = this.monitors[exportTypeTitle]["execution_time"] + this.monitorDelay;
       cookieName = "export-type-" + (exportTypeTitle.toLowerCase());
-      if (this.getCookie(cookieName) === "complete") {
+      if (c.utils.getCookie(cookieName) === "complete") {
         clearInterval(this.monitors[exportTypeTitle]["interval"]);
-        this.setCookie(cookieName, null);
+        c.utils.setCookie(cookieName, null);
         return this.onExportFinished(exportTypeTitle);
       } else if (this.monitors[exportTypeTitle]["execution_time"] > this.monitorTimeout || this.hasExportErrorOccurred(exportTypeTitle)) {
         clearInterval(this.monitors[exportTypeTitle]["interval"]);
@@ -381,36 +380,12 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       }
     };
 
-    ResultsWorkflow.prototype.setCookie = function(name, value) {
-      return document.cookie = "" + name + "=" + (escape(value)) + "; path=/";
-    };
-
-    ResultsWorkflow.prototype.getCookie = function(name) {
-      var endIndex, startIndex, value;
-      value = document.cookie;
-      startIndex = value.indexOf(" " + name + "=");
-      if (startIndex === -1) {
-        startIndex = value.indexOf("" + name + "=");
-      }
-      if (startIndex === -1) {
-        value = null;
-      } else {
-        startIndex = value.indexOf("=", startIndex) + 1;
-        endIndex = value.indexOf(";", startIndex);
-        if (endIndex === -1) {
-          endIndex = value.length;
-        }
-        value = unescape(value.substring(startIndex, endIndex));
-      }
-      return value;
-    };
-
     ResultsWorkflow.prototype.startExport = function(exportType, pages) {
       var cookieName, iframe, title, url;
       title = this.$(exportType).attr('title');
       this.changeExportStatus(title, "downloading");
       cookieName = "export-type-" + (title.toLowerCase());
-      this.setCookie(cookieName, null);
+      c.utils.setCookie(cookieName, null);
       url = this.$(exportType).attr('href');
       if (url[url.length - 1] !== "/") {
         url = "" + url + "/";
@@ -418,13 +393,10 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
       url = "" + url + pages;
       iframe = "<iframe id=export-download-" + title + " src=" + url + " style='display: none'></iframe>";
       this.$('.export-iframe-container').append(iframe);
-      if (this.data.exporters.notifiesOnComplete()) {
-        this.monitors[title] = {};
-        this.monitors[title]["execution_time"] = 0;
-        return this.monitors[title]["interval"] = setInterval(this.checkExportStatus, this.monitorDelay, title);
-      } else {
-        return setTimeout(this.onExportFinished, this.requestTimeout, title);
-      }
+      return this.monitors[title] = {
+        'execution_time': 0,
+        'interval': setInterval(this.checkExportStatus, this.monitorDelay, title)
+      };
     };
 
     ResultsWorkflow.prototype.initializeExportStatusIndicators = function(selectedTypes) {
@@ -472,9 +444,6 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
         this.initializeExportStatusIndicators(selectedTypes);
         this.ui.exportProgress.modal('show');
         delay = this.requestDelay;
-        if (!this.data.exporters.notifiesOnComplete()) {
-          delay = this.requestTimeout;
-        }
         _results = [];
         for (i = _i = 0, _ref = selectedTypes.length - 1; _i <= _ref; i = _i += 1) {
           this.changeExportStatus(this.$(selectedTypes[i]).attr('title'), "pending");
