@@ -368,6 +368,15 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return content.join('');
     };
 
+    DetailsTab.prototype._renderExpandCollapse = function() {
+      var content;
+      content = [];
+      content.push('<div class=expand-collapse-container>');
+      content.push('<a href="#" data-target=expand-collapse-link>MORE</a>');
+      content.push('</div>');
+      return content.join('');
+    };
+
     DetailsTab.prototype._span = function(html, size) {
       if (size == null) {
         size = 12;
@@ -378,16 +387,16 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     DetailsTab.prototype.render = function() {
       var $row1, $row2, $row3, attrs;
       attrs = this.model.get('variant');
-      $row1 = $('<div class=row-fluid />');
-      $row2 = $('<div class=row-fluid />');
+      $row1 = $('<div class=row-fluid data-target=expandable-details-row />');
+      $row2 = $('<div class=row-fluid data-target=expandable-details-row />');
       $row3 = $('<div class="row-fluid  assessments-table-container" />');
       $row1.append(this._span(this.renderSummary(this.model.attributes, attrs), 3));
-      $row1.append(this._span(this.renderEffects(attrs), 3));
-      $row1.append(this._span(this.renderPhenotypes(attrs), 3));
+      $row1.append(this._span(this.renderEffects(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
+      $row1.append(this._span(this.renderPhenotypes(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
       $row1.append(this._span(this.renderPredictions(attrs), 3));
       $row2.append(this._span(this.renderCohorts(attrs), 3));
       $row2.append(this._span(this.renderFrequencies(attrs), 3));
-      $row2.append(this._span(this.renderPubmed(attrs), 3));
+      $row2.append(this._span(this.renderPubmed(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
       $row3.append(this._span(this.renderAssessmentMetricsContainer(), 12));
       this.$content.append($row1, $row2, $row3);
       this.$el.find('.cohort-sample-popover').popover();
@@ -516,12 +525,20 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     __extends(ResultDetails, _super);
 
     function ResultDetails() {
+      this.toggleExpandedState = __bind(this.toggleExpandedState, this);
+      this._checkForOverflow = __bind(this._checkForOverflow, this);
       this.onSaveSuccess = __bind(this.onSaveSuccess, this);
       this.onSaveError = __bind(this.onSaveError, this);
       return ResultDetails.__super__.constructor.apply(this, arguments);
     }
 
     ResultDetails.prototype.className = 'modal hide';
+
+    ResultDetails.prototype.maxExpandableHeight = 300;
+
+    ResultDetails.prototype.showLessText = 'Show Less...';
+
+    ResultDetails.prototype.showMoreText = 'Show More...';
 
     ResultDetails.prototype.template = 'varify/modals/result';
 
@@ -535,7 +552,8 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       'click #close-review-button': 'close',
       'click #save-assessment-button': 'saveAndClose',
       'click #variant-details-link': 'hideButtons',
-      'click #knowledge-capture-link': 'showButtons'
+      'click #knowledge-capture-link': 'showButtons',
+      'click [data-target=expand-collapse-link]': 'toggleExpandedState'
     };
 
     ResultDetails.prototype.initialize = function() {
@@ -597,6 +615,39 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       });
     };
 
+    ResultDetails.prototype._checkForOverflow = function() {
+      return _.each($('.expandable-details-item'), function(element) {
+        var child, hasOverflow, _i, _len, _ref;
+        hasOverflow = false;
+        _ref = element.children;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          if ((child.offsetTop + child.offsetHeight) > this.maxExpandableHeight) {
+            hasOverflow = true;
+            break;
+          }
+        }
+        if (hasOverflow) {
+          return $(element).find('.expand-collapse-container').show();
+        } else {
+          return $(element).find('.expand-collapse-container').hide();
+        }
+      }, this);
+    };
+
+    ResultDetails.prototype.toggleExpandedState = function(event) {
+      var element, parent;
+      element = $(event.target);
+      parent = element.closest('[data-target=expandable-details-row]');
+      if (element.text() === this.showMoreText) {
+        parent.find('[data-target=expand-collapse-link]').text(this.showLessText);
+        return parent.css('height', 'auto').css('overflow', 'visible');
+      } else {
+        parent.find('[data-target=expand-collapse-link]').text(this.showMoreText);
+        return parent.css('height', this.maxExpandableHeight).css('overflow', 'hidden');
+      }
+    };
+
     ResultDetails.prototype.update = function(summaryView, result) {
       var assessmentModel, metrics;
       this.selectedSummaryView = summaryView;
@@ -617,7 +668,10 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
         assessmentModel.id = this.model.get('assessment').id;
       }
       this.assessmentTab.update(assessmentModel);
-      return this.$el.modal('show');
+      this.$el.modal('show');
+      $('[data-target=expandable-details-row]').css('height', "" + this.maxExpandableHeight + "px").css('overflow', 'hidden');
+      $('[data-target=expand-collapse-link]').text(this.showMoreText);
+      return this._checkForOverflow();
     };
 
     return ResultDetails;
