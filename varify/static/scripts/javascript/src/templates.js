@@ -220,10 +220,10 @@ define([
         _.each(items, function(item, key) {
             var popoverHtml,  username, usernames;
 
-            var call_indicator = item.is_user_call ? '*' : '';
+            var callIndicator = item.is_user_call ? '*' : '';
             var name = (key != null) && key !== '' ? key : 'N/A';
             var prefixHtml = '<small>' + name + '</small>  ' + (Numbers.prettyNumber(item.percentage)) + '% ';
-            var countHtml = '<span class=muted>(' + item.count + ')' + call_indicator + '</span>';
+            var countHtml = '<span class=muted>(' + item.count + ')' + callIndicator + '</span>';
 
             if (item.usernames.length > 0 && usernamePopover) {
                 usernames = [];
@@ -290,15 +290,15 @@ define([
     };
 
     var hgmdLinks = function(phenotypes) {
-        var hgmd_phenotypes = [];
+        var hgmdPhenotypes = [];
 
         for (var i = 0; i < phenotypes.length; i++) {
             if (phenotypes[i].hgmd_id != null) {
-                hgmd_phenotypes.push(phenotypes[i].hgmd_id);
+                hgmdPhenotypes.push(phenotypes[i].hgmd_id);
             }
         }
 
-        return hgmd_phenotypes.join(', ');
+        return hgmdPhenotypes.join(', ');
     };
 
     return {
