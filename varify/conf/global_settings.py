@@ -29,6 +29,7 @@ INSTALLED_APPS = (
     'varify.raw',
     'varify.raw.sources',
 
+    'varify.analyses',
     'varify.assessments',
     'varify.genome',
     'varify.genes',

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from varify.analyses.models import Analysis
 from varify.samples.models import Result
 from varify.core.models import TimestampedModel
 import reversion
@@ -45,6 +46,18 @@ class SangerResult(models.Model):
 
 
 class Assessment(TimestampedModel):
+    DRAFT = 'Draft'
+    PENDING = 'Pending'
+    COMPLETE = 'Complete'
+    IGNORED = 'Ignored'
+
+    STATUSES = (
+        (DRAFT, 'Draft'),
+        (PENDING, 'Pending'),
+        (COMPLETE, 'Complete'),
+        (IGNORED, 'Ignored'),
+    )
+
     evidence_details = models.TextField(null=True, blank=True)
     sanger_requested = models.BooleanField()
 
@@ -55,6 +68,9 @@ class Assessment(TimestampedModel):
     sample_result = models.ForeignKey(Result)
     sanger_result = models.ForeignKey(SangerResult, null=True, blank=True)
     user = models.ForeignKey(User)
+
+    status = models.CharField(max_length=10, choices=STATUSES, default='Draft')
+    analysis = models.ForeignKey(Analysis)
 
     class Meta(object):
         db_table = 'assessment'
