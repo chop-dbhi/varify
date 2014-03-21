@@ -48,9 +48,8 @@ define([
 
             return '<span class=assessment-category>' + (html.join(' ')) + '</span>';
         }
-        else {
-            return '';
-        }
+
+        return '';
     };
 
     var pathogenicity = function(assessment) {
@@ -60,9 +59,8 @@ define([
             html.push(assessment.pathogenicity.name);
             return '<span class=pathogenicity>' + (html.join('')) + '</span>';
         }
-        else {
-            return '';
-        }
+
+        return '';
     };
 
     // Takes an array of gene objects with `symbol`, `hgnc_id` and `name` and
@@ -98,9 +96,9 @@ define([
         if (eff != null) {
             text = eff.hgvs_c || '';
             return '<td title="' + text + '">' + text + '</td>';
-        } else {
-            return '<td></td>';
         }
+
+        return '<td></td>';
     };
 
     var genotype = function(value, description) {
@@ -112,9 +110,8 @@ define([
         if (eff != null) {
             return '<td>' + (eff.hgvs_p || eff.amino_acid_change || '') + '</td>';
         }
-        else {
-            return '<td></td>';
-        }
+
+        return '<td></td>';
     };
 
     var _renderVariantEffect = function(eff) {
