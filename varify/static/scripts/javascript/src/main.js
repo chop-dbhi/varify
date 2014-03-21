@@ -8,8 +8,8 @@ require({
     }
 }, [
     'cilantro',
-    'project/ui',
-    'project/csrf',
+    './ui',
+    './csrf',
     'tpl!project/templates/tables/header.html',
     'tpl!project/templates/modals/result.html',
     'tpl!project/templates/modals/phenotypes.html',
