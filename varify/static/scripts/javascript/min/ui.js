@@ -1,1 +1,1 @@
-define(["underscore","./ui/controls","./ui/modals","./ui/tables","./ui/workflows"],function(e){var t=Array.prototype.slice.call(arguments,1);return e.extend.apply(null,t)})
+define(["underscore","./ui/controls","./ui/modals","./ui/tables","./ui/workflows"],function(e){var t=Array.prototype.slice.call(arguments,1);return e.extend.apply(e,[{}].concat(t))})
