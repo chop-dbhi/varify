@@ -24,9 +24,28 @@ body {
     // modal to be a little larger than normal.
     width: 720px !important;
     margin-left: -360px !important;
+    max-height: 720px;
+    bottom: 5%;
+    top: 5%;
+
+    .tab-content {
+        position: absolute;
+        bottom: 65px;
+        top: 105px;
+        left: 15px;
+        right: 15px;
+    }
 
     .modal-body {
-        max-height: 500px !important;
+        position: static;
+        overflow: scroll;
+    }
+
+    .modal-footer {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
     }
 }
 
@@ -105,6 +124,19 @@ body {
 
     #audit-trail-button {
         float: left;
+    }
+
+    .expandable-details-item {
+        height: 100%;
+        position: relative;
+        padding-bottom: 20px;
+    }
+
+    .expand-collapse-container {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: white;
     }
 }
 

@@ -17,7 +17,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return DetailsTab.__super__.constructor.apply(this, arguments);
     }
 
-    DetailsTab.prototype.template = 'varify/empty';
+    DetailsTab.prototype.template = function() {};
 
     DetailsTab.prototype.initialize = function() {
       this.metrics = this.options.metrics;
@@ -146,8 +146,8 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return content.join('');
     };
 
-    DetailsTab.prototype.render1000g = function(attrs) {
-      var content, tg;
+    DetailsTab.prototype.renderFrequencies = function(attrs) {
+      var content, evs, tg;
       content = [];
       content.push('<h4>1000 Genomes</h4>');
       if ((tg = attrs['1000g'][0])) {
@@ -168,12 +168,6 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       } else {
         content.push('<p class=muted>No 1000G frequencies</p>');
       }
-      return content.join('');
-    };
-
-    DetailsTab.prototype.renderEvs = function(attrs) {
-      var content, evs;
-      content = [];
       content.push('<h4 title="Exome Variant Server">EVS</h4>');
       if ((evs = attrs.evs[0])) {
         content.push('<ul class=unstyled>');
@@ -241,49 +235,96 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return content.join('');
     };
 
+    DetailsTab.prototype._renderPhenotypeCollection = function(phenotypes) {
+      var content, phenotype, sorted, zpad, _i, _len;
+      content = [];
+      sorted = _.sortBy(phenotypes, function(item) {
+        return item.term;
+      });
+      content.push('<ul>');
+      for (_i = 0, _len = sorted.length; _i < _len; _i++) {
+        phenotype = sorted[_i];
+        content.push("<li>" + phenotype.term);
+        if (phenotype.hpo_id || phenotype.hgmd_id) {
+          if (phenotype.hgmd_id) {
+            content.push(" (HGMD: " + phenotype.hgmd_id + ")");
+          }
+          if (phenotype.hpo_id) {
+            zpad = String("0000000" + phenotype.hpo_id).slice(-7);
+            content.push(" (<a href=\"http://www.human-phenotype-ontology.org/hpoweb/showterm?id=HP_" + zpad + "\">HPO: " + zpad + "</a>)");
+          }
+        }
+        content.push('</li>');
+      }
+      content.push('</ul>');
+      return content;
+    };
+
     DetailsTab.prototype.renderPhenotypes = function(attrs) {
-      var content, phenotype, _i, _len, _ref;
+      var content;
       content = [];
       content.push('<h4>Phenotypes</h4>');
       if (attrs.phenotypes[0]) {
         content.push('<ul class=unstyled>');
-        _ref = attrs.phenotypes;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          phenotype = _ref[_i];
-          content.push("<li>" + phenotype.term);
-          if (phenotype.hpo_id || phenotype.hgmd_id) {
-            content.push('<ul>');
-            if (phenotype.hgmd_id) {
-              content.push("<li><small>HGMD</small> " + phenotype.hgmd_id + "</li>");
-            }
-            if (phenotype.hpo_id) {
-              content.push("<li><small>HPO</small> " + phenotype.hpo_id + "</li>");
-            }
-            content.push('</ul>');
-          }
-          content.push('</li>');
-        }
+        content.push('<li>Variant:</li>');
+        content = content.concat(this._renderPhenotypeCollection(attrs.phenotypes));
         content.push('</ul>');
       } else {
-        content.push('<p class=muted>No associated phenotypes</p>');
+        content.push('<p class=muted>No associated variant phenotypes</p>');
+      }
+      if (attrs.uniqueGenes[0]) {
+        content.push('<ul class=unstyled>');
+        _.each(attrs.uniqueGenes, function(gene) {
+          content.push("<li>" + gene.symbol + ":</li>");
+          if (gene.phenotypes[0]) {
+            return content = content.concat(this._renderPhenotypeCollection(gene.phenotypes));
+          } else {
+            return content.push('<p class=muted>No phenotypes for this gene</p>');
+          }
+        }, this);
+        content.push('</ul>');
       }
       return content.join('');
     };
 
+    DetailsTab.prototype._renderArticleCollection = function(articles) {
+      var content, pmid, sorted, _i, _len;
+      content = [];
+      sorted = _.sortBy(articles, function(item) {
+        return item;
+      });
+      content.push('<ul>');
+      for (_i = 0, _len = sorted.length; _i < _len; _i++) {
+        pmid = sorted[_i];
+        content.push("<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/" + pmid + "\">" + pmid + "</a></li>");
+      }
+      content.push('</ul>');
+      return content;
+    };
+
     DetailsTab.prototype.renderPubmed = function(attrs) {
-      var content, pmid, _i, _len, _ref;
+      var content;
       content = [];
       content.push('<h4>Articles</h4>');
       if (attrs.articles[0]) {
         content.push('<ul class=unstyled>');
-        _ref = attrs.articles;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          pmid = _ref[_i];
-          content.push("<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/" + pmid + "\">" + pmid + "</a></li>");
-        }
+        content.push('<li>Variant:</li>');
+        content = content.concat(this._renderArticleCollection(attrs.articles));
         content.push('</ul>');
       } else {
-        content.push('<p class=muted>No PubMed articles associated</p>');
+        content.push('<p class=muted>No PubMed articles for this variant</p>');
+      }
+      if (attrs.uniqueGenes[0]) {
+        content.push('<ul class=unstyled>');
+        _.each(attrs.uniqueGenes, function(gene) {
+          content.push("<li>" + gene.symbol + ":</li>");
+          if (gene.articles[0]) {
+            return content = content.concat(this._renderArticleCollection(gene.articles));
+          } else {
+            return content.push('<p class=muted>No PubMed articles for this gene</p>');
+          }
+        }, this);
+        content.push('</ul>');
       }
       return content.join('');
     };
@@ -327,6 +368,15 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return content.join('');
     };
 
+    DetailsTab.prototype._renderExpandCollapse = function() {
+      var content;
+      content = [];
+      content.push('<div class=expand-collapse-container>');
+      content.push('<a href="#" data-target=expand-collapse-link>MORE</a>');
+      content.push('</div>');
+      return content.join('');
+    };
+
     DetailsTab.prototype._span = function(html, size) {
       if (size == null) {
         size = 12;
@@ -337,17 +387,16 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     DetailsTab.prototype.render = function() {
       var $row1, $row2, $row3, attrs;
       attrs = this.model.get('variant');
-      $row1 = $('<div class=row-fluid />');
-      $row2 = $('<div class=row-fluid />');
+      $row1 = $('<div class=row-fluid data-target=expandable-details-row />');
+      $row2 = $('<div class=row-fluid data-target=expandable-details-row />');
       $row3 = $('<div class="row-fluid  assessments-table-container" />');
       $row1.append(this._span(this.renderSummary(this.model.attributes, attrs), 3));
-      $row1.append(this._span(this.renderEffects(attrs), 3));
-      $row1.append(this._span(this.renderPhenotypes(attrs), 3));
+      $row1.append(this._span(this.renderEffects(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
+      $row1.append(this._span(this.renderPhenotypes(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
       $row1.append(this._span(this.renderPredictions(attrs), 3));
       $row2.append(this._span(this.renderCohorts(attrs), 3));
-      $row2.append(this._span(this.render1000g(attrs), 3));
-      $row2.append(this._span(this.renderEvs(attrs), 3));
-      $row2.append(this._span(this.renderPubmed(attrs), 3));
+      $row2.append(this._span(this.renderFrequencies(attrs), 3));
+      $row2.append(this._span(this.renderPubmed(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
       $row3.append(this._span(this.renderAssessmentMetricsContainer(), 12));
       this.$content.append($row1, $row2, $row3);
       this.$el.find('.cohort-sample-popover').popover();
@@ -370,7 +419,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return AssessmentTab.__super__.constructor.apply(this, arguments);
     }
 
-    AssessmentTab.prototype.template = 'varify/empty';
+    AssessmentTab.prototype.template = function() {};
 
     AssessmentTab.prototype.el = '#knowledge-capture-content';
 
@@ -476,12 +525,20 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
     __extends(ResultDetails, _super);
 
     function ResultDetails() {
+      this.toggleExpandedState = __bind(this.toggleExpandedState, this);
+      this._checkForOverflow = __bind(this._checkForOverflow, this);
       this.onSaveSuccess = __bind(this.onSaveSuccess, this);
       this.onSaveError = __bind(this.onSaveError, this);
       return ResultDetails.__super__.constructor.apply(this, arguments);
     }
 
     ResultDetails.prototype.className = 'modal hide';
+
+    ResultDetails.prototype.maxExpandableHeight = 300;
+
+    ResultDetails.prototype.showLessText = 'Show Less...';
+
+    ResultDetails.prototype.showMoreText = 'Show More...';
 
     ResultDetails.prototype.template = 'varify/modals/result';
 
@@ -495,7 +552,8 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       'click #close-review-button': 'close',
       'click #save-assessment-button': 'saveAndClose',
       'click #variant-details-link': 'hideButtons',
-      'click #knowledge-capture-link': 'showButtons'
+      'click #knowledge-capture-link': 'showButtons',
+      'click [data-target=expand-collapse-link]': 'toggleExpandedState'
     };
 
     ResultDetails.prototype.initialize = function() {
@@ -557,6 +615,39 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       });
     };
 
+    ResultDetails.prototype._checkForOverflow = function() {
+      return _.each($('.expandable-details-item'), function(element) {
+        var child, hasOverflow, _i, _len, _ref;
+        hasOverflow = false;
+        _ref = element.children;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          child = _ref[_i];
+          if ((child.offsetTop + child.offsetHeight) > this.maxExpandableHeight) {
+            hasOverflow = true;
+            break;
+          }
+        }
+        if (hasOverflow) {
+          return $(element).find('.expand-collapse-container').show();
+        } else {
+          return $(element).find('.expand-collapse-container').hide();
+        }
+      }, this);
+    };
+
+    ResultDetails.prototype.toggleExpandedState = function(event) {
+      var element, parent;
+      element = $(event.target);
+      parent = element.closest('[data-target=expandable-details-row]');
+      if (element.text() === this.showMoreText) {
+        parent.find('[data-target=expand-collapse-link]').text(this.showLessText);
+        return parent.css('height', 'auto').css('overflow', 'visible');
+      } else {
+        parent.find('[data-target=expand-collapse-link]').text(this.showMoreText);
+        return parent.css('height', this.maxExpandableHeight).css('overflow', 'hidden');
+      }
+    };
+
     ResultDetails.prototype.update = function(summaryView, result) {
       var assessmentModel, metrics;
       this.selectedSummaryView = summaryView;
@@ -577,7 +668,10 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
         assessmentModel.id = this.model.get('assessment').id;
       }
       this.assessmentTab.update(assessmentModel);
-      return this.$el.modal('show');
+      this.$el.modal('show');
+      $('[data-target=expandable-details-row]').css('height', "" + this.maxExpandableHeight + "px").css('overflow', 'hidden');
+      $('[data-target=expand-collapse-link]').text(this.showMoreText);
+      return this._checkForOverflow();
     };
 
     return ResultDetails;

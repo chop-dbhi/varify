@@ -8,7 +8,7 @@ define [
 ], (_, Marionette, models, utils, Templates, Numbers) ->
 
     class DetailsTab extends Marionette.ItemView
-        template: 'varify/empty'
+        template: ->
 
         initialize: ->
             @metrics = @options.metrics
@@ -149,7 +149,7 @@ define [
             content.push "<a href='http://localhost:10000/show?request=chr#{ variant_attrs.chr }:g.#{ variant_attrs.pos }#{ variant_attrs.ref }>#{ variant_attrs.alt }' target=_blank class='btn btn-primary btn-small alamut-button'>Query Alamut</a>"
             return content.join ''
 
-        render1000g: (attrs) ->
+        renderFrequencies: (attrs) ->
             content = []
             content.push '<h4>1000 Genomes</h4>'
 
@@ -168,10 +168,6 @@ define [
             else
                 content.push '<p class=muted>No 1000G frequencies</p>'
 
-            return content.join ''
-
-        renderEvs: (attrs) ->
-            content = []
             content.push '<h4 title="Exome Variant Server">EVS</h4>'
 
             # EVS allele frequencies
@@ -234,27 +230,69 @@ define [
 
             return content.join ''
 
+        _renderPhenotypeCollection: (phenotypes) ->
+            content = []
+
+            sorted = _.sortBy phenotypes, (item) ->
+                return item.term
+
+            content.push '<ul>'
+            for phenotype in sorted
+                content.push "<li>#{ phenotype.term }"
+                if phenotype.hpo_id or phenotype.hgmd_id
+                    if phenotype.hgmd_id
+                        content.push " (HGMD: #{ phenotype.hgmd_id })"
+                    if phenotype.hpo_id
+                        # Zero-pad the HPO ID to force it to be 7 digits. This
+                        # trick is from:
+                        #       http://dev.enekoalonso.com/2010/07/20/little-tricks-string-padding-in-javascript/
+                        zpad = String("0000000" + phenotype.hpo_id).slice(-7)
+                        content.push " (<a href=\"http://www.human-phenotype-ontology.org/hpoweb/showterm?id=HP_#{ zpad }\">HPO: #{ zpad }</a>)"
+                content.push '</li>'
+            content.push '</ul>'
+
+            return content
+
         renderPhenotypes: (attrs) ->
             content = []
             content.push '<h4>Phenotypes</h4>'
 
             if attrs.phenotypes[0]
                 content.push '<ul class=unstyled>'
-                for phenotype in attrs.phenotypes
-                    content.push "<li>#{ phenotype.term }"
-                    if phenotype.hpo_id or phenotype.hgmd_id
-                        content.push '<ul>'
-                        if phenotype.hgmd_id
-                            content.push "<li><small>HGMD</small> #{ phenotype.hgmd_id }</li>"
-                        if phenotype.hpo_id
-                            content.push "<li><small>HPO</small> #{ phenotype.hpo_id }</li>"
-                        content.push '</ul>'
-                    content.push '</li>'
+                content.push '<li>Variant:</li>'
+                content = content.concat(@_renderPhenotypeCollection(attrs.phenotypes))
                 content.push '</ul>'
             else
-                content.push '<p class=muted>No associated phenotypes</p>'
+                content.push '<p class=muted>No associated variant phenotypes</p>'
+
+            if attrs.uniqueGenes[0]
+                content.push '<ul class=unstyled>'
+
+                _.each attrs.uniqueGenes, (gene) ->
+                    content.push "<li>#{ gene.symbol }:</li>"
+
+                    if gene.phenotypes[0]
+                        content = content.concat(@_renderPhenotypeCollection(gene.phenotypes))
+                    else
+                        content.push '<p class=muted>No phenotypes for this gene</p>'
+                , this
+
+                content.push '</ul>'
 
             return content.join ''
+
+        _renderArticleCollection: (articles) ->
+            content = []
+
+            sorted =  _.sortBy articles, (item) ->
+                return item
+
+            content.push '<ul>'
+            for pmid in sorted
+                content.push "<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/#{ pmid }\">#{ pmid }</a></li>"
+            content.push '</ul>'
+
+            return content
 
         renderPubmed: (attrs) ->
             content = []
@@ -262,11 +300,25 @@ define [
 
             if attrs.articles[0]
                 content.push '<ul class=unstyled>'
-                for pmid in attrs.articles
-                    content.push "<li><a href=\"http://www.ncbi.nlm.nih.gov/pubmed/#{ pmid }\">#{ pmid }</a></li>"
+                content.push '<li>Variant:</li>'
+                content = content.concat(@_renderArticleCollection(attrs.articles))
                 content.push '</ul>'
             else
-                content.push '<p class=muted>No PubMed articles associated</p>'
+                content.push '<p class=muted>No PubMed articles for this variant</p>'
+
+            if attrs.uniqueGenes[0]
+                content.push '<ul class=unstyled>'
+
+                _.each attrs.uniqueGenes, (gene) ->
+                    content.push "<li>#{ gene.symbol }:</li>"
+
+                    if gene.articles[0]
+                        content = content.concat(@_renderArticleCollection(gene.articles))
+                    else
+                        content.push '<p class=muted>No PubMed articles for this gene</p>'
+                , this
+
+                content.push '</ul>'
 
             return content.join ''
 
@@ -319,25 +371,42 @@ define [
 
             return content.join ''
 
+        _renderExpandCollapse: ->
+            content = []
+
+            content.push '<div class=expand-collapse-container>'
+            content.push '<a href="#" data-target=expand-collapse-link>MORE</a>'
+            content.push '</div>'
+
+            return content.join ''
+
         _span: (html, size=12) ->
             $("<div class=\"span#{size}\" />").html(html)
 
         render: =>
             attrs = @model.get('variant')
 
-            $row1 = $('<div class=row-fluid />')
-            $row2 = $('<div class=row-fluid />')
+            $row1 = $('<div class=row-fluid data-target=expandable-details-row />')
+            $row2 = $('<div class=row-fluid data-target=expandable-details-row />')
             $row3 = $('<div class="row-fluid  assessments-table-container" />')
 
             $row1.append @_span @renderSummary(@model.attributes, attrs), 3
-            $row1.append @_span @renderEffects(attrs), 3
-            $row1.append @_span @renderPhenotypes(attrs), 3
+            $row1.append(
+                @_span(@renderEffects(attrs), 3)
+                    .addClass('expandable-details-item')
+                    .append(@_renderExpandCollapse))
+            $row1.append(
+                @_span(@renderPhenotypes(attrs), 3)
+                    .addClass('expandable-details-item')
+                    .append(@_renderExpandCollapse))
             $row1.append @_span @renderPredictions(attrs), 3
 
             $row2.append @_span @renderCohorts(attrs), 3
-            $row2.append @_span @render1000g(attrs), 3
-            $row2.append @_span @renderEvs(attrs), 3
-            $row2.append @_span @renderPubmed(attrs), 3
+            $row2.append @_span @renderFrequencies(attrs), 3
+            $row2.append(
+                @_span(@renderPubmed(attrs), 3)
+                    .addClass('expandable-details-item')
+                    .append(@_renderExpandCollapse))
 
             $row3.append @_span @renderAssessmentMetricsContainer(), 12
 
@@ -351,7 +420,7 @@ define [
 
 
     class AssessmentTab extends Marionette.ItemView
-        template: 'varify/empty'
+        template: ->
 
         el: '#knowledge-capture-content'
 
@@ -456,6 +525,12 @@ define [
     class ResultDetails extends Marionette.ItemView
         className: 'modal hide'
 
+        # Fairly arbitray, mostly chosen because it was close to normal height
+        # of the sample summary item(1st item in upper left).
+        maxExpandableHeight: 300
+        showLessText: 'Show Less...'
+        showMoreText: 'Show More...'
+
         template: 'varify/modals/result'
 
         ui:
@@ -468,6 +543,7 @@ define [
             'click #save-assessment-button': 'saveAndClose'
             'click #variant-details-link': 'hideButtons'
             'click #knowledge-capture-link': 'showButtons'
+            'click [data-target=expand-collapse-link]': 'toggleExpandedState'
 
         initialize: ->
             @assessmentTab = new AssessmentTab
@@ -513,6 +589,55 @@ define [
                 keyboard: false
                 backdrop: 'static'
 
+        # Reset state of all the expand/collapse links based on whether their
+        # item is overflowing. Overflow detection code adapted from Mohsen's
+        # answer here:
+        #       http://stackoverflow.com/questions/7668636/check-with-jquery-if-div-has-overflowing-elements
+        _checkForOverflow: =>
+            _.each $('.expandable-details-item'), (element) ->
+                hasOverflow = false
+
+                # Note, we purposefully ignore horizontal overflow as it just
+                # isn't relevent here. Note, we use the maxExpandableHeight
+                # here rather than the properties of element to compute
+                # overflow because it is more consistent. element.offsetTop
+                # is measured from the 'content' div while individual children
+                # have their top offset calculated relative to the element
+                # itself so we use maxExpandableHeight to avoid doing any
+                # translations.
+                for child in element.children
+                    if (child.offsetTop + child.offsetHeight) > @maxExpandableHeight
+                        hasOverflow = true
+                        break
+
+                # We handle both cases because an item previously might have
+                # have been bounded and is now overflown or vice-versa and we
+                # want to match the current regardless of previous states.
+                if hasOverflow
+                    $(element).find('.expand-collapse-container').show()
+                else
+                    $(element).find('.expand-collapse-container').hide()
+            , this
+
+        # Toggles the expanded/collapsed state of the row containing the item
+        # containing the clicked link.
+        toggleExpandedState: (event) =>
+            element = $(event.target)
+            parent = element.closest('[data-target=expandable-details-row]')
+
+            # We essentially link all the expand/collapse links in a single row
+            # to take the same action. So, when one is used to expand, all
+            # other links in the row get updated in the same fasion to keep
+            # them all in sync.
+            if element.text() == @showMoreText
+                parent.find('[data-target=expand-collapse-link]').text(@showLessText)
+                parent.css('height', 'auto')
+                    .css('overflow', 'visible')
+            else
+                parent.find('[data-target=expand-collapse-link]').text(@showMoreText)
+                parent.css('height', @maxExpandableHeight)
+                    .css('overflow', 'hidden')
+
         update: (summaryView, result) ->
             @selectedSummaryView = summaryView
             @model = result
@@ -536,5 +661,15 @@ define [
             @assessmentTab.update(assessmentModel)
 
             @$el.modal('show')
+
+            # Reset the row and item heights and overflow styles as they
+            # may have been toggled previously.
+            $('[data-target=expandable-details-row]')
+                .css('height', "#{ @maxExpandableHeight }px")
+                .css('overflow', 'hidden')
+            $('[data-target=expand-collapse-link]').text(@showMoreText)
+
+            @_checkForOverflow()
+
 
     { ResultDetails }
