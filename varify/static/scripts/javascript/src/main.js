@@ -25,7 +25,7 @@ require({
     };
 
     var augmentFixedView = function() {
-        var new_view = {
+        var newView = {
             view: {
                 columns: [2]
             }
@@ -33,10 +33,10 @@ require({
 
         var json;
         if ((json = c.session.data.views.session.get('json')) != null) {
-            new_view['view']['ordering'] = json['ordering'];
+            newView['view']['ordering'] = json['ordering'];
         }
 
-        return new_view;
+        return newView;
     };
 
     // Define custom templates
@@ -96,13 +96,13 @@ require({
     // A simple handler for CONTEXT_REQUIRED and CONTEXT_INVALID events that
     // tells the user which concept is required(when possible) or prints a
     // generic message in the case the concept name could not be found.
-    var notify_required = (function(_this) {
+    var notifyRequired = (function(_this) {
         return function(concepts) {
             if (c.data == null) return;
 
             var names = _.map(concepts || [], function(concept) {
-                if ((curr_concept = c.data.concepts.get(concept.concept)) != null) {
-                    return curr_concept.get('name');
+                if ((currConcept = c.data.concepts.get(concept.concept)) != null) {
+                    return currConcept.get('name');
                 }
             });
 
@@ -124,8 +124,8 @@ require({
     // Mark the Sample concept as required and display a notification to the
     // user when it is not populated.
     c.config.set('query.concepts.required', [2]);
-    c.on(c.CONTEXT_INVALID, notify_required);
-    c.on(c.CONTEXT_REQUIRED, notify_required);
+    c.on(c.CONTEXT_INVALID, notifyRequired);
+    c.on(c.CONTEXT_REQUIRED, notifyRequired);
 
     return c.ready(function() {
         // Open the default session defined in the pre-defined configuration.
