@@ -1,1 +1,1 @@
-var __slice=[].slice;define(["underscore","./tables/body","./tables/header","./tables/row","./tables/table"],function(){var e,t;return t=arguments[0],e=2<=arguments.length?__slice.call(arguments,1):[],t.extend.apply(t,[{}].concat(__slice.call(e)))})
+define(["underscore","./tables/body","./tables/header","./tables/row","./tables/table"],function(){var e=[].slice.call(arguments,1);return _.extend.apply(null,[{}].concat(e))})
