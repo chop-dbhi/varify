@@ -535,7 +535,7 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
     };
 
     ResultsWorkflow.prototype.renderPhenotypes = function(model, response, update_results) {
-      var attr, last_modified, phenotype_modified;
+      var attr, last_modified, path, phenotype_modified;
       if (!this.ui.viewPhenotype.is(":visible")) {
         return;
       }
@@ -561,6 +561,11 @@ define(['underscore', 'marionette', 'cilantro', 'cilantro/ui/numbers', '../table
         attr.ruledOutDiagnoses = _.sortBy(attr.ruledOutDiagnoses, function(value) {
           return parseInt(value.priority) || model.lowestPriority + 1;
         });
+      }
+      if (attr.pedigree) {
+        path = attr.pedigree;
+        path = path.replace('/phenotype/media', 'api/samples');
+        attr.pedigree = utils.toAbsolutePath(path);
       }
       last_modified = utils.parseISO8601UTC(attr.last_modified);
       if (last_modified != null) {

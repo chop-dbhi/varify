@@ -519,6 +519,12 @@ define [
                 attr.ruledOutDiagnoses = _.sortBy(attr.ruledOutDiagnoses, (value) ->
                     parseInt(value.priority) or model.lowestPriority+1)
 
+            # Update pedigree path to point to the varify endpoint
+            if attr.pedigree
+                path = attr.pedigree
+                path = path.replace('/phenotype/media', 'api/samples')
+                attr.pedigree = utils.toAbsolutePath(path)
+
             # Format the date properties if they are present
             last_modified = utils.parseISO8601UTC(attr.last_modified)
             if last_modified?
