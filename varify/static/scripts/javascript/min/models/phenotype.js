@@ -1,1 +1,1 @@
-define(["backbone","../utils"],function(e,t){var n=e.Model.extend({urlRoot:function(){var e="api/samples/"+this.get("sample_id")+"/phenotypes";return t.toAbsolutePath(e)}});return{Phenotype:n}})
+define(["backbone","../utils"],function(e,t){var n=e.Model.extend({urlRoot:function(){var e="api/samples/"+this.get("sample_id")+"/phenotypes/";return t.toAbsolutePath(e)}});return{Phenotype:n}})
