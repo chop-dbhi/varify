@@ -293,14 +293,14 @@ class PhenotypeResource(ThrottledResource):
 
 
 class PedigreeResource(ThrottledResource):
-    def get(self, request, year, month, day, f):
+    def get(self, request, year, month, day, name):
         endpoint = getattr(settings, 'PEDIGREE_ENDPOINT', None)
 
         if not endpoint:
             log.error('PEDIGREE_ENDPOINT setting could not be found.')
             return HttpResponse(status=500)
 
-        endpoint = endpoint.format(year, month, day, f)
+        endpoint = endpoint.format(year, month, day, name)
 
         try:
             pedigree_response = requests.get(
@@ -316,7 +316,7 @@ class PedigreeResource(ThrottledResource):
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = \
             'attachment; filename="{0}-{1}-{2}-{3}"'.format(
-                year, month, day, f)
+                year, month, day, name)
 
         response.write(pedigree_response.content)
 
@@ -340,6 +340,6 @@ urlpatterns = patterns(
     url(r'^variants/(?P<pk>\d+)/$', sample_result_resource, name='variant'),
     url(r'^(?P<sample_id>.+)/phenotypes/$', phenotype_resource,
         name='phenotype'),
-    url(r'^pedigrees/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<f>.+)$',
+    url(r'^pedigrees/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<name>.+)$',
         pedigree_resource, name='pedigree'),
 )
