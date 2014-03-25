@@ -7,7 +7,7 @@ define([
 
     var Phenotype = Backbone.Model.extend({
         urlRoot: function() {
-            var path = 'api/samples/' + this.get('sample_id') + '/phenotypes';
+            var path = 'api/samples/' + this.get('sample_id') + '/phenotypes/';
             return utils.toAbsolutePath(path);
         }
     });

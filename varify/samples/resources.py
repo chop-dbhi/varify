@@ -292,12 +292,43 @@ class PhenotypeResource(ThrottledResource):
         return response.content
 
 
+class PedigreeResource(ThrottledResource):
+    def get(self, request, year, month, day, name):
+        endpoint = getattr(settings, 'PEDIGREE_ENDPOINT', None)
+
+        if not endpoint:
+            log.error('PEDIGREE_ENDPOINT setting could not be found.')
+            return HttpResponse(status=500)
+
+        endpoint = endpoint.format(year, month, day, name)
+
+        try:
+            pedigree_response = requests.get(
+                endpoint, cert=(settings.VARIFY_CERT, settings.VARIFY_KEY),
+                verify=False)
+        except requests.exceptions.SSLError:
+            raise PermissionDenied
+        except requests.exceptions.ConnectionError:
+            return HttpResponse(status=500)
+        except requests.exceptions.RequestException:
+            raise Http404
+
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = \
+            'attachment; filename="{0}-{1}-{2}-{3}"'.format(
+                year, month, day, name)
+
+        response.write(pedigree_response.content)
+
+        return response
+
 sample_resource = never_cache(SampleResource())
 samples_resource = never_cache(SamplesResource())
 named_sample_resource = never_cache(NamedSampleResource())
 sample_results_resource = never_cache(SampleResultsResource())
 sample_result_resource = never_cache(SampleResultResource())
 phenotype_resource = never_cache(PhenotypeResource())
+pedigree_resource = never_cache(PedigreeResource())
 
 urlpatterns = patterns(
     '',
@@ -309,4 +340,6 @@ urlpatterns = patterns(
     url(r'^variants/(?P<pk>\d+)/$', sample_result_resource, name='variant'),
     url(r'^(?P<sample_id>.+)/phenotypes/$', phenotype_resource,
         name='phenotype'),
+    url(r'^pedigrees/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<name>.+)$',
+        pedigree_resource, name='pedigree'),
 )
