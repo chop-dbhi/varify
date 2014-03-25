@@ -19,7 +19,7 @@ install_requires = [
     'django-widget-tweaks',
     'psycopg2==2.4.4',
     'avocado>=2.3.3,<3.0',
-    'serrano>=2.3.3,<3.0',
+    'serrano>=2.3.4,<3.0',
     'modeltree>=1.1.7',
     'django-haystack==2.0.0',
     'whoosh==2.4.1',
