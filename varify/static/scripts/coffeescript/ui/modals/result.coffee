@@ -281,6 +281,35 @@ define [
 
             return content.join ''
 
+        _renderClinVarCollection: (assertions) ->
+            content = []
+
+            for assertion in assertions
+                content.push "<li>Assertion: <a target=\"_blank\" href=\"https://www.ncbi.nlm.nih.gov/clinvar/#{ assertion.rcvaccession }/\">#{ assertion.rcvaccession }</a>"
+                content.push '<ul>'
+                content.push "<li><small>Siginificance</small> <b>#{ assertion.clinicalsignificance }</b></li>"
+                content.push "<li><small>Origin</small> #{ assertion.origin }</li>"
+                content.push "<li><small>Type</small> #{ assertion.type }</li>"
+                content.push "<li><small># Submitters</small> #{ assertion.numbersubmitters }</li>"
+                content.push "<li><small>Review Status</small> #{ assertion.reviewstatus }</li>"
+                content.push "<li><small>Last Evaluated</small> #{ assertion.lastevaluated }</li>"
+                content.push '</ul>'
+                content.push '</li>'
+
+            return content
+
+        renderClinvar: (attrs) ->
+            content = []
+            content.push '<h4>ClinVar</h4>'
+            if attrs.solvebio.clinvar[0]
+                content.push '<ul class=unstyled>'
+                content = content.concat(@_renderClinVarCollection(attrs.solvebio.clinvar))
+                content.push '</ul>'
+            else
+                content.push '<p class=muted>No ClinVar assertions</p>'
+
+            return content.join ''
+
         _renderArticleCollection: (articles) ->
             content = []
 
@@ -396,7 +425,7 @@ define [
                     .addClass('expandable-details-item')
                     .append(@_renderExpandCollapse))
             $row1.append(
-                @_span(@renderPhenotypes(attrs), 3)
+                @_span(@renderPhenotypes(attrs) + @renderClinvar(attrs), 3)
                     .addClass('expandable-details-item')
                     .append(@_renderExpandCollapse))
             $row1.append @_span @renderPredictions(attrs), 3

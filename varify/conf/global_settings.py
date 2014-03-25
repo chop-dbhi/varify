@@ -24,6 +24,8 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.staticfiles',
 
+    'solvebio.contrib.django_solvebio',
+
     'varify',
 
     'varify.raw',
@@ -385,3 +387,17 @@ SERRANO = {
 }
 
 VARIFY_SAMPLE_DIRS = ()
+
+#
+# SOLVEBIO SETTINGS (django_solvebio)
+#
+
+# Get your API key from https://www.solvebio.com/account
+SOLVEBIO_API_KEY = os.environ.get('SOLVEBIO_API_KEY', None)
+
+# You can optionally bypass DB lookups by hardcoding aliases.
+# The dict key is the alias and the value may be an ID or
+# full dataset name. [OPTIONAL]
+SOLVEBIO_DATASETS = {
+    'clinvar': 'ClinVar/0.0.2/ClinVar'
+}
