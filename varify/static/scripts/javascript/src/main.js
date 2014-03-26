@@ -193,8 +193,9 @@ require({
                 results: new ui.ResultsWorkflow({
                     view: this.data.views.session,
                     // The differences in these names are noted
+                    context: this.data.contexts.session,
                     results: this.data.preview,
-                    exporters: this.data.exporter,
+                    exporters: this.data.exporter
                 })
             };
 

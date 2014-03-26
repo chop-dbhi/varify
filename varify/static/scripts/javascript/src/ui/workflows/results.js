@@ -3,8 +3,49 @@
 define([
     'underscore',
     'cilantro',
+    'cilantro/ui/numbers',
     '../tables'
-], function(_, c, tables) {
+], function(_, c, numbers, tables) {
+
+    var ResultCount = c.ui.ResultCount.extend({
+        initialize: function() {
+            this.data = {};
+
+            if (!(this.data.context = this.options.context)) {
+                throw new Error('context model required');
+            }
+        },
+
+        renderCount: function(model, count, options) {
+            var samples = [], json;
+
+            if (this.data.context  && (json = this.data.context.get('json'))) {
+                _.each(json.children, function(child) {
+                    if (child.concept && child.concept === 2) {
+                        samples = _.pluck(child.children[0].value, 'label');
+                    }
+                });
+            }
+
+            numbers.renderCount(this.ui.count, count);
+            if (samples.length === 1) {
+                this.ui.label.text('records in ' + samples[0]);
+                this.ui.label.attr('title', samples[0]);
+                this.ui.label.tooltip({
+                     animation: false,
+                     html: true,
+                     placement: 'bottom',
+                     container: 'body'
+                });
+            }
+            else {
+                this.ui.label.text('records in various samples');
+                this.ui.label.attr('title', 'various samples');
+                this.ui.label.tooltip('destroy');
+            }
+        }
+
+    });
 
     // Extend the default Cilantro results workflow to account for items like
     // our custom result table and the integration of phenotype data.
@@ -26,6 +67,15 @@ define([
             });
 
             c.ui.ResultsWorkflow.prototype.initialize.call(this);
+
+            // The Cilantro workflow no longer requires the context but we
+            // need it to have any hope of referencing the sample name in the
+            // result count. The data object will already have been initialized
+            // in the call above so we are safe to add the context onto it
+            // here.
+            if (!(this.data.context = this.options.context)) {
+                throw new Error('context model required');
+            }
         },
 
         showPhenotypesModal: function() {
@@ -71,8 +121,9 @@ define([
                 model: this.data.results
             }));
 
-            this.count.show(new c.ui.ResultCount({
-                model: this.data.results
+            this.count.show(new ResultCount({
+                model: this.data.results,
+                context: this.data.context
             }));
 
             this.exportTypes.show(new c.ui.ExportTypeCollection({
