@@ -158,7 +158,11 @@ require({
                     collection: this.data.queries
                 }),
 
-                resultDetails: new ui.ResultDetails
+                resultDetails: new ui.ResultDetails,
+
+                phenotype: new ui.Phenotype({
+                    context: this.data.contexts.session
+                })
             };
 
             var elements = [];

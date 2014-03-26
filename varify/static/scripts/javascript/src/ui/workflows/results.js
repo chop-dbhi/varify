@@ -11,37 +11,25 @@ define([
     var ResultsWorkflow = c.ui.ResultsWorkflow.extend({
         template: 'varify/workflows/results',
 
-        _ui: {
-            viewPhenotype: '.phenotype-modal .modal-body .span12',
-            recalculateButton: '[data-target=recalculate-rankings]',
-            phenotypeWarning: '[data-target=phenotype-warning]'
-        },
-
         _events: {
             'click .export-options-modal [data-save]': 'onExportClicked',
             'click .export-options-modal [data-dismiss=modal]': 'onExportCloseClicked',
-            'show.bs.modal .phenotype-modal': 'viewPhenotypesClicked',
-            'hidden.bs.modal .phenotype-modal': 'hidePhenotypes',
-            'click [data-target=recalculate-rankings]': 'recalculateRankingsClicked'
-        },
-
-        _regions: {
-            resultDetailsModal: '.result-details-modal'
+            'click [data-toggle=phenotype-dialog]': 'showPhenotypesModal'
         },
 
         initialize: function() {
-            // Extend ui, events, and regions on Cilantro ResultsWorkflow with
-            // our local additions and register the row click listener before
-            // calling initialize on parent.
-            _.extend({}, this._ui, this.ui);
-            _.extend({}, this._events, this.events);
-            _.extend({}, this._regions, this.regions);
+            this.events = _.extend({}, this._events, this.events);
 
+            // This will be triggered by the table rows when they are clicked.
             c.on('resultRow:click', function(view, result) {
                 c.dialogs.resultDetails.open(view, result);
             });
 
             c.ui.ResultsWorkflow.prototype.initialize.call(this);
+        },
+
+        showPhenotypesModal: function() {
+            c.dialogs.phenotype.open();
         },
 
         onExportCloseClicked: function() {
