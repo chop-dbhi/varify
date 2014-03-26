@@ -810,7 +810,7 @@ define([
             }
         },
 
-        update: function(summaryView, result) {
+        open: function(summaryView, result) {
             var assessmentModel, metrics;
 
             this.selectedSummaryView = summaryView;

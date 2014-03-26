@@ -38,7 +38,7 @@ define([
             _.extend({}, this._regions, this.regions);
 
             c.on('resultRow:click', function(view, result) {
-                this.resultDetailsModal.currentView.update(view, result);
+                c.dialogs.resultDetails.open(view, result);
             });
 
             c.ui.ResultsWorkflow.prototype.initialize.call(this);
