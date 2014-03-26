@@ -2,7 +2,6 @@ WATCH_FILE = .watch-pid
 MANAGE_SCRIPT = ./bin/manage.py
 SITE_DIR = ./_site
 STATIC_DIR = ./varify/static
-COFFEE_DIR = ${STATIC_DIR}/scripts/coffeescript
 JAVASCRIPT_DIR = ${STATIC_DIR}/scripts/javascript
 JAVASCRIPT_SRC_DIR = ${JAVASCRIPT_DIR}/src
 JAVASCRIPT_MIN_DIR = ${JAVASCRIPT_DIR}/min
@@ -16,14 +15,11 @@ COMPILE_SASS = `which sass` \
 	-r ${SASS_DIR}/lib/bourbon/lib/bourbon.rb \
 	${SASS_DIR}:${CSS_DIR}
 
-COMPILE_COFFEE = `which coffee` -b -o ${JAVASCRIPT_SRC_DIR} -c ${COFFEE_DIR}
-WATCH_COFFEE = `which coffee` -w -b -o ${JAVASCRIPT_SRC_DIR} -c ${COFFEE_DIR}
-
 REQUIRE_OPTIMIZE = `which node` ./bin/r.js -o ${JAVASCRIPT_DIR}/app.build.js
 
 all: setup build collect
 
-build: sass coffee optimize
+build: sass optimize
 
 setup:
 	@if [ ! -f ./varify/conf/local_settings.py ] && [ -f ./varify/conf/local_settings.py.sample ]; then \
@@ -38,10 +34,6 @@ collect:
 sass: _ensure
 	@echo 'Compiling Sass/SCSS...'
 	@${COMPILE_SASS} --update
-
-coffee: _ensure
-	@echo 'Compiling CoffeeScript...'
-	@${COMPILE_COFFEE}
 
 watch: _ensure unwatch
 	@echo 'Watching in the background...'
@@ -66,4 +58,4 @@ _ensure:
 	@mkdir -p ${JAVASCRIPT_SRC_DIR} ${JAVASCRIPT_MIN_DIR} ${SASS_DIR} ${CSS_DIR}
 
 
-.PHONY: all build sass coffee watch unwatch optimize
+.PHONY: all build sass watch unwatch optimize
