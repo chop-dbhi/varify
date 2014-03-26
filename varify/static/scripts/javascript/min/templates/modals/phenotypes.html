@@ -1,13 +1,14 @@
 <div class=modal-header>
     <a class=close data-dismiss=modal><i class=icon-remove></i></a>
 
-    <h3>Phenotypes<span class='phenotype-sample-label'></span></h3>
+    <h3 data-target=header-label></h3>
 </div>
 
 <div class=modal-body>
     <div class=span12>
-        <div data-target=phenotype-warning class='alert alert-warning alert-block hide'></div>
-        <div class=loading>
+        <div data-target=warning class='alert alert-warning alert-block hide'></div>
+        <div data-target=error class='alert alert-error alert-block hide'></div>
+        <div data-target=loading>
             <h5><i class="icon-spinner icon-spin"></i> Loading Phenotypes...</h5>
         </div>
         <div class=content></div>
