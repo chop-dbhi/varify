@@ -2,41 +2,9 @@
 
 define([
     'underscore',
-    'cilantro'
-], function(_, c) {
-
-    // Until support for multi-sample filters is removed, we need to override
-    // the renderCount method to account for the possibility of multiple
-    // sample names in the current context.
-    var ResutlCount = c.ui.ResultCount.extend({
-        renderCount: function(model, count, options) {
-             var json, sample = null;
-
-            if ((this.data.context != null) && ((json = this.data.context.get('json')) != null)) {
-                _.each(json.children, function(child) {
-                    if ((child.concept != null) && child.concept === 2) {
-                        sample = child.children[0].value[0].label;
-                    }
-                });
-            }
-
-            numbers.renderCount(this.ui.count, count);
-            this.ui.label.text("records in " + (sample || "various samples"));
-            this.ui.label.attr('title', sample);
-
-            if (sample != null) {
-                this.ui.label.tooltip({
-                    animation: false,
-                    html: true,
-                    placement: 'bottom',
-                    container: 'body'
-                });
-            }
-            else {
-                this.ui.label.tooltip('destroy');
-            }
-        }
-    });
+    'cilantro',
+    '../tables'
+], function(_, c, tables) {
 
     // Extend the default Cilantro results workflow to account for items like
     // our custom result table and the integration of phenotype data.
@@ -101,6 +69,45 @@ define([
                 this.data.view.save({}, {success: this.exportData});
             }
         },
+
+        onRender: function() {
+            $(document).on('scroll', this.onPageScroll);
+
+            // Remove unsupported features from view/
+            if (!c.isSupported('2.1.0')) {
+                this.ui.saveQueryToggle.remove();
+                this.ui.saveQuery.remove();
+            }
+
+            this.paginator.show(new c.ui.Paginator({
+                model: this.data.results
+            }));
+
+            this.count.show(new c.ui.ResultCount({
+                model: this.data.results
+            }));
+
+            this.exportTypes.show(new c.ui.ExportTypeCollection({
+                collection: this.data.exporters
+            }));
+
+            this.exportProgress.show(new c.ui.ExportProgressCollection({
+                collection: this.data.exporters
+            }));
+
+
+            this.table.show(new tables.ResultTable({
+                view: this.data.view,
+                collection: this.data.results
+            }));
+
+
+            this.ui.navbarButtons.tooltip({
+                animation: false,
+                placement: 'bottom'
+            });
+        }
+
     });
 
     return {
