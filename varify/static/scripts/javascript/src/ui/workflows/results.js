@@ -4,8 +4,9 @@ define([
     'underscore',
     'cilantro',
     'cilantro/ui/numbers',
-    '../tables'
-], function(_, c, numbers, tables) {
+    '../tables',
+    '../../utils'
+], function(_, c, numbers, tables, utils) {
 
     var ResultCount = c.ui.ResultCount.extend({
         initialize: function() {
@@ -17,15 +18,7 @@ define([
         },
 
         renderCount: function(model, count, options) {
-            var samples = [], json;
-
-            if (this.data.context  && (json = this.data.context.get('json'))) {
-                _.each(json.children, function(child) {
-                    if (child.concept && child.concept === 2) {
-                        samples = _.pluck(child.children[0].value, 'label');
-                    }
-                });
-            }
+            var samples = utils.samplesInContext(this.data.context);
 
             numbers.renderCount(this.ui.count, count);
             if (samples.length === 1) {
