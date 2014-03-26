@@ -50,14 +50,12 @@ body {
 }
 
 .result-details-modal {
-    .modal {
-        width: 90%;
-        top: 5%;
-        left: 5%;
-        margin: 0;
-        max-height: 800px;
-        bottom: 5%;
-    }
+    width: 90%;
+    top: 5%;
+    left: 5%;
+    margin: 0;
+    max-height: 800px;
+    bottom: 5%;
 
     .tab-content {
         position: absolute;

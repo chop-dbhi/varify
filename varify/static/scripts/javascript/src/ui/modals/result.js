@@ -662,7 +662,7 @@ define([
     });
 
     var ResultDetails = Marionette.ItemView.extend({
-        className: 'modal hide',
+        className: 'result-details-modal modal hide',
 
         // Fairly arbitray, mostly chosen because it was close to normal height
         // of the sample summary item(1st item in upper left).
