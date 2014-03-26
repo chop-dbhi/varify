@@ -515,7 +515,7 @@ define([
             $row1.append(this._span(this.renderPhenotypes(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
             $row1.append(this._span(this.renderPredictions(attrs), 3));
 
-            $row2.append(this._span(this.renderCohorts(attrs), 3));
+            $row2.append(this._span(this.renderCohorts(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
             $row2.append(this._span(this.renderFrequencies(attrs), 3));
             $row2.append(this._span(this.renderPubmed(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
 
@@ -798,15 +798,15 @@ define([
             // them all in sync.
             if (element.text() === this.showMoreText) {
                 parent.find('[data-target=expand-collapse-link]')
-                    .text(this.showLessText)
-                    .css('height', 'auto')
-                    .css('overflow', 'visible');
+                      .text(this.showLessText);
+                parent.css('height', 'auto')
+                      .css('overflow', 'visible');
             }
             else {
                 parent.find('[data-target=expand-collapse-link]')
-                    .text(this.showMoreText)
-                    .css('height', this.maxExpandableHeight)
-                    .css('overflow', 'hidden');
+                      .text(this.showMoreText);
+                parent.css('height', this.maxExpandableHeight)
+                      .css('overflow', 'hidden');
             }
         },
 
