@@ -20,7 +20,7 @@ define([
         },
 
         onClick: function(events) {
-            c.trigger('resultRow:click', this, this.model);
+            c.dialogs.resultDetails.open(this, this.model);
         },
 
         initialize: function() {

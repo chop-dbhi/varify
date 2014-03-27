@@ -54,11 +54,6 @@ define([
         initialize: function() {
             this.events = _.extend({}, this._events, this.events);
 
-            // This will be triggered by the table rows when they are clicked.
-            c.on('resultRow:click', function(view, result) {
-                c.dialogs.resultDetails.open(view, result);
-            });
-
             c.ui.ResultsWorkflow.prototype.initialize.call(this);
 
             // The Cilantro workflow no longer requires the context but we
