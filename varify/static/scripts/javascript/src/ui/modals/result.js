@@ -287,6 +287,39 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       return content.join('');
     };
 
+    DetailsTab.prototype._renderClinVarCollection = function(assertions) {
+      var assertion, content, _i, _len;
+      content = [];
+      for (_i = 0, _len = assertions.length; _i < _len; _i++) {
+        assertion = assertions[_i];
+        content.push("<li>Assertion: <a target=\"_blank\" href=\"https://www.ncbi.nlm.nih.gov/clinvar/" + assertion.rcvaccession + "/\">" + assertion.rcvaccession + "</a>");
+        content.push('<ul>');
+        content.push("<li><small>Siginificance</small> <b>" + assertion.clinicalsignificance + "</b></li>");
+        content.push("<li><small>Origin</small> " + assertion.origin + "</li>");
+        content.push("<li><small>Type</small> " + assertion.type + "</li>");
+        content.push("<li><small># Submitters</small> " + assertion.numbersubmitters + "</li>");
+        content.push("<li><small>Review Status</small> " + assertion.reviewstatus + "</li>");
+        content.push("<li><small>Last Evaluated</small> " + assertion.lastevaluated + "</li>");
+        content.push('</ul>');
+        content.push('</li>');
+      }
+      return content;
+    };
+
+    DetailsTab.prototype.renderClinvar = function(attrs) {
+      var content;
+      content = [];
+      content.push('<h4>ClinVar</h4>');
+      if (attrs.solvebio.clinvar[0]) {
+        content.push('<ul class=unstyled>');
+        content = content.concat(this._renderClinVarCollection(attrs.solvebio.clinvar));
+        content.push('</ul>');
+      } else {
+        content.push('<p class=muted>No ClinVar assertions</p>');
+      }
+      return content.join('');
+    };
+
     DetailsTab.prototype._renderArticleCollection = function(articles) {
       var content, pmid, sorted, _i, _len;
       content = [];
@@ -392,7 +425,7 @@ define(['underscore', 'marionette', '../../models', '../../utils', '../../templa
       $row3 = $('<div class="row-fluid  assessments-table-container" />');
       $row1.append(this._span(this.renderSummary(this.model.attributes, attrs), 3));
       $row1.append(this._span(this.renderEffects(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
-      $row1.append(this._span(this.renderPhenotypes(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
+      $row1.append(this._span(this.renderPhenotypes(attrs) + this.renderClinvar(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
       $row1.append(this._span(this.renderPredictions(attrs), 3));
       $row2.append(this._span(this.renderCohorts(attrs), 3));
       $row2.append(this._span(this.renderFrequencies(attrs), 3));
