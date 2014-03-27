@@ -290,6 +290,12 @@ Sample = {
     }
 }
 
+Analysis = {
+    'fields': [':pk', 'name', 'status', 'sample'],
+    'related': {
+        'sample': SimpleSample,
+    }
+}
 
 ResultVariant = {
     'fields': ['variant_id', 'chr', 'pos', 'ref', 'alt'],
@@ -314,7 +320,7 @@ Genotype = {
 
 
 Assessment = {
-    'exclude': ['user', 'sample_result', 'notes']
+    'exclude': ['user', 'sample_result', 'notes', 'analysis']
 }
 
 ResultAssessment = {
