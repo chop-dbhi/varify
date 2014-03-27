@@ -2,6 +2,10 @@
 from south.v2 import DataMigration
 
 class Migration(DataMigration):
+    # Force Avocado migrations to run before this migration
+    depends_on = (
+        ('avocado', '0034_auto__add_field_datafield_type'),
+    )
 
     def forwards(self, orm):
         "Perform a 'safe' load using Avocado's backup utilities."
