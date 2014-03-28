@@ -48,7 +48,7 @@ define([
          * end of the URL and be left with the root URL so we can use this to
          * construct the result URLs later on.
          */
-        return window.location.href.replace(/[^\/]*\/$/, '/');
+        return window.location.href.replace(/\/[^\/]*\/$/, '/');
     };
 
 
