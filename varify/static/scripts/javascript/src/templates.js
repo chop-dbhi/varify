@@ -164,6 +164,7 @@ define([
     var condensedFlags = function(attrs) {
         var flags = [];
         flags.push(['dbSNP', attrs['rsid'] != null]);
+        flags.push(['ClinVar', attrs['solvebio']['clinvar'].length > 0]);
         flags.push(['HGMD', _.pluck(attrs['phenotypes'], 'hgmd_id').length > 0]);
         flags.push(['1000g', attrs['1000g'].length > 0]);
         flags.push(['EVS', attrs['evs'].length > 0]);
