@@ -43,7 +43,7 @@ def create_sample(sample_name, vcf_colname, batch_name, project_name=None,
 
 def check_sample_section(manifest):
     section = manifest.section('sample')
-    #sample itself is no longer a required key
+    # Sample itself is no longer a required key
     required_keys = ('batch', 'project', 'version')
     return all([key in section for key in required_keys])
 
@@ -174,13 +174,13 @@ def load_results(manifest_path, database, **kwargs):
             log.error('Sample does not exist', extra=sample_info)
             return
 
-        #is it already loaded, let's skip for now
+        # Is it already loaded, let's skip for now
         if Result.objects.filter(sample=sample).exists():
             log.debug('{0} exists in results'.format(vcf_sample))
         else:
             log.debug('about to load results for {0}'.format(vcf_sample))
 
-            #STSError: Cannot start transition while already in one.
+            # STSError: Cannot start transition while already in one.
             successful = False
             while not successful:
                 try:

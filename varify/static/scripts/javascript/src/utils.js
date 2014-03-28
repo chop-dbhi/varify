@@ -1,6 +1,56 @@
 /* global define */
 
-define([], function() {
+define([
+    'underscore'
+], function(_) {
+
+    var depthClass = function(depth) {
+        if (depth < 10) {
+            return 'text-warning';
+        }
+        else if (depth >= 30) {
+            return 'text-success';
+        }
+        else {
+            return '';
+        }
+    };
+
+
+    var effectImpactPriority = function(impact) {
+        var priority;
+
+        switch(impact) {
+            case 'High':
+                priority = 1;
+                break;
+            case 'Moderate':
+                priority = 2;
+                break;
+            case 'Low':
+                priority = 3;
+                break;
+            case 'Modifier':
+                priority = 4;
+                break;
+            default:
+                priority = 5;
+                break;
+        }
+
+        return priority;
+    };
+
+
+    var getRootUrl = function() {
+        /*
+         * Get the route-free URL. That is, we want to remove the route at the
+         * end of the URL and be left with the root URL so we can use this to
+         * construct the result URLs later on.
+         */
+        return window.location.href.replace(/[^\/]*\/$/, '/');
+    };
+
 
     var parseISO8601UTC = function(str) {
         /*
@@ -89,42 +139,6 @@ define([], function() {
         return;
     };
 
-    var getRootUrl = function() {
-        /*
-         * Get the route-free URL. That is, we want to remove the route at the
-         * end of the URL and be left with the root URL so we can use this to
-         * construct the result URLs later on.
-         */
-        return window.location.href.replace(new RegExp('/[^/]*/$'), '/');
-    };
-
-    var toAbsolutePath = function(path) {
-        return '' + getRootUrl() + path;
-    };
-
-    var effectImpactPriority = function(impact) {
-        var priority;
-
-        switch(impact) {
-            case 'High':
-                priority = 1;
-                break;
-            case 'Moderate':
-                priority = 2;
-                break;
-            case 'Low':
-                priority = 3;
-                break;
-            case 'Modifier':
-                priority = 4;
-                break;
-            default:
-                priority = 5;
-                break;
-        }
-
-        return priority;
-    };
 
     var priorityClass = function(priority) {
         var klass;
@@ -144,18 +158,6 @@ define([], function() {
         return klass;
     };
 
-    var depthClass = function(depth) {
-        if (depth < 10) {
-            return 'text-warning';
-        }
-        else if (depth >= 30) {
-            return 'text-success';
-        }
-        else {
-            return '';
-        }
-    };
-
     var qualityClass = function(qual) {
         if (qual < 30) {
             return 'text-warning';
@@ -168,13 +170,44 @@ define([], function() {
         }
     };
 
-    return {
-        parseISO8601UTC: parseISO8601UTC,
-        getRootUrl: getRootUrl,
-        toAbsolutePath: toAbsolutePath,
-        effectImpactPriority: effectImpactPriority,
-        priorityClass: priorityClass,
-        depthClass: depthClass,
-        qualityClass: qualityClass
+
+    var samplesInContext = function(context) {
+        /*
+         * Utility method for retrieving the full list of sample labels in
+         * the current context. Given the current sample control, this could
+         * be 0, 1, or more sample labels. This method returns a list of the
+         * sample labels in the supplied context. If there is an issue
+         * retreving them or there are no sample labels, an empty list is
+         * returned.
+         */
+        var samples = [], json;
+
+        if (context && (json = context.get('json'))) {
+            _.each(json.children, function(child) {
+                if (child.concept && child.concept === 2) {
+                    samples = _.pluck(child.children[0].value, 'label');
+                }
+            });
+        }
+
+        return samples;
     };
+
+
+    var toAbsolutePath = function(path) {
+        return '' + getRootUrl() + path;
+    };
+
+
+    return {
+        depthClass: depthClass,
+        effectImpactPriority: effectImpactPriority,
+        getRootUrl: getRootUrl,
+        parseISO8601UTC: parseISO8601UTC,
+        priorityClass: priorityClass,
+        qualityClass: qualityClass,
+        samplesInContext: samplesInContext,
+        toAbsolutePath: toAbsolutePath
+    };
+
 });

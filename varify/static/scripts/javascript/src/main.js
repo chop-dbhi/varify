@@ -15,8 +15,9 @@ require({
     'tpl!project/templates/modals/phenotypes.html',
     'tpl!project/templates/controls/sift.html',
     'tpl!project/templates/controls/polyphen.html',
-    'tpl!project/templates/workflows/results.html'
-], function(c, ui, csrf, header, result, phenotype, sift, polyphen, results) {
+    'tpl!project/templates/workflows/results.html',
+    'tpl!project/templates/export/dialog.html'
+], function(c, ui, csrf, header, result, phenotype, sift, polyphen, results, exportDialog) {
 
     // Session options
     var options = {
@@ -40,6 +41,7 @@ require({
     };
 
     // Define custom templates
+    c.templates.set('varify/export/dialog', exportDialog);
     c.templates.set('varify/tables/header', header);
     c.templates.set('varify/modals/result', result);
     c.templates.set('varify/modals/phenotype', phenotype);
@@ -127,62 +129,123 @@ require({
     c.on(c.CONTEXT_INVALID, notifyRequired);
     c.on(c.CONTEXT_REQUIRED, notifyRequired);
 
-    return c.ready(function() {
+    // Open the default session when Cilantro is ready
+    c.ready(function() {
+
         // Open the default session defined in the pre-defined configuration.
         // Initialize routes once data is confirmed to be available
-        return c.sessions.open(options).then(function() {
+        c.sessions.open(options).then(function() {
+
+            // Panels are defined in their own namespace since they shared
+            // across workflows
+            c.panels = {
+                concept: new c.ui.ConceptPanel({
+                    collection: this.data.concepts.queryable
+                }),
+
+                context: new c.ui.ContextPanel({
+                    model: this.data.contexts.session
+                })
+            };
+
+            c.dialogs = {
+                exporter: new ui.ExporterDialog({
+                    // TODO rename data.exporter on session
+                    exporters: this.data.exporter
+                }),
+
+                columns: new c.ui.ConceptColumnsDialog({
+                    view: this.data.views.session,
+                    concepts: this.data.concepts.viewable
+                }),
+
+                query: new c.ui.EditQueryDialog({
+                    view: this.data.views.session,
+                    context: this.data.contexts.session,
+                    collection: this.data.queries
+                }),
+
+                resultDetails: new ui.ResultDetails,
+
+                phenotype: new ui.Phenotype({
+                    context: this.data.contexts.session
+                })
+            };
+
+            var elements = [];
+
+            // Render and append panels in the designated main element
+            // prior to starting the session and loading the initial workflow
+            // Render and append element for insertion
+            $.each(c.panels, function(key, view) {
+                view.render();
+                elements.push(view.el);
+            });
+
+            $.each(c.dialogs, function(key, view) {
+                view.render();
+                elements.push(view.el);
+            });
+
+            // Set the initial HTML with all the global views
+            var main = $(c.config.get('main'));
+            main.append.apply(main, elements);
+
+            c.workflows = {
+                query: new c.ui.QueryWorkflow({
+                    context: this.data.contexts.session,
+                    concepts: this.data.concepts.queryable
+                }),
+
+                results: new ui.ResultsWorkflow({
+                    view: this.data.views.session,
+                    // We need the context in the results workflow because we
+                    // need to be able to reference the sample name.
+                    context: this.data.contexts.session,
+                    results: this.data.preview
+                })
+            };
+
+            // Define routes
             var routes = [{
                 id: 'query',
                 route: 'query/',
-                view: new c.ui.QueryWorkflow({
-                    context: this.data.contexts.session,
-                    concepts: this.data.concepts.queryable
-                })
+                view: c.workflows.query
             }, {
                 id: 'results',
                 route: 'results/',
-                view: new ui.ResultsWorkflow({
-                    view: this.data.views.session,
-                    context: this.data.contexts.session,
-                    concepts: this.data.concepts.viewable,
-                    results: this.data.preview,
-                    exporters: this.data.exporter,
-                    queries: this.data.queries
-                })
+                view: c.workflows.results
             }];
 
-            if (c.isSupported('2.2.0')) {
-                routes.push({
-                    id: 'query-load',
-                    route: 'results/:query_id/',
-                    view: new c.ui.QueryLoader({
-                        queries: this.data.queries,
-                        context: this.data.contexts.session,
-                        view: this.data.views.session
-                    })
-                });
-            }
+            c.workflows.workspace = new c.ui.WorkspaceWorkflow({
+                queries: this.data.queries,
+                context: this.data.contexts.session,
+                view: this.data.views.session,
+                public_queries: this.data.public_queries
+            });
 
-            var data;
-            if (c.isSupported('2.1.0')) {
-                data = {
-                    queries: this.data.queries,
-                    context: this.data.contexts.session,
-                    view: this.data.views.session
-                };
+            routes.push({
+                id: 'workspace',
+                route: 'workspace/',
+                view: c.workflows.workspace
+            });
 
-                if (c.isSupported('2.2.0')) {
-                    data.public_queries = this.data.public_queries;
-                }
+            c.workflows.queryload = new c.ui.QueryLoader({
+                queries: this.data.queries,
+                context: this.data.contexts.session,
+                view: this.data.views.session
+            });
 
-                routes.push({
-                    id: 'workspace',
-                    route: 'workspace/',
-                    view: new c.ui.WorkspaceWorkflow(data)
-                });
-            }
+            routes.push({
+                id: 'query-load',
+                route: 'results/:query_id/',
+                view: c.workflows.queryload
+            });
 
-            return this.start(routes);
+            // Register routes and start the session
+            this.start(routes);
         });
+
     });
+
 });

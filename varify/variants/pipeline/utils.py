@@ -291,7 +291,7 @@ class EffectStream(VCFPGCopyEditor):
 
         effects = []
 
-        #is this returning a list now??
+        # Is this returning a list now??
         effects_line = record.INFO.get('EFF', [])
 
         # Multiple separate SNPEff records
