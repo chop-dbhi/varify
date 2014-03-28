@@ -4,7 +4,7 @@ define([
     'underscore',
     './controls/sift',
     './controls/polyphen'
-], function() {
+], function(_) {
 
     var mods = [].slice.call(arguments, 1);
 

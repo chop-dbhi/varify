@@ -1,1 +1,1 @@
-define(["underscore","./controls/sift","./controls/polyphen"],function(){var e=[].slice.call(arguments,1);return _.extend.apply(null,[{}].concat(e))})
+define(["underscore","./controls/sift","./controls/polyphen"],function(e){var t=[].slice.call(arguments,1);return e.extend.apply(null,[{}].concat(t))})
