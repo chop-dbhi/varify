@@ -17,7 +17,7 @@ define([
             }
         },
 
-        renderCount: function(model, count, options) {
+        renderCount: function(model, count) {
             var samples = utils.samplesInContext(this.data.context);
 
             numbers.renderCount(this.ui.count, count);
@@ -25,10 +25,10 @@ define([
                 this.ui.label.text('records in ' + samples[0]);
                 this.ui.label.attr('title', samples[0]);
                 this.ui.label.tooltip({
-                     animation: false,
-                     html: true,
-                     placement: 'bottom',
-                     container: 'body'
+                    animation: false,
+                    html: true,
+                    placement: 'bottom',
+                    container: 'body'
                 });
             }
             else {
@@ -45,13 +45,13 @@ define([
     var ResultsWorkflow = c.ui.ResultsWorkflow.extend({
         template: 'varify/workflows/results',
 
-        _events: {
-            'click [data-toggle=phenotype-dialog]': 'showPhenotypesModal'
+        events: function() {
+            return _.extend({
+                'click [data-toggle=phenotype-dialog]': 'showPhenotypesModal'
+            }, c.ui.ResultsWorkflow.prototype.events);
         },
 
         initialize: function() {
-            this.events = _.extend({}, this._events, this.events);
-
             c.ui.ResultsWorkflow.prototype.initialize.call(this);
 
             // The Cilantro workflow no longer requires the context but we

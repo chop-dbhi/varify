@@ -1,20 +1,17 @@
 /* global define */
 
 define([
+    'underscore',
     'cilantro'
-], function(c) {
+], function(_, c) {
 
     var ExporterDialog = c.ui.ExporterDialog.extend({
         template: 'varify/export/dialog',
 
-        _events: {
-            'click [data-action=change-columns]': 'changeColumnsClicked'
-        },
-
-        initialize: function() {
-            this.events = _.extend({}, this._events, this.events);
-
-            c.ui.ExporterDialog.prototype.initialize.call(this);
+        events: function() {
+            return _.extend({
+                'click [data-action=change-columns]': 'changeColumnsClicked'
+            }, c.ui.ExporterDialog.prototype.events);
         },
 
         changeColumnsClicked: function() {
