@@ -1,9 +1,10 @@
 /* global define */
 
 define([
+    'underscore',
     'backbone',
     '../utils'
-], function(Backbone, utils) {
+], function(_, Backbone, utils) {
 
     var Phenotype = Backbone.Model.extend({
         lowestPriority: 10,
@@ -20,22 +21,25 @@ define([
 
         parse: function(attrs) {
             var path, lastModified, phenotypeModified;
-            //Backbone.Model.prototype.parse.call(this, attrs);
 
             if (attrs.hpoAnnotations && attrs.hpoAnnotations.length) {
-                attrs.hpoAnnotations = _.sortBy(attrs.hpoAnnotations, parsePriority);
+                attrs.hpoAnnotations =
+                    _.sortBy(attrs.hpoAnnotations, this.parsePriority);
             }
 
             if (attrs.confirmedDiagnoses && attrs.confirmedDiagnoses.length) {
-                attrs.confirmedDiagnoses = _.sortBy(attrs.confirmedDiagnoses, parsePriority);
+                attrs.confirmedDiagnoses =
+                    _.sortBy(attrs.confirmedDiagnoses, this.parsePriority);
             }
 
             if (attrs.suspectedDiagnoses && attrs.suspectedDiagnoses.length) {
-                attrs.suspectedDiagnoses = _.sortBy(attrs.suspectedDiagnoses, parsePriority);
+                attrs.suspectedDiagnoses =
+                    _.sortBy(attrs.suspectedDiagnoses, this.parsePriority);
             }
 
             if (attrs.ruledOutDiagnoses && attrs.ruledOutDiagnoses.length) {
-                attrs.ruledOutDiagnoses = _.sortBy(attrs.ruledOutDiagnoses, parsePriority);
+                attrs.ruledOutDiagnoses =
+                    _.sortBy(attrs.ruledOutDiagnoses, this.parsePriority);
             }
 
             // Update pedigree path to point to the varify endpoint
@@ -46,20 +50,20 @@ define([
             }
 
             // Format the date properties if they are present
-            lastModified = utils.parseISO8601UTC(attrs.last_modified);
+            lastModified = utils.parseISO8601UTC(attrs.last_modified);  // jshint ignore: line
             if (lastModified) {
-                attrs.last_modified = lastModified.toLocaleString();
+                attrs.last_modified = lastModified.toLocaleString();    // jshint ignore: line
             }
             else {
-                attrs.last_modified = "N/A";
+                attrs.last_modified = "N/A";    // jshint ignore: line
             }
 
-            phenotypeModified = utils.parseISO8601UTC(attrs.phenotype_modified);
+            phenotypeModified = utils.parseISO8601UTC(attrs.phenotype_modified);    // jshint ignore: line
             if (phenotypeModified) {
-                attrs.phenotype_modified = phenotypeModified.toLocaleString();
+                attrs.phenotype_modified = phenotypeModified.toLocaleString();  // jshint ignore: line
             }
             else {
-                attrs.phenotype_modified = "N/A";
+                attrs.phenotype_modified = "N/A";   // jshint ignore: line
             }
 
             return attrs;
