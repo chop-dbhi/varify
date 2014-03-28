@@ -6,7 +6,7 @@ define([
     './tables/header',
     './tables/row',
     './tables/table'
-], function() {
+], function(_) {
 
     var mods = [].slice.call(arguments, 1);
 
