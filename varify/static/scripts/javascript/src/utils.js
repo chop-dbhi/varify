@@ -1,6 +1,8 @@
 /* global define */
 
-define([], function() {
+define([
+    'underscore'
+], function(_) {
 
     var depthClass = function(depth) {
         if (depth < 10) {
@@ -46,7 +48,7 @@ define([], function() {
          * end of the URL and be left with the root URL so we can use this to
          * construct the result URLs later on.
          */
-        return window.location.href.replace(new RegExp('/[^/]*/$'), '/');
+        return window.location.href.replace(/[^\/]*\/$/, '/');
     };
 
 
@@ -180,7 +182,7 @@ define([], function() {
          */
         var samples = [], json;
 
-        if (context  && (json = context.get('json'))) {
+        if (context && (json = context.get('json'))) {
             _.each(json.children, function(child) {
                 if (child.concept && child.concept === 2) {
                     samples = _.pluck(child.children[0].value, 'label');
