@@ -82,11 +82,6 @@ if __name__ == '__main__':
     print 'VARIANT STREAM PERF'
     print '---\n'
 
-    #print 'Baseline (file only)'
-    #t0 = time.time()
-    #baseline()
-    #print 'Time:', round(time.time() - t0, 1), 'seconds'
-
     print 'VCF Baseline'
     t0 = time.time()
     vcf_baseline()
