@@ -3,6 +3,7 @@
 define([
     'underscore',
     './ui/controls',
+    './ui/exporter',
     './ui/modals',
     './ui/tables',
     './ui/workflows'
@@ -13,4 +14,5 @@ define([
 
     // Merge the mods into an empty object that will be exported
     return _.extend.apply(_, [{}].concat(mods));
+
 });

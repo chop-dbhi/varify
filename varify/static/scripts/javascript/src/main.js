@@ -15,8 +15,9 @@ require({
     'tpl!project/templates/modals/phenotypes.html',
     'tpl!project/templates/controls/sift.html',
     'tpl!project/templates/controls/polyphen.html',
-    'tpl!project/templates/workflows/results.html'
-], function(c, ui, csrf, header, result, phenotype, sift, polyphen, results) {
+    'tpl!project/templates/workflows/results.html',
+    'tpl!project/templates/export/dialog.html'
+], function(c, ui, csrf, header, result, phenotype, sift, polyphen, results, exportDialog) {
 
     // Session options
     var options = {
@@ -40,6 +41,7 @@ require({
     };
 
     // Define custom templates
+    c.templates.set('varify/export/dialog', exportDialog);
     c.templates.set('varify/tables/header', header);
     c.templates.set('varify/modals/result', result);
     c.templates.set('varify/modals/phenotype', phenotype);
@@ -147,7 +149,7 @@ require({
             };
 
             c.dialogs = {
-                exporter: new c.ui.ExporterDialog({
+                exporter: new ui.ExporterDialog({
                     // TODO rename data.exporter on session
                     exporters: this.data.exporter
                 }),
