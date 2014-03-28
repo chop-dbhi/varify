@@ -17,10 +17,6 @@ define([
             c.ui.ExporterDialog.prototype.initialize.call(this);
         },
 
-        onRender: function() {
-            c.ui.ExporterDialog.prototype.onRender.call(this);
-        },
-
         changeColumnsClicked: function() {
             c.dialogs.columns.open();
         }
