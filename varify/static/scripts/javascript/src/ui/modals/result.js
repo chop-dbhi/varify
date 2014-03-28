@@ -545,12 +545,13 @@ define([
 
             $row1.append(this._span(this.renderSummary(this.model.attributes, attrs), 3));
             $row1.append(this._span(this.renderEffects(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
-            $row1.append(this._span(this.renderPhenotypes(attrs) + this.renderClinvar(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
+            $row1.append(this._span(this.renderPhenotypes(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
             $row1.append(this._span(this.renderPredictions(attrs), 3));
 
             $row2.append(this._span(this.renderCohorts(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
             $row2.append(this._span(this.renderFrequencies(attrs), 3));
             $row2.append(this._span(this.renderPubmed(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
+            $row2.append(this._span(this.renderClinvar(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
 
             $row3.append(this._span(this.renderAssessmentMetricsContainer(), 12));
 
