@@ -4,11 +4,11 @@ define([
     'jquery',
     'underscore',
     'marionette',
+    'cilantro',
     '../../models',
     '../../utils',
     '../../templates',
-    'cilantro/utils/numbers'
-], function($, _, Marionette, models, utils, Templates, Numbers) {
+], function($, _, Marionette, c, models, utils, Templates) {
 
     var DetailsTab = Marionette.ItemView.extend({
         template: function() {},
@@ -124,26 +124,26 @@ define([
             return content.join('');
         },
 
-        renderSummary: function(result_attrs, variant_attrs) {
+        renderSummary: function(resultAttrs, variantAttrs) {
             var bases, content, hgmdLinks, key, labelClass;
 
             content = [];
-            content.push('<h4>' + result_attrs.sample.label + ' <small>in ' +
-                result_attrs.sample.project + '</small></h4>');
+            content.push('<h4>' + resultAttrs.sample.label + ' <small>in ' +
+                resultAttrs.sample.project + '</small></h4>');
             content.push('<ul class=unstyled>');
             content.push('<li><small>Variant Result ID </small>' +
-                result_attrs.id + '</li>');
+                resultAttrs.id + '</li>');
 
-            labelClass = utils.depthClass(result_attrs.read_depth);
+            labelClass = utils.depthClass(resultAttrs.read_depth);
             content.push('<li><small>Coverage</small> <span class=' +
-                labelClass + '>' + result_attrs.read_depth +
+                labelClass + '>' + resultAttrs.read_depth +
                 'x</span> <span class=muted>(<span title=Ref>' +
-                result_attrs.read_depth_ref + '</span>/<span title=Alt>' +
-                result_attrs.read_depth_alt + '</span>)</span> </li>');
+                resultAttrs.read_depth_ref + '</span>/<span title=Alt>' +
+                resultAttrs.read_depth_alt + '</span>)</span> </li>');
             content.push('<li><small>Raw Coverage</small> ');
 
-            if (result_attrs.raw_read_depth != null) {
-                content.push('' + result_attrs.raw_read_depth + 'x');
+            if (resultAttrs.raw_read_depth != null) {
+                content.push('' + resultAttrs.raw_read_depth + 'x');
             }
             else {
                 content.push('<span class=muted>n/a</span>');
@@ -151,19 +151,19 @@ define([
 
             content.push('</li>');
 
-            labelClass = utils.qualityClass(result_attrs.quality);
+            labelClass = utils.qualityClass(resultAttrs.quality);
             content.push('<li><small>Quality</small> <span class=' +
-                labelClass + '>' + result_attrs.quality + '</span> </li>');
+                labelClass + '>' + resultAttrs.quality + '</span> </li>');
             content.push('<li style=word-wrap:break-word><small>Genotype</small> ' +
-                result_attrs.genotype_value + ' <small>(' +
-                result_attrs.genotype_description + ')</small></li>');
+                resultAttrs.genotype_value + ' <small>(' +
+                resultAttrs.genotype_description + ')</small></li>');
             content.push('<li><small>Base Counts</small> ');
 
-            if (result_attrs.base_counts) {
+            if (resultAttrs.base_counts) {
                 bases = [];
 
-                for (key in result_attrs.base_counts) {
-                    bases.push('' + key + '=' + result_attrs.base_counts[key]);
+                for (key in resultAttrs.base_counts) {
+                    bases.push('' + key + '=' + resultAttrs.base_counts[key]);
                 }
 
                 content.push(bases.sort().join(', '));
@@ -174,25 +174,25 @@ define([
 
             content.push('</li>');
             content.push('<li><small>Position</small> ' +
-                (Templates.genomicPosition(variant_attrs.chr, variant_attrs.pos)) +
+                (Templates.genomicPosition(variantAttrs.chr, variantAttrs.pos)) +
                 '</li>');
             content.push('<li><small>Genes</small> ' +
-                (Templates.geneLinks(variant_attrs.uniqueGenes)) + '</li>');
+                (Templates.geneLinks(variantAttrs.uniqueGenes)) + '</li>');
 
-            hgmdLinks = Templates.hgmdLinks(variant_attrs.phenotypes);
+            hgmdLinks = Templates.hgmdLinks(variantAttrs.phenotypes);
             if (hgmdLinks) {
                 content.push('<li><small>HGMD IDs</small> ' + hgmdLinks + '</li>');
             }
 
-            if (variant_attrs.rsid) {
+            if (variantAttrs.rsid) {
                 content.push('<li><small>dbSNP</small> ' +
-                    (Templates.dbSNPLink(variant_attrs.rsid)) + '</li>');
+                    (Templates.dbSNPLink(variantAttrs.rsid)) + '</li>');
             }
 
             content.push('</ul>');
             content.push('<a href="http://localhost:10000/show?request=chr' +
-                variant_attrs.chr + ':g.' + variant_attrs.pos +
-                variant_attrs.ref + '>' + variant_attrs.alt +
+                variantAttrs.chr + ':g.' + variantAttrs.pos +
+                variantAttrs.ref + '>' + variantAttrs.alt +
                 '" target=_blank class="btn btn-primary btn-small alamut-button">Query Alamut</a>');
 
             return content.join('');
@@ -208,16 +208,16 @@ define([
                 content.push('<ul class=unstyled>');
 
                 if (tg.all_af != null) {
-                    content.push('<li><small>All</small> ' + (Numbers.prettyNumber(tg.all_af * 100)) + '%</li>');
+                    content.push('<li><small>All</small> ' + (c.utils.Numbers.prettyNumber(tg.all_af * 100)) + '%</li>');
                 }
                 if (tg.amr_af != null) {
-                    content.push('<li><small>American</small> ' + (Numbers.prettyNumber(tg.amr_af * 100)) + '%</li>');
+                    content.push('<li><small>American</small> ' + (c.utils.Numbers.prettyNumber(tg.amr_af * 100)) + '%</li>');
                 }
                 if (tg.afr_af != null) {
-                    content.push('<li><small>African</small> ' + (Numbers.prettyNumber(tg.afr_af * 100)) + '%</li>');
+                    content.push('<li><small>African</small> ' + (c.utils.Numbers.prettyNumber(tg.afr_af * 100)) + '%</li>');
                 }
                 if (tg.eur_af != null) {
-                    content.push('<li><small>European</small> ' + (Numbers.prettyNumber(tg.eur_af * 100)) + '%</li>');
+                    content.push('<li><small>European</small> ' + (c.utils.Numbers.prettyNumber(tg.eur_af * 100)) + '%</li>');
                 }
 
                 content.push('</ul>');
@@ -231,13 +231,13 @@ define([
                 content.push('<ul class=unstyled>');
 
                 if (evs.all_af != null) {
-                    content.push('<li><small>All</small> ' + (Numbers.prettyNumber(evs.all_af * 100)) + '%</li>');
+                    content.push('<li><small>All</small> ' + (c.utils.Numbers.prettyNumber(evs.all_af * 100)) + '%</li>');
                 }
                 if (evs.afr_af != null) {
-                    content.push('<li><small>African</small> ' + (Numbers.prettyNumber(evs.afr_af * 100)) + '%</li>');
+                    content.push('<li><small>African</small> ' + (c.utils.Numbers.prettyNumber(evs.afr_af * 100)) + '%</li>');
                 }
                 if (evs.eur_af != null) {
-                    content.push('<li><small>European</small> ' + (Numbers.prettyNumber(evs.eur_af * 100)) + '%</li>');
+                    content.push('<li><small>European</small> ' + (c.utils.Numbers.prettyNumber(evs.eur_af * 100)) + '%</li>');
                 }
 
                 content.push('</ul>');
