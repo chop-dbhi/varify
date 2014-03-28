@@ -17,9 +17,6 @@ class NoSyncDbRouter(object):
 
     def allow_syncdb(self, db, model):
         pass
-        # Completely restrict syncdb with the variants app and database
-        #if db == self.using or model._meta.app_label in self.app_labels:
-        #    return False
 
 
 class VariantsRouter(NoSyncDbRouter):

@@ -65,7 +65,8 @@ class CohortsFormatter(HTMLFormatter):
 
             # All cohorts this user has permission to
             self._cohorts = list(Cohort.objects.filter(perms, batch=None)
-                .only('name', 'count').order_by('order', 'name'))
+                                 .only('name', 'count')
+                                 .order_by('order', 'name'))
         return self._cohorts
 
     def _get_cohort_variants(self, value, **context):
