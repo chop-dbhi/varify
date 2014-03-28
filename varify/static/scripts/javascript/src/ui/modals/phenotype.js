@@ -24,7 +24,8 @@ define([
             pedigree: '[data-target=pedigree]',
             recalculateButton: '[data-target=recalculate]',
             updateTimes: '[data-target=update-times]',
-            warning: '[data-target=warning]'
+            warning: '[data-target=warning]',
+            hideOnRetrieve: '[data-action=hide-on-retrieve]'
         },
 
         events: {
@@ -78,8 +79,8 @@ define([
                 for (key in annotations) {
                     html.push('<li>');
 
-                    html.push('<a href="http://www.human-phenotype-ontology.org/hpoweb/showterm?id=' +
-                              annotations[key].hpo_id + '" target="_blank">' +
+                    html.push('<a href="http://www.human-phenotype-ontology.org/hpoweb/showterm?id=' +  // jshint ignore: line
+                              annotations[key].hpo_id + '" target="_blank">' +  // jshint ignore: line
                               annotations[key].name + '</a>');
 
                     if ((priority = annotations[key].priority)) {
@@ -126,11 +127,12 @@ define([
                 for (key in diagnoses) {
                     html.push('<li>');
                     html.push('<a href="http://purl.bioontology.org/ontology/OMIM/' +
-                              diagnoses[key].omim_id + '" target="_blank">' +
+                              diagnoses[key].omim_id + '" target="_blank">' +   // jshint ignore: line
                               diagnoses[key].name + '</a>');
 
                     if ((priority = diagnoses[key].priority)) {
-                        html.push('<span class="badge badge-important">' + priority + '</span>');
+                        html.push('<span class="badge badge-important">' +
+                                  priority + '</span>');
                     }
 
                     html.push('</li>');
@@ -170,11 +172,11 @@ define([
             var html = [];
 
             html.push('<div class=span6>');
-            html.push('<h6>Phenotypes Updated: </h6>' + attr.last_modified);
+            html.push('<h6>Phenotypes Updated: </h6>' + attr.last_modified);    // jshint ignore: line
             html.push('</div>');
 
             html.push('<div class=span6>');
-            html.push('<h6>Rankings Updated: </h6>' + attr.phenotype_modified);
+            html.push('<h6>Rankings Updated: </h6>' + attr.phenotype_modified); // jshint ignore: line
             html.push('</div>');
 
             return html.join('');
@@ -217,17 +219,13 @@ define([
         },
 
         retrievePhenotypes: function(recalculateRankings) {
-            if (recalculateRankings == null) {
-                recalculateRankins = false;
+            if (recalculateRankings === null) {
+                recalculateRankings = false;
             }
 
             // We are about to attempt to reload the phenotypes so we want to
             // start fresh and clear any old artifacts.
-            this.ui.warning.hide();
-            this.ui.error.hide();
-            this.ui.loading.hide();
-            this.ui.content.hide();
-            this.ui.pedigree.hide();
+            this.ui.hideOnRetrieve.hide();
             this.ui.recalculateButton.prop('disabled', true);
 
             var samples = utils.samplesInContext(this.data.context);
@@ -242,14 +240,14 @@ define([
                 // Show the loading indicator before making the request.
                 this.ui.loading.show();
 
-                phenotype = new models.Phenotype({
-                    sample_id: samples[0]
+                var phenotype = new models.Phenotype({
+                    sampleId: samples[0]
                 });
 
                 var _this = this;
                 this.request = phenotype.fetch({
                     data: {
-                        recalculate_rankings: recalculateRankings
+                        recalculate_rankings: recalculateRankings   // jshint ignore: line
                     },
                     processData: true,
                     success: function(model, response) {

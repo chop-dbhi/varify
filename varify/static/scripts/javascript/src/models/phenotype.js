@@ -11,7 +11,7 @@ define([
         highestPriority: 1,
 
         urlRoot: function() {
-            var path = 'api/samples/' + this.get('sample_id') + '/phenotypes/';
+            var path = 'api/samples/' + this.get('sampleId') + '/phenotypes/';
             return utils.toAbsolutePath(path);
         },
 
