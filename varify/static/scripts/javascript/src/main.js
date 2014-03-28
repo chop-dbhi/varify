@@ -147,6 +147,11 @@ require({
             };
 
             c.dialogs = {
+                exporter: new c.ui.ExporterDialog({
+                    // TODO rename data.exporter on session
+                    exporters: this.data.exporter
+                }),
+
                 columns: new c.ui.ConceptColumnsDialog({
                     view: this.data.views.session,
                     concepts: this.data.concepts.viewable
@@ -192,10 +197,10 @@ require({
 
                 results: new ui.ResultsWorkflow({
                     view: this.data.views.session,
-                    // The differences in these names are noted
+                    // We need the context in the results workflow because we
+                    // need to be able to reference the sample name.
                     context: this.data.contexts.session,
-                    results: this.data.preview,
-                    exporters: this.data.exporter
+                    results: this.data.preview
                 })
             };
 
@@ -210,36 +215,30 @@ require({
                 view: c.workflows.results
             }];
 
-            // Workspace supported as of 2.1.0
-            if (c.isSupported('2.1.0')) {
-                c.workflows.workspace = new c.ui.WorkspaceWorkflow({
-                    queries: this.data.queries,
-                    context: this.data.contexts.session,
-                    view: this.data.views.session,
-                    public_queries: this.data.public_queries
-                });
+            c.workflows.workspace = new c.ui.WorkspaceWorkflow({
+                queries: this.data.queries,
+                context: this.data.contexts.session,
+                view: this.data.views.session,
+                public_queries: this.data.public_queries
+            });
 
-                routes.push({
-                    id: 'workspace',
-                    route: 'workspace/',
-                    view: c.workflows.workspace
-                });
-            }
+            routes.push({
+                id: 'workspace',
+                route: 'workspace/',
+                view: c.workflows.workspace
+            });
 
-            // Query URLs supported as of 2.2.0
-            if (c.isSupported('2.2.0')) {
-                c.workflows.queryload = new c.ui.QueryLoader({
-                    queries: this.data.queries,
-                    context: this.data.contexts.session,
-                    view: this.data.views.session
-                });
+            c.workflows.queryload = new c.ui.QueryLoader({
+                queries: this.data.queries,
+                context: this.data.contexts.session,
+                view: this.data.views.session
+            });
 
-                routes.push({
-                    id: 'query-load',
-                    route: 'results/:query_id/',
-                    view: c.workflows.queryload
-                });
-            }
+            routes.push({
+                id: 'query-load',
+                route: 'results/:query_id/',
+                view: c.workflows.queryload
+            });
 
             // Register routes and start the session
             this.start(routes);
