@@ -387,10 +387,11 @@ define([
         },
 
         _renderClinVarCollection: function(assertions) {
-            var assertion, content, _i, _len;
-            content = [];
-            for (_i = 0, _len = assertions.length; _i < _len; _i++) {
-                assertion = assertions[_i];
+            var assertion;
+            var content = [];
+
+            for (var i = 0; i < assertions.length; i++) {
+                assertion = assertions[i];
                 content.push("<li>Assertion: <a target=\"_blank\" href=\"https://www.ncbi.nlm.nih.gov/clinvar/" + assertion.rcvaccession + "/\">" + assertion.rcvaccession + "</a>");
                 content.push('<ul>');
                 content.push("<li><small>Siginificance</small> <b>" + assertion.clinicalsignificance + "</b></li>");
@@ -402,13 +403,15 @@ define([
                 content.push('</ul>');
                 content.push('</li>');
             }
+
             return content;
         },
 
-        renderClinvar: function(attrs) {
-            var content;
-            content = [];
+        renderClinVar: function(attrs) {
+            var content = [];
+
             content.push('<h4>ClinVar</h4>');
+
             if (attrs.solvebio.clinvar[0]) {
                 content.push('<ul class=unstyled>');
                 content = content.concat(this._renderClinVarCollection(attrs.solvebio.clinvar));
@@ -416,6 +419,7 @@ define([
             } else {
                 content.push('<p class=muted>No ClinVar assertions</p>');
             }
+
             return content.join('');
         },
 
@@ -551,7 +555,10 @@ define([
             $row2.append(this._span(this.renderCohorts(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
             $row2.append(this._span(this.renderFrequencies(attrs), 3));
             $row2.append(this._span(this.renderPubmed(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
-            $row2.append(this._span(this.renderClinvar(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
+
+            if (attrs['solvebio']) {
+              $row2.append(this._span(this.renderClinVar(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
+            }
 
             $row3.append(this._span(this.renderAssessmentMetricsContainer(), 12));
 

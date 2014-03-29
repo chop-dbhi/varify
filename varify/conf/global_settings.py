@@ -397,6 +397,6 @@ SOLVEBIO_API_KEY = os.environ.get('SOLVEBIO_API_KEY', None)
 # You can optionally bypass DB lookups by hardcoding aliases.
 # The dict key is the alias and the value may be an ID or
 # full dataset name. [OPTIONAL]
-SOLVEBIO_DATASETS = {
+SOLVEBIO_DATASET_ALIASES = {
     'clinvar': 'ClinVar/0.0.2/ClinVar'
 }
