@@ -4,7 +4,7 @@ from django.http import Http404
 from django.views.decorators.cache import never_cache
 from guardian.shortcuts import get_objects_for_user
 from solvebio.contrib.django_solvebio.client import client as solvebio_client
-from solvebio import SolveError, Filter, RangeFilter
+from solvebio import Filter, RangeFilter
 from preserialize.serialize import serialize
 from serrano.resources.base import ThrottledResource
 from varify import api
