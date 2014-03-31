@@ -3,6 +3,8 @@ from django.db.models import Q
 from django.http import Http404
 from django.views.decorators.cache import never_cache
 from guardian.shortcuts import get_objects_for_user
+from solvebio.contrib.django_solvebio.client import client as solvebio_client
+from solvebio import Filter, RangeFilter
 from preserialize.serialize import serialize
 from serrano.resources.base import ThrottledResource
 from varify import api
@@ -36,11 +38,18 @@ class VariantResource(ThrottledResource):
         # this is quite important
         genes = set()
         effects = set()
+        # Compile the HGVS_c values for the SolveBio query
+        hgvs_c_values = set()
+
         for eff in data['effects']:
             effects.add(eff['type'])
             if eff.get('transcript') and eff['transcript'].get('gene'):
                 if eff['transcript']['gene']:
                     genes.add(eff['transcript']['gene']['symbol'])
+
+                if eff['transcript'].get('transcript') and eff.get('hgvs_c'):
+                    hgvs_c_values.add('{0}:{1}'.format(
+                        eff['transcript']['transcript'], eff['hgvs_c']))
 
         data['unique_genes'] = sorted(genes)
         data['unique_effects'] = sorted(effects)
@@ -68,6 +77,25 @@ class VariantResource(ThrottledResource):
             cohort_list.append(cohort_data)
 
         data['cohorts'] = cohort_list
+
+        if solvebio_client.is_enabled():
+            data['solvebio'] = {}
+
+            # ClinVar integration
+            # use position, gene symbol, and HGVS notation as possible filters
+            filters = RangeFilter(variant.chr, variant.pos, variant.pos)
+
+            if genes:
+                filters = filters | Filter(gene_symbol__in=list(genes))
+
+            if hgvs_c_values:
+                filters = filters | Filter(hgvs_c__in=list(hgvs_c_values))
+
+            clinvar = solvebio_client.query('clinvar', filters)
+
+            # only present ClinVar if the query succeeds
+            if clinvar is not None:
+                data['solvebio']['clinvar'] = clinvar
 
         return data
 
