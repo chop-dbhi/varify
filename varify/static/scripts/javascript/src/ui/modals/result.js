@@ -557,7 +557,7 @@ define([
             $row2.append(this._span(this.renderPubmed(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
 
             if (attrs['solvebio']) {
-              $row2.append(this._span(this.renderClinVar(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
+                $row2.append(this._span(this.renderClinVar(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
             }
 
             $row3.append(this._span(this.renderAssessmentMetricsContainer(), 12));
