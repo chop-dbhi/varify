@@ -208,16 +208,16 @@ define([
                 content.push('<ul class=unstyled>');
 
                 if (tg.all_af != null) {
-                    content.push('<li><small>All</small> ' + (c.utils.Numbers.prettyNumber(tg.all_af * 100)) + '%</li>');
+                    content.push('<li><small>All</small> ' + (c.utils.prettyNumber(tg.all_af * 100)) + '%</li>');
                 }
                 if (tg.amr_af != null) {
-                    content.push('<li><small>American</small> ' + (c.utils.Numbers.prettyNumber(tg.amr_af * 100)) + '%</li>');
+                    content.push('<li><small>American</small> ' + (c.utils.prettyNumber(tg.amr_af * 100)) + '%</li>');
                 }
                 if (tg.afr_af != null) {
-                    content.push('<li><small>African</small> ' + (c.utils.Numbers.prettyNumber(tg.afr_af * 100)) + '%</li>');
+                    content.push('<li><small>African</small> ' + (c.utils.prettyNumber(tg.afr_af * 100)) + '%</li>');
                 }
                 if (tg.eur_af != null) {
-                    content.push('<li><small>European</small> ' + (c.utils.Numbers.prettyNumber(tg.eur_af * 100)) + '%</li>');
+                    content.push('<li><small>European</small> ' + (c.utils.prettyNumber(tg.eur_af * 100)) + '%</li>');
                 }
 
                 content.push('</ul>');
@@ -231,13 +231,13 @@ define([
                 content.push('<ul class=unstyled>');
 
                 if (evs.all_af != null) {
-                    content.push('<li><small>All</small> ' + (c.utils.Numbers.prettyNumber(evs.all_af * 100)) + '%</li>');
+                    content.push('<li><small>All</small> ' + (c.utils.prettyNumber(evs.all_af * 100)) + '%</li>');
                 }
                 if (evs.afr_af != null) {
-                    content.push('<li><small>African</small> ' + (c.utils.Numbers.prettyNumber(evs.afr_af * 100)) + '%</li>');
+                    content.push('<li><small>African</small> ' + (c.utils.prettyNumber(evs.afr_af * 100)) + '%</li>');
                 }
                 if (evs.eur_af != null) {
-                    content.push('<li><small>European</small> ' + (c.utils.Numbers.prettyNumber(evs.eur_af * 100)) + '%</li>');
+                    content.push('<li><small>European</small> ' + (c.utils.prettyNumber(evs.eur_af * 100)) + '%</li>');
                 }
 
                 content.push('</ul>');
