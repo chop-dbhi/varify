@@ -286,16 +286,20 @@ define([
                           content.push('<small>for <a target=_blank href="http://www.genenames.org/data/hgnc_data.php?hgnc_id=' + gene.hgnc_id + '">' + gene.symbol + '</a></small> ');
                         }
 
-                        content.push('<ul><li>');
+                        content.push('<ul>');
 
+                        if (eff.hgvs_c || eff.segment) {
+                            content.push('<li>');
+                        }
                         if (eff.hgvs_c) {
                             content.push('' + eff.hgvs_c + ' ');
                         }
                         if (eff.segment) {
                             content.push('' + eff.segment + ' ');
                         }
-
-                        content.push('</li>');
+                        if (eff.hgvs_c || eff.segment) {
+                            content.push('</li>');
+                        }
 
                         if (eff.hgvs_p || eff.amino_acid_change) {
                             content.push('<li>' + (eff.hgvs_p || eff.amino_acid_change) + '</li>');
