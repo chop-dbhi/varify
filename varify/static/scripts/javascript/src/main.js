@@ -21,13 +21,13 @@ require({
     'cilantro',
     'project/ui',
     'project/csrf',
-    'tpl!project/templates/tables/header.html',
-    'tpl!project/templates/modals/result.html',
-    'tpl!project/templates/modals/phenotypes.html',
-    'tpl!project/templates/controls/sift.html',
-    'tpl!project/templates/controls/polyphen.html',
-    'tpl!project/templates/workflows/results.html',
-    'tpl!project/templates/export/dialog.html'
+    'tpl!../../templates/tables/header.html',
+    'tpl!../../templates/modals/result.html',
+    'tpl!../../templates/modals/phenotypes.html',
+    'tpl!../../templates/controls/sift.html',
+    'tpl!../../templates/controls/polyphen.html',
+    'tpl!../../templates/workflows/results.html',
+    'tpl!../../templates/export/dialog.html'
 ], function(c, ui, csrf, header, result, phenotype, sift, polyphen, results, exportDialog) {
 
     // Session options
