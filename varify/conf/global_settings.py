@@ -51,7 +51,6 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'django_rq',
     'django_rq_dashboard',
-    'solvebio.contrib.django_solvebio',
 
     'serrano',
     'avocado',
