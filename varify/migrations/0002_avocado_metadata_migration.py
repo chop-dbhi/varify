@@ -5,7 +5,7 @@ from south.v2 import DataMigration
 class Migration(DataMigration):
     depends_on = (
         ('samples', '0001_initial'),
-        ('avocado', '0029_auto__add_field_dataview_parent__add_field_dataquery_parent__add_field'),
+        ('avocado', '0034_auto__add_field_datafield_type'),
     )
 
     def forwards(self, orm):
