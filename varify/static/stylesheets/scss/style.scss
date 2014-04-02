@@ -136,6 +136,17 @@ body, #concept-panel, #context-panel {
         width: 100%;
         background: white;
     }
+
+    // Cohort popover styles
+    .popover {
+        max-height: 250px;
+        max-width: 200px;
+    }
+
+    .popover-content > div {
+        max-height: 200px;
+        overflow-y: scroll;
+    }
 }
 
 .variant-container {
