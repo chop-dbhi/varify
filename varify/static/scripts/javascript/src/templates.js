@@ -205,7 +205,7 @@ define([
 
             sampleHtml = sampleNames.join('<br />');
             popoverHtml = '<div>' + ($('<div />').html(sampleHtml).html()) + '</div>';
-            html.push('<li class=cohort-details><a href="#" class=cohort-sample-popover title="Samples in Cohort" data-html=true data-placement=right data-trigger=click data-content="' + popoverHtml + '">' + cohortHtml + '</a></li>');
+            html.push('<li class=cohort-details><a href="#" class=cohort-sample-popover data-content=\'' + popoverHtml + '\'>' + cohortHtml + '</a></li>');
         }
 
         return '<ul class=unstyled>' + (html.join('')) + '</ul>';

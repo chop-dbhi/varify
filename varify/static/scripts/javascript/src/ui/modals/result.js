@@ -567,7 +567,11 @@ define([
             $row3.append(this._span(this.renderAssessmentMetricsContainer(), 12));
 
             this.$content.append($row1, $row2, $row3);
-            this.$el.find('.cohort-sample-popover').popover();
+            this.$el.find('.cohort-sample-popover').popover({
+                container: '.result-details-modal',
+                html: true,
+                title: 'Samples in Cohort'
+            });
             this.metrics.fetch({
                 success: this.fetchMetricsSuccess,
                 error: this.fetchMetricsError
