@@ -43,6 +43,28 @@ RedHat Enterprise Linux Server 6.3.
 - [nginx](http://nginx.org/en/download.html)
 - [supervisord](http://supervisord.org)
 
+
+### Optional Dependencies (SolveBio)
+
+SolveBio provides easy integration with external datasets such as ClinVar,
+OMIM, dbSNP, and PubMed. It is currently integrated into the variant resource,
+and populates a portion of the variant details view in the Varify web client.
+
+**SolveBio is currently in Private Beta,** but Varify users can get access by
+[signing up at solvebio.com](https://www.solvebio.com/signup).
+
+To enable SolveBio within Varify, first install the Python package:
+
+```bash
+pip install solvebio
+```
+
+Then, make sure that the `SOLVEBIO_API_KEY` Django setting is set either
+via an environment variable (see `global_settings.py`) or explicitly in your
+`local_settings.py`. You can find your API key from your account page on the
+SolveBio website.
+
+
 ## Setup & Install
 
 Distribute, Pip and virtualenv are required. To check if you have them:
