@@ -24,7 +24,7 @@ define([
         },
 
         events: {
-            'click .cohort-sample-popover': 'hidePopover',
+            'click': 'hidePopover',
             'click .assessment-details-table .icon-plus': 'expandAssessmentRow',
             'click .assessment-details-table .icon-minus': 'collapseAssessmentRow'
         },
