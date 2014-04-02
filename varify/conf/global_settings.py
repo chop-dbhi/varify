@@ -388,7 +388,15 @@ VARIFY_SAMPLE_DIRS = ()
 
 #
 # SOLVEBIO SETTINGS (django_solvebio)
-#
+# SolveBio integration is optional (see README.md for more info).
+
+try:
+    __import__('solvebio')
+except ImportError:
+    pass
+else:
+    INSTALLED_APPS += ('solvebio.contrib.django_solvebio', )
+
 
 # Get your API key from https://www.solvebio.com/account
 SOLVEBIO_API_KEY = os.environ.get('SOLVEBIO_API_KEY', None)

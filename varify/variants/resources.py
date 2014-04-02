@@ -12,8 +12,15 @@ from varify.assessments.models import Assessment, Pathogenicity, \
     AssessmentCategory
 from .models import Variant
 
-
 log = logging.getLogger(__name__)
+
+try:
+    from solvebio.contrib.django_solvebio.client import client \
+        as solvebio_client
+    from solvebio import Filter, RangeFilter  # noqa
+except ImportError:
+    solvebio_client = None
+    log.warning('Could not import the SolveBio client')
 
 
 class VariantResource(ThrottledResource):
@@ -80,31 +87,27 @@ class VariantResource(ThrottledResource):
 
         data['cohorts'] = cohort_list
 
-        try:
-            from solvebio import Filter, RangeFilter
-            from solvebio.contrib.django_solvebio.client import client \
-                as solvebio_client
+        if solvebio_client and solvebio_client.is_enabled():
+            data['solvebio'] = {}
 
-            if solvebio_client.is_enabled():
-                data['solvebio'] = {}
+            # ClinVar integration -- use position, gene symbol, and HGVS
+            # notation as possible filters.
+            filters = RangeFilter(variant.chr, variant.pos, variant.pos)
 
-                # ClinVar integration -- use position, gene symbol, and HGVS
-                # notation as possible filters.
-                filters = RangeFilter(variant.chr, variant.pos, variant.pos)
+            if genes:
+                filters = filters | Filter(gene_symbol__in=list(genes))
 
-                if genes:
-                    filters = filters | Filter(gene_symbol__in=list(genes))
+            if hgvs_c_values:
+                filters = filters | Filter(hgvs_c__in=list(hgvs_c_values))
 
-                if hgvs_c_values:
-                    filters = filters | Filter(hgvs_c__in=list(hgvs_c_values))
+            # returns None on failure and a list on success
+            clinvar = solvebio_client.query('clinvar', filters)
 
-                clinvar = solvebio_client.query('clinvar', filters)
-
-                # only present ClinVar if the query succeeds
-                if clinvar is not None:
-                    data['solvebio']['clinvar'] = clinvar
-        except ImportError:
-            log.warning('Could not import solve_bio client')
+            # only add the 'clinvar' key if the query succeeds
+            if clinvar is not None:
+                data['solvebio']['clinvar'] = clinvar
+            else:
+                log.error('SolveBio ClinVar query failed')
 
         return data
 
