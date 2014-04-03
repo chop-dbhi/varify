@@ -1,0 +1,2 @@
+define([],function(){var t=function(t,e,n){var i=t.children(),o=i.size();return 0>e&&(e=Math.max(0,o+1+e)),t.append(n),o>e&&i.eq(e).before(i.last()),t};return{insertAt:t}});
+//@ sourceMappingURL=dom.js.map

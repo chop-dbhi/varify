@@ -1,0 +1,2 @@
+var __slice=[].slice;define(["underscore","./context/nodes","./context/model"],function(){var t,e;return e=arguments[0],t=2<=arguments.length?__slice.call(arguments,1):[],e.extend.apply(e,[{}].concat(__slice.call(t)))});
+//@ sourceMappingURL=context.js.map

@@ -1,0 +1,2 @@
+var __hasProp={}.hasOwnProperty,__extends=function(t,e){function n(){this.constructor=t}for(var i in e)__hasProp.call(e,i)&&(t[i]=e[i]);return n.prototype=e.prototype,t.prototype=new n,t.__super__=e.prototype,t};define(["underscore","marionette"],function(t,e){var n,i;return n=function(t){function e(){return i=e.__super__.constructor.apply(this,arguments)}return __extends(e,t),e.prototype.className="welcome",e.prototype.template="welcome",e}(e.ItemView),{Welcome:n}});
+//@ sourceMappingURL=welcome.js.map

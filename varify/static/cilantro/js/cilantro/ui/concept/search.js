@@ -1,0 +1,2 @@
+define(["underscore","../search"],function(t,e){var i=e.Search.extend({className:"concept-search search",options:function(){return t.extend({},e.Search.prototype.options,{placeholder:"Search by name, description, or data..."})},initialize:function(){if(this._request=null,!this.options.handler)throw new Error("no search handler defined")},search:function(t){this._request&&this._request.abort();var e=this.options.handler;t?this._request=this.collection.search(t,function(i){e(t,i)}):e(null,[])}});return{ConceptSearch:i}});
+//@ sourceMappingURL=search.js.map

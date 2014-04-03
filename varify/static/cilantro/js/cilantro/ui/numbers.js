@@ -1,0 +1,2 @@
+define(["./core"],function(t){return{renderCount:function(e,n,i){return null==i&&(i="<em>n/a</em>"),null==n?e.html(i):e.html(t.utils.prettyNumber(n)).attr("title",t.utils.toDelimitedNumber(n))}}});
+//@ sourceMappingURL=numbers.js.map

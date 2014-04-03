@@ -1,0 +1,2 @@
+define(["../core","./templates","./controls","./dom","bootstrap","plugins/bootstrap-datepicker","plugins/jquery-ui","plugins/jquery-easing","plugins/jquery-panels","plugins/jquery-scroller"],function(t,e,n,i){return t.templates=e,t.controls=n,t.dom=i,t});
+//@ sourceMappingURL=core.js.map

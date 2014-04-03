@@ -1,0 +1,2 @@
+define(["underscore","marionette","../core"],function(t,e,i){var n=e.ItemView.extend({template:"context/actions",ui:{removeAll:"[data-target=remove]"},events:{"click @ui.removeAll":"clickRemoveAll"},modelEvents:{change:"render"},serializeData:function(){var e=t.clone(this.model.attributes);return e.prettyCount=i.utils.prettyNumber(e.count),e},clickRemoveAll:function(){this.model.manager.clear()},onRender:function(){this.ui.removeAll.prop("disabled",!this.model.get("json"))}});return{ContextActions:n}});
+//@ sourceMappingURL=actions.js.map

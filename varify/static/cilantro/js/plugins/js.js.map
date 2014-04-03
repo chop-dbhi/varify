@@ -1,0 +1,1 @@
+{"version":3,"file":"js.js","sources":["js.js.src.js"],"names":["define","String","prototype","trim","ltrim","this","replace","rtrim"],"mappings":"AAEAA,UAAU,WACDC,OAAOC,UAAUC,OAClBF,OAAOC,UAAUE,MAAQ,WACrB,MAAOC,MAAKC,QAAQ,OAAQ,KAGhCL,OAAOC,UAAUK,MAAQ,WACrB,MAAOF,MAAKC,QAAQ,OAAQ,KAGhCL,OAAOC,UAAUC,KAAO,WACpBE,KAAKD,QAAQG"}
