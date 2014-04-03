@@ -1,6 +1,6 @@
 @import "lib/bourbon/bourbon";
 
-body {
+body, #concept-panel, #context-panel {
     padding-top: 40px;
 }
 
@@ -50,14 +50,12 @@ body {
 }
 
 .result-details-modal {
-    .modal {
-        width: 90%;
-        top: 5%;
-        left: 5%;
-        margin: 0;
-        max-height: 800px;
-        bottom: 5%;
-    }
+    width: 90%;
+    top: 5%;
+    left: 5%;
+    margin: 0;
+    max-height: 800px;
+    bottom: 5%;
 
     .tab-content {
         position: absolute;
@@ -137,6 +135,17 @@ body {
         bottom: 0;
         width: 100%;
         background: white;
+    }
+
+    // Cohort popover styles
+    .popover {
+        max-height: 250px;
+        max-width: 200px;
+    }
+
+    .popover-content > div {
+        max-height: 200px;
+        overflow-y: scroll;
     }
 }
 

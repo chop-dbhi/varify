@@ -7,8 +7,7 @@ define([
     './models/phenotype'
 ], function(_) {
 
-    // Modules to be mixed-in with exports
-    var mods = Array.prototype.slice.call(arguments, 1);
+    var mods = [].slice.call(arguments, 1);
 
-    return _.extend.apply(null, mods);
+    return _.extend.apply(null, [{}].concat(mods));
 });

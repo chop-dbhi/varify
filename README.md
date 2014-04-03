@@ -22,13 +22,6 @@ way to install most of these of these libraries.
 - [PostgreSQL 9.2+](http://www.postgresql.org/download/)
 - [Memcached](http://memcached.org)
 - Ruby Sass gem
-- Node CoffeeScript module
-
-Install CoffeeScript:
-
-```bash
-npm install -g coffee-script
-```
 
 Install the Sass gem:
 
@@ -49,6 +42,28 @@ RedHat Enterprise Linux Server 6.3.
 
 - [nginx](http://nginx.org/en/download.html)
 - [supervisord](http://supervisord.org)
+
+
+### Optional Dependencies (SolveBio)
+
+SolveBio provides easy integration with external datasets such as ClinVar,
+OMIM, dbSNP, and PubMed. It is currently integrated into the variant resource,
+and populates a portion of the variant details view in the Varify web client.
+
+**SolveBio is currently in Private Beta,** but Varify users can get access by
+[signing up at solvebio.com](https://www.solvebio.com/signup).
+
+To enable SolveBio within Varify, first install the Python package:
+
+```bash
+pip install solvebio
+```
+
+Then, make sure that the `SOLVEBIO_API_KEY` Django setting is set either
+via an environment variable (see `global_settings.py`) or explicitly in your
+`local_settings.py`. You can find your API key from your account page on the
+SolveBio website.
+
 
 ## Setup & Install
 
@@ -143,13 +158,11 @@ uwsgi --ini server/uwsgi/local.ini --protocol http --socket 127.0.0.1:8000 --che
 
 ## Makefile Commands
 
-- `build` - builds and initializes all submodules, compiles SCSS and
-    CoffeeScript and optimizes JavaScript
-- `watch` - watches the CoffeeScript and SCSS files in the background
+- `build` - builds and initializes all submodules, compiles SCSS and optimizes JavaScript
+- `watch` - watches the SCSS files in the background
 for changes and automatically recompiles the files
-- `unwatch` - stops watching the CoffeeScript and SCSS files
+- `unwatch` - stops watching the SCSS files
 - `sass` - one-time explicit recompilation of SCSS files
-- `coffee` - one-time explicit recompilation of CoffeeScript files
 
 ## Fabfile Commands
 
@@ -164,18 +177,7 @@ passwords, the `SECRET_KEY` and other information that should not be in version
 control. Defining `local_settings.py` is not mandatory but will warn if it does
 not exist.
 
-## CoffeeScript & Sass Development
-
-CoffeeScript is lovely. The flow is simple:
-
-- write some CoffeeScript which automatically gets compiled in JavaScript
-(by doing `make watch`)
-- when ready to test non-`DEBUG` mode, run `make optimize`
-
-The `app.build.js` file will need to be updated to define which modules
-should be compiled to single files. It is recommended to take a tiered
-approach to reduce overall file size across pages and increase cache potential
-for libraries that won't change for a while, for example jQuery.
+## Sass Development
 
 [Sass](http://sass-lang.com/) is awesome. SCSS is a superset of CSS so you can
 use as much or as little SCSS syntax as you want. It is recommended to write
@@ -186,11 +188,10 @@ Execute the following commands to begin watching the static files and
 collect the files (using Django's collectstatic command):
 
 ```bash
-make sass coffee collect watch
+make sass collect watch
 ```
 
-_Note, the `sass` and `coffee` targets are called first to ensure the compiled
-files exist before attempting to collect them._
+_Note, the `sass` target is called first to ensure the compiled files exist before attempting to collect them._
 
 ## Pipeline
 

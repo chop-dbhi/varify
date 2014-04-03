@@ -168,6 +168,10 @@ define([
         flags.push(['1000g', attrs['1000g'].length > 0]);
         flags.push(['EVS', attrs['evs'].length > 0]);
 
+        if (!! attrs['solvebio'] && !! attrs['solvebio']['clinvar']) {
+            flags.push(['ClinVar', attrs['solvebio']['clinvar'].length > 0]);
+        }
+
         var html = [], label, present, klass;
         for (var i = 0; i < flags.length; i++) {
             label = flags[i][0];
@@ -201,7 +205,7 @@ define([
 
             sampleHtml = sampleNames.join('<br />');
             popoverHtml = '<div>' + ($('<div />').html(sampleHtml).html()) + '</div>';
-            html.push('<li class=cohort-details><a href="#" class=cohort-sample-popover title="Samples in Cohort" data-html=true data-placement=right data-trigger=click data-content="' + popoverHtml + '">' + cohortHtml + '</a></li>');
+            html.push('<li class=cohort-details><a href="#" class=cohort-sample-popover data-content=\'' + popoverHtml + '\'>' + cohortHtml + '</a></li>');
         }
 
         return '<ul class=unstyled>' + (html.join('')) + '</ul>';

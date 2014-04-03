@@ -161,8 +161,8 @@ class Sample(LabeledModel, TimestampedModel):
 class SampleManifest(TimestampedModel):
     "Discrete attributes from the sample manifest."
     sample = models.OneToOneField(Sample, related_name='manifest')
-    # Original path to the manifest file
-    #manifest paths cannot be unique since a vcf can contain more than one vcf
+    # Original path to the manifest file manifest paths cannot be unique
+    # since a vcf can contain more than one vcf.
     path = models.CharField(max_length=200, unique=False)
     # Cache of the manifest content in case the file no longer exists
     content = models.TextField()

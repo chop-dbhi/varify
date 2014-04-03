@@ -1,0 +1,1 @@
+define(["underscore","cilantro"],function(e,t){var n=t.ui.ExporterDialog.extend({template:"varify/export/dialog",events:function(){return e.extend({"click [data-action=change-columns]":"changeColumnsClicked"},t.ui.ExporterDialog.prototype.events)},changeColumnsClicked:function(){t.dialogs.columns.open()}});return{ExporterDialog:n}})

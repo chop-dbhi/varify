@@ -1,0 +1,28 @@
+<div class=modal-header>
+    <a class=close data-dismiss=modal><i class=icon-remove></i></a>
+
+    <h3 data-target=header-label></h3>
+</div>
+
+<div class=modal-body>
+    <div class=span12>
+        <div data-target=warning data-action=hide-on-retrieve class='alert alert-warning alert-block hide'></div>
+        <div data-target=error data-action=hide-on-retrieve class='alert alert-error alert-block hide'></div>
+        <div data-target=loading data-action=hide-on-retrieve>
+            <h5><i class="icon-spinner icon-spin"></i> Loading Phenotypes...</h5>
+        </div>
+        <div data-target=content data-action=hide-on-retrieve>
+            <div class=row-fluid>
+                <div class=span6 data-target=annotations></div>
+                <div class=span6 data-target=notes></div>
+            </div>
+            <div class=row-fluid data-target=diagnoses></div>
+            <div class=row-fluid data-target=update-times></div>
+        </div>
+    </div>
+</div>
+
+<div class=modal-footer>
+    <a href='#' class=pull-left data-target=pedigree data-action=hide-on-retrieve>View Pedigree</a>
+    <button data-target='recalculate' class='btn btn-primary' disabled=disabled>Recalculate Ranks</button>
+</div>
