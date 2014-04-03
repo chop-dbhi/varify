@@ -739,14 +739,16 @@ define([
             this.assessmentTab = new AssessmentTab;
         },
 
+        //Add/remove 'hide' class rather than calling
+        //show()/hide() to keep height consistent
         hideButtons: function() {
-            this.ui.saveButton.hide();
-            this.ui.auditTrailButton.hide();
+            this.ui.saveButton.addClass('hide');
+            this.ui.auditTrailButton.addClass('hide');
         },
 
         showButtons: function() {
-            this.ui.saveButton.show();
-            this.ui.auditTrailButton.show();
+            this.ui.saveButton.removeClass('hide');
+            this.ui.auditTrailButton.removeClass('hide');
         },
 
         saveAndClose: function(event) {
