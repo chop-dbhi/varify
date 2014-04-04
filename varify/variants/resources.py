@@ -15,12 +15,11 @@ from .models import Variant
 log = logging.getLogger(__name__)
 
 try:
-    from solvebio.contrib.django_solvebio.client import client \
-        as solvebio_client
-    from solvebio import Filter, RangeFilter  # noqa
+    from solvebio.contrib.django_solvebio import SolveBio
+    from solvebio import SolveError, Filter, RangeFilter  # noqa
 except ImportError:
-    solvebio_client = None
-    log.warning('Could not import the SolveBio client')
+    SolveBio = None
+    log.warning('Could not import SolveBio')
 
 
 class VariantResource(ThrottledResource):
@@ -87,7 +86,7 @@ class VariantResource(ThrottledResource):
 
         data['cohorts'] = cohort_list
 
-        if solvebio_client and solvebio_client.is_enabled():
+        if SolveBio and SolveBio.is_enabled():
             data['solvebio'] = {}
 
             # ClinVar integration -- use position, gene symbol, and HGVS
@@ -100,14 +99,14 @@ class VariantResource(ThrottledResource):
             if hgvs_c_values:
                 filters = filters | Filter(hgvs_c__in=list(hgvs_c_values))
 
-            # returns None on failure and a list on success
-            clinvar = solvebio_client.query('clinvar', filters)
-
-            # only add the 'clinvar' key if the query succeeds
-            if clinvar is not None:
-                data['solvebio']['clinvar'] = clinvar
-            else:
-                log.error('SolveBio ClinVar query failed')
+            try:
+                # get the ClinVar Dataset resource by its alias
+                clinvar = SolveBio.get_dataset('clinvar')
+                # list() ensures the query is executed within the try/except
+                data['solvebio']['clinvar'] = list(
+                    clinvar.query(filters=filters))
+            except SolveError as e:
+                log.exception('SolveBio ClinVar query failed: {}'.format(e))
 
         return data
 
