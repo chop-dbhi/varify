@@ -1,7 +1,7 @@
 import logging
 import time
 from optparse import make_option
-from django.db import transaction, DEFAULT_DB_ALIAS, DatabaseError
+from django.db import transaction, connections, DEFAULT_DB_ALIAS, DatabaseError
 from django.db.models import F, Q
 from django.core.management.base import BaseCommand
 from varify.samples.models import Cohort
@@ -36,8 +36,12 @@ class Command(BaseCommand):
             log.debug('"{0}" ({1} samples)...'.format(cohort, cohort.count))
 
             t0 = time.time()
+            cursor = connections[database].cursor()
             with transaction.commit_manually(database):
                 try:
+                    # Raw query to prevent all the overhead of using the
+                    # `delete()` method.
+                    cursor.execute('TRUNCATE "cohort_variant" RESTART IDENTITY')
                     cohort.compute_allele_frequencies(database)
                     log.debug('done in {0}s\n'.format(int(time.time() - t0)))
                     transaction.commit()

@@ -240,12 +240,6 @@ class Cohort(ObjectSet):
             with transaction.commit_manually(using):
                 # TODO update to use model._meta.db_table..
                 try:
-                    # Raw query to prevent all the overhead of using the
-                    # `delete()` method.
-                    cursor.execute(
-                        'DELETE FROM cohort_variant WHERE cohort_id = %s',
-                        [self.id])
-
                     # Update count on cohort instance
                     cursor.execute('''
                         UPDATE "cohort" SET "count" = (
