@@ -41,7 +41,8 @@ class Command(BaseCommand):
                 try:
                     # Raw query to prevent all the overhead of using the
                     # `delete()` method.
-                    cursor.execute('TRUNCATE "cohort_variant" RESTART IDENTITY')
+                    cursor.execute(
+                        'TRUNCATE "cohort_variant" RESTART IDENTITY')
                     cohort.compute_allele_frequencies(database)
                     log.debug('done in {0}s\n'.format(int(time.time() - t0)))
                     transaction.commit()
