@@ -21,10 +21,7 @@ class AssessmentResourceBase(ThrottledResource):
         data['evidence_details'] = assessment.evidence_details
         data['sanger_requested'] = assessment.sanger_requested
         data['pathogenicity'] = assessment.pathogenicity.pk
-
-        if (assessment.assessment_category):
-            data['assessment_category'] = assessment.assessment_category.pk
-
+        data['assessment_category'] = assessment.assessment_category.pk
         data['mother_result'] = assessment.mother_result.pk
         data['father_result'] = assessment.father_result.pk
         data['sample_result'] = assessment.sample_result.pk
