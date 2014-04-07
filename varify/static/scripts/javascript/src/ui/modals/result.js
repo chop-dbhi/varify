@@ -416,7 +416,7 @@ define([
 
             content.push('<h4>ClinVar</h4>');
 
-            if (attrs.solvebio.clinvar[0]) {
+            if (attrs.solvebio.clinvar && attrs.solvebio.clinvar.length) {
                 content.push('<ul class=unstyled>');
                 content = content.concat(this._renderClinVarCollection(attrs.solvebio.clinvar));
                 content.push('</ul>');
@@ -560,7 +560,7 @@ define([
             $row2.append(this._span(this.renderFrequencies(attrs), 3));
             $row2.append(this._span(this.renderPubmed(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
 
-            if (attrs['solvebio']) {
+            if (attrs.solvebio) {
                 $row2.append(this._span(this.renderClinVar(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
             }
 
