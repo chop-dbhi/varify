@@ -2,7 +2,7 @@ WATCH_FILE = .watch-pid
 MANAGE_SCRIPT = ./bin/manage.py
 SITE_DIR = ./_site
 STATIC_DIR = ./varify/static
-JAVASCRIPT_DIR = ${STATIC_DIR}/scripts/javascript
+JAVASCRIPT_DIR = ${STATIC_DIR}/js
 JAVASCRIPT_SRC_DIR = ${JAVASCRIPT_DIR}/src
 JAVASCRIPT_MIN_DIR = ${JAVASCRIPT_DIR}/min
 
