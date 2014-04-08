@@ -15,11 +15,10 @@ recursive-include varify/templates *
 
 global-exclude .DS_Store
 
-exclude varify/static/scripts/javascript/app.build.js
-exclude varify/static/scripts/javascript/min/build.txt
+exclude varify/static/js/app.build.js
+exclude varify/static/js/min/build.txt
 exclude varify/conf/local_settings.py
 
 prune _site/static
-prune varify/static/scripts/coffeescript
 prune varify/static/stylesheets/scss
 prune tests

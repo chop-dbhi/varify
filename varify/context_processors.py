@@ -12,8 +12,7 @@ def static(request):
     return {
         'CSS_URL': os.path.join(static_url, 'stylesheets/css'),
         'IMAGES_URL': os.path.join(static_url, 'images'),
-        'JAVASCRIPT_URL': os.path.join(static_url, 'scripts/javascript',
-                                       prefix),
+        'JAVASCRIPT_URL': os.path.join(static_url, 'js', prefix),
     }
 
 
