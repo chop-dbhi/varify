@@ -1,0 +1,1 @@
+define(["backbone"],function(e){var t=e.Model.extend({url:function(){return"/api/samples/"+this.get("id")+"/"}});return{Sample:t}})

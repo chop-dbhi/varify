@@ -5,6 +5,7 @@ define([
     './ui/controls',
     './ui/exporter',
     './ui/modals',
+    './ui/sample',
     './ui/tables',
     './ui/workflows'
 ], function(_) {
