@@ -1,90 +1,104 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['underscore', 'marionette', '../core', '../base', '../query'], function(_, Marionette, c, base, query) {
-  var WorkspaceWorkflow, _ref;
-  WorkspaceWorkflow = (function(_super) {
-    __extends(WorkspaceWorkflow, _super);
+define([
+    'marionette',
+    '../core',
+    '../query'
+], function(Marionette, c, query) {
 
-    function WorkspaceWorkflow() {
-      _ref = WorkspaceWorkflow.__super__.constructor.apply(this, arguments);
-      return _ref;
-    }
+    var WorkspaceWorkflow = Marionette.Layout.extend({
+        className: 'workspace-workflow',
 
-    WorkspaceWorkflow.prototype.className = 'workspace-workflow';
+        template: 'workflows/workspace',
 
-    WorkspaceWorkflow.prototype.template = 'workflows/workspace';
+        regions: {
+            queries: '.query-region',
+            publicQueries: '.public-query-region',
+            editQueryRegion: '.save-query-modal',
+            deleteQueryRegion: '.delete-query-modal'
+        },
 
-    WorkspaceWorkflow.prototype.regions = {
-      queries: '.query-region',
-      publicQueries: '.public-query-region',
-      editQueryRegion: '.save-query-modal',
-      deleteQueryRegion: '.delete-query-modal'
+        regionViews: {
+            queries: query.QueryList,
+            publicQueries: query.QueryList
+        },
+
+        initialize: function() {
+            this.data = {};
+
+            if (c.isSupported('2.2.0')) {
+                if (!(this.data.publicQueries = this.options.public_queries)) {  // jshint ignore:line
+                    throw new Error('public queries collection required');
+                }
+            }
+
+            if (!(this.data.queries = this.options.queries)) {
+                throw new Error('queries collection required');
+            }
+
+            if (!(this.data.context = this.options.context)) {
+                throw new Error('context model required');
+            }
+
+            if (!(this.data.view = this.options.view)) {
+                throw new Error('view model required');
+            }
+
+            // When this workflow is loaded, toggle shared components
+            this.on('router:load', function() {
+                // Fully hide the panel; do not leave an edge to show/hide
+                c.panels.context.closePanel({full: true});
+                c.panels.concept.closePanel({full: true});
+            });
+        },
+
+        onRender: function() {
+            var queryView = new this.regionViews.queries({
+                editQueryRegion: this.editQueryRegion,
+                deleteQueryRegion: this.deleteQueryRegion,
+                collection: this.data.queries,
+                context: this.data.context,
+                view: this.data.view,
+                editable: true
+            });
+
+            this.queries.show(queryView);
+
+            if (c.isSupported('2.2.0')) {
+                var publicQueryView = new this.regionViews.publicQueries({
+                    collection: this.data.publicQueries,
+                    context: this.data.context,
+                    view: this.data.view,
+                    title: 'Public Queries',
+                    emptyMessage: "There are no public queries. You can create a " +
+                                  "new, public query by navigating to the 'Results'" +
+                                  "page and clicking on the 'Save Query...' button. " +
+                                  "While filling out the query form, you can mark " +
+                                  "the query as public which will make it visible " +
+                                  "to all users and cause it to be listed here."
+                });
+
+                // When the queries are synced we need to manually update the
+                // public queries collection so that any changes to public
+                // queries are reflected there. Right now, this is done lazily
+                // rather than checking if the changed model is public or had
+                // its publicity changed. If this becomes too slow we can
+                // perform these checks but for now this is snappy enough.
+                this.listenTo(this.data.queries, 'sync', function() {
+                    this.data.publicQueries.fetch({reset: true});
+                });
+
+                // We explicitly set the editable option to false below because
+                // users should not be able to edit the public queries
+                // collection.
+                this.publicQueries.show(publicQueryView);
+            }
+        }
+    });
+
+
+    return {
+        WorkspaceWorkflow: WorkspaceWorkflow
     };
 
-    WorkspaceWorkflow.prototype.regionViews = {
-      queries: query.QueryList
-    };
-
-    WorkspaceWorkflow.prototype.initialize = function() {
-      this.data = {};
-      if (c.isSupported('2.2.0') && !(this.data.publicQueries = this.options.public_queries)) {
-        throw new Error('public queries collection required');
-      }
-      if (!(this.data.queries = this.options.queries)) {
-        throw new Error('queries collection required');
-      }
-      if (!(this.data.context = this.options.context)) {
-        throw new Error('context model required');
-      }
-      if (!(this.data.view = this.options.view)) {
-        throw new Error('view model required');
-      }
-      return this.on('router:load', function() {
-        c.panels.context.closePanel({
-          full: true
-        });
-        return c.panels.concept.closePanel({
-          full: true
-        });
-      });
-    };
-
-    WorkspaceWorkflow.prototype.onRender = function() {
-      var publicQueryView, queryView,
-        _this = this;
-      queryView = new this.regionViews.queries({
-        editQueryRegion: this.editQueryRegion,
-        deleteQueryRegion: this.deleteQueryRegion,
-        collection: this.data.queries,
-        context: this.data.context,
-        view: this.data.view,
-        editable: true
-      });
-      this.queries.show(queryView);
-      if (c.isSupported('2.2.0')) {
-        publicQueryView = new this.regionViews.queries({
-          collection: this.data.publicQueries,
-          context: this.data.context,
-          view: this.data.view,
-          title: 'Public Queries',
-          emptyMessage: "There are no public queries. You can create a new, public query by navigating to the 'Results' page and clicking on the 'Save Query...' button. While filling out the query form, you can mark the query as public which will make it visible to all users and cause it to be listed here."
-        });
-        this.data.queries.on('sync', function() {
-          return _this.data.publicQueries.fetch({
-            add: true,
-            remove: true,
-            merge: true
-          });
-        });
-        return this.publicQueries.show(publicQueryView);
-      }
-    };
-
-    return WorkspaceWorkflow;
-
-  })(Marionette.Layout);
-  return {
-    WorkspaceWorkflow: WorkspaceWorkflow
-  };
 });

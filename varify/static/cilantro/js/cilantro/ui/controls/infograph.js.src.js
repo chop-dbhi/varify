@@ -427,6 +427,12 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
       return this.toggleToolbar();
     };
 
+    InfographControl.prototype.validate = function(attrs) {
+      if (_.isUndefined(attrs.value) || attrs.value.length === 0) {
+        return 'Select at least one value';
+      }
+    };
+
     return InfographControl;
 
   })(base.ControlLayout);

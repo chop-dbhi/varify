@@ -11,6 +11,8 @@ define(['underscore', 'backbone'], function(_, Backbone) {
       return _ref;
     }
 
+    StatModel.prototype.idAttribute = 'key';
+
     return StatModel;
 
   })(Backbone.Model);

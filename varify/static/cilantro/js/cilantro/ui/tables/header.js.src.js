@@ -1,7 +1,7 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
-define(['underscore', 'backbone', './row'], function(_, Backbone, row) {
+define(['underscore', 'marionette', './row'], function(_, Marionette, row) {
   var Header, HeaderCell, HeaderRow, _ref, _ref1;
   HeaderCell = (function(_super) {
     __extends(HeaderCell, _super);
@@ -85,7 +85,7 @@ define(['underscore', 'backbone', './row'], function(_, Backbone, row) {
 
     return HeaderCell;
 
-  })(Backbone.View);
+  })(Marionette.ItemView);
   HeaderRow = (function(_super) {
     __extends(HeaderRow, _super);
 
@@ -120,7 +120,7 @@ define(['underscore', 'backbone', './row'], function(_, Backbone, row) {
 
     return Header;
 
-  })(Backbone.View);
+  })(Marionette.ItemView);
   return {
     Header: Header
   };

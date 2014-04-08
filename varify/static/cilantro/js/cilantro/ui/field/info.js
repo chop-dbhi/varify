@@ -1,2 +1,2 @@
-define(["underscore","marionette"],function(t,e){var n=e.ItemView.extend({className:"field-info",template:"field/info"});return{FieldInfo:n}});
+define(["underscore","marionette"],function(t,e){var i=e.ItemView.extend({className:"field-info",template:"field/info"});return{FieldInfo:i}});
 //@ sourceMappingURL=info.js.map

@@ -185,7 +185,7 @@ define([
         if (context && (json = context.get('json'))) {
             _.each(json.children, function(child) {
                 if (child.concept && child.concept === 2) {
-                    samples = _.pluck(child.children[0].value, 'label');
+                    samples = _.pluck(child.value, 'label');
                 }
             });
         }

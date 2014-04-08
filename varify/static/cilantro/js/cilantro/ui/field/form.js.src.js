@@ -1,343 +1,393 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+/* global define, require */
 
-define(['underscore', 'backbone', 'marionette', 'loglevel', '../../core', '../base', './info', './stats', './controls', '../charts'], function(_, Backbone, Marionette, loglevel, c, base, info, stats, controls, charts) {
-  var FieldError, FieldForm, FieldFormCollection, FieldLink, FieldLinkCollection, LoadingFields, fieldIdAttr, resolveFieldFormOptions, _ref, _ref1, _ref2, _ref3, _ref4;
-  fieldIdAttr = function(concept, field) {
-    return "c" + concept + "f" + field;
-  };
-  resolveFieldFormOptions = function(model) {
-    var defaultOptions, formClass, formClassModule, formOptions, instanceOptions, typeOptions;
-    formClass = null;
-    formClassModule = null;
-    formOptions = [{}];
-    instanceOptions = c.config.get("fields.instances." + model.id + ".form");
-    if (_.isFunction(instanceOptions)) {
-      formClass = instanceOptions;
-    } else if (_.isString(instanceOptions)) {
-      formClassModule = instanceOptions;
-    } else if (_.isObject(instanceOptions)) {
-      formOptions.push(instanceOptions);
-    }
-    typeOptions = c.config.get("fields.types." + (model.get('logical_type')) + ".form");
-    if (!formClass && _.isFunction(typeOptions)) {
-      formClass = typeOptions;
-    } else if (!formClassModule && _.isString(typeOptions)) {
-      formClassModule = typeOptions;
-    } else {
-      formOptions.push(typeOptions);
-    }
-    defaultOptions = c.config.get('fields.defaults.form');
-    if (!formClass && _.isFunction(defaultOptions)) {
-      formClass = defaultOptions;
-    } else if (!formClassModule && _.isString(defaultOptions)) {
-      formClassModule = defaultOptions;
-    } else {
-      formOptions.push(defaultOptions);
-    }
-    formOptions = _.defaults.apply(null, formOptions);
+define([
+    'underscore',
+    'backbone',
+    'marionette',
+    'loglevel',
+    '../../core',
+    '../base',
+    '../charts',
+    '../config',
+    './info',
+    './stats',
+    './controls'
+], function(_, Backbone, Marionette, loglevel, c, base, charts,
+            config, info, stats, controls) {
+
+
+    var LoadingFields = base.LoadView.extend({
+        message: 'Loading fields...'
+    });
+
+
+    // Contained within the ConceptForm containing views for a single FieldModel
+    var FieldForm = Marionette.Layout.extend({
+        className: 'field-form',
+
+        getTemplate: function() {
+            if (this.options.condensed) {
+                return 'field/form-condensed';
+            }
+
+            return 'field/form';
+        },
+
+        options: {
+            info: true,
+            chart: false,
+            stats: true,
+            controls: true,
+            condensed: false
+        },
+
+        ui: {
+            apply: '[data-action=apply]',
+            update: '[data-action=update]',
+            state: '[data-target=state]'
+        },
+
+        events: {
+            'click @ui.apply': 'applyFilter',
+            'click @ui.update': 'applyFilter'
+        },
+
+        filterEvents: {
+            'applied': 'renderFilter',
+            'unapplied': 'renderFilter',
+            'change': 'renderFilter'
+        },
+
+        regions: {
+            info: '.info-region',
+            stats: '.stats-region',
+            chart: '.chart-region',
+            controls: '.controls-region'
+        },
+
+        regionViews: {
+            info: info.FieldInfo,
+            stats: stats.FieldStats,
+            chart: charts.FieldChart,
+            controls: controls.FieldControls
+        },
+
+        initialize: function(options) {
+            this.data = {};
+
+            if (!(this.data.concept = options.concept)) {
+                throw new Error('concept required');
+            }
+
+            if (!(this.data.context = options.context)) {
+                throw new Error('context required');
+            }
+
+            if (!options.filter) {
+                options.filter = this.data.context.define({
+                    concept: this.data.concept.id,
+                    field: this.model.id
+                });
+            }
+
+            this.data.filter = options.filter;
+
+            Marionette.bindEntityEvents(this, this.data.filter,
+                Marionette.getOption(this, 'filterEvents'));
+        },
+
+        onRender: function() {
+            // Set id for anchoring
+            this.$el.attr('id', this.data.filter.id);
+            if (this.options.condensed) this.$el.addClass('condensed');
+
+            if (this.options.info) this.renderInfo();
+            if (this.options.stats && this.model.stats) this.renderStats();
+            if (this.options.controls) this.renderControls();
+            if (this.options.chart && this.model.links.distribution) this.renderChart();
+
+            this.renderFilter();
+        },
+
+        renderInfo: function() {
+            var options = {model: this.model};
+
+            if (_.isObject(this.options.info)) {
+                _.extend(options, this.options.info);
+            }
+
+            this.info.show(new this.regionViews.info(options));
+        },
+
+        renderStats: function() {
+            var options = {
+                model: this.model,
+                collection: this.model.stats
+            };
+
+            if (_.isObject(this.options.stats)) {
+                _.extend(options, this.options.stats);
+            }
+
+            this.stats.show(new this.regionViews.stats(options));
+        },
+
+        renderControls: function() {
+            var controls = [];
+
+            _.each(this.options.controls, function(options) {
+                var attrs = {
+                    model: this.model,
+                    filter: this.data.filter
+                };
+
+                if (_.isObject(options)) {
+                    _.extend(attrs, options);
+                } else {
+                    attrs.control = options;
+                }
+
+                controls.push(attrs);
+            }, this);
+
+            if (controls.length > 0) {
+                var region = new this.regionViews.controls({
+                    collection: new Backbone.Collection(controls)
+                });
+
+                this.controls.show(region);
+            }
+        },
+
+        renderChart: function() {
+            var options;
+
+            // Append a chart if the field supports a distribution
+            if (this.options.condensed) {
+                options = {
+                    chart: {
+                        height: 100
+                    }
+                };
+            } else {
+                options = {
+                    chart: {
+                        height: 200
+                    }
+                };
+            }
+
+            options.context = this.context;
+            options.model = this.model;
+
+            if (_.isObject(this.options.chart)) {
+                _.extend(options, this.options.chart);
+            }
+
+            this.chart.show(new this.regionViews.chart(options));
+        },
+
+        renderFilter: function() {
+            this.ui.apply.prop('disabled', false);
+            this.ui.update.prop('disabled', true);
+            this.ui.state.hide();
+
+            if (this.data.context.isFilterApplied(this.data.filter)) {
+                this.ui.apply.hide();
+                this.ui.update.show();
+
+                // Collect the relevant keys across controls that need to be compared
+                // between the current and applied filter. This ensures server
+                // annotations and other attributes not represented in UI are not
+                // influencing the state.
+                var keys = [];
+
+                this.controls.currentView.children.each(function(proxy) {
+                    if (!proxy.view) return;
+                    keys = keys.concat(_.keys(proxy.view.get()));
+                });
+
+                if (this.data.context.hasFilterChanged(this.data.filter, keys)) {
+                    this.ui.update.prop('disabled', false);
+                }
+            }
+            else {
+                this.ui.apply.show();
+                this.ui.update.hide();
+            }
+        },
+
+        validateFilter: function() {
+            var message,
+                messages = [],
+                attrs = this.data.filter.toJSON();
+
+            // Children are proxies to the control..
+            this.controls.currentView.children.each(function(proxy) {
+                if (proxy.view) {
+                    message = proxy.view.validate(attrs);
+                    if (message) messages.push(message);
+                }
+            });
+
+            if (messages.length) {
+                this.validationErrors = messages;
+                this.ui.state.html(messages.join('<br>')).show();
+                return false;
+            }
+
+            this.validationErrors = null;
+            this.ui.state.text('').hide();
+            return true;
+        },
+
+        applyFilter: function(event) {
+            event.preventDefault();
+            if (this.validateFilter()) {
+                this.data.filter.apply();
+            }
+        }
+    });
+
+
+    var FieldError = base.ErrorView.extend({});
+
+
+    var FieldFormCollection = Marionette.View.extend({
+        itemView: FieldForm,
+
+        emptyView: LoadingFields,
+
+        errorView: FieldError,
+
+        collectionEvents: {
+            'reset': 'render'
+        },
+
+        initialize: function() {
+            this.data = {};
+
+            if (!(this.data.concept = this.options.concept)) {
+                throw new Error('concept required');
+            }
+
+            if (!(this.data.context = this.options.context)) {
+                throw new Error('context required');
+            }
+        },
+
+        render: function() {
+            if (this.collection.length) {
+                var _this = this;
+
+                this.collection.each(function(model, index) {
+                    _this.renderItem(model, index);
+                });
+            }
+
+            return this;
+        },
+
+        // Renders an item.
+        renderItem: function(model, index) {
+            var options = _.extend({}, this.options, {
+                model: model,
+                context: this.data.context,
+                concept: this.data.concept,
+                index: index
+            });
+
+            // This collection is used by a concept, therefore if only one
+            // field is present, the concept name and description take
+            // precedence
+            if (this.collection.length < 2) {
+                options.info = false;
+            }
+
+            // The condense option causes all fields after the first to render
+            // in a condensed view by default.
+            else if (index > 0 && this.options.condense) {
+                options.condensed = true;
+            }
+
+            var result = config.resolveFormOptions(model, 'fields');
+
+            _.extend(options, result.options);
+
+            if (result.module) {
+                var _this = this;
+
+                require([
+                    result.module
+                ], function(viewClass) {
+                    _this.createView(viewClass, options);
+                }, function(err) {
+                    _this.showErrorView(model);
+                    loglevel.debug(err);
+                });
+            }
+            else {
+                this.createView(result.view || this.itemView, options);
+            }
+        },
+
+        createView: function(viewClass, options) {
+            try {
+                var view = new viewClass(options);
+                view.render();
+                c.dom.insertAt(this.$el, options.index, view.el);
+            }
+            catch (err) {
+                this.showErrorView(options.model);
+                if (c.config.get('debug')) throw err;
+            }
+        },
+
+        showErrorView: function(model) {
+            var view = new this.errorView({model: model});
+            view.render();
+            this.$el.html(view.el);
+        }
+    });
+
+
+    var FieldLink = Marionette.ItemView.extend({
+        tagName: 'li',
+
+        template: 'field/link',
+
+        ui: {
+            anchor: 'a'
+        },
+
+        serializeData: function() {
+            return {
+                name: this.model.get('alt_name') || this.model.get('name')
+            };
+        }
+    });
+
+
+    var FieldLinkCollection = Marionette.CompositeView.extend({
+        template: 'field/links',
+
+        itemView: FieldLink,
+
+        itemViewContainer: '[data-target=links]',
+
+        onAfterItemAdded: function(view) {
+            // Add anchor href to link to anchor
+            var concept = this.options.concept;
+            var id = 'c' + concept.id + 'f' + view.model.id;
+            view.ui.anchor.attr('href', '#' + id);
+        }
+    });
+
+
     return {
-      view: formClass,
-      module: formClassModule,
-      options: formOptions
-    };
-  };
-  LoadingFields = (function(_super) {
-    __extends(LoadingFields, _super);
-
-    function LoadingFields() {
-      _ref = LoadingFields.__super__.constructor.apply(this, arguments);
-      return _ref;
-    }
-
-    LoadingFields.prototype.message = 'Loading fields...';
-
-    return LoadingFields;
-
-  })(base.LoadView);
-  FieldForm = (function(_super) {
-    __extends(FieldForm, _super);
-
-    FieldForm.prototype.className = 'field-form';
-
-    FieldForm.prototype.getTemplate = function() {
-      if (this.options.condensed) {
-        return 'field/form-condensed';
-      } else {
-        return 'field/form';
-      }
+        FieldForm: FieldForm,
+        FieldFormCollection: FieldFormCollection,
+        FieldLinkCollection: FieldLinkCollection
     };
 
-    FieldForm.prototype.options = {
-      info: true,
-      chart: false,
-      stats: true,
-      controls: true,
-      condensed: false,
-      nodeType: 'condition'
-    };
-
-    function FieldForm() {
-      FieldForm.__super__.constructor.apply(this, arguments);
-      this.context = this.options.context.define({
-        concept: this.options.context.get('concept'),
-        field: this.model.id
-      }, {
-        type: this.options.nodeType
-      });
-    }
-
-    FieldForm.prototype.regions = {
-      info: '.info-region',
-      stats: '.stats-region',
-      chart: '.chart-region',
-      controls: '.controls-region'
-    };
-
-    FieldForm.prototype.regionViews = {
-      info: info.FieldInfo,
-      stats: stats.FieldStats,
-      chart: charts.FieldChart,
-      controls: controls.FieldControls
-    };
-
-    FieldForm.prototype.onRender = function() {
-      var concept;
-      concept = this.options.context.get('concept');
-      this.$el.attr('id', fieldIdAttr(concept, this.model.id));
-      this.renderInfo();
-      this.renderStats();
-      this.renderControls();
-      this.renderChart();
-      if (this.options.condensed) {
-        return this.$el.addClass('condensed');
-      }
-    };
-
-    FieldForm.prototype.renderInfo = function() {
-      var options;
-      if (this.options.info) {
-        options = {
-          model: this.model
-        };
-        if (_.isObject(this.options.info)) {
-          _.extend(options, this.options.info);
-        }
-        return this.info.show(new this.regionViews.info(options));
-      }
-    };
-
-    FieldForm.prototype.renderStats = function() {
-      var options;
-      if (this.options.stats && (this.model.stats != null)) {
-        options = {
-          model: this.model
-        };
-        if (_.isObject(this.options.stats)) {
-          _.extend(options, this.options.stats);
-        }
-        return this.stats.show(new this.regionViews.stats(options));
-      }
-    };
-
-    FieldForm.prototype.renderControls = function() {
-      var attrs, options, _i, _len, _ref1;
-      if (this.options.controls) {
-        controls = [];
-        _ref1 = this.options.controls;
-        for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-          options = _ref1[_i];
-          attrs = {
-            model: this.model,
-            context: this.context
-          };
-          if (_.isObject(options)) {
-            _.extend(attrs, options);
-          } else {
-            attrs.control = options;
-          }
-          controls.push(attrs);
-        }
-        return this.controls.show(new this.regionViews.controls({
-          collection: new Backbone.Collection(controls)
-        }));
-      }
-    };
-
-    FieldForm.prototype.renderChart = function() {
-      var options;
-      if (this.options.chart && (this.model.links.distribution != null)) {
-        if (this.options.condensed) {
-          options = {
-            chart: {
-              height: 100
-            }
-          };
-        } else {
-          options = {
-            chart: {
-              height: 200
-            }
-          };
-        }
-        options.context = this.context;
-        options.model = this.model;
-        if (_.isObject(this.options.chart)) {
-          _.extend(options, this.options.chart);
-        }
-        return this.chart.show(new this.regionViews.chart(options));
-      }
-    };
-
-    return FieldForm;
-
-  })(Marionette.Layout);
-  FieldError = (function(_super) {
-    __extends(FieldError, _super);
-
-    function FieldError() {
-      _ref1 = FieldError.__super__.constructor.apply(this, arguments);
-      return _ref1;
-    }
-
-    return FieldError;
-
-  })(base.ErrorView);
-  FieldFormCollection = (function(_super) {
-    __extends(FieldFormCollection, _super);
-
-    function FieldFormCollection() {
-      this.createView = __bind(this.createView, this);
-      _ref2 = FieldFormCollection.__super__.constructor.apply(this, arguments);
-      return _ref2;
-    }
-
-    FieldFormCollection.prototype.itemView = FieldForm;
-
-    FieldFormCollection.prototype.emptyView = LoadingFields;
-
-    FieldFormCollection.prototype.errorView = FieldError;
-
-    FieldFormCollection.prototype.collectionEvents = {
-      'reset': 'render'
-    };
-
-    FieldFormCollection.prototype.render = function() {
-      var _this = this;
-      if (this.collection.length) {
-        this.collection.each(function(model, index) {
-          return _this.renderItem(model, index);
-        });
-      }
-      return this.el;
-    };
-
-    FieldFormCollection.prototype.renderItem = function(model, index) {
-      var options, result,
-        _this = this;
-      options = _.extend({}, this.options, {
-        model: model,
-        context: this.options.context,
-        index: index
-      });
-      if (this.collection.length < 2) {
-        options.info = false;
-      } else if (index > 0 && this.options.condense) {
-        options.condensed = true;
-      }
-      result = resolveFieldFormOptions(model);
-      options = _.extend(options, result.options);
-      if (result.module) {
-        return require([result.module], function(viewClass) {
-          return _this.createView(viewClass, options);
-        }, function(err) {
-          _this.showErrorView(model);
-          return loglevel.debug(err);
-        });
-      } else {
-        return this.createView(result.view || this.itemView, options);
-      }
-    };
-
-    FieldFormCollection.prototype.createView = function(viewClass, options) {
-      var err, view;
-      try {
-        view = new viewClass(options);
-        view.render();
-        return c.dom.insertAt(this.$el, options.index, view.el);
-      } catch (_error) {
-        err = _error;
-        this.showErrorView(options.model);
-        if (c.config.get('debug')) {
-          throw err;
-        }
-      }
-    };
-
-    FieldFormCollection.prototype.showErrorView = function(model) {
-      var view;
-      view = new this.errorView({
-        model: model
-      });
-      view.render();
-      return this.$el.html(view.el);
-    };
-
-    return FieldFormCollection;
-
-  })(Marionette.View);
-  FieldLink = (function(_super) {
-    __extends(FieldLink, _super);
-
-    function FieldLink() {
-      _ref3 = FieldLink.__super__.constructor.apply(this, arguments);
-      return _ref3;
-    }
-
-    FieldLink.prototype.tagName = 'li';
-
-    FieldLink.prototype.template = 'field/link';
-
-    FieldLink.prototype.ui = {
-      anchor: 'a'
-    };
-
-    FieldLink.prototype.serializeData = function() {
-      return {
-        name: this.model.get('alt_name') || this.model.get('name')
-      };
-    };
-
-    return FieldLink;
-
-  })(Marionette.ItemView);
-  FieldLinkCollection = (function(_super) {
-    __extends(FieldLinkCollection, _super);
-
-    function FieldLinkCollection() {
-      _ref4 = FieldLinkCollection.__super__.constructor.apply(this, arguments);
-      return _ref4;
-    }
-
-    FieldLinkCollection.prototype.template = 'field/links';
-
-    FieldLinkCollection.prototype.itemView = FieldLink;
-
-    FieldLinkCollection.prototype.itemViewContainer = '[data-target=links]';
-
-    FieldLinkCollection.prototype.onAfterItemAdded = function(view) {
-      var concept;
-      concept = this.options.concept.id;
-      return view.ui.anchor.attr('href', '#' + fieldIdAttr(concept, view.model.id));
-    };
-
-    return FieldLinkCollection;
-
-  })(Marionette.CompositeView);
-  return {
-    FieldForm: FieldForm,
-    FieldFormCollection: FieldFormCollection,
-    FieldLinkCollection: FieldLinkCollection
-  };
 });

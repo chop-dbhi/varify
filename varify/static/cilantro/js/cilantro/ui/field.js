@@ -1,2 +1,2 @@
-var __slice=[].slice;define(["underscore","./field/info","./field/form","./field/stats"],function(){var t,e;return e=arguments[0],t=2<=arguments.length?__slice.call(arguments,1):[],e.extend.apply(e,[{}].concat(__slice.call(t)))});
+define(["underscore","./field/info","./field/form","./field/stats","./field/controls"],function(t){var e=[].slice.call(arguments,1);return t.extend.apply(null,[{}].concat(e))});
 //@ sourceMappingURL=field.js.map

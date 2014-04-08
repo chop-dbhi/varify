@@ -1,34 +1,29 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['./range'], function(range) {
-  var NumberControl, _ref;
-  NumberControl = (function(_super) {
-    __extends(NumberControl, _super);
+define([
+    './range'
+], function(range) {
 
-    function NumberControl() {
-      _ref = NumberControl.__super__.constructor.apply(this, arguments);
-      return _ref;
-    }
+    // A control for entering an inclusive or exclusive numeric range
+    var NumberControl = range.RangeControl.extend({
 
-    NumberControl.prototype.getLowerBoundValue = function() {
-      var value;
-      if ((value = this.ui.lowerBound.val().trim())) {
-        return parseFloat(value);
-      }
+        // Cast the lower bound to a number for use in the getValue() method
+        getLowerBoundValue: function() {
+            var value = this.ui.lowerBound.val().trim();
+            if (value) return parseFloat(value);
+        },
+
+        // Cast the upper bound to a number for use in the getValue() method
+        getUpperBoundValue: function() {
+            var value = this.ui.upperBound.val().trim();
+            if (value) return parseFloat(value);
+        }
+
+    });
+
+
+    return {
+        NumberControl: NumberControl
     };
 
-    NumberControl.prototype.getUpperBoundValue = function() {
-      var value;
-      if ((value = this.ui.upperBound.val().trim())) {
-        return parseFloat(value);
-      }
-    };
-
-    return NumberControl;
-
-  })(range.RangeControl);
-  return {
-    NumberControl: NumberControl
-  };
 });

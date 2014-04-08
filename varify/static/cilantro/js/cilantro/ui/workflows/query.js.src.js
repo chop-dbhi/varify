@@ -1,64 +1,70 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['underscore', 'marionette', '../core', '../base', '../concept'], function(_, Marionette, c, base, concept) {
-  /*
-  The QueryWorkflow provides an interface for navigating and viewing
-  concepts that are deemed 'queryable'. This includes browsing the
-  available concepts in the index, viewing details about the
-  concept in the workspace as well as adding or modifying filters,
-  and viewing the list of filters in the context panel.
-  
-  This view requires the following options:
-  - concepts: a collection of concepts that are deemed queryable
-  - context: the session/active context model
-  */
+define([
+    'marionette',
+    '../core',
+    '../concept'
+], function(Marionette, c, concept) {
 
-  var QueryWorkflow, _ref;
-  QueryWorkflow = (function(_super) {
-    __extends(QueryWorkflow, _super);
+    /*
+    The QueryWorkflow provides an interface for navigating and viewing
+    concepts that are deemed 'queryable'. This includes browsing the
+    available concepts in the index, viewing details about the
+    concept in the workspace as well as adding or modifying filters,
+    and viewing the list of filters in the context panel.
 
-    function QueryWorkflow() {
-      _ref = QueryWorkflow.__super__.constructor.apply(this, arguments);
-      return _ref;
-    }
+    This view requires the following options:
+    - concepts: a collection of concepts that are deemed queryable
+    - context: the session/active context model
+    */
+    var QueryWorkflow = Marionette.Layout.extend({
+        className: 'query-workflow',
 
-    QueryWorkflow.prototype.className = 'query-workflow';
+        template: 'workflows/query',
 
-    QueryWorkflow.prototype.template = 'workflows/query';
+        regions: {
+            workspace: '.concept-workspace-region'
+        },
 
-    QueryWorkflow.prototype.regions = {
-      workspace: '.concept-workspace-region'
+        regionViews: {
+            workspace: concept.ConceptWorkspace
+        },
+
+        initialize: function() {
+            this.data = {};
+
+            if (!(this.data.context = this.options.context)) {
+                throw new Error('context model required');
+            }
+
+            if (!(this.data.concepts = this.options.concepts)) {
+                throw new Error('concept collection required');
+            }
+
+            // Ensure the necessary panels are toggled
+            this.on('router:load', function() {
+                c.panels.concept.openPanel();
+                c.panels.context.openPanel();
+            });
+
+            this.on('router:unload', function() {
+                c.panels.concept.closePanel();
+            });
+        },
+
+        onRender: function() {
+            var workspace = new this.regionViews.workspace({
+                context: this.data.context,
+                concepts: this.data.concepts
+            });
+
+            this.workspace.show(workspace);
+        }
+    });
+
+
+    return {
+        QueryWorkflow: QueryWorkflow
     };
 
-    QueryWorkflow.prototype.initialize = function() {
-      this.data = {};
-      if (!(this.data.context = this.options.context)) {
-        throw new Error('context model required');
-      }
-      if (!(this.data.concepts = this.options.concepts)) {
-        throw new Error('concept collection required');
-      }
-      this.on('router:load', function() {
-        c.panels.concept.openPanel();
-        return c.panels.context.openPanel();
-      });
-      return this.on('router:unload', function() {
-        return c.panels.concept.closePanel();
-      });
-    };
-
-    QueryWorkflow.prototype.onRender = function() {
-      return this.workspace.show(new concept.ConceptWorkspace({
-        context: this.data.context,
-        concepts: this.data.concepts
-      }));
-    };
-
-    return QueryWorkflow;
-
-  })(Marionette.Layout);
-  return {
-    QueryWorkflow: QueryWorkflow
-  };
 });

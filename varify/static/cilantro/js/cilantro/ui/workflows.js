@@ -1,2 +1,2 @@
-var __slice=[].slice;define(["underscore","./workflows/query","./workflows/results","./workflows/workspace"],function(){var t,e;return e=arguments[0],t=2<=arguments.length?__slice.call(arguments,1):[],e.extend.apply(e,[{}].concat(__slice.call(t)))});
+define(["underscore","./workflows/query","./workflows/results","./workflows/workspace"],function(t){var e=[].slice.call(arguments,1);return t.extend.apply(null,[{}].concat(e))});
 //@ sourceMappingURL=workflows.js.map

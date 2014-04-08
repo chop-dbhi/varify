@@ -35,7 +35,7 @@ define(['underscore', 'backbone', '../core', './base', './stats'], function(_, B
       var attrs;
       this._cache = {};
       attrs = FieldModel.__super__.parse.apply(this, arguments);
-      attrs.logical_type = getLogicalType(attrs);
+      attrs.type = getLogicalType(attrs);
       return attrs;
     };
 
