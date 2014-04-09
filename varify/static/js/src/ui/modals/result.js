@@ -682,7 +682,8 @@ define([
                 pathogenicity: $('input[name=pathogenicity-radio]:checked').val(),
                 assessment_category: $('input[name=category-radio]:checked').val(),
                 mother_result: $('#mother-results').val(),
-                father_result: $('#father-results').val()
+                father_result: $('#father-results').val(),
+                assessment_status: $('[data-target=assessment-status]').val()
             });
 
             this.errorContainer.hide();
@@ -743,6 +744,18 @@ define([
             $('#mother-results').val(this.model.get('mother_result'));
             $('#father-results').val(this.model.get('father_result'));
             $('#evidence-details').val(this.model.get('evidence_details'));
+
+            var status = this.model.get('status');
+            $('[data-target=assessment-status]').val(status);
+            // Assessments with a complete status mean that the analysis is
+            // complete and can be considered closed. Properties of a complete
+            // assessment are no longer editable so disable the controls.
+            if (status === 'Complete') {
+                $('select, textarea, input, label, #save-assessment-button').attr('disabled', true);
+            }
+            else {
+                $('select, textarea, input, label, #save-assessment-button').attr('disabled', false);
+            }
         }
 
     });
