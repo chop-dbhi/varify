@@ -1,3 +1,4 @@
+import logging
 from django.conf.urls import patterns, url
 from django.http import HttpResponse
 from django.views.decorators.cache import never_cache
@@ -6,8 +7,13 @@ from preserialize.serialize import serialize
 from restlib2.http import codes
 from serrano.resources.base import ThrottledResource
 from varify import api
+from varify.analyses.models import Analysis
+from varify.samples.models import Result
 from .models import Assessment
 from .forms import AssessmentForm
+
+
+log = logging.getLogger(__name__)
 
 
 class AssessmentResourceBase(ThrottledResource):
@@ -42,6 +48,30 @@ class AssessmentsResource(AssessmentResourceBase):
             response = HttpResponse(status=codes.unprocessable_entity,
                                     content="Request user is not valid.")
             return response
+
+        # Check to see if there is an open or pending analysis for the sample
+        # associated with this assessment. If there is not an analysis with
+        # one of those two statuses, then create a new one so we have something
+        # to associate this assessment with.
+        try:
+            result = Result.objects.get(pk=data['sample_result'])
+            sample = result.sample
+
+            analysis = Analysis.objects.get(
+                sample_id=sample.id,
+                status__in=[Analysis.OPEN, Analysis.PENDING])
+        except Result.DoesNotExist:
+            log.error('Could not find result with id {0} when saving '
+                      'assessment'.format(data['sample_result']))
+
+            return HttpResponse(
+                status=codes.unprocessable_entity,
+                content='Could not find result when saving assessment')
+        except Analysis.DoesNotExist:
+            analysis = Analysis.objects.create(
+                name='{0} Analysis'.format(sample.label), sample=sample)
+
+        data['analysis'] = analysis.id
 
         form = AssessmentForm(data)
 
@@ -82,6 +112,12 @@ class AssessmentResource(AssessmentResourceBase):
             response = HttpResponse(status=codes.unprocessable_entity,
                                     content="Request user is not valid.")
             return response
+
+        # The assessment cannot be changed by the user and we do not send it
+        # to the client so reuse the existing ID when updating an existing
+        # assessment. Assessments are assigned to an analysis when they are
+        # created in the POST handler above.
+        data['analysis'] = request.instance.analysis_id
 
         form = AssessmentForm(data, instance=request.instance)
 
