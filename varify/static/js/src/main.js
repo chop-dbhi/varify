@@ -20,17 +20,8 @@ require({
 }, [
     'cilantro',
     'project/ui',
-    'project/csrf',
-    'tpl!../../templates/tables/header.html',
-    'tpl!../../templates/modals/result.html',
-    'tpl!../../templates/modals/phenotypes.html',
-    'tpl!../../templates/controls/sift.html',
-    'tpl!../../templates/controls/polyphen.html',
-    'tpl!../../templates/workflows/results.html',
-    'tpl!../../templates/export/dialog.html',
-    'tpl!../../templates/sample/loader.html'
-], function(c, ui, csrf, header, result, phenotype, sift, polyphen, results,
-            exportDialog, sampleLoader) {
+    'project/csrf'
+], function(c, ui, csrf) {
 
     // Session options
     var options = {
@@ -52,16 +43,6 @@ require({
 
         return newView;
     };
-
-    // Define custom templates
-    c.templates.set('varify/export/dialog', exportDialog);
-    c.templates.set('varify/tables/header', header);
-    c.templates.set('varify/modals/result', result);
-    c.templates.set('varify/modals/phenotype', phenotype);
-    c.templates.set('varify/controls/sift', sift);
-    c.templates.set('varify/controls/polyphen', polyphen);
-    c.templates.set('varify/workflows/results', results);
-    c.templates.set('varify/sample/loader', sampleLoader);
 
     // Globally disable stats on all fields
     c.config.set('fields.defaults.form.stats', false);
