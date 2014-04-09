@@ -27,8 +27,10 @@ require({
     'tpl!../../templates/controls/sift.html',
     'tpl!../../templates/controls/polyphen.html',
     'tpl!../../templates/workflows/results.html',
-    'tpl!../../templates/export/dialog.html'
-], function(c, ui, csrf, header, result, phenotype, sift, polyphen, results, exportDialog) {
+    'tpl!../../templates/export/dialog.html',
+    'tpl!../../templates/sample/loader.html'
+], function(c, ui, csrf, header, result, phenotype, sift, polyphen, results,
+            exportDialog, sampleLoader) {
 
     // Session options
     var options = {
@@ -59,6 +61,7 @@ require({
     c.templates.set('varify/controls/sift', sift);
     c.templates.set('varify/controls/polyphen', polyphen);
     c.templates.set('varify/workflows/results', results);
+    c.templates.set('varify/sample/loader', sampleLoader);
 
     // Globally disable stats on all fields
     c.config.set('fields.defaults.form.stats', false);
@@ -214,6 +217,10 @@ require({
                     // need to be able to reference the sample name.
                     context: this.data.contexts.session,
                     results: this.data.preview
+                }),
+
+                sampleload: new ui.SampleLoader({
+                    context: this.data.contexts.session
                 })
             };
 
@@ -226,6 +233,10 @@ require({
                 id: 'results',
                 route: 'results/',
                 view: c.workflows.results
+            }, {
+                id: 'sample-load',
+                route: 'sample/:sample_id/',
+                view: c.workflows.sampleload
             }];
 
             c.workflows.workspace = new c.ui.WorkspaceWorkflow({

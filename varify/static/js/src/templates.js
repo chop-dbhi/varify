@@ -189,7 +189,7 @@ define([
         var html = [], cohort, cohortHtml, sample, sampleNames, sortedSamples, samplePath, popoverHtml;
 
         for (var i = 0; i < cohorts.length; i++) {
-            cohort = cohorts[i]
+            cohort = cohorts[i];
             cohortHtml = '<small>' + cohort.name + '</small> ' + (Numbers.prettyNumber(cohort.af * 100)) + '% <span class=muted>(' + cohort.size + ')</span>';
 
             sampleNames = [];
@@ -199,7 +199,7 @@ define([
 
             for (var j = 0; j < sortedSamples.length; j++) {
                 sample = sortedSamples[j];
-                samplePath = '/workspace/samples/' + sample.id;
+                samplePath = '/samples/' + sample.id;
                 sampleNames.push('<a href="' + (utils.toAbsolutePath(samplePath)) + '/">' + sample.name + '</a>');
             }
 
