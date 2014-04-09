@@ -5,9 +5,10 @@
 
             {% if user.is_authenticated %}
         	<ul class="nav">
-                <li><a href="{% url workspace %}"><i class="icon-search"></i> Workspace</a></li>
+                <li><a href="{% url workspace %}"><i class="icon-dashboard"></i> Workspace</a></li>
                 <li><a href="{% url query %}"><i class="icon-search"></i> Discover</a></li>
                 <li><a href="{% url results %}"><i class="icon-table"></i> Results</a></li>
+                <li><a href="{% url analysis %}"><i class="icon-screenshot"></i> Analysis</a></li>
             </ul>
             {% endif %}
 
