@@ -200,6 +200,8 @@ require({
                     results: this.data.preview
                 }),
 
+                analysis: new ui.AnalysisWorkflow(),
+
                 sampleload: new ui.SampleLoader({
                     context: this.data.contexts.session
                 })
@@ -215,6 +217,10 @@ require({
                 route: 'results/',
                 view: c.workflows.results
             }, {
+                id: 'analysis',
+                route: 'analysis/',
+                view: c.workflows.analysis
+            },{
                 id: 'sample-load',
                 route: 'sample/:sample_id/',
                 view: c.workflows.sampleload

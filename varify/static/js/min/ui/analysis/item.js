@@ -1,0 +1,1 @@
+define(["marionette","cilantro"],function(e){var t=e.ItemView.extend({className:"row-fluid",template:"varify/analysis/item"});return{AnalysisItem:t}})

@@ -2,8 +2,8 @@
 
 define([
     'underscore',
-    './workflows/analysis',
-    './workflows/results'
+    './analysis/item',
+    './analysis/list'
 ], function(_) {
 
     var mods = [].slice.call(arguments, 1);

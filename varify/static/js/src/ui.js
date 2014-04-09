@@ -2,6 +2,7 @@
 
 define([
     'underscore',
+    './ui/analysis',
     './ui/controls',
     './ui/exporter',
     './ui/modals',

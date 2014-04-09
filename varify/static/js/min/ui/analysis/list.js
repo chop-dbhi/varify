@@ -1,0 +1,1 @@
+define(["marionette","./item"],function(e,t){var n=e.CompositeView.extend({itemView:t.AnalysisItem,itemViewContainer:".items",template:"varify/analysis/list"});return{AnalysisList:n}})
