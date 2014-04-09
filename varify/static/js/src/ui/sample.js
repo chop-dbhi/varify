@@ -50,8 +50,7 @@ define([
 
         showError: function(text) {
             this.ui.loadingMessage.hide();
-            this.ui.errorMessage.text(text);
-            this.ui.errorMessage.show();
+            this.ui.errorMessage.text(text).show();
         },
 
         onSampleFetchError: function() {
