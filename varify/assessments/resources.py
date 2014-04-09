@@ -103,5 +103,5 @@ assessment_resource = never_cache(AssessmentResource())
 urlpatterns = patterns(
     '',
     url(r'^$', assessments_resource, name='assessments'),
-    url(r'^(?P<pk>\d+)/$', assessment_resource, name='assessment'),
+    url(r'^(?P<pk>\d+)/?$', assessment_resource, name='assessment'),
 )
