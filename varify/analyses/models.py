@@ -4,10 +4,14 @@ from varify.samples.models import Sample
 
 
 class Analysis(LabeledModel, TimestampedModel):
+    OPEN = 'Open'
+    PENDING = 'Pending'
+    COMPLETE = 'Complete'
+
     STATUSES = (
-        ('Open', 'Open'),
-        ('Pending', 'Pending'),
-        ('Complete', 'Complete'),
+        (OPEN, OPEN),
+        (PENDING, PENDING),
+        (COMPLETE, COMPLETE),
     )
 
     sample = models.ForeignKey(Sample)
