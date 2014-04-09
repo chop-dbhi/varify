@@ -7,6 +7,7 @@ define([
     './ui/modals',
     './ui/sample',
     './ui/tables',
+    './ui/templates',
     './ui/workflows'
 ], function(_) {
 
