@@ -12,6 +12,10 @@ define([
     });
 
     var AnalysisCollection = Backbone.Collection.extend({
+        url: function() {
+            return utils.toAbsolutePath('api/analyses/');
+        },
+
         model: AnalysisModel
     });
 

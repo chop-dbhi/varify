@@ -2,9 +2,10 @@
 
 define([
     'underscore',
-    './models/result',
+    './models/analysis',
     './models/assessment',
     './models/phenotype',
+    './models/result',
     './models/sample'
 ], function(_) {
 

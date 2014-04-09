@@ -3,8 +3,9 @@
 define([
     'cilantro',
     'marionette',
-    '../analysis'
-], function(c, Marionette, analysis) {
+    '../analysis',
+    '../../models'
+], function(c, Marionette, analysis, models) {
 
     var AnalysisWorkflow = Marionette.Layout.extend({
         className: 'analysis-workflow',
@@ -29,7 +30,9 @@ define([
         },
 
         onRender: function() {
-            this.analyses.show(new this.regionViews.analyses());
+            this.analyses.show(new this.regionViews.analyses({
+                collection: new models.AnalysisCollection()
+            }));
         }
     });
 
