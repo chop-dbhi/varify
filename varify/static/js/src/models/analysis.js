@@ -19,24 +19,21 @@ define([
         model: AnalysisModel
     });
 
-    var AssessmentModel = Backbone.Model.extend({
-        urlRoot: function() {
-            return utils.toAbsolutePath('api/assessments/');
-        }
-    });
+    var PathogenicityModel = Backbone.Model.extend();
 
-    var AssessmentCollection = Backbone.Collection.extend({
+    var PathogenicityCollection = Backbone.Collection.extend({
         url: function() {
             return utils.toAbsolutePath(
                 'api/analyses/' + this.analysisId + '/assessments/');
-        }
+        },
+
+        model: PathogenicityModel
     });
 
     return {
         AnalysisModel: AnalysisModel,
         AnalysisCollection: AnalysisCollection,
-        AssessmentModel: AssessmentModel,
-        AssessmentCollection: AssessmentCollection
+        PathogenicityCollection: PathogenicityCollection
     };
 
 });

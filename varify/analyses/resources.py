@@ -7,7 +7,8 @@ from django.views.decorators.cache import never_cache
 from preserialize.serialize import serialize
 from serrano.resources.base import ThrottledResource
 from varify import api
-from varify.assessments.models import Assessment
+from varify.assessments.models import Assessment, Pathogenicity, \
+    AssessmentCategory
 from .models import Analysis
 
 log = logging.getLogger(__name__)
@@ -73,23 +74,42 @@ class AnalysisAssessmentsResource(ThrottledResource):
     def get(self, request, pk):
         assessments = self.model.objects.filter(analysis__pk=pk)
 
-        resp = serialize(list(assessments), **self.template)
+        pathogenicities = []
 
-        for obj in resp:
-            obj['_links'] = {
-                'self': {
-                    'rel': 'self',
-                    'href': reverse('api:assessments:assessment',
-                                    kwargs={'pk': obj['id']})
-                },
-                'analysis': {
-                    'rel': 'related',
-                    'href': reverse('api:analyses:analysis',
-                                    kwargs={'pk': pk}),
-                }
-            }
+        for p in Pathogenicity.objects.all():
 
-        return resp
+            categories = []
+            for c in AssessmentCategory.objects.all():
+
+                categoryAssessments = assessments.filter(
+                    pathogenicity_id=p.id, assessment_category_id=c.id)
+                resultIds = categoryAssessments\
+                    .values_list('sample_result_id', flat=True).distinct()
+
+                results = []
+                for resultId in resultIds:
+                    resultAssessments = list(
+                        categoryAssessments.filter(sample_result_id=resultId))
+
+                    results.append({
+                        'id': resultId,
+                        'assessments': serialize(resultAssessments,
+                                                 **self.template)
+                    })
+
+                categories.append({
+                    'id': c.id,
+                    'name': c.name,
+                    'results': results,
+                })
+
+            pathogenicities.append({
+                'id': p.id,
+                'name': p.name,
+                'categories': categories,
+            })
+
+        return pathogenicities
 
 
 analyses_resource = never_cache(AnalysesResource())

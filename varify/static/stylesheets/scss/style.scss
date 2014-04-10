@@ -309,8 +309,14 @@ body, #concept-panel, #context-panel {
     }
 
     .assessments-region {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
         margin-left: $analysesRegionWidth + 25px;
         padding-top: 5px;
+        overflow-y: scroll;
     }
 
     .analysis-item {

@@ -4,8 +4,11 @@ define([
     'cilantro',
     'tpl!../../../templates/analysis/assessment-item.html',
     'tpl!../../../templates/analysis/assessment-list.html',
+    'tpl!../../../templates/analysis/category-list.html',
     'tpl!../../../templates/analysis/item.html',
     'tpl!../../../templates/analysis/list.html',
+    'tpl!../../../templates/analysis/pathogenicity-list.html',
+    'tpl!../../../templates/analysis/result-list.html',
     'tpl!../../../templates/controls/polyphen.html',
     'tpl!../../../templates/controls/sift.html',
     'tpl!../../../templates/export/dialog.html',
@@ -15,15 +18,33 @@ define([
     'tpl!../../../templates/tables/header.html',
     'tpl!../../../templates/workflows/analysis.html',
     'tpl!../../../templates/workflows/results.html'
-], function(c, assessmentItem, assessmentList, analysisItem, analysisList,
-            polyphen, sift, exportDialog, phenotype, result, sampleLoader,
-            header, analysis, results) {
+], function(
+    c,
+    assessmentItem,
+    assessmentList,
+    categoryList,
+    analysisItem,
+    analysisList,
+    pathogenicityList,
+    resultList,
+    polyphen,
+    sift,
+    exportDialog,
+    phenotype,
+    result,
+    sampleLoader,
+    header,
+    analysis,
+    results) {
 
     // Define custom templates
     c.templates.set('varify/analysis/assessment-item', assessmentItem);
     c.templates.set('varify/analysis/assessment-list', assessmentList);
+    c.templates.set('varify/analysis/category-list', categoryList);
     c.templates.set('varify/analysis/item', analysisItem);
     c.templates.set('varify/analysis/list', analysisList);
+    c.templates.set('varify/analysis/pathogenicity-list', pathogenicityList);
+    c.templates.set('varify/analysis/result-list', resultList);
     c.templates.set('varify/controls/polyphen', polyphen);
     c.templates.set('varify/controls/sift', sift);
     c.templates.set('varify/export/dialog', exportDialog);

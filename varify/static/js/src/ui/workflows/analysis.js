@@ -19,7 +19,7 @@ define([
 
         regionViews: {
             analyses: analysis.AnalysisList,
-            assessments: analysis.AssessmentList
+            assessments: analysis.PathogenictyList
         },
 
         initialize: function() {
@@ -37,7 +37,7 @@ define([
             }));
 
             this.assessments.show(new this.regionViews.assessments({
-                collection: new models.AssessmentCollection()
+                collection: new models.PathogenicityCollection()
             }));
         }
     });

@@ -3,9 +3,10 @@
 define([
     'underscore',
     'cilantro',
+    'backbone',
     'marionette',
     './item'
-], function(_, c, Marionette, item) {
+], function(_, c, Backbone, Marionette, item) {
 
     var AnalysisList = Marionette.CompositeView.extend({
         itemView: item.AnalysisItem,
@@ -80,6 +81,57 @@ define([
 
         template: 'varify/analysis/assessment-list',
 
+        modelEvents: {
+            sync: 'render'
+        },
+
+        initialize: function() {
+            this.collection = new Backbone.Collection(
+                this.model.get('assessments'));
+        }
+    });
+
+    var ResultList = Marionette.CompositeView.extend({
+        itemView: AssessmentList,
+
+        itemViewContainer: '.items',
+
+        template: 'varify/analysis/result-list',
+
+        modelEvents: {
+            sync: 'render'
+        },
+
+        initialize: function() {
+            this.collection = new Backbone.Collection(
+                this.model.get('results'));
+        }
+    });
+
+    var CategoryList = Marionette.CompositeView.extend({
+        itemView: ResultList,
+
+        itemViewContainer: '.items',
+
+        template: 'varify/analysis/category-list',
+
+        modelEvents: {
+            sync: 'render'
+        },
+
+        initialize: function() {
+            this.collection = new Backbone.Collection(
+                this.model.get('categories'));
+        }
+    });
+
+    var PathogenicityList = Marionette.CompositeView.extend({
+        itemView: CategoryList,
+
+        itemViewContainer: '.items',
+
+        template: 'varify/analysis/pathogenicity-list',
+
         ui: {
             empty: '.empty-message',
             error: '.error-message',
@@ -139,13 +191,13 @@ define([
             this.render();
 
             this.collection.analysisId = this.model.id;
-            this.collection.fetch();
+            this.collection.fetch({reset: true});
         }
     });
 
     return {
         AnalysisList: AnalysisList,
-        AssessmentList: AssessmentList
+        PathogenictyList: PathogenicityList
     };
 
 });
