@@ -28,7 +28,7 @@ define([
     var AssessmentCollection = Backbone.Collection.extend({
         url: function() {
             return utils.toAbsolutePath(
-                'api/analyses/' + this.get('analysisId') + '/assessments/');
+                'api/analyses/' + this.analysisId + '/assessments/');
         }
     });
 

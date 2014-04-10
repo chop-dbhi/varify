@@ -11,7 +11,7 @@ define([
         template: 'varify/analysis/item',
 
         events: {
-            'click': 'onClick'
+            'click a': 'onClick'
         },
 
         modelEvents: {

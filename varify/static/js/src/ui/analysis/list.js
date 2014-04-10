@@ -115,7 +115,9 @@ define([
 
         initialize: function() {
             _.bindAll(this, 'onCollectionError', 'onCollectionRequest',
-                      'onCollectionSync');
+                      'onCollectionSync', 'onAnalysisItemClick');
+
+            c.on('analysis:item:click', this.onAnalysisItemClick);
         },
 
         checkForEmptyCollection: function() {
@@ -125,6 +127,19 @@ define([
             else {
                 this.ui.empty.hide();
             }
+        },
+
+        onAnalysisItemClick: function(view, model) {
+            // If we are already looking at the assessments for this analysis
+            // then don't bother reloading it.
+            if (this.model && this.model.id === model.id) return;
+
+            this.model = model;
+
+            this.render();
+
+            this.collection.analysisId = this.model.id;
+            this.collection.fetch();
         }
     });
 
