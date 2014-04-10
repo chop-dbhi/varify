@@ -73,12 +73,9 @@ class AnalysisAssessmentsResource(ThrottledResource):
     def get(self, request, pk):
         assessments = self.model.objects.filter(analysis__pk=pk)
 
-        resp = {
-            'count': assessments.count(),
-            'assessments': serialize(list(assessments), **self.template),
-        }
+        resp = serialize(list(assessments), **self.template)
 
-        for obj in resp['assessments']:
+        for obj in resp:
             obj['_links'] = {
                 'self': {
                     'rel': 'self',
