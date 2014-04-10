@@ -189,7 +189,10 @@ class Command(BaseCommand):
                         # itself.
                         genes = result.variant.effects\
                             .exclude(transcript__gene__symbol__isnull=True)\
-                            .values_list('transcript__gene__symbol', flat=True)
+                            .order_by('effect__impact')\
+                            .values_list(
+                                'transcript__gene__symbol', flat=True)\
+                            .distinct()
 
                         # If there is no gene on this result or the gene is
                         # not found in the list of ranked genes then skip this

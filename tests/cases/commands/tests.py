@@ -453,12 +453,10 @@ class GeneRanksTestCase(TestCase):
             self.assertTrue(Sample.objects.filter(
                 phenotype_modified__isnull=False).count(), 3)
 
-            # Check that the result count is what we expect. Each sample is
-            # knows to have 18 results associated with one or more of the three
-            # ranked genes in the mock data and there are 3 samples so we
-            # expect 54 new result scores.
-            self.assertEqual(ResultScore.objects.count(),
-                             initial_score_count + 54)
+            # We are not doing a varification of the ranker here, all we care
+            # about is that there were scores added.
+            self.assertGreater(ResultScore.objects.count(),
+                               initial_score_count)
             initial_score_count = ResultScore.objects.count()
 
             # Calling the gene-rank command again should skip all of the
