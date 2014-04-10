@@ -660,3 +660,28 @@ class DeleteTestCase(QueueTestCase):
         self.assertEqual(0, Sample.objects.count())
         self.assertEqual(0, Batch.objects.count())
         self.assertEqual(0, Project.objects.count())
+
+@override_settings(VARIFY_SAMPLE_DIRS=SAMPLE_DIRS)
+class AlleleTestCase(QueueTestCase):
+    def setUp(self):
+        super(AlleleTestCase, self).setUp()
+
+        # Immediately validates and creates a sample
+        management.call_command('samples', 'queue')
+
+        # Synchronously work on queue
+        worker1 = get_worker('variants')
+        worker2 = get_worker('default')
+
+        # Work on variants...
+        worker1.work(burst=True)
+
+        # Work on effects...
+        worker2.work(burst=True)
+
+    def test_allele_freqs(self):
+        management.call_command('samples', 'allele-freqs')
+        firstCount = CohortVariant.objects.count()
+        self.assertNotEqual(firstCount, 0)
+        management.call_command('samples', 'allele-freqs')
+        self.assertEqual(firstCount, CohortVariant.objects.count())
