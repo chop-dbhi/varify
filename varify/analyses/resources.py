@@ -28,6 +28,8 @@ def analysis_posthook(instance, data, request):
         }
     }
 
+    data['assessment_count'] = instance.assessments.count()
+
     return data
 
 
