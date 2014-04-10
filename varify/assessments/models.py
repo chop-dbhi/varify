@@ -70,7 +70,7 @@ class Assessment(TimestampedModel):
     user = models.ForeignKey(User)
 
     status = models.CharField(max_length=10, choices=STATUSES, default='Draft')
-    analysis = models.ForeignKey(Analysis)
+    analysis = models.ForeignKey(Analysis, related_name='assessments')
 
     class Meta(object):
         db_table = 'assessment'
