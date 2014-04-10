@@ -22,6 +22,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         database = options.get('database')
+        cursor = connections[database].cursor()
 
         if options.get('force'):
             cohorts = list(Cohort.objects.all())
@@ -32,17 +33,20 @@ class Command(BaseCommand):
 
         log.debug('Computing for {0} cohorts'.format(len(cohorts)))
 
+        with transaction.commit_manually(database):
+            try:
+                cursor.execute('TRUNCATE "cohort_variant" RESTART IDENTITY')
+                transaction.commit()
+            except DatabaseError:
+                transaction.rollback()
+                log.exception('Could not truncate CohortVariant table')
+
         for cohort in cohorts:
             log.debug('"{0}" ({1} samples)...'.format(cohort, cohort.count))
 
             t0 = time.time()
-            cursor = connections[database].cursor()
             with transaction.commit_manually(database):
                 try:
-                    # Raw query to prevent all the overhead of using the
-                    # `delete()` method.
-                    cursor.execute(
-                        'TRUNCATE "cohort_variant" RESTART IDENTITY')
                     cohort.compute_allele_frequencies(database)
                     log.debug('done in {0}s\n'.format(int(time.time() - t0)))
                     transaction.commit()
