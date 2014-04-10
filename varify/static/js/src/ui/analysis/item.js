@@ -1,14 +1,18 @@
 /* global define */
 
 define([
-    'marionette',
-    'cilantro'
-], function(Marionette) {
+    'cilantro',
+    'marionette'
+], function(c, Marionette) {
 
     var AnalysisItem = Marionette.ItemView.extend({
-        className: 'row-fluid analysis-item',
+        className: 'analysis-item',
 
         template: 'varify/analysis/item',
+
+        events: {
+            'click': 'onClick'
+        },
 
         modelEvents: {
             sync: 'render'
@@ -22,6 +26,10 @@ define([
             this.ui.status.removeClass(
                 'label-info label-warning label-success label-important')
                 .addClass(cls);
+        },
+
+        onClick: function() {
+            c.trigger('analysis:item:click', this, this.model);
         },
 
         onRender: function() {

@@ -2,9 +2,10 @@
 
 define([
     'underscore',
+    'cilantro',
     'marionette',
     './item'
-], function(_, Marionette, item) {
+], function(_, c, Marionette, item) {
 
     var AnalysisList = Marionette.CompositeView.extend({
         itemView: item.AnalysisItem,
@@ -16,7 +17,8 @@ define([
         ui: {
             empty: '.empty-message',
             error: '.error-message',
-            loading: '.loading-indicator'
+            loading: '.loading-indicator',
+            items: '.items'
         },
 
         collectionEvents: {
@@ -45,7 +47,9 @@ define([
 
         initialize: function() {
             _.bindAll(this, 'onCollectionError', 'onCollectionRequest',
-                      'onCollectionSync');
+                      'onCollectionSync', 'onAnalysisItemClick');
+
+            c.on('analysis:item:click', this.onAnalysisItemClick);
 
             this.collection.fetch();
         },
@@ -61,6 +65,11 @@ define([
 
         onRender: function() {
             this.checkForEmptyCollection();
+        },
+
+        onAnalysisItemClick: function(view, model) {
+            this.ui.items.children().removeClass('selected');
+            view.$el.addClass('selected');
         }
     });
 
@@ -116,7 +125,7 @@ define([
             else {
                 this.ui.empty.hide();
             }
-        },
+        }
     });
 
     return {
