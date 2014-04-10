@@ -43,8 +43,19 @@ define([
 
     });
 
+    var AssessmentItem = Marionette.ItemView.extend({
+        className: 'assessment-item',
+
+        template: 'varify/analysis/assessment-item',
+
+        modelEvents: {
+            sync: 'render'
+        }
+    });
+
     return {
-        AnalysisItem: AnalysisItem
+        AnalysisItem: AnalysisItem,
+        AssessmentItem: AssessmentItem
     };
 
 });

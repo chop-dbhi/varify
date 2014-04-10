@@ -292,17 +292,24 @@ body, #concept-panel, #context-panel {
     right: 0;
     overflow: hidden;
 
+    $analysesWidth: 265px;
+
     .analyses-region {
         position: absolute;
         top: 0;
         bottom: 0;
         padding-left: 10px;
-        width: 265px;
+        width: $analysesWidth;
         background-color: #f9f9f9;
         text-shadow: 0 1px 1px #fff;
         box-shadow: inset -2px 0 2px rgba(0, 0, 0, 0.05);
         border-right: 1px solid rgba(0, 0, 0, 0.1);
         overflow: scroll;
+    }
+
+    .assessments-region {
+        margin-left: $analysesWidth + 25px;
+        padding-top: 5px;
     }
 
     .analysis-item {

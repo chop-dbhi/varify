@@ -13,11 +13,13 @@ define([
         template: 'varify/workflows/analysis',
 
         regions: {
-            analyses: '.analyses-region'
+            analyses: '.analyses-region',
+            assessments: '.assessments-region'
         },
 
         regionViews: {
-            analyses: analysis.AnalysisList
+            analyses: analysis.AnalysisList,
+            assessments: analysis.AssessmentList
         },
 
         initialize: function() {
@@ -32,6 +34,10 @@ define([
         onRender: function() {
             this.analyses.show(new this.regionViews.analyses({
                 collection: new models.AnalysisCollection()
+            }));
+
+            this.assessments.show(new this.regionViews.assessments({
+                collection: new models.AssessmentCollection()
             }));
         }
     });

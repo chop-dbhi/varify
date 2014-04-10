@@ -1,0 +1,14 @@
+<div class=assessment-list>
+    <h4><%= data.name || 'No Analysis Selected' %></h4>
+    <div class=initial-message>
+        To review the knowledge capture records for an analysis, click on an analysis in the list on the left.
+    </div>
+    <div class='empty-message hide'>
+        There are no knowledge capture records associated with this analysis. To create one, fill out the knowledge capture form on a result. To do this, navigate to the &quot;Results&quot; page. After the results load, click on any of the results in the table. Open the &quot;Knowledge Capture&quot; tab then fill out the form and click &quot;Save Changes&quot;. After that, you can return to this screen and reopen this analysis.
+    </div>
+    <div class='loading-indicator hide'>
+        <i class='icon-spinner icon-spin'></i> Loading Knowledge Capture Data...
+    </div>
+    <div class='alert alert-danger error-message hide'>There was a problem retrieving the assessments for this analysis. Please reload the page to try to reload the assessments.</div>
+    <div class=items></div>
+</div>

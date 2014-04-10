@@ -2,6 +2,8 @@
 
 define([
     'cilantro',
+    'tpl!../../../templates/analysis/assessment-item.html',
+    'tpl!../../../templates/analysis/assessment-list.html',
     'tpl!../../../templates/analysis/item.html',
     'tpl!../../../templates/analysis/list.html',
     'tpl!../../../templates/controls/polyphen.html',
@@ -13,10 +15,13 @@ define([
     'tpl!../../../templates/tables/header.html',
     'tpl!../../../templates/workflows/analysis.html',
     'tpl!../../../templates/workflows/results.html'
-], function(c, analysisItem, analysisList, polyphen, sift, exportDialog,
-            phenotype, result, sampleLoader, header, analysis, results) {
+], function(c, assessmentItem, assessmentList, analysisItem, analysisList,
+            polyphen, sift, exportDialog, phenotype, result, sampleLoader,
+            header, analysis, results) {
 
     // Define custom templates
+    c.templates.set('varify/analysis/assessment-item', assessmentItem);
+    c.templates.set('varify/analysis/assessment-list', assessmentList);
     c.templates.set('varify/analysis/item', analysisItem);
     c.templates.set('varify/analysis/list', analysisList);
     c.templates.set('varify/controls/polyphen', polyphen);

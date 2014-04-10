@@ -19,9 +19,24 @@ define([
         model: AnalysisModel
     });
 
+    var AssessmentModel = Backbone.Model.extend({
+        urlRoot: function() {
+            return utils.toAbsolutePath('api/assessments/');
+        }
+    });
+
+    var AssessmentCollection = Backbone.Collection.extend({
+        url: function() {
+            return utils.toAbsolutePath(
+                'api/analyses/' + this.get('analysisId') + '/assessments/');
+        }
+    });
+
     return {
         AnalysisModel: AnalysisModel,
-        AnalysisCollection: AnalysisCollection
+        AnalysisCollection: AnalysisCollection,
+        AssessmentModel: AssessmentModel,
+        AssessmentCollection: AssessmentCollection
     };
 
 });
