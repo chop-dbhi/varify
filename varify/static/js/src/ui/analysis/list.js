@@ -91,16 +91,18 @@ define([
         }
     });
 
-    var ResultList = Marionette.CompositeView.extend({
+    var ResultList = c.ui.AccordianSection.extend({
         itemView: AssessmentList,
-
-        itemViewContainer: '.items',
 
         template: 'varify/analysis/result-list',
 
+        /*
         modelEvents: {
             sync: 'render'
         },
+        */
+
+        itemViewContainer: '.items',
 
         initialize: function() {
             this.collection = new Backbone.Collection(
@@ -108,18 +110,22 @@ define([
         }
     });
 
-    var CategoryList = Marionette.CompositeView.extend({
+    var CategoryList = c.ui.AccordianGroup.extend({
         itemView: ResultList,
-
-        itemViewContainer: '.items',
 
         template: 'varify/analysis/category-list',
 
+        itemViewContainer: '.items',
+
+        /*
         modelEvents: {
             sync: 'render'
         },
+        */
 
         initialize: function() {
+            c.ui.AccordianGroup.prototype.initialize();
+
             this.collection = new Backbone.Collection(
                 this.model.get('categories'));
         }
