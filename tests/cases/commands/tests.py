@@ -374,9 +374,9 @@ class GeneRanksTestCase(TestCase):
                            GENE_RANK_BASE_URL='api/tests/gene_rank'):
             management.call_command('samples', 'gene-ranks', 'NA12878')
 
-            self.assertTrue(self.mock_handler.messages['error'])
+            self.assertTrue(self.mock_handler.messages['warning'])
             self.assertTrue("Could not parse response" in
-                            self.mock_handler.messages['error'][-1])
+                            self.mock_handler.messages['warning'][-1])
 
         with self.settings(PHENOTYPE_ENDPOINT=
                            'http://localhost/api/tests/unparseable_date/%s/',
@@ -385,10 +385,9 @@ class GeneRanksTestCase(TestCase):
 
             self.assertTrue(self.mock_handler.messages['warning'])
             self.assertTrue("Could not parse 'last_modified'" in
-                            self.mock_handler.messages['warning'][-1])
-            self.assertTrue(self.mock_handler.messages['error'])
+                            self.mock_handler.messages['warning'][-2])
             self.assertTrue("Response from phenotype missing HPO Annotations"
-                            in self.mock_handler.messages['error'][-1])
+                            in self.mock_handler.messages['warning'][-1])
 
         with self.settings(PHENOTYPE_ENDPOINT=
                            'http://localhost/api/tests/unparseable_terms/%s/',

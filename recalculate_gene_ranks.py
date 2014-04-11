@@ -7,7 +7,7 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'varify.conf.settings')
 
 from django.core import management
 
-log = logging.getLogger(__name__)
+log = logging.getLogger('recalculate_gene_ranks')
 
 # We don't want this job to run forever so limit to this many attempts and
 # if the queue is still not empty just give up.
