@@ -107,6 +107,12 @@ define([
 
         itemViewContainer: '.items',
 
+        ui: function() {
+            return _.extend({
+                totals: '[data-target=totals]'
+            }, c.ui.AccordianGroup.prototype.ui);
+        },
+
         initialize: function() {
             c.ui.AccordianGroup.prototype.initialize();
 
@@ -120,10 +126,12 @@ define([
             if (this.model.get('total_count') > 0) {
                 this.ui.heading.css('cursor', 'pointer');
                 this.ui.icon.show();
+                this.ui.totals.show();
             }
             else {
                 this.ui.heading.css('cursor', 'auto');
                 this.ui.icon.hide();
+                this.ui.totals.hide();
             }
         }
     });
