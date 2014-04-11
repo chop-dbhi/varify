@@ -318,6 +318,10 @@ body, #concept-panel, #context-panel {
         margin-right: 25px;
         padding-top: 5px;
         overflow-y: scroll;
+
+        .group > .inner {
+            margin-left: 20px;
+        }
     }
 
     .analysis-item {

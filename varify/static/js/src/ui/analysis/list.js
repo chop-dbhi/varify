@@ -5,8 +5,9 @@ define([
     'cilantro',
     'backbone',
     'marionette',
-    './item'
-], function(_, c, Backbone, Marionette, item) {
+    './item',
+    '../tables'
+], function(_, c, Backbone, Marionette, item, tables) {
 
     var AnalysisList = Marionette.CompositeView.extend({
         itemView: item.AnalysisItem,
@@ -88,11 +89,15 @@ define([
     });
 
     var ResultList = c.ui.AccordianSection.extend({
-        itemView: AssessmentList,
+        itemView: tables.ResultRow,
 
         template: 'varify/analysis/result-list',
 
         itemViewContainer: '.items',
+
+        itemViewOptions: function (model, index) {
+            return _.defaults({resultPk: model.get('id')}, this.options);
+        },
 
         initialize: function() {
             this.collection = new Backbone.Collection(
@@ -116,7 +121,7 @@ define([
         initialize: function() {
             c.ui.AccordianGroup.prototype.initialize();
 
-            this.collection = new Backbone.Collection(
+            c.ui.AccordianGroup.prototype.collection = new Backbone.Collection(
                 this.model.get('categories'));
         },
 
@@ -125,8 +130,6 @@ define([
             // item, we can use that as the determining factor of "emptiness."
             if (this.model.get('total_count') > 0) {
                 this.ui.heading.css('cursor', 'pointer');
-                this.ui.icon.show();
-                this.ui.totals.show();
             }
             else {
                 this.ui.heading.css('cursor', 'auto');
