@@ -416,9 +416,9 @@ define([
 
             content.push('<h4>ClinVar</h4>');
 
-            if (attrs.solvebio.clinvar && attrs.solvebio.clinvar.length) {
+            if (attrs.solvebio.clinvar && attrs.solvebio.clinvar.total > 0) {
                 content.push('<ul class=unstyled>');
-                content = content.concat(this._renderClinVarCollection(attrs.solvebio.clinvar));
+                content = content.concat(this._renderClinVarCollection(attrs.solvebio.clinvar.results));
                 content.push('</ul>');
             } else {
                 content.push('<p class=muted>No ClinVar assertions</p>');
