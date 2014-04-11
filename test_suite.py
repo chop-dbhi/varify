@@ -9,7 +9,6 @@ apps = sys.argv[1:]
 
 if not apps:
     apps = [
-        'assessments',
         'sample_load_process',
         'south_tests',
         'geneset_form',

@@ -1,40 +1,17 @@
 import json
-import os
 from restlib2.http import codes
 from ..base import AuthenticatedBaseTestCase
-from django.test.utils import override_settings
 from varify.assessments.models import Assessment, Pathogenicity,\
     ParentalResult, AssessmentCategory
-from varify.samples.models import Sample, Result
-from django.core import management
-from django_rq import get_worker
-from django.core.cache import cache
-from django_rq import get_queue, get_connection
-from rq.queue import get_failed_queue
-
-TESTS_DIR = os.path.join(os.path.dirname(__file__), '../..')
-SAMPLE_DIRS = [os.path.join(TESTS_DIR, 'samples', 'batch1')]
+from varify.samples.models import Result
 
 
-@override_settings(VARIFY_SAMPLE_DIRS=SAMPLE_DIRS)
 class AssessmentResourceTestCase(AuthenticatedBaseTestCase):
+    fixtures = ['initial_data.json']
 
     def setUp(self):
-        cache.clear()
-        get_queue('variants').empty()
-        get_queue('default').empty()
-        get_failed_queue(get_connection()).empty()
-
-        management.call_command('samples', 'queue')
-
-        worker1 = get_worker('variants')
-        worker2 = get_worker('default')
-
-        worker1.work(burst=True)
-        worker2.work(burst=True)
-
-        # Create and record some data that will be used to create knowledge
-        # capture assessments later on.
+        # Create and record some data
+        self.result = Result.objects.all()[0]
         self.pathogenicity = Pathogenicity(name='pathogenic')
         self.pathogenicity.save()
         self.parental_result = ParentalResult(name='heterozygous')
@@ -43,19 +20,18 @@ class AssessmentResourceTestCase(AuthenticatedBaseTestCase):
         self.category.save()
         super(AssessmentResourceTestCase, self).setUp()
 
-    def test_get_all(self):
-        response = self.client.get('/api/assessments/',
-                                   HTTP_ACCEPT='application/json')
-        self.assertEqual(response.status_code, codes.no_content)
-
-    def test_get_when_empty(self):
+    def test_get_empty(self):
         response = self.client.get('/api/assessments/1/',
                                    HTTP_ACCEPT='application/json')
         self.assertEqual(response.status_code, codes.not_found)
 
-        sample_id = Sample.objects.values_list('id', flat=True)[0]
-        sample_result = Result.objects.filter(sample_id=sample_id)[0]
-        assessment = Assessment(sample_result=sample_result, user=self.user,
+        response = self.client.get('/api/assessments/',
+                                   HTTP_ACCEPT='application/json')
+        self.assertEqual(response.status_code, codes.no_content)
+
+    def test_get(self):
+        assessment = Assessment(sample_result=self.result,
+                                user=self.user,
                                 assessment_category=self.category,
                                 sanger_requested=True,
                                 pathogenicity=self.pathogenicity,
@@ -69,12 +45,10 @@ class AssessmentResourceTestCase(AuthenticatedBaseTestCase):
         self.assertTrue(response.content)
 
     def test_post(self):
-        sample_id = Sample.objects.values_list('id', flat=True)[0]
-        sample_result = Result.objects.filter(sample_id=sample_id)[0]
         count_before = Assessment.objects.count()
 
         assessment_obj = {
-            'sample_result': sample_result.id,
+            'sample_result': self.result.id,
             'user': self.user.id,
             'assessment_category': self.category.id,
             'pathogenicity': self.pathogenicity.id,
@@ -99,9 +73,7 @@ class AssessmentResourceTestCase(AuthenticatedBaseTestCase):
         self.assertEqual(response.status_code, codes.unprocessable_entity)
 
     def test_put(self):
-        sample_id = Sample.objects.values_list('id', flat=True)[0]
-        sample_result = Result.objects.filter(sample_id=sample_id)[0]
-        assessment = Assessment(sample_result=sample_result,
+        assessment = Assessment(sample_result=self.result,
                                 user=self.user,
                                 assessment_category=self.category,
                                 sanger_requested=False,

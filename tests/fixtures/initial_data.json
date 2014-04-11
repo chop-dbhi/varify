@@ -1,0 +1,141 @@
+[
+    {
+        "pk": 1,
+        "model": "samples.project",
+        "fields": {"notes": null,
+            "label": "Something else",
+            "modified": "2014-02-25T14:38:56.910",
+            "name": "Default",
+            "created": "2014-02-25T14:38:56.910"}
+    },
+    {
+        "pk": 1,
+        "model": "samples.batch",
+        "fields":
+        {"count": 3,
+          "name": "locus_1",
+          "investigator": null,
+          "notes": null,
+          "created": "2014-02-25T14:39:46.700",
+          "modified": "2014-02-25T14:40:16.208",
+          "label": "locus_1",
+          "project": 1,
+          "published": true
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 1,
+        "fields": {
+            "label": "1",
+            "value": "1",
+            "order": 1,
+            "code": 1
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 2,
+        "fields": {
+            "label": "Het Ref",
+            "value": "0/1",
+            "order": 2,
+            "code": 2
+        }
+    },
+    {
+        "model": "variants.varianttype",
+        "pk": 1,
+        "fields": {
+            "value": "SNP",
+            "label": "SNP",
+            "code": 1,
+            "order": 1
+        }
+     },
+    {
+        "pk": 1,
+        "model": "variants.variant",
+        "fields": {
+            "articles": [],
+            "liftover": null,
+            "type": 1,
+            "chr": 1,
+            "pos": 98,
+            "rsid": "rs1603",
+            "alt": "TG",
+            "ref": "F",
+            "md5": "8d908ff5406b"
+        }
+    },
+    {
+        "model": "samples.person",
+        "pk":1,
+        "fields": {
+            "mrn": "blah",
+            "sex": "Female",
+            "created": "2014-02-25T14:39:46.700",
+            "modified": "2014-02-25T14:40:16.208"
+        }
+    },
+    {
+        "pk": 9,
+        "model": "samples.sample",
+        "fields": {
+            "count": 13,
+            "bio_sample": null,
+            "name": "NA",
+            "created": "2014-02-25T14:39:46.766",
+            "notes": null,
+            "published": true,
+            "modified": "2014-02-25T14:40:16.191",
+            "label": "N87dsss",
+            "project": 1,
+            "person": 1,
+            "version": 0,
+            "vcf_colname": "78",
+            "batch": 1,
+            "phenotype_modified": null,
+            "md5": null
+        }
+    },
+    {
+        "pk": 1,
+        "model": "samples.result",
+        "fields": {
+            "haplotype_score": null,
+            "read_depth": null,
+            "coverage_alt": null,
+            "homopolymer_run": null,
+            "sample": 9,
+            "genotype": null,
+            "quality": null,
+            "base_counts": 43,
+            "variant": 1,
+            "mq0": null,
+            "read_pos_rank_sum": null,
+            "strand_bias": null,
+            "notes": null,
+            "created": "2014-02-25T14:40:07.630",
+            "modified": "2014-02-25T14:40:07.630",
+            "mq_rank_sum": null,
+            "baseq_rank_sum": null,
+            "raw_read_depth": 147
+        }
+    },
+    {
+        "pk": 3,
+        "model": "genes.gene",
+        "fields": {
+            "articles": [],
+            "families": [],
+            "name": "Homoglobin",
+            "symbol": "KRD34A",
+            "hgnc_id": null,
+            "chr": 1,
+            "synonyms": []
+        }
+    }
+]
+
+
