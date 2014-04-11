@@ -1,2 +1,2 @@
-define(["underscore","./ui/core","./ui/base","./ui/button","./ui/concept","./ui/field","./ui/charts","./ui/context","./ui/controls","./ui/exporter","./ui/tables","./ui/query","./ui/workflows","./ui/paginator","./ui/notify"],function(t){var e=[].slice.call(arguments,2);return t.extend.apply(null,[{}].concat(e))});
+define(["underscore","./ui/core","./ui/accordian","./ui/base","./ui/button","./ui/charts","./ui/concept","./ui/context","./ui/controls","./ui/exporter","./ui/field","./ui/notify","./ui/paginator","./ui/query","./ui/tables","./ui/workflows"],function(t){var e=[].slice.call(arguments,2);return t.extend.apply(null,[{}].concat(e))});
 //@ sourceMappingURL=ui.js.map
