@@ -40,3 +40,9 @@ service { "memcached":
   enable => true,
   require => Package['memcached']
 }
+
+# Remove bad iptable rule
+exec{ "iptables":
+    path=>$path,
+    command=>"sudo iptables -D INPUT 5;sudo iptables -D FORWARD 1;sudo service iptables save"
+}
