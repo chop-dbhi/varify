@@ -81,10 +81,6 @@ define([
 
         template: 'varify/analysis/assessment-list',
 
-        modelEvents: {
-            sync: 'render'
-        },
-
         initialize: function() {
             this.collection = new Backbone.Collection(
                 this.model.get('assessments'));
@@ -95,12 +91,6 @@ define([
         itemView: AssessmentList,
 
         template: 'varify/analysis/result-list',
-
-        /*
-        modelEvents: {
-            sync: 'render'
-        },
-        */
 
         itemViewContainer: '.items',
 
@@ -117,17 +107,24 @@ define([
 
         itemViewContainer: '.items',
 
-        /*
-        modelEvents: {
-            sync: 'render'
-        },
-        */
-
         initialize: function() {
             c.ui.AccordianGroup.prototype.initialize();
 
             this.collection = new Backbone.Collection(
                 this.model.get('categories'));
+        },
+
+        onCompositeCollectionRendered: function() {
+            // Since we record the total number of assessments for each
+            // item, we can use that as the determining factor of "emptiness."
+            if (this.model.get('total_count') > 0) {
+                this.ui.heading.css('cursor', 'pointer');
+                this.ui.icon.show();
+            }
+            else {
+                this.ui.heading.css('cursor', 'auto');
+                this.ui.icon.hide();
+            }
         }
     });
 
