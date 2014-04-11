@@ -10,7 +10,8 @@ class AssessmentResourceTestCase(AuthenticatedBaseTestCase):
     fixtures = ['initial_data.json']
 
     def setUp(self):
-        # Create and record some data
+        # Create and record some data that will be used to create knowledge
+        # capture assessments later on.
         self.result = Result.objects.all()[0]
         self.pathogenicity = Pathogenicity(name='pathogenic')
         self.pathogenicity.save()
