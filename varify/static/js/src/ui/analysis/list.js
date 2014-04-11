@@ -142,7 +142,8 @@ define([
             empty: '.empty-message',
             error: '.error-message',
             initial: '.initial-message',
-            loading: '.loading-indicator'
+            loading: '.loading-indicator',
+            items: '.items'
         },
 
         collectionEvents: {
@@ -162,6 +163,7 @@ define([
             this.ui.empty.hide();
             this.ui.error.hide();
             this.ui.initial.hide();
+            this.ui.items.hide();
             this.ui.loading.show();
         },
 
@@ -183,6 +185,7 @@ define([
                 this.ui.empty.show();
             }
             else {
+                this.ui.items.show();
                 this.ui.empty.hide();
             }
         },
