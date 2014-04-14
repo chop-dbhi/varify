@@ -306,6 +306,10 @@ body, #concept-panel, #context-panel {
         box-shadow: inset -2px 0 2px rgba(0, 0, 0, 0.05);
         border-right: 1px solid rgba(0, 0, 0, 0.1);
         overflow: scroll;
+
+        .title {
+            padding-left: 10px;
+        }
     }
 
     .assessments-region {
@@ -321,6 +325,16 @@ body, #concept-panel, #context-panel {
 
         .group > .inner {
             margin-left: 20px;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        // Need this to override the dominant border style carried over from
+        // the variant container table rows
+        tr:first-child {
+            border: 0px;
         }
     }
 

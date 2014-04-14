@@ -323,6 +323,10 @@ Assessment = {
     'exclude': ['user', 'sample_result', 'notes', 'analysis']
 }
 
+AnalysisAssessment = {
+    'exclude': ['sample_result', 'notes', 'analysis']
+}
+
 ResultAssessment = {
     'fields': ['id', 'assessment_category', 'pathogenicity']
 }

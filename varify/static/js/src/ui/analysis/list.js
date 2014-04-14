@@ -82,22 +82,31 @@ define([
 
         template: 'varify/analysis/assessment-list',
 
+        ui: {
+            resultRow: '[data-target=result-row]'
+        },
+
         initialize: function() {
             this.collection = new Backbone.Collection(
                 this.model.get('assessments'));
+        },
+
+        onRender: function() {
+            var rowView = new tables.ResultRow({
+                resultPk: this.model.get('id')
+            });
+            rowView.render();
+
+            this.ui.resultRow.html(rowView.el);
         }
     });
 
     var ResultList = c.ui.AccordianSection.extend({
-        itemView: tables.ResultRow,
+        itemView: AssessmentList,
 
         template: 'varify/analysis/result-list',
 
         itemViewContainer: '.items',
-
-        itemViewOptions: function (model, index) {
-            return _.defaults({resultPk: model.get('id')}, this.options);
-        },
 
         initialize: function() {
             this.collection = new Backbone.Collection(

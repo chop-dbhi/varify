@@ -66,7 +66,7 @@ class AnalysisResource(ThrottledResource):
 class AnalysisAssessmentsResource(ThrottledResource):
     model = Assessment
 
-    template = api.templates.Assessment
+    template = api.templates.AnalysisAssessment
 
     def is_not_found(self, request, response, pk):
         return not Analysis.objects.filter(pk=pk).exists()
