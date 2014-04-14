@@ -1,0 +1,65 @@
+.analysis-workflow {
+    position: absolute;
+    top: 30px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow: hidden;
+
+    $analysesRegionWidth: 265px;
+    $leftPadding: 10px;
+    $analysisItemWidth: $analysesRegionWidth - $leftPadding;
+
+    .analyses-region {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: $analysesRegionWidth;
+        background-color: #f9f9f9;
+        text-shadow: 0 1px 1px #fff;
+        box-shadow: inset -2px 0 2px rgba(0, 0, 0, 0.05);
+        border-right: 1px solid rgba(0, 0, 0, 0.1);
+        overflow: scroll;
+
+        .title {
+            padding-left: 10px;
+        }
+    }
+
+    .assessments-region {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        margin-left: $analysesRegionWidth + 25px;
+        margin-right: 25px;
+        padding-top: 5px;
+        overflow-y: scroll;
+
+        .group > .inner {
+            margin-left: 20px;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        // Need this to override the dominant border style carried over from
+        // the variant container table rows
+        tr:first-child {
+            border: 0px;
+        }
+    }
+
+    .analysis-item {
+        padding-left: $leftPadding;
+        width: $analysisItemWidth;
+
+        &.selected {
+            background-color: #ecffff;
+            border-right: 1px solid rgba(0,0,0,0.1);
+            box-shadow: inset -2px 0 2px rgba(0,0,0,0.05);
+        }
+    }
+}
