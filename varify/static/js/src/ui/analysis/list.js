@@ -137,13 +137,8 @@ define([
         onCompositeCollectionRendered: function() {
             // Since we record the total number of assessments for each
             // item, we can use that as the determining factor of "emptiness."
-            if (this.model.get('total_count') > 0) {
-                this.ui.heading.css('cursor', 'pointer');
-            }
-            else {
-                this.ui.heading.css('cursor', 'auto');
-                this.ui.icon.hide();
-                this.ui.totals.hide();
+            if (this.model.get('total_count') === 0) {
+                this.$el.hide();
             }
         }
     });
