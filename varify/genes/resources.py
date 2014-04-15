@@ -28,8 +28,10 @@ class GeneResource(ThrottledResource):
         data = serialize(gene, **self.template)
         # The approved symbol and name is listed as a synonym for easier
         # searching, but they should be displayed in the output
-        data['synonyms'].remove(data['name'])
-        data['synonyms'].remove(data['symbol'])
+        if data['name'] in data['synonyms']:
+            data['synonyms'].remove(data['name'])
+        if data['symbol'] in data['synonyms']:
+            data['synonyms'].remove(data['symbol'])
         return data
 
 
@@ -73,8 +75,10 @@ class GeneSearchResource(ThrottledResource):
         for obj in resp['results']:
             # The approved symbol and name is listed as a synonym for easier
             # searching, but they should be displayed in the output
-            obj['synonyms'].remove(obj['name'])
-            obj['synonyms'].remove(obj['symbol'])
+            if obj['name'] in obj['synonyms']:
+                obj['synonyms'].remove(obj['name'])
+            if obj['symbol'] in obj['synonyms']:
+                obj['synonyms'].remove(obj['symbol'])
 
             obj['_links'] = {
                 'self': {
