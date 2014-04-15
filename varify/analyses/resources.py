@@ -109,10 +109,6 @@ class AnalysisAssessmentsResource(ThrottledResource):
                     'id': c.id,
                     'name': c.name,
                     'results': results,
-                    'draft_count': categoryAssessments.filter(
-                        status=Assessment.DRAFT).count(),
-                    'pending_count': categoryAssessments.filter(
-                        status=Assessment.PENDING).count(),
                     'total_count': categoryAssessments.count(),
                 })
 
@@ -120,10 +116,6 @@ class AnalysisAssessmentsResource(ThrottledResource):
                 'id': p.id,
                 'name': p.name,
                 'categories': categories,
-                'draft_count': pathogenicityAssessments.filter(
-                    status=Assessment.DRAFT).count(),
-                'pending_count': pathogenicityAssessments.filter(
-                    status=Assessment.PENDING).count(),
                 'total_count': pathogenicityAssessments.count(),
 
             })
