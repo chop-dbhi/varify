@@ -90,8 +90,14 @@ class AnalysisAssessmentsResource(ThrottledResource):
 
                 results = []
                 for resultId in resultIds:
+                    # The use of assessments here is intentional. While we want
+                    # to group by pathogenicity and then by category, we must
+                    # include all the assessments for each result here. Imagine
+                    # user1 and user2 review the same result but select
+                    # different pathogenicities. We want both those assessments
+                    # to appear under each result.
                     resultAssessments = list(
-                        categoryAssessments.filter(sample_result_id=resultId))
+                        assessments.filter(sample_result_id=resultId))
 
                     results.append({
                         'id': resultId,
