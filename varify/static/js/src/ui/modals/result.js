@@ -773,6 +773,8 @@ define([
         },
 
         initialize: function() {
+            _.bindAll(this, 'onSaveError', 'onSaveSuccess');
+
             this.assessmentTab = new AssessmentTab;
         },
 
@@ -922,7 +924,12 @@ define([
             });
 
             if (this.model.get('assessment') != null) {
-                assessmentModel.id = this.model.get('assessment').id;
+                // We normally would set assessmentModel.id, but, due to
+                // a change(https://github.com/jashkenas/backbone/pull/2878) in
+                // Backbone, we need to set this on attributes rather than
+                // access id directly like we used to. See notes and changes on
+                // the pull request for more details.
+                assessmentModel.set(assessmentModel.idAttribute, this.model.get('assessment').id);
             }
 
             this.assessmentTab.update(assessmentModel);
