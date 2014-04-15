@@ -10,6 +10,11 @@
     $leftPadding: 10px;
     $analysisItemWidth: $analysesRegionWidth - $leftPadding;
 
+    .label {
+        width: 65px;
+        text-align: center;
+    }
+
     .analyses-region {
         position: absolute;
         top: 0;

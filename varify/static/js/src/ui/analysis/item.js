@@ -5,27 +5,29 @@ define([
     'marionette'
 ], function(c, Marionette) {
 
-    var AnalysisItem = Marionette.ItemView.extend({
-        className: 'analysis-item',
-
-        template: 'varify/analysis/item',
-
-        events: {
-            'click a': 'onClick'
+    var StatusItem = Marionette.ItemView.extend({
+        ui: {
+            status: '[data-target=status-label]'
         },
 
         modelEvents: {
             sync: 'render'
         },
 
-        ui: {
-            status: '[data-target=status-label]'
-        },
-
         setStatus: function(cls) {
             this.ui.status.removeClass(
                 'label-info label-warning label-success label-important')
                 .addClass(cls);
+        },
+    });
+
+    var AnalysisItem = StatusItem.extend({
+        className: 'analysis-item',
+
+        template: 'varify/analysis/item',
+
+        events: {
+            'click a': 'onClick'
         },
 
         onClick: function() {
@@ -48,16 +50,28 @@ define([
                     break;
             }
         }
-
     });
 
-    var AssessmentItem = Marionette.ItemView.extend({
+    var AssessmentItem = StatusItem.extend({
         className: 'assessment-item',
 
         template: 'varify/analysis/assessment-item',
 
-        modelEvents: {
-            sync: 'render'
+        onRender: function() {
+            switch(this.model.get('status')) {
+                case 'Draft':
+                    this.setStatus('label-info');
+                    break;
+                case 'Pending':
+                    this.setStatus('label-warning');
+                    break;
+                case 'Complete':
+                    this.setStatus('label-success');
+                    break;
+                default:
+                    this.setStatus('label-important');
+                    break;
+            }
         }
     });
 
