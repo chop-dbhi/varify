@@ -13,6 +13,7 @@ if not apps:
         'sample_load_process',
         'south_tests',
         'geneset_form',
+        'exporting',
         'commands',
     ]
 
