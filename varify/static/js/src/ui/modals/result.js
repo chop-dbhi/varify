@@ -302,7 +302,44 @@ define([
                         }
 
                         if (eff.hgvs_p || eff.amino_acid_change) {
-                            content.push('<li>' + (eff.hgvs_p || eff.amino_acid_change) + '</li>');
+                            var changeString = eff.hgvs_p || eff.amino_acid_change;
+
+                           /*
+                            *  Key is the basic physicochemical property of the amino acid
+                            *  And each character in the value string are the categorizations
+                            *  Inspecting the hgvs_p will tell us about the protein change
+                            *  For more info refer to
+                            *  https://www.ncbi.nlm.nih.gov/Class/Structure/aa/aa_explorer.cgi
+                            */
+                            var changes = {
+                                'Non-Polar': 'IFVLWMAGP',
+                                'Polar': 'CYTSNQ',
+                                'Negative': 'ED',
+                                'Positive': 'HKR'
+                            }
+                            var initialAminoAcid = changeString[2],
+                                finalAminoAcid = changeString[changeString.length - 1],
+                                initialProperty = '',
+                                finalProperty = '';
+
+                            // Check if there was a change in the hgvs_p
+                            for (var change in changes) {
+                                if (changes[change].indexOf(initialAminoAcid) != -1) {
+                                    initialProperty = change;
+                                }
+                                if (changes[change].indexOf(finalAminoAcid) != -1) {
+                                    finalProperty = '&#8594' + change;
+                                }
+                            }
+
+                            content.push('<li>' + changeString);
+
+                            // Only display if the protein actually changed
+                            if (initialProperty && finalProperty) {
+                                content.push('<br>' + initialProperty + finalProperty);
+                            }
+
+                            content.push('</li>');
                         }
 
                         content.push('</ul>');
