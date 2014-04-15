@@ -773,6 +773,8 @@ define([
         },
 
         initialize: function() {
+            _.bindAll(this, 'onSaveError', 'onSaveSuccess');
+
             this.assessmentTab = new AssessmentTab;
         },
 
