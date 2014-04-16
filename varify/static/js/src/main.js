@@ -139,7 +139,7 @@ require({
 
     // Mark the Sample concept as required and display a notification to the
     // user when it is not populated.
-    c.config.set('query.concepts.required', [2]);
+    c.config.set('filters.required', [{concept: 2}]);
     c.on(c.CONTEXT_INVALID, notifyRequired);
     c.on(c.CONTEXT_REQUIRED, notifyRequired);
 
