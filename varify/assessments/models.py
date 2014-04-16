@@ -52,10 +52,10 @@ class Assessment(TimestampedModel):
     IGNORED = 'Ignored'
 
     STATUSES = (
-        (DRAFT, 'Draft'),
-        (PENDING, 'Pending'),
-        (COMPLETE, 'Complete'),
-        (IGNORED, 'Ignored'),
+        (DRAFT, DRAFT),
+        (PENDING, PENDING),
+        (COMPLETE, COMPLETE),
+        (IGNORED, IGNORED),
     )
 
     evidence_details = models.TextField(null=True, blank=True)
