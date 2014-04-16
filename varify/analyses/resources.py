@@ -97,7 +97,8 @@ class AnalysisAssessmentsResource(ThrottledResource):
                     # different pathogenicities. We want both those assessments
                     # to appear under each result.
                     resultAssessments = list(
-                        assessments.filter(sample_result_id=resultId))
+                        assessments.filter(sample_result_id=resultId)
+                                   .exclude(status=Assessment.IGNORED))
 
                     results.append({
                         'id': resultId,
