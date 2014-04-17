@@ -1,9 +1,10 @@
 /* global define */
 
 define([
+    'underscore',
     'cilantro',
     'marionette'
-], function(c, Marionette) {
+], function(_, c, Marionette) {
 
     var StatusItem = Marionette.ItemView.extend({
         ui: {
@@ -57,6 +58,13 @@ define([
 
         template: 'varify/analysis/assessment-item',
 
+        ui: function() {
+            return _.extend({
+                pathogenicity: '.pathogenicity-label',
+                category: '.category-label'
+            }, StatusItem.prototype.ui);
+        },
+
         onRender: function() {
             switch(this.model.get('status')) {
                 case 'Draft':
@@ -71,6 +79,14 @@ define([
                 default:
                     this.setStatus('label-important');
                     break;
+            }
+
+            if (this.model.get('pathogenicity').name !== this.options.pathogenicity) {
+                this.ui.pathogenicity.addClass('text-warning').removeClass('muted');
+            }
+
+            if (this.model.get('assessment_category').name !== this.options.category) {
+                this.ui.category.addClass('text-warning').removeClass('muted');
             }
         }
     });

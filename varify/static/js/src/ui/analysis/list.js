@@ -85,6 +85,15 @@ define([
             resultRow: '[data-target=result-row]'
         },
 
+        itemViewOptions: function() {
+            // Pass the pathogenicity(from above) and the category down
+            // to the assessment level.
+            return {
+                pathogenicity: this.options.pathogenicity,
+                category: this.options.category
+            };
+        },
+
         initialize: function() {
             this.collection = new Backbone.Collection(
                 this.model.get('assessments'));
@@ -98,6 +107,15 @@ define([
 
         itemViewContainer: '.items',
 
+        itemViewOptions: function() {
+            // Pass the pathogenicity(from above) and the category down
+            // to the assessment level.
+            return {
+                pathogenicity: this.options.pathogenicity,
+                category: this.model.get('name')
+            };
+        },
+
         initialize: function() {
             this.collection = new Backbone.Collection(
                 this.model.get('results'));
@@ -110,6 +128,13 @@ define([
         template: 'varify/analysis/category-list',
 
         itemViewContainer: '.items',
+
+        itemViewOptions: function() {
+            // Pass the pathogenicity down to the assessment level.
+            return _.extend({
+                pathogenicity: this.model.get('name')
+            }, c.ui.AccordianGroup.prototype.itemViewOptions);
+        },
 
         ui: function() {
             return _.extend({
