@@ -112,6 +112,31 @@ class ThousandG(models.Model):
     eur_af = models.FloatField('allele frequency for EUR (European)',
                                null=True, db_index=True)
 
+    def maxPopulationFrequency(self):
+        """
+        Returns a tuple containing the maximum population frequency and the
+        name of the population having the max frequency. The first item in the
+        tuple is the max frequency and the second item is the population name.
+        Should 2 populations have the same frequency, the first population in
+        alphabetical order is returned.
+        """
+        maxFreq = self.afr_af
+        population = 'African'
+
+        if self.amr_af > maxFreq:
+            maxFreq = self.amr_af
+            population = 'American'
+
+        if self.asn_af > maxFreq:
+            maxFreq = self.asn_af
+            population = 'Asian'
+
+        if self.eur_af > maxFreq:
+            maxFreq = self.eur_af
+            population = 'European'
+
+        return (maxFreq, population)
+
     class Meta(object):
         db_table = '1000g'
 
@@ -148,6 +173,23 @@ class EVS(models.Model):
                                null=True)
     read_depth = models.IntegerField('read depth', null=True)
     clinical_association = models.TextField(null=True)
+
+    def maxPopulationFrequency(self):
+        """
+        Returns a tuple containing the maximum population frequency and the
+        name of the population having the max frequency. The first item in the
+        tuple is the max frequency and the second item is the population name.
+        Should 2 populations have the same frequency, the first population in
+        alphabetical order is returned.
+        """
+        maxFreq = self.aa_af
+        population = 'African'
+
+        if self.ea_af > maxFreq:
+            maxFreq = self.ea_af
+            population = 'European'
+
+        return (maxFreq, population)
 
     class Meta(object):
         db_table = 'evs'

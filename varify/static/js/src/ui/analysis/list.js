@@ -5,9 +5,8 @@ define([
     'cilantro',
     'backbone',
     'marionette',
-    './item',
-    '../tables'
-], function(_, c, Backbone, Marionette, item, tables) {
+    './item'
+], function(_, c, Backbone, Marionette, item) {
 
     var AnalysisList = Marionette.CompositeView.extend({
         itemView: item.AnalysisItem,
@@ -69,7 +68,7 @@ define([
             this.checkForEmptyCollection();
         },
 
-        onAnalysisItemClick: function(view, model) {
+        onAnalysisItemClick: function(view) {
             this.ui.items.children().removeClass('selected');
             view.$el.addClass('selected');
         }
@@ -89,15 +88,6 @@ define([
         initialize: function() {
             this.collection = new Backbone.Collection(
                 this.model.get('assessments'));
-        },
-
-        onRender: function() {
-            var rowView = new tables.ResultRow({
-                resultPk: this.model.get('id')
-            });
-            rowView.render();
-
-            this.ui.resultRow.html(rowView.el);
         }
     });
 

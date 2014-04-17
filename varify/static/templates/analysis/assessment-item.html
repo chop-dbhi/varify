@@ -1,4 +1,7 @@
 <p>
     <span data-target='status-label' class='label'><%= data.status %></span>
     <a href='<%= data.user.email %>'><%= data.user.username %></a>: <%= data.evidence_details %>
+    <br />
+    <span class='muted pathogenicity-label'>Pathogenicity: <%= data.pathogenicity.name %></span>
+    <span class='muted category-label'>Category: <%= data.assessment_category.name %></span>
 </p>

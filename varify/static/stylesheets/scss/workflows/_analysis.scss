@@ -59,6 +59,26 @@
         .heading {
             cursor: pointer;
         }
+
+        .category-label {
+            float: right;
+            margin-right: 15px;
+        }
+
+        .assessment-list {
+            .row-fluid {
+                background-color: #ececec;
+                padding: 5px;
+
+                span {
+                    width: 13%;
+                    display: inline-block;
+                    font-weight: bold;
+                    text-align: center;
+                    white-space: nowrap;
+                }
+            }
+        }
     }
 
     .analysis-item {

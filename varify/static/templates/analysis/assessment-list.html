@@ -1,5 +1,33 @@
 <div class=assessment-list>
-    <table><tbody data-target='result-row'></tbody></table>
+    <div class=row-fluid>
+        <span>
+            <a target=_blank href="http://genome.ucsc.edu/cgi-bin/hgTracks?position=chr<%= data.chr %>%3A<%= data.pos %>">chr<%= data.chr %> <span class=muted>@</span> <%= data.pos %></a>
+        </span>
+        <span><%= data.gene %></span>
+        <span><% print(data.hgvs_c || '<span class=muted>No HGVS.c</span>'); %></span>
+        <span><% print(data.hgvs_p || '<span class=muted>No HGVS.p</span>'); %></span>
+        <span><%= data.genotype %></span>
+        <span>
+            <%
+            if (data.thousandg) {
+                print(data.thousandg.frequency + '(' + data.thousandg.population + ')');
+            }
+            else {
+                print('<span class=muted>Not in 1000g</span>');
+            }
+            %>
+        </span>
+        <span>
+            <%
+            if (data.evs) {
+                print(data.evs.frequency + '(' + data.evs.population + ')');
+            }
+            else {
+                print('<span class=muted>Not in EVS</span>');
+            }
+            %>
+        </span>
+    </div>
 
     <div class=items></div>
 </div>

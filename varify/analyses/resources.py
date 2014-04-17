@@ -9,6 +9,7 @@ from serrano.resources.base import ThrottledResource
 from varify import api
 from varify.assessments.models import Assessment, Pathogenicity, \
     AssessmentCategory
+from varify.samples.models import Result
 from .models import Analysis
 
 log = logging.getLogger(__name__)
@@ -72,7 +73,8 @@ class AnalysisAssessmentsResource(ThrottledResource):
         return not Analysis.objects.filter(pk=pk).exists()
 
     def get(self, request, pk):
-        assessments = self.model.objects.filter(analysis__pk=pk)
+        assessments = self.model.objects.filter(analysis_id=pk)\
+                                        .exclude(status=Assessment.IGNORED)
 
         pathogenicities = []
 
@@ -82,7 +84,6 @@ class AnalysisAssessmentsResource(ThrottledResource):
 
             categories = []
             for c in AssessmentCategory.objects.all():
-
                 categoryAssessments = pathogenicityAssessments.filter(
                     assessment_category_id=c.id)
                 resultIds = categoryAssessments\
@@ -90,6 +91,13 @@ class AnalysisAssessmentsResource(ThrottledResource):
 
                 results = []
                 for resultId in resultIds:
+                    try:
+                        result = Result.objects.get(id=resultId)
+                    except Result.DoesNotExist:
+                        log.error('Could not find result with ID={0}'
+                                  .format(resultId))
+                        continue
+
                     # The use of assessments here is intentional. While we want
                     # to group by pathogenicity and then by category, we must
                     # include all the assessments for each result here. Imagine
@@ -97,14 +105,49 @@ class AnalysisAssessmentsResource(ThrottledResource):
                     # different pathogenicities. We want both those assessments
                     # to appear under each result.
                     resultAssessments = list(
-                        assessments.filter(sample_result_id=resultId)
-                                   .exclude(status=Assessment.IGNORED))
+                        assessments.filter(sample_result_id=resultId))
 
-                    results.append({
+                    data = {
                         'id': resultId,
+                        'chr': result.variant.chr.label,
+                        'pos': result.variant.pos,
+                        'genotype': result.genotype.value,
                         'assessments': serialize(resultAssessments,
                                                  **self.template)
-                    })
+                    }
+
+                    # If any effects exist then only choose the most impactful
+                    # effect to report on.
+                    if result.variant.effects.exists():
+                        effect = result.variant.effects.order_by(
+                            'effect__impact')[0]
+                        data['gene'] = effect.transcript.gene.symbol
+                        data['hgvs_c'] = effect.hgvs_c
+                        data['hgvs_p'] = effect.hgvs_p
+
+                    # If the variant has 1000g or EVS frequencies recorded,
+                    # choose and report back only the maximum.
+                    if result.variant.thousandg.exists():
+                        instance = result.variant.thousandg.get()
+
+                        freq, population = instance.maxPopulationFrequency()
+
+                        data['thousandg'] = {
+                            'frequency': freq,
+                            'population': population
+                        }
+
+                    if result.variant.evs.exists():
+                        instance = result.variant.evs.get()
+
+                        freq, population = instance.maxPopulationFrequency()
+
+                        data['evs'] = {
+                            'frequency': freq,
+                            'population': population
+                        }
+
+                    results.append(data)
 
                 categories.append({
                     'id': c.id,
