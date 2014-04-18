@@ -73,16 +73,17 @@ def auto_create_project_group(instance, created, **kwargs):
     # TODO change this to queue up an email rather than doing it in process..
     if created:
         assign('view_project', group, instance)
-        kwargs = {
-            'subject': '{0}Project "{1}" Created'.format(
-                settings.EMAIL_SUBJECT_PREFIX, name),
-            'message': 'The "{0}" Project Group has been created. This is a '
-                       'reminder to setup any permissions for the associated '
-                       'users.'.format(name),
-            'from_email': settings.NO_REPLY_EMAIL,
-            'recipient_list': [settings.SUPPORT_EMAIL],
-        }
+
         try:
+            kwargs = {
+                'subject': '{0}Project "{1}" Created'.format(
+                    settings.EMAIL_SUBJECT_PREFIX, name),
+                'message': 'The "{0}" Project Group has been created. This is '
+                           'a reminder to setup any permissions for the '
+                           'associated users.'.format(name),
+                'from_email': settings.NO_REPLY_EMAIL,
+                'recipient_list': [settings.SUPPORT_EMAIL],
+            }
             # Since we aren't passing the fail_silently kwarg to the send_mail
             # method, it will throw any errors back in our face so we catch
             # them here and log them rather than letting it propogate.
