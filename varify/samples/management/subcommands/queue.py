@@ -9,7 +9,7 @@ from varify.samples.pipeline.handlers import load_samples
 
 SAMPLE_DIRS = getattr(settings, 'VARIFY_SAMPLE_DIRS', ())
 
-log = logging.getLogger(__file__)
+log = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
