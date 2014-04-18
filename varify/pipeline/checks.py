@@ -8,8 +8,9 @@ def record_is_valid(record):
     if record.CHROM.startswith('GL'):
         return False
 
-    # Skip results with a read depth < 5
-    if record.INFO['DP'] < 5:
+    # Skip results with a read depth < 5. If no read depth is specified then
+    # we have no choice but to consider this record as being valid.
+    if 'DP' in record.INFO and record.INFO['DP'] < 5:
         return False
 
     return True
