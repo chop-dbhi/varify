@@ -22,12 +22,11 @@ class Command(BaseCommand):
         database = options.get('database')
         cursor = connections[database].cursor()
 
-        assessments = Assessment.objects.filter(
-            sample_result__sample_id__in=args)
+        invalid_ids = set(Assessment.objects.filter(
+            sample_result__sample_id__in=args).values_list(
+            'sample_result__sample_id', flat=True))
 
-        invalid_ids = []
-        if assessments.exists():
-            invalid_ids = assessments.values_list('id', flat=True)
+        if invalid_ids:
             log.warning("Sample(s) with id '{0}' cannot be deleted "
                         "because they have knowledge capture data "
                         "associated with them. If you are absolutely "
