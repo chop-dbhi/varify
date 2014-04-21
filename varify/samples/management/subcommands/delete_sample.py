@@ -2,7 +2,7 @@ import logging
 from optparse import make_option
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connections, transaction, DEFAULT_DB_ALIAS, DatabaseError
-from varify.assessments.models import Assessment
+from varify.samples.models import Sample
 
 log = logging.getLogger(__name__)
 
@@ -22,9 +22,9 @@ class Command(BaseCommand):
         database = options.get('database')
         cursor = connections[database].cursor()
 
-        invalid_ids = set(Assessment.objects.filter(
-            sample_result__sample_id__in=args).values_list(
-            'sample_result__sample_id', flat=True))
+        invalid_ids = set(Sample.objects.filter(
+            results__assessment__isnull=False, pk__in=args).values_list(
+            'id', flat=True))
 
         if invalid_ids:
             log.warning("Sample(s) with id '{0}' cannot be deleted "
@@ -35,7 +35,7 @@ class Command(BaseCommand):
                         "for them and then rerun this command."
                         .format(", ".join([str(id) for id in invalid_ids])))
 
-        valid_ids = [id for id in args if id not in invalid_ids]
+        valid_ids = [id for id in args if int(id) not in invalid_ids]
         columns = ", ".join(['%s' for id in valid_ids])
 
         if not valid_ids:
