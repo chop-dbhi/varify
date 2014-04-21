@@ -14,13 +14,18 @@ define([
         template: function() {},
 
         initialize: function() {
-            _.bindAll(this, 'fetchMetricsError', 'fetchMetricsSuccess');
+            _.bindAll(this, 'fetchMetricsError', 'fetchMetricsSuccess',
+                'hidePopover');
+
 
             this.metrics = this.options.metrics;
 
             this.$content = $('<div class=content>');
             this.$el.append(this.$content);
             this.$el.attr('id', 'variant-details-content');
+
+            c.on('resultModal:detailsTabClosed', this.hidePopover);
+            c.on('resultModal:closed', this.hidePopover);
         },
 
         events: {
@@ -30,7 +35,12 @@ define([
         },
 
         hidePopover: function(event) {
-            $('.cohort-sample-popover').not(event.target).popover('hide');
+            if (event && event.target) {
+                $('.cohort-sample-popover').not(event.target).popover('hide');
+            }
+            else {
+                $('.cohort-sample-popover').popover('hide');
+            }
         },
 
         expandAssessmentRow: function(event) {
@@ -765,10 +775,10 @@ define([
         },
 
         events: {
-            'click #close-review-button': 'close',
+            'click [data-action=close-result-modal]': 'close',
             'click #save-assessment-button': 'saveAndClose',
             'click #variant-details-link': 'hideButtons',
-            'click #knowledge-capture-link': 'showButtons',
+            'click #knowledge-capture-link': 'knowledgeCaptureTabClicked',
             'click [data-target=expand-collapse-link]': 'toggleExpandedState'
         },
 
@@ -776,6 +786,11 @@ define([
             _.bindAll(this, 'onSaveError', 'onSaveSuccess');
 
             this.assessmentTab = new AssessmentTab;
+        },
+
+        knowledgeCaptureTabClicked: function() {
+            c.trigger('resultModal:detailsTabClosed');
+            this.showButtons();
         },
 
         //Add/remove 'hide' class rather than calling
@@ -798,6 +813,7 @@ define([
         },
 
         close: function() {
+            c.trigger('resultModal:closed');
             this.$el.modal('hide');
         },
 
