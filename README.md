@@ -197,7 +197,8 @@ _Note, the `sass` target is called first to ensure the compiled files exist befo
 
 The following describes the steps to execute the loading pipeline, the performance of the pipeline, and the process behind it.
 
-### Executing the Load Pipeline
+
+#### NOTE: All VCF files being loaded into Varify must be annotated with the [CBMi fork of SnpEff](https://github.com/CBMi-BiG/snpEff). The key difference is that the CBMi fork attempts to generate valid HGVS for insertions and deletions, including those which require "walking and rolling" to identify the correct indel frame while the standard SnpEff version only contains a partial implementation of HGVS notation [as noted here](http://snpeff.sourceforge.net/SnpEff_manual.html#filters).
 
 ### Retrieving Test Data
 
