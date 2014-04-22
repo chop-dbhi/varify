@@ -5,7 +5,7 @@ python:
     - "2.7"
 
 env:
-    - DJANGO=1.4.10
+    - DJANGO=1.4.11
 
 virtualenv:
     system_site_packages: true
