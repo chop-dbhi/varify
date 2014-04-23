@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 from django.core import management
 from django.test import TestCase
 from django.test.utils import override_settings
-from django_rq import get_worker
 from requests.exceptions import ConnectionError, RequestException, SSLError
 from varify.assessments.models import Assessment, Pathogenicity, \
     ParentalResult, AssessmentCategory
@@ -527,17 +526,8 @@ class DeleteTestCase(QueueTestCase):
         super(DeleteTestCase, self).setUp()
 
         # Immediately validates and creates a sample
-        management.call_command('samples', 'queue')
-
-        # Synchronously work on queue
-        worker1 = get_worker('variants')
-        worker2 = get_worker('default')
-
-        # Work on variants...
-        worker1.work(burst=True)
-
-        # Work on effects...
-        worker2.work(burst=True)
+        management.call_command('samples', 'queue',
+                                burst=True, startworkers=True)
 
         # Create and record some data that will be used to create knowledge
         # capture assessments later on.
@@ -660,23 +650,15 @@ class DeleteTestCase(QueueTestCase):
         self.assertEqual(0, Batch.objects.count())
         self.assertEqual(0, Project.objects.count())
 
+
 @override_settings(VARIFY_SAMPLE_DIRS=SAMPLE_DIRS)
 class AlleleTestCase(QueueTestCase):
     def setUp(self):
         super(AlleleTestCase, self).setUp()
 
         # Immediately validates and creates a sample
-        management.call_command('samples', 'queue')
-
-        # Synchronously work on queue
-        worker1 = get_worker('variants')
-        worker2 = get_worker('default')
-
-        # Work on variants...
-        worker1.work(burst=True)
-
-        # Work on effects...
-        worker2.work(burst=True)
+        management.call_command('samples', 'queue',
+                                burst=True, startworkers=True)
 
     def test_allele_freqs(self):
         management.call_command('samples', 'allele-freqs')
