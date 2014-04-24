@@ -1,6 +1,6 @@
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
-from .models import Project, Cohort, Batch, Sample, SampleManifest
+from .models import Project, Cohort, Batch, Sample, SampleManifest, ResultSet
 
 
 class ProjectAdmin(GuardedModelAdmin):
@@ -76,8 +76,19 @@ class SampleManifestAdmin(admin.ModelAdmin):
     formatted_content.short_description = 'Content'
 
 
+class ResultSetAdmin(admin.ModelAdmin):
+    list_display = ('name', 'sample', 'user')
+
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'sample', 'user', 'description'),
+        }),
+    )
+
+
 admin.site.register(Sample, SampleAdmin)
 admin.site.register(SampleManifest, SampleManifestAdmin)
 admin.site.register(Cohort, CohortAdmin)
 admin.site.register(Project, ProjectAdmin)
 admin.site.register(Batch, BatchAdmin)
+admin.site.register(ResultSet, ResultSetAdmin)
