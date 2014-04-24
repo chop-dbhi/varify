@@ -362,6 +362,9 @@ MODELTREES = {
         }, {
             'target': 'samples.cohortvariant',
             'source': 'variants.variant',
+        }, {
+            'target': 'samples.resultset',
+            'source': 'samples.resultsetitem',
         }],
         'excluded_routes': [{
             'target': 'genes.gene',
