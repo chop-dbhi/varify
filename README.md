@@ -60,7 +60,7 @@ pip install solvebio
 ```
 
 Then, make sure that the `SOLVEBIO_API_KEY` Django setting is set either
-via an environment variable (see `global_settings.py`) or explicitly in your
+via an environment variable (see `settings.py`) or explicitly in your
 `local_settings.py`. You can find your API key from your account page on the
 SolveBio website.
 
