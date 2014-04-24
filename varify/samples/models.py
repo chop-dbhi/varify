@@ -384,6 +384,28 @@ class ResultScore(TimestampedModel):
         db_table = 'result_score'
 
 
+class ResultSet(ObjectSet):
+    sample = models.ForeignKey(Sample, related_name='result_sets')
+    name = models.CharField(max_length=200)
+    description = models.TextField(null=True, blank=True)
+    user = models.ForeignKey(User)
+
+    results = models.ManyToManyField(Result, through='ResultSetItem')
+
+    class Meta(object):
+        db_table = 'result_set'
+        unique_together = ('sample', 'name')
+
+
+class ResultSetItem(SetObject):
+    result = models.ForeignKey(Result)
+    set = models.ForeignKey(ResultSet)
+
+    class Meta(object):
+        db_table = 'result_set_item'
+        unique_together = ('result', 'set')
+
+
 # Load signal receivers. This is imported below to prevent circular imports
 # with the above models.
 from . import receivers     # noqa
