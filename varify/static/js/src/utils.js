@@ -17,7 +17,7 @@ define([
     };
 
 
-    var groupByType = function(effects) {
+    var groupEffectsByType = function(effects) {
         var data = [];
 
         if (effects && effects.length) {
@@ -28,6 +28,26 @@ define([
                     effects: groupedEffects[type]
                 });
             }
+        }
+
+        return data;
+    };
+
+
+    var groupPhenotypesByType = function(variant) {
+        var data = [];
+
+        data.push({
+            type: 'variant',
+            phenotypes: variant.phenotypes
+        });
+
+        for (var i = 0; i < variant.uniqueGenes.length; i++) {
+            data.push({
+                type: 'gene',
+                phenotypes: variant.uniqueGenes[i].phenotypes,
+                gene: variant.uniqueGenes[i]
+            });
         }
 
         return data;
@@ -220,7 +240,8 @@ define([
         depthClass: depthClass,
         effectImpactPriority: effectImpactPriority,
         getRootUrl: getRootUrl,
-        groupByType: groupByType,
+        groupEffectsByType: groupEffectsByType,
+        groupPhenotypesByType: groupPhenotypesByType,
         parseISO8601UTC: parseISO8601UTC,
         priorityClass: priorityClass,
         qualityClass: qualityClass,
