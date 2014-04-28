@@ -1,0 +1,7 @@
+<%= data.term %>
+<% if (data.hgmd_id) {%>
+    (HGMD: <%= data.hgmd_id %>)
+<% } %>
+<% if (data.hpo_id) {%>
+    (<a href='http://www.human-phenotype-ontology.org/hpoweb/showterm?id=HP_<%= data.hpo_id %>'>HPO: <%= data.hpo_id %></a>)
+<% } %>

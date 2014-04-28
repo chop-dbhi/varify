@@ -18,6 +18,8 @@ define([
     'tpl!../../../templates/variant/effect-type.html',
     'tpl!../../../templates/variant/effects.html',
     'tpl!../../../templates/variant/frequencies.html',
+    'tpl!../../../templates/variant/phenotype-item.html',
+    'tpl!../../../templates/variant/phenotype-group.html',
     'tpl!../../../templates/variant/phenotypes.html',
     'tpl!../../../templates/variant/scores.html',
     'tpl!../../../templates/variant/summary.html',
@@ -25,8 +27,8 @@ define([
 ], function(c, polyphen, sift, exportDialog, phenotype, result, sample,
             sampleLoader, sampleRow, sampleTable, header, variantArticles,
             variantCohorts, effectItem, effectType, variantEffects,
-            variantFrequencies, variantPhenotypes, variantScores,
-            variantSummary, results) {
+            variantFrequencies, phenotypeItem, phenotypeGroup,
+            variantPhenotypes, variantScores, variantSummary, results) {
 
     // Define custom templates
     c.templates.set('varify/controls/polyphen', polyphen);
@@ -50,6 +52,8 @@ define([
     c.templates.set('varify/variant/effect-type', effectType);
     c.templates.set('varify/variant/effects', variantEffects);
     c.templates.set('varify/variant/frequencies', variantFrequencies);
+    c.templates.set('varify/variant/phenotype-item', phenotypeItem);
+    c.templates.set('varify/variant/phenotype-group', phenotypeGroup);
     c.templates.set('varify/variant/phenotypes', variantPhenotypes);
     c.templates.set('varify/variant/scores', variantScores);
     c.templates.set('varify/variant/summary', variantSummary);
