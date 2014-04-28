@@ -406,7 +406,8 @@ define([
         regions: {
             summary: '[data-target=summary]',
             effects: '[data-target=effects]',
-            phenotypes: '[data-target=phenotypes]'
+            phenotypes: '[data-target=phenotypes]',
+            scores: '[data-target=prediction-scores]'
         },
 
         events: {
@@ -517,6 +518,10 @@ define([
                 collection: new Backbone.Collection(
                     utils.groupPhenotypesByType(this.model.get('variant'))
                 )
+            }));
+
+            this.scores.show(new variant.PredictionScores({
+                model: new Backbone.Model(this.model.get('variant'))
             }));
 
             this.$el.modal('show');
