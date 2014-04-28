@@ -405,7 +405,8 @@ define([
 
         regions: {
             summary: '[data-target=summary]',
-            effects: '[data-target=effects]'
+            effects: '[data-target=effects]',
+            phenotypes: '[data-target=phenotypes]'
         },
 
         events: {
@@ -505,16 +506,17 @@ define([
             // minimum required data we need to display an effect is held
             // within the transcript object.
             this.effects.show(new variant.Effects({
-                collection: new Backbone.Collection(utils.groupByType(
+                collection: new Backbone.Collection(utils.groupEffectsByType(
                     _.filter(this.model.get('variant').effects, function(effect) {
                         return effect.transcript !== null;
                     })
                 ))
             }));
 
-            this.phenotypes.show(new variant.Phenotyopes({
+            this.phenotypes.show(new variant.Phenotypes({
                 collection: new Backbone.Collection(
-                    this.model.get('phenotypes'))
+                    utils.groupPhenotypesByType(this.model.get('variant'))
+                )
             }));
 
             this.$el.modal('show');
