@@ -1,0 +1,21 @@
+<small>
+    <a href='http://www.ncbi.nlm.nih.gov/nuccore/<%= data.transcript.transcript %>'>
+        <%= data.transcript.transcript %>
+    </a>
+</small>
+
+<% if (data.gene) { %>
+    <small>for <a target=_blank href='http://www.genenames.org/data/hgnc_data.php?hgnc_id=<%= data.gene.hgnc_id %>'><%= data.gene.symbol %></a></small>
+<% } %>
+
+<ul>
+    <% if (data.hgvscOrSegment) { %>
+        <li><%= data.hgvscOrSegment %></li>
+    <% } %>
+    <% if (data.changeString) { %>
+        <li><%= data.changeString %></li>
+    <% } %>
+    <% if (data.proteinChange) { %>
+        <li><%= data.proteinChange %></li>
+    <% } %>
+</ul>

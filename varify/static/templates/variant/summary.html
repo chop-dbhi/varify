@@ -1,0 +1,51 @@
+<h4><%= data.sample.label %> <small>in <%= data.sample.project %></small></h4>
+
+<ul class=unstyled>
+
+    <li>
+        <small>Variant Result ID </small> <%= data.id %>
+    </li>
+
+    <li>
+        <small>Coverage</small> <span class='<%= data.read_depth_class %>'><%= data.read_depth %>x</span> (<span title=Ref><%= data.read_depth_ref %></span>/<span title=Alt><%= data.read_depth_alt %></span>)
+    </li>
+
+    <li>
+        <small>Raw Coverage</small> <span class='<%= data.raw_read_depth_class %>'><%= data.raw_read_depth %></span>
+    </li>
+
+    <li>
+        <small>Quality</small> <span class='<%= data.quality_class %>'><%= data.quality %></span>
+    </li>
+
+    <li>
+        <small>Genotype</small> <%= data.genotype_value %> <small>(<%= data.genotype_description %>)</small>
+    </li>
+
+    <li>
+        <small>Base Counts</small> <%= data.base_counts %>
+    </li>
+
+    <li>
+    <small>Position</small> <a target=_blank href='http://genome.ucsc.edu/cgi-bin/hgTracks?position=chr<%= data.variant.chr %>%3A<%= data.variant.pos %>'>chr<%= data.variant.chr %> @ <%= data.pchr %></a>
+    </li>
+
+    <li>
+        <small>Genes</small> <%= data.genes %>
+    </li>
+
+    <li>
+        <small>HGMD IDs</small> <%= data.hgmd %>
+    </li>
+
+    <li>
+        <small>dbSNP</small> <% if (data.variant.rsid) {
+            print('<a target=_blank href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=' + data.variant.rsid + '">' + data.variant.rsid + '</a>');
+        }
+        else {
+            print('n/a');
+        } %>
+    </li>
+</ul>
+
+<a href='http://localhost:10000/show?request=chr<%= data.variant.chr %>:g.<%= data.variant.pos %><%= data.variant.ref %>><%= data.variant.alt %>' target=_blank class='btn btn-primary btn-small alamut-button'>Query Alamut</a>
