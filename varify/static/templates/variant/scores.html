@@ -1,0 +1,17 @@
+<h4>Prediction Scores</h4>
+
+<ul class=unstyled>
+    <% if (data.sift) { %>
+        <li>
+            <small>SIFT</small> <span class='<%= data.siftClass %>'><%= data.sift %></span>
+        </li>
+    <% } if (data.polyphen) { %>
+        <li>
+            <small>PolyPhen2</small> <span class='<%= data.polyphenClass %>'><%= data.polyphen %></span>
+        </li>
+    <% } %>
+</ul>
+
+<% if (!(data.sift || data.polyphen)) { %>
+    <p class=muted>No prediction scores</p>
+<% } %>
