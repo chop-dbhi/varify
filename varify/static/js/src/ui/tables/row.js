@@ -1,12 +1,13 @@
 /* global define */
 
 define([
+    'underscore',
     'jquery',
     'marionette',
     'cilantro',
     '../../models',
     '../../templates'
-], function($, Marionette, c, models, Templates) {
+], function(_, $, Marionette, c, models, Templates) {
 
     var ResultRow = Marionette.ItemView.extend({
         className: 'area-container variant-container',
@@ -19,8 +20,8 @@ define([
             'click': 'onClick'
         },
 
-        onClick: function(events) {
-            c.dialogs.resultDetails.open(this, this.model);
+        onClick: function() {
+            c.dialogs.resultDetails.open(this.model);
         },
 
         initialize: function() {

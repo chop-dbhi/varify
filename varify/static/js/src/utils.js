@@ -17,6 +17,23 @@ define([
     };
 
 
+    var groupByType = function(effects) {
+        var data = [];
+
+        if (effects && effects.length) {
+            var groupedEffects = _.groupBy(effects, 'type');
+            for (var type in groupedEffects) {
+                data.push({
+                    type: type,
+                    effects: groupedEffects[type]
+                });
+            }
+        }
+
+        return data;
+    };
+
+
     var effectImpactPriority = function(impact) {
         var priority;
 
@@ -203,6 +220,7 @@ define([
         depthClass: depthClass,
         effectImpactPriority: effectImpactPriority,
         getRootUrl: getRootUrl,
+        groupByType: groupByType,
         parseISO8601UTC: parseISO8601UTC,
         priorityClass: priorityClass,
         qualityClass: qualityClass,
