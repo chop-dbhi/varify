@@ -18,10 +18,13 @@ require({
         }
     }
 }, [
+    'jquery',
+    'underscore',
     'cilantro',
     'project/ui',
     'project/csrf'
-], function(c, ui, csrf) {
+], function($, _, c, ui) {
+
     var SAMPLE_CONCEPT_ID = 2,
         SAMPLE_FIELD_ID = 111;
 
@@ -90,39 +93,18 @@ require({
         control: 'nullSelector'
     }]);
 
-    // A simple handler for CONTEXT_REQUIRED and CONTEXT_INVALID events that
-    // tells the user which concept is required(when possible) or prints a
-    // generic message in the case the concept name could not be found.
-    var notifyRequired = (function(_this) {
-        return function(concepts) {
-            if (c.data == null) return;
-
-            var names = _.map(concepts || [], function(concept) {
-                if ((currConcept = c.data.concepts.get(concept.concept)) != null) {
-                    return currConcept.get('name');
-                }
-            });
-
-            var message;
-            if (names) {
-                message = 'The following concepts are required: ' + names.join(', ');
-            }
-            else {
-                message = 'There are 1 or more required concepts';
-            }
-
-            return c.notify({
-                level: 'error',
-                message: message
-            });
-        };
-    })(this);
+    // If no sample is selected, open the dialog to select one
+    var showSampleDialog = function(required) {
+        if (_.findWhere(required, {concept: SAMPLE_CONCEPT_ID})) {
+            c.dialogs.sample.open();
+        }
+    };
 
     // Mark the Sample concept as required and display a notification to the
     // user when it is not populated.
     c.config.set('filters.required', [{concept: SAMPLE_CONCEPT_ID}]);
-    c.on(c.CONTEXT_INVALID, notifyRequired);
-    c.on(c.CONTEXT_REQUIRED, notifyRequired);
+    c.on(c.CONTEXT_INVALID, showSampleDialog);
+    c.on(c.CONTEXT_REQUIRED, showSampleDialog);
 
     // Open the default session when Cilantro is ready
     c.ready(function() {
@@ -168,9 +150,13 @@ require({
 
                 deleteQuery: new c.ui.DeleteQueryDialog(),
 
-                resultDetails: new ui.ResultDetails,
+                resultDetails: new ui.ResultDetails(),
 
                 phenotype: new ui.Phenotype({
+                    context: this.data.contexts.session
+                }),
+
+                sample: new ui.SampleDialog({
                     context: this.data.contexts.session
                 })
             };
