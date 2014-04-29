@@ -283,3 +283,66 @@ body, #concept-panel, #context-panel {
         border-top: 1px solid #eee;
     }
 }
+
+#sample-dialog {
+    .modal-footer {
+        text-align: left;
+
+        [data-target=selected-sample] {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            float: right;
+        }
+    }
+
+    table.table {
+
+        thead th {
+            cursor: pointer;
+            position: relative;
+            width: 200px;
+
+            &:hover {
+                background-color: #eee;
+            }
+
+            .icon-sort-up, .icon-sort-down {
+                position: absolute;
+                right: 8px;
+                top: 12px;
+            }
+
+            &.desc {
+                .icon-sort-up {
+                    display: none;
+                }
+            }
+
+            &.asc {
+                .icon-sort-down {
+                    display: none;
+                }
+            }
+
+            &:first-child {
+                border-left: 1px solid #ddd;
+            }
+        }
+
+        tbody tr {
+            cursor: pointer;
+
+            &.filtered {
+                display: none;
+            }
+
+            &.selected td {
+                background-color: lightYellow;
+                font-weight: bold;
+            }
+        }
+    }
+}
