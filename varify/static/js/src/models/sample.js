@@ -10,8 +10,19 @@ define([
         }
     });
 
+
+    var Samples = Backbone.Collection.extend({
+        model: Sample,
+
+        url: function() {
+            return '/api/samples/';
+        }
+    });
+
+
     return {
-        Sample: Sample
+        Sample: Sample,
+        Samples: Samples
     };
 
 });
