@@ -10,6 +10,7 @@ from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.views.decorators.cache import never_cache
 from django.conf import settings
+from guardian.shortcuts import get_objects_for_user
 from preserialize.serialize import serialize
 from restlib2 import resources
 from serrano.resources.base import ThrottledResource
@@ -38,33 +39,44 @@ def sample_posthook(instance, data, request):
     return data
 
 
-class SampleResource(ThrottledResource):
+class SampleBaseResource(ThrottledResource):
     model = Sample
 
     template = api.templates.Sample
 
+    def get_queryset(self, request, **kwargs):
+        projects = get_objects_for_user(request.user, 'samples.view_project')
+        return self.model.objects.filter(project__in=projects)
+
+    def get_object(self, request, pk):
+        if not hasattr(request, 'instance'):
+            queryset = self.get_queryset(request)
+
+            try:
+                instance = queryset.select_related('batch', 'project')\
+                    .get(pk=pk)
+            except self.model.DoesNotExist:
+                instance = None
+
+            request.instance = instance
+
+        return request.instance
+
+
+class SampleResource(SampleBaseResource):
     def is_not_found(self, request, response, pk):
-        return not self.model.objects.filter(pk=pk).exists()
+        return not self.get_object(request, pk=pk)
 
     @api.cache_resource
     def get(self, request, pk):
-        try:
-            sample = self.model.objects.select_related(
-                'batch', 'project').get(pk=pk)
-        except self.model.DoesNotExist:
-            raise Http404
-
+        instance = self.get_object(request, pk=pk)
         posthook = functools.partial(sample_posthook, request=request)
-        return serialize(sample, posthook=posthook, **self.template)
+        return serialize(instance, posthook=posthook, **self.template)
 
 
-class SamplesResource(ThrottledResource):
-    model = Sample
-
-    template = api.templates.Sample
-
+class SamplesResource(SampleBaseResource):
     def get(self, request):
-        samples = self.model.objects.all()
+        samples = self.get_queryset(request)
         posthook = functools.partial(sample_posthook, request=request)
         return serialize(samples, posthook=posthook, **self.template)
 
@@ -106,16 +118,20 @@ class NamedSampleResource(ThrottledResource):
         return data
 
 
-class SampleResultsResource(ThrottledResource):
+class SampleResultBaseResource(ThrottledResource):
+    def is_not_found(self, request, response, pk):
+        projects = get_objects_for_user(request.user, 'samples.view_project')
+        return not Sample.objects.filter(project__in=projects, pk=pk).exists()
+
+
+class SampleResultsResource(SampleResultBaseResource):
     "Paginated view of results for a sample."
     model = Result
 
     template = api.templates.SampleResult
 
-    def is_not_found(self, request, response, pk):
-        return not Sample.objects.filter(pk=pk).exists()
-
     def get(self, request, pk):
+        uri = request.build_absolute_uri
         page = request.GET.get('page', 1)
 
         related = ['sample', 'variant', 'variant__chr', 'genotype']
@@ -142,39 +158,49 @@ class SampleResultsResource(ThrottledResource):
             obj['_links'] = {
                 'self': {
                     'rel': 'self',
-                    'href': reverse('api:samples:variant',
-                                    kwargs={'pk': obj['id']})
+                    'href': uri(reverse('api:samples:variant',
+                                        kwargs={'pk': obj['id']}))
                 },
                 'sample': {
                     'rel': 'related',
-                    'href': reverse('api:samples:sample',
-                                    kwargs={'pk': obj['sample']['id']})
+                    'href': uri(reverse('api:samples:sample',
+                                        kwargs={'pk': obj['sample']['id']}))
                 },
                 'variant': {
                     'rel': 'related',
-                    'href': reverse('api:variants:variant',
-                                    kwargs={'pk': obj['variant_id']}),
+                    'href': uri(reverse('api:variants:variant',
+                                        kwargs={'pk': obj['variant_id']})),
                 }
             }
             obj.pop('variant_id')
 
-        links = {}
+        links = {
+            'self': {
+                'rel': 'self',
+                'href': uri(reverse('api:samples:variants',
+                                    kwargs={'pk': pk})),
+            }
+        }
+
         if page.number != 1:
             links['prev'] = {
                 'rel': 'prev',
-                'href': "{0}?page={1}".format(
+                'href': uri('{0}?page={1}'.format(
                     reverse('api:samples:variants', kwargs={'pk': pk}),
-                    str(page.number - 1))
+                    str(page.number - 1)))
             }
+
         if page.number < paginator.num_pages - 1:
             links['next'] = {
                 'rel': 'next',
-                'href': "{0}?page={1}".format(
+                'href': uri('{0}?page={1}'.format(
                     reverse('api:samples:variants', kwargs={'pk': pk}),
-                    str(page.number + 1))
+                    str(page.number + 1)))
             }
+
         if links:
             resp['_links'] = links
+
         return resp
 
 
@@ -187,6 +213,7 @@ class SampleResultResource(ThrottledResource):
         return not self.model.objects.filter(pk=pk).exists()
 
     def _cache_data(self, request, pk, key):
+        uri = request.build_absolute_uri
         related = ['sample', 'variant', 'genotype', 'score']
 
         try:
@@ -199,18 +226,18 @@ class SampleResultResource(ThrottledResource):
         data['_links'] = {
             'self': {
                 'rel': 'self',
-                'href': reverse('api:samples:variant',
-                                kwargs={'pk': data['id']})
+                'href': uri(reverse('api:samples:variant',
+                                    kwargs={'pk': data['id']}))
             },
             'sample': {
                 'rel': 'related',
-                'href': reverse('api:samples:sample',
-                                kwargs={'pk': data['sample']['id']})
+                'href': uri(reverse('api:samples:sample',
+                                    kwargs={'pk': data['sample']['id']}))
             },
             'variant': {
                 'rel': 'related',
-                'href': reverse('api:variants:variant',
-                                kwargs={'pk': data['variant_id']}),
+                'href': uri(reverse('api:variants:variant',
+                                    kwargs={'pk': data['variant_id']})),
             }
         }
 
@@ -271,19 +298,19 @@ class PhenotypeResource(ThrottledResource):
     def get(self, request, sample_id):
         recalculate = request.GET.get('recalculate_rankings')
 
-        if recalculate == "true":
+        if recalculate == 'true':
             try:
                 management.call_command('samples', 'gene-ranks', sample_id,
                                         force=True)
             except Exception:
-                log.exception("Error recalculating gene rankings")
-                return HttpResponse("Error recalculating gene rankings",
+                log.exception('Error recalculating gene rankings')
+                return HttpResponse('Error recalculating gene rankings',
                                     status=500)
 
         endpoint = getattr(settings, 'PHENOTYPE_ENDPOINT', None)
 
         if not endpoint:
-            log.error("PHENOTYPE_ENDPOINT setting could not be found.")
+            log.error('PHENOTYPE_ENDPOINT setting could not be found.')
             return HttpResponse(status=500)
 
         endpoint = endpoint.format(sample_id)
@@ -341,6 +368,7 @@ class PedigreeResource(ThrottledResource):
         response.write(pedigree_response.content)
 
         return response
+
 
 sample_resource = never_cache(SampleResource())
 samples_resource = never_cache(SamplesResource())
