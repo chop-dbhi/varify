@@ -24,55 +24,6 @@ define([
             return content.join('');
         },
 
-        renderPredictions: function(attrs) {
-            var content, labelClass, pp2, sift;
-
-            content = [];
-            content.push('<h4>Prediction Scores</h4>');
-            content.push('<ul class=unstyled>');
-
-            if ((sift = attrs.sift[0])) {
-                labelClass = '';
-
-                switch (sift.prediction) {
-                    case 'Damaging':
-                        labelClass = 'text-error';
-                        break;
-                    default:
-                        labelClass = 'muted';
-                }
-
-                content.push('<li><small>SIFT</small> <span class=' +
-                    labelClass + '>' + sift.prediction + '</span></li>');
-            }
-
-            if ((pp2 = attrs.polyphen2[0])) {
-                labelClass = '';
-
-                switch (pp2.prediction) {
-                    case 'Probably Damaging':
-                        labelClass = 'text-error';
-                        break;
-                    case 'Possibly Damaging':
-                        labelClass = 'text-warning';
-                        break;
-                    default:
-                        labelClass = 'muted';
-                }
-
-                content.push('<li><small>PolyPhen2</small> <span class=' +
-                    labelClass + '>' + pp2.prediction + '</span></li>');
-            }
-
-            content.push('</ul>');
-
-            if (!(sift || pp2)) {
-                content.push('<p class=muted>No predictions scores</p>');
-            }
-
-            return content.join('');
-        },
-
         renderFrequencies: function(attrs) {
             var content, evs, tg;
 
@@ -119,76 +70,6 @@ define([
             }
             else {
                 content.push('<p class=muted>No EVS frequencies</p>');
-            }
-
-            return content.join('');
-        },
-
-        _renderPhenotypeCollection: function(phenotypes) {
-            var content, phenotype, sorted, zpad;
-
-            content = [];
-
-            sorted = _.sortBy(phenotypes, function(item) {
-                return item.term;
-            });
-
-            content.push('<ul>');
-
-            for (var i = 0; i < sorted.length; i++) {
-                phenotype = sorted[i];
-                content.push('<li>' + phenotype.term);
-
-                if (phenotype.hpo_id || phenotype.hgmd_id) {
-                    if (phenotype.hgmd_id) {
-                        content.push(' (HGMD: ' + phenotype.hgmd_id + ')');
-                    }
-                    if (phenotype.hpo_id) {
-                        // Zero-pad the HPO ID to force it to be 7 digits. This
-                        // trick is from:
-                        //       http://dev.enekoalonso.com/2010/07/20/little-tricks-string-padding-in-javascript/
-                        zpad = String('0000000' + phenotype.hpo_id).slice(-7);
-                        content.push(' (<a href="http://www.human-phenotype-ontology.org/hpoweb/showterm?id=HP_' + zpad + '">HPO: ' + zpad + '</a>)');
-                    }
-                }
-
-                content.push('</li>');
-            }
-
-            content.push('</ul>');
-            return content;
-        },
-
-        renderPhenotypes: function(attrs) {
-            var content = [];
-
-            content.push('<h4>Phenotypes</h4>');
-
-            if (attrs.phenotypes[0]) {
-                content.push('<ul class=unstyled>');
-                content.push('<li>Variant:</li>');
-                content = content.concat(this._renderPhenotypeCollection(attrs.phenotypes));
-                content.push('</ul>');
-            }
-            else {
-                content.push('<p class=muted>No associated variant phenotypes</p>');
-            }
-
-            if (attrs.uniqueGenes[0]) {
-                content.push('<ul class=unstyled>');
-
-                _.each(attrs.uniqueGenes, function(gene) {
-                    content.push('<li>' + gene.symbol + ':</li>');
-
-                    if (gene.phenotypes[0]) {
-                        content = content.concat(this._renderPhenotypeCollection(gene.phenotypes));
-                    }
-                    else {
-                        content.push('<p class=muted>No phenotypes for this gene</p>');
-                    }
-                }, this);
-
-                content.push('</ul>');
             }
 
             return content.join('');
@@ -407,7 +288,8 @@ define([
             summary: '[data-target=summary]',
             effects: '[data-target=effects]',
             phenotypes: '[data-target=phenotypes]',
-            scores: '[data-target=prediction-scores]'
+            scores: '[data-target=prediction-scores]',
+            frequencies: '[data-target=frequencies]'
         },
 
         events: {
@@ -521,6 +403,10 @@ define([
             }));
 
             this.scores.show(new variant.PredictionScores({
+                model: new Backbone.Model(this.model.get('variant'))
+            }));
+
+            this.frequencies.show(new variant.Frequencies({
                 model: new Backbone.Model(this.model.get('variant'))
             }));
 
