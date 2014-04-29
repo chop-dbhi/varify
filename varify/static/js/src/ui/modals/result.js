@@ -24,57 +24,6 @@ define([
             return content.join('');
         },
 
-        renderFrequencies: function(attrs) {
-            var content, evs, tg;
-
-            content = [];
-            content.push('<h4>1000 Genomes</h4>');
-
-            if ((tg = attrs['1000g'][0])) {
-                content.push('<ul class=unstyled>');
-
-                if (tg.all_af != null) {
-                    content.push('<li><small>All</small> ' + (c.utils.prettyNumber(tg.all_af * 100)) + '%</li>');
-                }
-                if (tg.amr_af != null) {
-                    content.push('<li><small>American</small> ' + (c.utils.prettyNumber(tg.amr_af * 100)) + '%</li>');
-                }
-                if (tg.afr_af != null) {
-                    content.push('<li><small>African</small> ' + (c.utils.prettyNumber(tg.afr_af * 100)) + '%</li>');
-                }
-                if (tg.eur_af != null) {
-                    content.push('<li><small>European</small> ' + (c.utils.prettyNumber(tg.eur_af * 100)) + '%</li>');
-                }
-
-                content.push('</ul>');
-            }
-            else {
-                content.push('<p class=muted>No 1000G frequencies</p>');
-            }
-
-            content.push('<h4 title="Exome Variant Server">EVS</h4>');
-            if ((evs = attrs.evs[0])) {
-                content.push('<ul class=unstyled>');
-
-                if (evs.all_af != null) {
-                    content.push('<li><small>All</small> ' + (c.utils.prettyNumber(evs.all_af * 100)) + '%</li>');
-                }
-                if (evs.afr_af != null) {
-                    content.push('<li><small>African</small> ' + (c.utils.prettyNumber(evs.afr_af * 100)) + '%</li>');
-                }
-                if (evs.eur_af != null) {
-                    content.push('<li><small>European</small> ' + (c.utils.prettyNumber(evs.eur_af * 100)) + '%</li>');
-                }
-
-                content.push('</ul>');
-            }
-            else {
-                content.push('<p class=muted>No EVS frequencies</p>');
-            }
-
-            return content.join('');
-        },
-
         _renderClinVarCollection: function(assertions) {
             var assertion;
             var content = [];
@@ -107,60 +56,6 @@ define([
                 content.push('</ul>');
             } else {
                 content.push('<p class=muted>No ClinVar assertions</p>');
-            }
-
-            return content.join('');
-        },
-
-        _renderArticleCollection: function(articles) {
-            var content, pmid, sorted;
-
-            content = [];
-            sorted = _.sortBy(articles, function(item) {
-                return item;
-            });
-
-            content.push('<ul>');
-
-            for (var i = 0; i < sorted.length; i++) {
-                pmid = sorted[i];
-                content.push('<li><a href="http://www.ncbi.nlm.nih.gov/pubmed/' + pmid + '">' + pmid + '</a></li>');
-            }
-
-            content.push('</ul>');
-            return content;
-        },
-
-        renderPubmed: function(attrs) {
-            var content = [];
-
-            content.push('<h4>Articles</h4>');
-
-            if (attrs.articles[0]) {
-                content.push('<ul class=unstyled>');
-                content.push('<li>Variant:</li>');
-                content = content.concat(this._renderArticleCollection(attrs.articles));
-                content.push('</ul>');
-            }
-            else {
-                content.push('<p class=muted>No PubMed articles for this variant</p>');
-            }
-
-            if (attrs.uniqueGenes[0]) {
-                content.push('<ul class=unstyled>');
-
-                _.each(attrs.uniqueGenes, function(gene) {
-                    content.push("<li>" + gene.symbol + ":</li>");
-
-                    if (gene.articles[0]) {
-                        content = content.concat(this._renderArticleCollection(gene.articles));
-                    }
-                    else {
-                        content.push('<p class=muted>No PubMed articles for this gene</p>');
-                    }
-                }, this);
-
-                content.push('</ul>');
             }
 
             return content.join('');
@@ -289,7 +184,8 @@ define([
             effects: '[data-target=effects]',
             phenotypes: '[data-target=phenotypes]',
             scores: '[data-target=prediction-scores]',
-            frequencies: '[data-target=frequencies]'
+            frequencies: '[data-target=frequencies]',
+            articles: '[data-target=articles]'
         },
 
         events: {
@@ -408,6 +304,12 @@ define([
 
             this.frequencies.show(new variant.Frequencies({
                 model: new Backbone.Model(this.model.get('variant'))
+            }));
+
+            this.articles.show(new variant.Articles({
+                collection: new Backbone.Collection(
+                    utils.groupArticlesByType(this.model.get('variant'))
+                )
             }));
 
             this.$el.modal('show');
