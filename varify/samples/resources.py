@@ -13,6 +13,7 @@ from django.conf import settings
 from guardian.shortcuts import get_objects_for_user
 from preserialize.serialize import serialize
 from restlib2 import resources
+from restlib2.http import codes
 from serrano.resources.base import ThrottledResource
 from varify.variants.resources import VariantResource
 from varify import api
@@ -304,14 +305,15 @@ class PhenotypeResource(ThrottledResource):
                                         force=True)
             except Exception:
                 log.exception('Error recalculating gene rankings')
-                return HttpResponse('Error recalculating gene rankings',
-                                    status=500)
+                return self.render(request, {
+                    'message': 'Error recalculating gene rankings',
+                }, status=codes.server_error)
 
         endpoint = getattr(settings, 'PHENOTYPE_ENDPOINT', None)
 
         if not endpoint:
             log.error('PHENOTYPE_ENDPOINT setting could not be found.')
-            return HttpResponse(status=500)
+            return self.render(request, '', status=codes.server_error)
 
         endpoint = endpoint.format(sample_id)
 
@@ -321,7 +323,7 @@ class PhenotypeResource(ThrottledResource):
         except requests.exceptions.SSLError:
             raise PermissionDenied
         except requests.exceptions.ConnectionError:
-            return HttpResponse(status=500)
+            return self.render(request, '', status=codes.server_error)
         except requests.exceptions.RequestException:
             raise Http404
 
@@ -345,7 +347,7 @@ class PedigreeResource(ThrottledResource):
 
         if not endpoint:
             log.error('PEDIGREE_ENDPOINT setting could not be found.')
-            return HttpResponse(status=500)
+            return self.render(request, '', status=codes.server_error)
 
         endpoint = endpoint.format(year, month, day, name)
 
@@ -356,7 +358,7 @@ class PedigreeResource(ThrottledResource):
         except requests.exceptions.SSLError:
             raise PermissionDenied
         except requests.exceptions.ConnectionError:
-            return HttpResponse(status=500)
+            return self.render(request, '', status=codes.server_error)
         except requests.exceptions.RequestException:
             raise Http404
 
