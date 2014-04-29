@@ -46,8 +46,8 @@ require({
         };
 
         var json;
-        if ((json = c.session.data.views.session.get('json')) != null) {
-            newView['view']['ordering'] = json['ordering'];
+        if (c.session && (json = c.session.data.views.session.get('json')) != null) {
+            newView.view.ordering = json.ordering;
         }
 
         return newView;
