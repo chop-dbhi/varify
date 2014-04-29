@@ -100,6 +100,13 @@ require({
         }
     };
 
+    // Use sample dialog as means of selecting the sample
+    c.on(c.CONCEPT_FOCUS, function(concept) {
+        if (concept === SAMPLE_CONCEPT_ID) {
+            c.dialogs.sample.open();
+        }
+    });
+
     // Mark the Sample concept as required and display a notification to the
     // user when it is not populated.
     c.config.set('filters.required', [{concept: SAMPLE_CONCEPT_ID}]);
