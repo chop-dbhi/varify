@@ -126,8 +126,6 @@ define([
                 dir = this.collection._sortDir === 'asc' ? 'desc' : 'asc';
             }
 
-            var p;
-
             this.$('[data-sort=' + this.collection._sortAttr + ']')
                 .removeClass(this.collection._sortDir);
             this.$('[data-sort=' + attr + ']').addClass(dir);
@@ -136,20 +134,22 @@ define([
             this.collection._sortAttr = attr;
             this.collection._sortDir = dir;
 
-            // Custom parser
+            // Parse function for handling the different sort attributes.
+            var parse;
+
             if (attr === 'created') {
-                p = function(v) {
+                parse = function(v) {
                     return (new Date(v)).getTime();
                 };
             }
             else {
-                p = function(v) {
+                parse = function(v) {
                     return v;
                 };
             }
 
             this.collection.comparator = function(m1, m2) {
-                var v1 = p(m1.get(attr)), v2 = p(m2.get(attr));
+                var v1 = parse(m1.get(attr)), v2 = parse(m2.get(attr));
                 if (v1 < v2) return (dir === 'asc' ? 1 : -1);
                 if (v1 > v2) return (dir === 'asc' ? -1 : 1);
                 return 0;
