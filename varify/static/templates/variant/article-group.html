@@ -1,0 +1,8 @@
+<li>
+    <% if (data.gene) { %>
+        <%= data.gene.symbol %>:
+    <% } else { %>
+        Variant:
+    <% } %>
+    <ul data-target=items></ul>
+</li>
