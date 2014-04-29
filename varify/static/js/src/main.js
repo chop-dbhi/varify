@@ -119,6 +119,11 @@ require({
             // the user's view.
             c.config.set('session.defaults.data.preview', augmentFixedView);
 
+            // Ensure the session context is valid
+            this.data.contexts.once('sync', function() {
+                this.session.validate();
+            });
+
             // Panels are defined in their own namespace since they shared
             // across workflows
             c.panels = {
