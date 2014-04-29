@@ -8,14 +8,12 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
-        orms['DataConcept'].objects\
-                .filter(app_name='samples', model_name='sample', field_name='id')\
+        orms['DataConcept'].objects.filter(name='Sample')\
                 .update(queryable=False)
 
     def backwards(self, orm):
         "Write your backwards methods here."
-        orms['DataConcept'].objects\
-                .filter(app_name='samples', model_name='sample', field_name='id')\
+        orms['DataConcept'].objects.filter(name='Sample')\
                 .update(queryable=True)
 
     models = {
