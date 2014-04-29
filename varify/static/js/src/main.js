@@ -22,6 +22,12 @@ require({
     'project/ui',
     'project/csrf'
 ], function(c, ui, csrf) {
+    var SAMPLE_CONCEPT_ID = 2,
+        SAMPLE_FIELD_ID = 111;
+
+    // Add namespaced variables for reference in other modules
+    c.config.set('varify.sample.concept', SAMPLE_CONCEPT_ID);
+    c.config.set('varify.sample.field', SAMPLE_FIELD_ID);
 
     // Session options
     var options = {
@@ -32,7 +38,7 @@ require({
     var augmentFixedView = function() {
         var newView = {
             view: {
-                columns: [2]
+                columns: [SAMPLE_CONCEPT_ID]
             }
         };
 
@@ -114,7 +120,7 @@ require({
 
     // Mark the Sample concept as required and display a notification to the
     // user when it is not populated.
-    c.config.set('filters.required', [{concept: 2}]);
+    c.config.set('filters.required', [{concept: SAMPLE_CONCEPT_ID}]);
     c.on(c.CONTEXT_INVALID, notifyRequired);
     c.on(c.CONTEXT_REQUIRED, notifyRequired);
 
