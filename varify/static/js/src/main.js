@@ -106,6 +106,12 @@ require({
         }
     };
 
+    // Use sample dialog as means of selecting the sample
+    c.on(c.CONCEPT_FOCUS, function(concept) {
+        if (concept === SAMPLE_CONCEPT_ID) {
+            c.dialogs.sample.open();
+        }
+    });
 
     // Mark the Sample concept as required and display a notification to the
     // user when it is not populated.
@@ -119,6 +125,11 @@ require({
         // Open the default session defined in the pre-defined configuration.
         // Initialize routes once data is confirmed to be available
         c.sessions.open(options).then(function() {
+
+            // Ensure the session context is valid
+            this.data.contexts.once('sync', function() {
+                this.session.validate();
+            });
 
             // Panels are defined in their own namespace since they shared
             // across workflows
