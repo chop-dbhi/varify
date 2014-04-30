@@ -120,7 +120,9 @@ define([
 */
 
     var ResultDetails = Marionette.Layout.extend({
-        className: 'result-details-modal modal hide',
+        id: 'result-details-modal',
+
+        className: 'modal hide',
 
         // Fairly arbitray, mostly chosen because it was close to normal height
         // of the sample summary item(1st item in upper left).
