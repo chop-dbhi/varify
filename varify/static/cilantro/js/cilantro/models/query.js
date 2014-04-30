@@ -1,2 +1,2 @@
-var __hasProp={}.hasOwnProperty,__extends=function(t,e){function i(){this.constructor=t}for(var n in e)__hasProp.call(e,n)&&(t[n]=e[n]);return i.prototype=e.prototype,t.prototype=new i,t.__super__=e.prototype,t};define(["./base"],function(t){var e,i,n,s;return i=function(t){function e(){return n=e.__super__.constructor.apply(this,arguments)}return __extends(e,t),e.prototype.parse=function(t){return e.__super__.parse.apply(this,arguments),null!=t&&null==t.shared_users&&(t.shared_users=[]),t},e}(t.Model),e=function(t){function e(){return s=e.__super__.constructor.apply(this,arguments)}return __extends(e,t),e.prototype.model=i,e}(t.Collection),{QueryModel:i,QueryCollection:e}});
-//@ sourceMappingURL=query.js.map
+define(["./base"],function(e){var r=e.Model.extend({parse:function(r,s){return r&&!r.shared_users&&(r.shared_users=[]),e.Model.prototype.parse.call(this,r,s)}}),s=e.Collection.extend({model:r});return{Query:r,Queries:s}});
+//# sourceMappingURL=query.js.map

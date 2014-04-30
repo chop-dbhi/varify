@@ -3,19 +3,20 @@ var __slice = [].slice,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['../core', 'underscore', 'backbone'], function(c, _, Backbone) {
-  var Page, Paginator, PaginatorMixin, _ref, _ref1;
+  var Page, Paginator, PaginatorMixin;
   PaginatorMixin = {
     comparator: 'page_num',
     refresh: function() {
-      var _this = this;
       if (!this.pending) {
         this.pending = true;
         return this.fetch({
           reset: true
-        }).done(function() {
-          delete _this.pending;
-          return _this.setCurrentPage(_this.models[0].id);
-        });
+        }).done((function(_this) {
+          return function() {
+            delete _this.pending;
+            return _this.setCurrentPage(_this.models[0].id);
+          };
+        })(this));
       }
     },
     parse: function(resp, options) {
@@ -61,8 +62,7 @@ define(['../core', 'underscore', 'backbone'], function(c, _, Backbone) {
       return this.trigger.apply(this, ['change:currentpage', this].concat(__slice.call(this.getCurrentPageStats())));
     },
     getPage: function(num, options) {
-      var model,
-        _this = this;
+      var model;
       if (options == null) {
         options = {};
       }
@@ -75,9 +75,11 @@ define(['../core', 'underscore', 'backbone'], function(c, _, Backbone) {
         });
         model.pending = true;
         this.add(model);
-        model.fetch().done(function() {
-          return delete model.pending;
-        });
+        model.fetch().done((function(_this) {
+          return function() {
+            return delete model.pending;
+          };
+        })(this));
       }
       if (model && options.active !== false) {
         this.setCurrentPage(num);
@@ -134,8 +136,7 @@ define(['../core', 'underscore', 'backbone'], function(c, _, Backbone) {
     __extends(Page, _super);
 
     function Page() {
-      _ref = Page.__super__.constructor.apply(this, arguments);
-      return _ref;
+      return Page.__super__.constructor.apply(this, arguments);
     }
 
     Page.prototype.idAttribute = 'page_num';
@@ -156,8 +157,7 @@ define(['../core', 'underscore', 'backbone'], function(c, _, Backbone) {
     __extends(Paginator, _super);
 
     function Paginator() {
-      _ref1 = Paginator.__super__.constructor.apply(this, arguments);
-      return _ref1;
+      return Paginator.__super__.constructor.apply(this, arguments);
     }
 
     Paginator.prototype.model = Page;

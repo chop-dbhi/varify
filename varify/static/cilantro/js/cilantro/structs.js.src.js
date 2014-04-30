@@ -3,13 +3,12 @@ var __hasProp = {}.hasOwnProperty,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 define(['underscore', 'backbone', './models/base'], function(_, Backbone, base) {
-  var Datum, Frame, FrameArray, Index, Indexes, Series, _DatumArray, _SeriesArray, _ref, _ref1;
+  var Datum, Frame, FrameArray, Index, Indexes, Series, _DatumArray, _SeriesArray;
   Index = (function(_super) {
     __extends(Index, _super);
 
     function Index() {
-      _ref = Index.__super__.constructor.apply(this, arguments);
-      return _ref;
+      return Index.__super__.constructor.apply(this, arguments);
     }
 
     Index.prototype.defaults = {
@@ -35,8 +34,7 @@ define(['underscore', 'backbone', './models/base'], function(_, Backbone, base) 
     __extends(Indexes, _super);
 
     function Indexes() {
-      _ref1 = Indexes.__super__.constructor.apply(this, arguments);
-      return _ref1;
+      return Indexes.__super__.constructor.apply(this, arguments);
     }
 
     Indexes.prototype.model = Index;

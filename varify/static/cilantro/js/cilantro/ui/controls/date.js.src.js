@@ -2,13 +2,12 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['underscore', './range'], function(_, range) {
-  var DateControl, _ref;
+  var DateControl;
   DateControl = (function(_super) {
     __extends(DateControl, _super);
 
     function DateControl() {
-      _ref = DateControl.__super__.constructor.apply(this, arguments);
-      return _ref;
+      return DateControl.__super__.constructor.apply(this, arguments);
     }
 
     DateControl.prototype._events = {

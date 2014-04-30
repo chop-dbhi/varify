@@ -3,13 +3,12 @@ var __hasProp = {}.hasOwnProperty,
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
 define(['underscore', '../core', '../constants', '../structs', './paginator'], function(_, c, constants, structs, paginator) {
-  var Results, ResultsPage, _ref, _ref1;
+  var Results, ResultsPage;
   ResultsPage = (function(_super) {
     __extends(ResultsPage, _super);
 
     function ResultsPage() {
-      _ref = ResultsPage.__super__.constructor.apply(this, arguments);
-      return _ref;
+      return ResultsPage.__super__.constructor.apply(this, arguments);
     }
 
     ResultsPage.prototype.idAttribute = 'page_num';
@@ -34,8 +33,7 @@ define(['underscore', '../core', '../constants', '../structs', './paginator'], f
       this.markAsDirty = __bind(this.markAsDirty, this);
       this.onWorkspaceUnload = __bind(this.onWorkspaceUnload, this);
       this.onWorkspaceLoad = __bind(this.onWorkspaceLoad, this);
-      _ref1 = Results.__super__.constructor.apply(this, arguments);
-      return _ref1;
+      return Results.__super__.constructor.apply(this, arguments);
     }
 
     Results.prototype.initialize = function() {
@@ -63,8 +61,7 @@ define(['underscore', '../core', '../constants', '../structs', './paginator'], f
     };
 
     Results.prototype.fetch = function(options) {
-      var data,
-        _this = this;
+      var data;
       if (options == null) {
         options = {};
       }
@@ -81,9 +78,11 @@ define(['underscore', '../core', '../constants', '../structs', './paginator'], f
         return Results.__super__.fetch.call(this, options);
       } else {
         return {
-          done: function() {
-            return delete _this.pending;
-          }
+          done: (function(_this) {
+            return function() {
+              return delete _this.pending;
+            };
+          })(this)
         };
       }
     };

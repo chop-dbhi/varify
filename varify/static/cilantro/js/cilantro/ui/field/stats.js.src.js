@@ -3,7 +3,7 @@ var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments)
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['jquery', 'underscore', 'backbone', 'marionette', '../core', '../base', '../charts', '../charts/utils'], function($, _, Backbone, Marionette, c, base, charts, utils) {
-  var FieldStatValue, FieldStats, FieldStatsChart, FieldStatsValues, prettyValue, _ref, _ref1, _ref2, _ref3;
+  var FieldStatValue, FieldStats, FieldStatsChart, FieldStatsValues, prettyValue;
   prettyValue = function(value) {
     if (_.isNumber(value)) {
       return c.utils.prettyNumber(value);
@@ -16,8 +16,7 @@ define(['jquery', 'underscore', 'backbone', 'marionette', '../core', '../base', 
 
     function FieldStatValue() {
       this.template = __bind(this.template, this);
-      _ref = FieldStatValue.__super__.constructor.apply(this, arguments);
-      return _ref;
+      return FieldStatValue.__super__.constructor.apply(this, arguments);
     }
 
     FieldStatValue.prototype.tagName = 'li';
@@ -31,7 +30,7 @@ define(['jquery', 'underscore', 'backbone', 'marionette', '../core', '../base', 
     };
 
     FieldStatValue.prototype.template = function(data) {
-      return "<span class=stat-label>" + (this.keyMap[data.key] || data.key) + "</span>                <span class=stat-value title=\"" + data.value + "\">" + (prettyValue(data.value)) + "</span>";
+      return "<span class=stat-label>" + (this.keyMap[data.key] || data.key) + "</span> <span class=stat-value title=\"" + data.value + "\">" + (prettyValue(data.value)) + "</span>";
     };
 
     return FieldStatValue;
@@ -41,8 +40,7 @@ define(['jquery', 'underscore', 'backbone', 'marionette', '../core', '../base', 
     __extends(FieldStatsValues, _super);
 
     function FieldStatsValues() {
-      _ref1 = FieldStatsValues.__super__.constructor.apply(this, arguments);
-      return _ref1;
+      return FieldStatsValues.__super__.constructor.apply(this, arguments);
     }
 
     FieldStatsValues.prototype.tagName = 'ul';
@@ -56,8 +54,7 @@ define(['jquery', 'underscore', 'backbone', 'marionette', '../core', '../base', 
     __extends(FieldStatsChart, _super);
 
     function FieldStatsChart() {
-      _ref2 = FieldStatsChart.__super__.constructor.apply(this, arguments);
-      return _ref2;
+      return FieldStatsChart.__super__.constructor.apply(this, arguments);
     }
 
     FieldStatsChart.prototype.className = 'sparkline';
@@ -81,8 +78,7 @@ define(['jquery', 'underscore', 'backbone', 'marionette', '../core', '../base', 
     __extends(FieldStats, _super);
 
     function FieldStats() {
-      _ref3 = FieldStats.__super__.constructor.apply(this, arguments);
-      return _ref3;
+      return FieldStats.__super__.constructor.apply(this, arguments);
     }
 
     FieldStats.prototype.className = 'field-stats';

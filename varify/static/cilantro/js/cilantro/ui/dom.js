@@ -1,2 +1,2 @@
-define([],function(){var t=function(t,e,i){var n=t.children(),o=n.size();return 0>e&&(e=Math.max(0,o+1+e)),t.append(i),o>e&&n.eq(e).before(n.last()),t};return{insertAt:t}});
-//@ sourceMappingURL=dom.js.map
+define([],function(){var e=function(e,n,r){var t=e.children(),a=t.size();return 0>n&&(n=Math.max(0,a+1+n)),e.append(r),a>n&&t.eq(n).before(t.last()),e};return{insertAt:e}});
+//# sourceMappingURL=dom.js.map

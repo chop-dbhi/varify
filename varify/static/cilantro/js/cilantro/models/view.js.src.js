@@ -2,13 +2,12 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['underscore', 'backbone', '../core', './base'], function(_, Backbone, c, base) {
-  var Facet, Facets, ViewCollection, ViewModel, _ref, _ref1, _ref2;
+  var Facet, Facets, ViewCollection, ViewModel;
   Facet = (function(_super) {
     __extends(Facet, _super);
 
     function Facet() {
-      _ref = Facet.__super__.constructor.apply(this, arguments);
-      return _ref;
+      return Facet.__super__.constructor.apply(this, arguments);
     }
 
     Facet.prototype.idAttribute = 'concept';
@@ -20,8 +19,7 @@ define(['underscore', 'backbone', '../core', './base'], function(_, Backbone, c,
     __extends(Facets, _super);
 
     function Facets() {
-      _ref1 = Facets.__super__.constructor.apply(this, arguments);
-      return _ref1;
+      return Facets.__super__.constructor.apply(this, arguments);
     }
 
     Facets.prototype.model = Facet;
@@ -41,7 +39,6 @@ define(['underscore', 'backbone', '../core', './base'], function(_, Backbone, c,
     }
 
     ViewModel.prototype.initialize = function() {
-      var _this = this;
       this.on('request', function() {
         return c.trigger(c.VIEW_SYNCING, this);
       });
@@ -59,11 +56,13 @@ define(['underscore', 'backbone', '../core', './base'], function(_, Backbone, c,
       this.on('change', function() {
         return c.trigger(c.VIEW_CHANGED, this);
       });
-      return c.on(c.VIEW_SAVE, function(id) {
-        if (_this.id === id || !id && _this.isSession()) {
-          return _this.save();
-        }
-      });
+      return c.on(c.VIEW_SAVE, (function(_this) {
+        return function(id) {
+          if (_this.id === id || !id && _this.isSession()) {
+            return _this.save();
+          }
+        };
+      })(this));
     };
 
     ViewModel.prototype.isSession = function() {
@@ -88,7 +87,10 @@ define(['underscore', 'backbone', '../core', './base'], function(_, Backbone, c,
     };
 
     ViewModel.prototype.jsonToFacets = function(json) {
-      var attrs, columns, i, id, models, ordering, sort, _i, _id, _j, _len, _len1, _ref2;
+      var attrs, columns, i, id, models, ordering, sort, _i, _id, _j, _len, _len1, _ref;
+      if (json == null) {
+        json = {};
+      }
       if (_.isArray(json)) {
         this.facets.reset(json);
         return;
@@ -102,7 +104,7 @@ define(['underscore', 'backbone', '../core', './base'], function(_, Backbone, c,
           concept: id
         };
         for (i = _j = 0, _len1 = ordering.length; _j < _len1; i = ++_j) {
-          _ref2 = ordering[i], _id = _ref2[0], sort = _ref2[1];
+          _ref = ordering[i], _id = _ref[0], sort = _ref[1];
           if (id === _id) {
             attrs.sort = sort;
             attrs.sort_index = i;
@@ -138,8 +140,7 @@ define(['underscore', 'backbone', '../core', './base'], function(_, Backbone, c,
     __extends(ViewCollection, _super);
 
     function ViewCollection() {
-      _ref2 = ViewCollection.__super__.constructor.apply(this, arguments);
-      return _ref2;
+      return ViewCollection.__super__.constructor.apply(this, arguments);
     }
 
     ViewCollection.prototype.model = ViewModel;

@@ -1,2 +1,2 @@
-define(["underscore","./query/dialog","./query/item","./query/list","./query/loader"],function(t){var e=[].slice.call(arguments,1);return t.extend.apply(null,[{}].concat(e))});
-//@ sourceMappingURL=query.js.map
+define(["underscore","./query/dialog","./query/item","./query/list","./query/loader"],function(e){var r=[].slice.call(arguments,1);return e.extend.apply(null,[{}].concat(r))});
+//# sourceMappingURL=query.js.map

@@ -1,195 +1,119 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['backbone'], function(Backbone) {
-  var Collection, Model, SessionCollection, SynclessCollection, SynclessModel, _ref, _ref1, _ref2;
-  Model = (function(_super) {
-    __extends(Model, _super);
+define([
+    'underscore',
+    'backbone'
+], function(_, Backbone) {
 
-    Model.prototype.url = function() {
-      if (this.isNew()) {
-        return Model.__super__.url.apply(this, arguments);
-      } else {
-        return this.links.self;
-      }
-    };
+    // Base model for Cilantro. Data for models commonly contain a
+    // `_links` attribute which is parsed to be made accessible for
+    // consumers.
+    var Model = Backbone.Model.extend({
+        constructor: function(attrs, options) {
+            options = _.defaults({parse: true}, options);
+            this.links = {};
 
-    function Model(attrs, options) {
-      this.links = {};
-      Model.__super__.constructor.call(this, attrs, options);
-      this.on('change:_links', function(model, attrs, options) {
-        return this._parseLinks(attrs);
-      });
-    }
+            Backbone.Model.prototype.constructor.call(this, attrs, options);
+            this.on('change:_links', this._parseLinks);
+        },
 
-    Model.prototype._parseLinks = function(attrs) {
-      var link, links, name;
-      links = {};
-      for (name in attrs) {
-        link = attrs[name];
-        links[name] = link.href;
-      }
-      return this.links = links;
-    };
+        url: function() {
+            if (this.isNew()) {
+                return Backbone.Model.prototype.url.call(this);
+            }
+            return this.links.self;
+        },
 
-    Model.prototype.parse = function(attrs) {
-      if ((attrs != null ? attrs._links : void 0) != null) {
-        this._parseLinks(attrs._links);
-      }
-      return attrs;
-    };
+        _parseLinks: function(model, attrs) {
+            var links = {};
 
-    return Model;
+            _.each(attrs, function(link, name) {
+                links[name] = link.href;
+            });
 
-  })(Backbone.Model);
-  Collection = (function(_super) {
-    __extends(Collection, _super);
+            model.links = links;
+        },
 
-    Collection.prototype.model = Model;
+        parse: function(attrs) {
+            if (attrs && attrs._links) {
+                this._parseLinks(this, attrs._links);
+            }
 
-    Collection.prototype.url = function() {
-      return this.links.self;
-    };
-
-    function Collection(attrs, options) {
-      this.links = {};
-      Collection.__super__.constructor.call(this, attrs, options);
-    }
-
-    Collection.prototype._parseLinks = function(attrs) {
-      var link, links, name;
-      links = {};
-      for (name in attrs) {
-        link = attrs[name];
-        links[name] = link.href;
-      }
-      return this.links = links;
-    };
-
-    Collection.prototype.parse = function(attrs) {
-      if ((attrs != null ? attrs._links : void 0) != null) {
-        this._parseLinks(attrs._links);
-      }
-      return attrs;
-    };
-
-    return Collection;
-
-  })(Backbone.Collection);
-  SynclessModel = (function(_super) {
-    __extends(SynclessModel, _super);
-
-    function SynclessModel() {
-      _ref = SynclessModel.__super__.constructor.apply(this, arguments);
-      return _ref;
-    }
-
-    SynclessModel.prototype.sync = function() {};
-
-    return SynclessModel;
-
-  })(Model);
-  SynclessCollection = (function(_super) {
-    __extends(SynclessCollection, _super);
-
-    function SynclessCollection() {
-      _ref1 = SynclessCollection.__super__.constructor.apply(this, arguments);
-      return _ref1;
-    }
-
-    SynclessCollection.prototype.sync = function() {};
-
-    return SynclessCollection;
-
-  })(Collection);
-  SessionCollection = (function(_super) {
-    __extends(SessionCollection, _super);
-
-    function SessionCollection() {
-      _ref2 = SessionCollection.__super__.constructor.apply(this, arguments);
-      return _ref2;
-    }
-
-    SessionCollection.prototype.initialize = function() {
-      this.add({
-        session: true
-      });
-      return this.session = this.get('session');
-    };
-
-    SessionCollection.prototype._resetSession = function() {
-      this.session.clear({
-        silent: true
-      });
-      return this.session.set('session', true, {
-        silent: true
-      });
-    };
-
-    SessionCollection.prototype.reset = function(models, options) {
-      var model, _i, _len, _ref3;
-      if (options == null) {
-        options = {};
-      }
-      _ref3 = this.models;
-      for (_i = 0, _len = _ref3.length; _i < _len; _i++) {
-        model = _ref3[_i];
-        if (model === this.session) {
-          this._resetSession();
-        } else {
-          this._removeReference(model);
+            return attrs;
         }
-      }
-      options.previousModels = this.models;
-      this._reset();
-      this.add(this.session, _.extend({
-        silent: true
-      }, options));
-      if ((model = _.findWhere(models, {
-        session: true
-      }))) {
-        this.session.set(model, options);
-      }
-      this.add(models, _.extend({
-        silent: true,
-        merge: true
-      }, options));
-      if (!options.silent) {
-        this.trigger('reset', this, options);
-      }
-      return this;
+    });
+
+    var Collection = Backbone.Collection.extend({
+        model: Model
+    });
+
+    // Base collection class that is session-aware. A session is always
+    // created on initialization which enables immediately binding to the
+    // session object, as well transparency when switching between session
+    // objects. This is used for Context, View and Query collections.
+    var SessionCollection = Collection.extend({
+        initialize: function() {
+            this.session = this.add({session: true});
+        },
+
+        // Prevent deferencing the session
+        reset: function(models, options) {
+            options = options || {};
+            models = models || [];
+
+            // Search for session model, merge into existing and remove it
+            var model, match;
+
+            for (var i = 0; i < models.length; i++) {
+                model = models[i];
+
+                if (model instanceof Backbone.Model) {
+                    if (model.get('session') === true) match = model.toJSON();
+                } else if (model && model.session === true) {
+                    match = model;
+                }
+
+                if (match) {
+                    this.session.set(match, options);
+                    models.splice(i, 1);
+                    break;
+                }
+            }
+
+            models.push(this.session);
+            return Collection.prototype.reset.call(this, models, options);
+        },
+
+        // Extend `get` to lookup by session if passed. The session model
+        // may change over time which is independent of the model id.
+        // Furthermore, it guarantees views will have something to bind to
+        // prior to it being fetched from the server.
+        get: function(attrs) {
+            var session = false;
+
+            if (attrs instanceof Backbone.Model) {
+                session = attrs.get('session');
+            }
+
+            if (attrs === 'session' || (typeof attrs === 'object' && attrs.session)) {
+                session = true;
+            }
+
+            if (session) return this.findWhere({session: true});
+
+            return Collection.prototype.get.call(this, attrs);
+        },
+
+        getSession: function() {
+            return this.session;
+        }
+    });
+
+
+    return {
+        Model: Model,
+        Collection: Collection,
+        SessionCollection: SessionCollection
     };
 
-    SessionCollection.prototype.get = function(attrs) {
-      var session;
-      session = false;
-      if (attrs instanceof Backbone.Model) {
-        session = attrs.get('session');
-      }
-      if (attrs === 'session' || (typeof attrs === 'object' && attrs.session)) {
-        session = true;
-      }
-      if (session) {
-        return this.findWhere({
-          session: true
-        });
-      } else {
-        return SessionCollection.__super__.get.call(this, attrs);
-      }
-    };
-
-    SessionCollection.prototype.getSession = function() {
-      return this.session;
-    };
-
-    return SessionCollection;
-
-  })(Collection);
-  return {
-    Model: Model,
-    Collection: Collection,
-    SynclessModel: SynclessModel,
-    SynclessCollection: SynclessCollection,
-    SessionCollection: SessionCollection
-  };
 });

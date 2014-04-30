@@ -1,42 +1,29 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['./base'], function(base) {
-  var QueryCollection, QueryModel, _ref, _ref1;
-  QueryModel = (function(_super) {
-    __extends(QueryModel, _super);
+define([
+    './base'
+], function(base) {
 
-    function QueryModel() {
-      _ref = QueryModel.__super__.constructor.apply(this, arguments);
-      return _ref;
-    }
 
-    QueryModel.prototype.parse = function(attrs) {
-      QueryModel.__super__.parse.apply(this, arguments);
-      if ((attrs != null) && (attrs.shared_users == null)) {
-        attrs.shared_users = [];
-      }
-      return attrs;
+    var Query = base.Model.extend({
+        parse: function(attrs, options) {
+            if (attrs && !attrs.shared_users) {  // jshint ignore:line
+                attrs.shared_users = [];  // jshint ignore:line
+            }
+
+            return base.Model.prototype.parse.call(this, attrs, options);
+        }
+    });
+
+
+    var Queries = base.Collection.extend({
+        model: Query
+    });
+
+
+    return {
+        Query: Query,
+        Queries: Queries
     };
 
-    return QueryModel;
-
-  })(base.Model);
-  QueryCollection = (function(_super) {
-    __extends(QueryCollection, _super);
-
-    function QueryCollection() {
-      _ref1 = QueryCollection.__super__.constructor.apply(this, arguments);
-      return _ref1;
-    }
-
-    QueryCollection.prototype.model = QueryModel;
-
-    return QueryCollection;
-
-  })(base.Collection);
-  return {
-    QueryModel: QueryModel,
-    QueryCollection: QueryCollection
-  };
 });
