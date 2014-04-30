@@ -10,20 +10,6 @@ define([
 ], function($, _, Backbone, Marionette, utils, variant) {
 
     /*
-        renderCohorts: function(attrs) {
-            var content = [];
-            content.push('<h4>Cohorts</h4>');
-
-            if ((attrs.cohorts != null) && attrs.cohorts.length) {
-                content.push('' + Templates.cohortVariantDetailList(attrs.cohorts));
-            }
-            else {
-                content.push('<p class=muted>No cohorts</p>');
-            }
-
-            return content.join('');
-        },
-
         _renderClinVarCollection: function(assertions) {
             var assertion;
             var content = [];
@@ -114,31 +100,7 @@ define([
             return content.join('');
         },
 
-        _span: function(html, size) {
-            if (size == null) {
-                size = 12;
-            }
-
-            return $('<div class="span' + size + '" />').html(html);
-        },
-
         render: function() {
-            var $row1, $row2, $row3, attrs;
-
-            attrs = this.model.get('variant');
-
-            $row1 = $('<div class=row-fluid data-target=expandable-details-row />');
-            $row2 = $('<div class=row-fluid data-target=expandable-details-row />');
-            $row3 = $('<div class="row-fluid  assessments-table-container" />');
-
-            $row1.append(this._span(this.renderSummary(this.model.attributes, attrs), 3));
-            $row1.append(this._span(this.renderEffects(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
-            $row1.append(this._span(this.renderPhenotypes(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
-            $row1.append(this._span(this.renderPredictions(attrs), 3));
-
-            $row2.append(this._span(this.renderCohorts(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
-            $row2.append(this._span(this.renderFrequencies(attrs), 3));
-            $row2.append(this._span(this.renderPubmed(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
 
             if (attrs.solvebio) {
                 $row2.append(this._span(this.renderClinVar(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
@@ -146,12 +108,6 @@ define([
 
             $row3.append(this._span(this.renderAssessmentMetricsContainer(), 12));
 
-            this.$content.append($row1, $row2, $row3);
-            this.$el.find('.cohort-sample-popover').popover({
-                container: '.result-details-modal',
-                html: true,
-                title: 'Samples in Cohort'
-            });
             this.metrics.fetch({
                 success: this.fetchMetricsSuccess,
                 error: this.fetchMetricsError
@@ -184,6 +140,7 @@ define([
             effects: '[data-target=effects]',
             phenotypes: '[data-target=phenotypes]',
             scores: '[data-target=prediction-scores]',
+            cohorts: '[data-target=cohorts]',
             frequencies: '[data-target=frequencies]',
             articles: '[data-target=articles]'
         },
@@ -300,6 +257,12 @@ define([
 
             this.scores.show(new variant.PredictionScores({
                 model: new Backbone.Model(this.model.get('variant'))
+            }));
+
+            this.cohorts.show(new variant.Cohorts({
+                collection: new Backbone.Collection(
+                    this.model.get('variant').cohorts
+                )
             }));
 
             this.frequencies.show(new variant.Frequencies({
