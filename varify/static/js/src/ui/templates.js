@@ -15,6 +15,8 @@ define([
     'tpl!../../../templates/variant/article-item.html',
     'tpl!../../../templates/variant/article-group.html',
     'tpl!../../../templates/variant/articles.html',
+    'tpl!../../../templates/variant/cohort-item.html',
+    'tpl!../../../templates/variant/cohort-popover-item.html',
     'tpl!../../../templates/variant/cohorts.html',
     'tpl!../../../templates/variant/effect-item.html',
     'tpl!../../../templates/variant/effect-type.html',
@@ -28,10 +30,10 @@ define([
     'tpl!../../../templates/workflows/results.html'
 ], function(c, polyphen, sift, exportDialog, phenotype, result, sample,
             sampleLoader, sampleRow, sampleTable, header, articleItem,
-            articleGroup, variantArticles, variantCohorts, effectItem,
-            effectType, variantEffects, variantFrequencies, phenotypeItem,
-            phenotypeGroup, variantPhenotypes, variantScores, variantSummary,
-            results) {
+            articleGroup, variantArticles, cohortItem, cohortPopoverItem,
+            variantCohorts, effectItem, effectType, variantEffects,
+            variantFrequencies, phenotypeItem, phenotypeGroup,
+            variantPhenotypes, variantScores, variantSummary, results) {
 
     // Define custom templates
     c.templates.set('varify/controls/polyphen', polyphen);
@@ -52,6 +54,8 @@ define([
     c.templates.set('varify/variant/article-item', articleItem);
     c.templates.set('varify/variant/article-group', articleGroup);
     c.templates.set('varify/variant/articles', variantArticles);
+    c.templates.set('varify/variant/cohort-item', cohortItem);
+    c.templates.set('varify/variant/cohort-popover-item', cohortPopoverItem);
     c.templates.set('varify/variant/cohorts', variantCohorts);
     c.templates.set('varify/variant/effect-item', effectItem);
     c.templates.set('varify/variant/effect-type', effectType);

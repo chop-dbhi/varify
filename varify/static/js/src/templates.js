@@ -185,32 +185,6 @@ define([
         return '<td class=flags-container><span class=flags>' + (html.join('')) + '<span></td>';
     };
 
-    var cohortVariantDetailList = function(cohorts) {
-        var html = [], cohort, cohortHtml, sample, sampleNames, sortedSamples, samplePath, popoverHtml;
-
-        for (var i = 0; i < cohorts.length; i++) {
-            cohort = cohorts[i];
-            cohortHtml = '<small>' + cohort.name + '</small> ' + (Numbers.prettyNumber(cohort.af * 100)) + '% <span class=muted>(' + cohort.size + ')</span>';
-
-            sampleNames = [];
-            sortedSamples = _.sortBy(cohort.samples, function(s) {
-                return s.name;
-            });
-
-            for (var j = 0; j < sortedSamples.length; j++) {
-                sample = sortedSamples[j];
-                samplePath = '/samples/' + sample.id;
-                sampleNames.push('<a href="' + (utils.toAbsolutePath(samplePath)) + '/">' + sample.name + '</a>');
-            }
-
-            sampleHtml = sampleNames.join('<br />');
-            popoverHtml = '<div>' + ($('<div />').html(sampleHtml).html()) + '</div>';
-            html.push('<li class=cohort-details><a href="#" class=cohort-sample-popover data-content=\'' + popoverHtml + '\'>' + cohortHtml + '</a></li>');
-        }
-
-        return '<ul class=unstyled>' + (html.join('')) + '</ul>';
-    };
-
     var dbSNPLink = function(rsid) {
         return '<a target=_blank href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=' + rsid + '">' + rsid + '</a>';
     };
@@ -293,26 +267,12 @@ define([
         return html.join('');
     };
 
-    var hgmdLinks = function(phenotypes) {
-        var hgmdPhenotypes = [];
-
-        for (var i = 0; i < phenotypes.length; i++) {
-            if (phenotypes[i].hgmd_id != null) {
-                hgmdPhenotypes.push(phenotypes[i].hgmd_id);
-            }
-        }
-
-        return hgmdPhenotypes.join(', ');
-    };
-
     return {
         assessmentMetrics: assessmentMetrics,
         assessmentRows: assessmentRows,
         category: category,
-        cohortVariantDetailList: cohortVariantDetailList,
         condensedFlags: condensedFlags,
         dbSNPLink: dbSNPLink,
-        hgmdLinks: hgmdLinks,
         hgvsC: hgvsC,
         hgvsP: hgvsP,
         geneLinks: geneLinks,
