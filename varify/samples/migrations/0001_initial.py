@@ -7,6 +7,7 @@ from django.db import models
 class Migration(SchemaMigration):
 
     depends_on = (
+        ('avocado', '0034_auto__add_field_datafield_type'),
         ('variants', '0001_initial'),
     )
 
