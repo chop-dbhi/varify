@@ -18,21 +18,29 @@ from serrano.resources.base import ThrottledResource
 from varify.variants.resources import VariantResource
 from varify import api
 from varify.assessments.models import Assessment
-from .models import Sample, Result, ResultScore
+from .models import Sample, Result, ResultScore, ResultSet
 
 log = logging.getLogger(__name__)
 
 
 def sample_posthook(instance, data, request):
     uri = request.build_absolute_uri
+
     data['_links'] = {
         'self': {
             'rel': 'self',
-            'href': uri(reverse('api:samples:sample', args=[instance.pk])),
+            'href': uri(reverse('api:samples:sample',
+                                args=[instance.pk])),
         },
         'variants': {
             'rel': 'related',
-            'href': uri(reverse('api:samples:variants', args=[instance.pk])),
+            'href': uri(reverse('api:samples:variants',
+                                args=[instance.pk])),
+        },
+        'variant-sets': {
+            'rel': 'related',
+            'href': uri(reverse('api:samples:variant-sets',
+                                args=[instance.pk])),
         }
     }
 
@@ -63,6 +71,13 @@ class SampleBaseResource(ThrottledResource):
         return request.instance
 
 
+class SamplesResource(SampleBaseResource):
+    def get(self, request):
+        samples = self.get_queryset(request)
+        posthook = functools.partial(sample_posthook, request=request)
+        return serialize(samples, posthook=posthook, **self.template)
+
+
 class SampleResource(SampleBaseResource):
     def is_not_found(self, request, response, pk):
         return not self.get_object(request, pk=pk)
@@ -72,13 +87,6 @@ class SampleResource(SampleBaseResource):
         instance = self.get_object(request, pk=pk)
         posthook = functools.partial(sample_posthook, request=request)
         return serialize(instance, posthook=posthook, **self.template)
-
-
-class SamplesResource(SampleBaseResource):
-    def get(self, request):
-        samples = self.get_queryset(request)
-        posthook = functools.partial(sample_posthook, request=request)
-        return serialize(samples, posthook=posthook, **self.template)
 
 
 class NamedSampleResource(ThrottledResource):
@@ -102,20 +110,8 @@ class NamedSampleResource(ThrottledResource):
         return False
 
     def get(self, request, project, batch, sample):
-        data = serialize(request.instance, **self.template)
-        data['_links'] = {
-            'self': {
-                'rel': 'self',
-                'href': reverse('api:samples:sample',
-                                kwargs={'pk': request.instance.pk})
-            },
-            'variants': {
-                'rel': 'related',
-                'href': reverse('api:samples:variants',
-                                kwargs={'pk': request.instance.pk}),
-            }
-        }
-        return data
+        posthook = functools.partial(sample_posthook, request=request)
+        return serialize(request.instance, posthook=posthook, **self.template)
 
 
 class SampleResultBaseResource(ThrottledResource):
@@ -352,24 +348,98 @@ class PedigreeResource(ThrottledResource):
         return response
 
 
+class SampleResultSetsResource(ThrottledResource):
+    model = ResultSet
+
+    template = api.templates.ResultSet
+
+    def get_queryset(self, request, pk):
+        return self.model.objects.filter(user=request.user, sample__pk=pk)
+
+    def get(self, request, pk):
+        queryset = self.get_queryset(request, pk)
+        return serialize(queryset, **self.template)
+
+
+class SampleResultSetResource(ThrottledResource):
+    model = ResultSet
+
+    template = api.templates.ResultSet
+
+    def get_queryset(self, request):
+        return self.model.objects.filter(user=request.user)
+
+    def get_object(self, request, pk):
+        if not hasattr(request, 'instance'):
+            queryset = self.get_queryset(request)
+
+            try:
+                instance = queryset.get(pk=pk)
+            except self.model.DoesNotExist:
+                instance = None
+
+            request.instance = instance
+
+        return request.instance
+
+    def is_not_found(self, request, response, pk):
+        return not self.get_object(request, pk)
+
+    def get(self, request, pk):
+        instance = self.get_object(request, pk)
+        return serialize(instance, **self.template)
+
+
 sample_resource = never_cache(SampleResource())
 samples_resource = never_cache(SamplesResource())
 named_sample_resource = never_cache(NamedSampleResource())
+
 sample_results_resource = never_cache(SampleResultsResource())
 sample_result_resource = never_cache(SampleResultResource())
+
+sample_result_sets_resource = never_cache(SampleResultSetsResource())
+sample_result_set_resource = never_cache(SampleResultSetResource())
+
 phenotype_resource = never_cache(PhenotypeResource())
 pedigree_resource = never_cache(PedigreeResource())
 
 urlpatterns = patterns(
     '',
-    url(r'^$', samples_resource, name='samples'),
-    url(r'^(?P<pk>\d+)/$', sample_resource, name='sample'),
-    url(r'^(?P<project>.+)/(?P<batch>.+)/(?P<sample>.+)/$',
-        named_sample_resource, name='named_sample'),
-    url(r'^(?P<pk>\d+)/variants/$', sample_results_resource, name='variants'),
-    url(r'^variants/(?P<pk>\d+)/$', sample_result_resource, name='variant'),
-    url(r'^(?P<sample_id>.+)/phenotypes/$', phenotype_resource,
+
+    url(r'^$',
+        samples_resource,
+        name='samples'),
+
+    url(r'^(?P<pk>\d+)/$',
+        sample_resource,
+        name='sample'),
+
+    url(r'^(?P<pk>\d+)/variants/$',
+        sample_results_resource,
+        name='variants'),
+
+    url(r'^variants/(?P<pk>\d+)/$',
+        sample_result_resource,
+        name='variant'),
+
+    url(r'^(?P<pk>\d+)/variants/sets/$',
+        sample_result_sets_resource,
+        name='variant-sets'),
+
+    url(r'^variants/sets/(?P<pk>\d+)/$',
+        sample_result_set_resource,
+        name='variant-set'),
+
+    url(r'^(?P<sample_id>.+)/phenotypes/$',
+        phenotype_resource,
         name='phenotype'),
+
     url(r'^pedigrees/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<name>.+)$',
-        pedigree_resource, name='pedigree'),
+        pedigree_resource,
+        name='pedigree'),
+
+    # At the bottom to prevent matching on such variable parameters
+    url(r'^(?P<project>.+)/(?P<batch>.+)/(?P<sample>.+)/$',
+        named_sample_resource,
+        name='named_sample'),
 )
