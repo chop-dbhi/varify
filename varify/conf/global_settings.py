@@ -24,6 +24,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.staticfiles',
 
+    'varify.samples',
     'varify',
 
     'varify.raw',
@@ -34,7 +35,6 @@ INSTALLED_APPS = (
     'varify.genes',
     'varify.variants',
     'varify.phenotypes',
-    'varify.samples',
     'varify.literature',
 
     'varify.support',
@@ -58,6 +58,7 @@ INSTALLED_APPS = (
     'modeltree',
     'guardian',
     'reversion',
+
 )
 
 
