@@ -22,8 +22,9 @@ require({
     'underscore',
     'cilantro',
     'project/ui',
+    'project/models',
     'project/csrf'
-], function($, _, c, ui) {
+], function($, _, c, ui, models) {
 
     var SAMPLE_CONCEPT_ID = 2,
         SAMPLE_FIELD_ID = 111;
@@ -126,6 +127,10 @@ require({
             // the user's view.
             c.config.set('session.defaults.data.preview', augmentFixedView);
 
+            // Add additional data to the session
+            this.data.samples = new models.Samples();
+            this.data.samples.fetch({reset: true});
+
             // Ensure the session context is valid
             this.data.contexts.once('sync', function() {
                 this.session.validate();
@@ -169,7 +174,8 @@ require({
                 }),
 
                 sample: new ui.SampleDialog({
-                    context: this.data.contexts.session
+                    context: this.data.contexts.session,
+                    samples: this.data.samples
                 })
             };
 
