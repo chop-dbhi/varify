@@ -103,12 +103,6 @@ require({
         control: 'nullSelector'
     }]);
 
-    // Force calls to the preview endpoint to use a fixed view composed solely
-    // of the sample concept. This will have the intended result of removing
-    // "duplicate" rows in the results table that sometimes occured due to
-    // the user's view.
-    c.config.set('session.defaults.data.preview', augmentFixedView);
-
     // A simple handler for CONTEXT_REQUIRED and CONTEXT_INVALID events that
     // tells the user which concept is required(when possible) or prints a
     // generic message in the case the concept name could not be found.
@@ -149,6 +143,12 @@ require({
         // Open the default session defined in the pre-defined configuration.
         // Initialize routes once data is confirmed to be available
         c.sessions.open(options).then(function() {
+
+            // Force calls to the preview endpoint to use a fixed view composed solely
+            // of the sample concept. This will have the intended result of removing
+            // "duplicate" rows in the results table that sometimes occured due to
+            // the user's view.
+            c.config.set('session.defaults.data.preview', augmentFixedView);
 
             // Panels are defined in their own namespace since they shared
             // across workflows
