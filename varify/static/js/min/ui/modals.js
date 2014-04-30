@@ -1,1 +1,1 @@
-define(["underscore","./modals/result","./modals/phenotype"],function(e){var t=[].slice.call(arguments,1);return e.extend.apply(null,[{}].concat(t))})
+define(["underscore","./modals/result","./modals/phenotype","./modals/sample"],function(e){var t=[].slice.call(arguments,1);return e.extend.apply(null,[{}].concat(t))})

@@ -1,1 +1,1 @@
-define(["backbone"],function(e){var t=e.Model.extend({url:function(){return"/api/samples/"+this.get("id")+"/"}});return{Sample:t}})
+define(["backbone"],function(e){var t=e.Model.extend({url:function(){return"/api/samples/"+this.get("id")+"/"}}),n=e.Collection.extend({model:t,url:function(){return"/api/samples/"}});return{Sample:t,Samples:n}})

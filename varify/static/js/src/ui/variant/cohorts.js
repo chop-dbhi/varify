@@ -79,7 +79,7 @@ define([
 
         onRender: function() {
             this.$el.find(this.popoverSelector).popover({
-                container: '.result-details-modal',
+                container: '#result-details-modal',
                 html: true,
                 title: 'Samples in Cohort'
             });
