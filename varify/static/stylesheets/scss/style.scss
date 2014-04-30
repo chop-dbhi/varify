@@ -19,37 +19,7 @@ body, #concept-panel, #context-panel {
     margin-top: 10px !important;
 }
 
-.export-options-modal {
-    // Override Cilantro styles for modal and modal-body to alow the export
-    // modal to be a little larger than normal.
-    width: 720px !important;
-    margin-left: -360px !important;
-    max-height: 720px;
-    bottom: 5%;
-    top: 5%;
-
-    .tab-content {
-        position: absolute;
-        bottom: 65px;
-        top: 105px;
-        left: 15px;
-        right: 15px;
-    }
-
-    .modal-body {
-        position: static;
-        overflow: scroll;
-    }
-
-    .modal-footer {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-    }
-}
-
-.result-details-modal {
+#result-details-modal {
     width: 90%;
     top: 5%;
     left: 5%;
