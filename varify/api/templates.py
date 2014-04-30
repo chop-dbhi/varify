@@ -353,3 +353,12 @@ SampleResultVariant['related']['variant'] = {
     },
     'merge': True,
 }
+
+
+ResultSet = {
+    'fields': [':local', 'created', 'modified'],
+    'exclude': ['user', 'results'],
+    'related': {
+        'sample': Sample
+    }
+}
