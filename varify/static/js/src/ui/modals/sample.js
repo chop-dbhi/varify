@@ -6,8 +6,7 @@ define([
     'marionette',
     'cilantro',
     '../../models'
-], function($, _, Marionette, c, models) {
-
+], function($, _, Marionette, c) {
 
     var SampleRow = Marionette.ItemView.extend({
         tagName: 'tr',
@@ -191,20 +190,20 @@ define([
                 throw new Error('context model required');
             }
 
+            if (!(this.data.samples = this.options.samples)) {
+                throw new Error('samples collection required');
+            }
+
             // Define (get or create) the internal filter for the sample concept
             this.data.filter = this.data.context.define({
                 concept: c.config.get('varify.sample.concept'),
                 field: c.config.get('varify.sample.field')
             });
 
-            this.data.samples = new models.Samples();
-
             // Flag the currently selected sample if one exists onces the samples
             // load
             this.listenTo(this.data.samples, 'reset', this.getSelected);
             this.listenTo(this.data.samples, 'select', this.setSelected);
-
-            this.data.samples.fetch({reset: true});
         },
 
         onRender: function() {
