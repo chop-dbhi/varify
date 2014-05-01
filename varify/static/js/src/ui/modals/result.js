@@ -132,8 +132,15 @@ define([
 
         template: 'varify/modals/result',
 
+        selectors: {
+            expandableRow: '[data-target=expandable-row]',
+            expandableItem: '.expandable-item',
+            expandCollapseLink: '[data-target=expand-collapse-link]',
+            linkContainer: '.expand-collapse-container'
+        },
+
         ui: {
-            expandableRows: '[data-target=expandable-details-row]',
+            // TODO: Can this reference the link selector above?
             expandLinks: '[data-target=expand-collapse-link]'
         },
 
@@ -171,7 +178,7 @@ define([
          *      http://stackoverflow.com/questions/7668636/check-with-jquery-if-div-has-overflowing-elements
          */
         _checkForOverflow: function() {
-            _.each($('.expandable-details-item'), function(element) {
+            _.each($(this.selectors.expandableItem), function(element) {
                 var child, hasOverflow = false;
 
                 /*
@@ -187,6 +194,9 @@ define([
                 for (var i = 0; i < element.children.length; i++) {
                     child = element.children[i];
 
+                    console.log(child);
+                    console.log(child.offsetTop + child.offsetHeight);
+                    console.log(this.maxExpandableHeight);
                     if ((child.offsetTop + child.offsetHeight) >
                             this.maxExpandableHeight) {
                         hasOverflow = true;
@@ -198,10 +208,10 @@ define([
                 // have been bounded and is now overflown or vice-versa and we
                 // want to match the current regardless of previous states.
                 if (hasOverflow) {
-                    $(element).find('.expand-collapse-container').show();
+                    $(element).find(this.selectors.linkContainer).show();
                 }
                 else {
-                    $(element).find('.expand-collapse-container').hide();
+                    $(element).find(this.selectors.linkContainer).hide();
                 }
 
             }, this);
@@ -213,20 +223,20 @@ define([
             var element, parent;
 
             element = $(event.target);
-            parent = element.closest('[data-target=expandable-details-row]');
+            parent = element.closest(this.selectors.expandableRow);
 
             // We essentially link all the expand/collapse links in a single
             // row to take the same action. So, when one is used to expand, all
             // other links in the row get updated in the same fasion to keep
             // them all in sync.
             if (element.text() === this.showMoreText) {
-                parent.find('[data-target=expand-collapse-link]')
+                parent.find(this.selectors.expandCollapseLink)
                       .text(this.showLessText);
                 parent.css('height', 'auto')
                       .css('overflow', 'visible');
             }
             else {
-                parent.find('[data-target=expand-collapse-link]')
+                parent.find(this.selectors.expandCollapseLink)
                       .text(this.showMoreText);
                 parent.css('height', this.maxExpandableHeight)
                       .css('overflow', 'hidden');
@@ -281,9 +291,11 @@ define([
 
             // Reset the row and item heights and overflow styles as they may
             // have been toggled previously.
-            this.ui.expandableRows.css('height', '' + this.maxExpandableHeight + 'px')
+            this.$el.find(this.selectors.expandableRow)
+                .css('height', '' + this.maxExpandableHeight + 'px')
                 .css('overflow', 'hidden');
-            this.ui.expandLinks.text(this.showMoreText);
+            this.$el.find(this.selectors.expandCollapseLink)
+                .text(this.showMoreText);
 
             this._checkForOverflow();
         }
