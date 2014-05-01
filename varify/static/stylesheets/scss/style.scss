@@ -27,11 +27,12 @@ body, #concept-panel, #context-panel {
     max-height: 800px;
     bottom: 5%;
 
-    .tab-content {
+    .variant-details-container {
         position: absolute;
         width: 96.5%;
-        top: 60px;
-        bottom: 60px;
+        top: 0;
+        bottom: 70px;
+        overflow: scroll;
     }
 
     .modal-footer {
@@ -50,51 +51,7 @@ body, #concept-panel, #context-panel {
         position: static;
     }
 
-    #knowledge-capture-feedback-container {
-        height: 400px;
-        text-align: center;
-    }
-
-    #knowledge-capture-form {
-        margin: 0;
-        .radio {
-            padding-left: 30px;
-        }
-        .nested-radio {
-            padding-left: 60px;
-        }
-        .inline {
-            display: inline;
-        }
-        label.inline {
-            padding-left: 15px;
-        }
-        textarea {
-            width: 75%;
-            resize: none;
-            margin: 0;
-        }
-        select, h4 {
-            margin: 5px 0px 5px 0px;
-        }
-    }
-
-    #error-container {
-        margin: 0;
-        margin-bottom: 10px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-
-        h5 {
-            margin: 0;
-        }
-    }
-
-    #audit-trail-button {
-        float: left;
-    }
-
-    .expandable-details-item {
+    .expandable-item {
         height: 100%;
         position: relative;
         padding-bottom: 20px;
