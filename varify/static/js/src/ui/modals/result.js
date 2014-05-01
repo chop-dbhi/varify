@@ -10,43 +10,6 @@ define([
 ], function($, _, Backbone, Marionette, utils, variant) {
 
     /*
-        _renderClinVarCollection: function(assertions) {
-            var assertion;
-            var content = [];
-
-            for (var i = 0; i < assertions.length; i++) {
-                assertion = assertions[i];
-                content.push("<li>Assertion: <a target=\"_blank\" href=\"https://www.ncbi.nlm.nih.gov/clinvar/" + assertion.rcvaccession + "/\">" + assertion.rcvaccession + "</a>");
-                content.push('<ul>');
-                content.push("<li><small>Siginificance</small> <b>" + assertion.clinicalsignificance + "</b></li>");
-                content.push("<li><small>Origin</small> " + assertion.origin + "</li>");
-                content.push("<li><small>Type</small> " + assertion.type + "</li>");
-                content.push("<li><small># Submitters</small> " + assertion.numbersubmitters + "</li>");
-                content.push("<li><small>Review Status</small> " + assertion.reviewstatus + "</li>");
-                content.push("<li><small>Last Evaluated</small> " + assertion.lastevaluated + "</li>");
-                content.push('</ul>');
-                content.push('</li>');
-            }
-
-            return content;
-        },
-
-        renderClinVar: function(attrs) {
-            var content = [];
-
-            content.push('<h4>ClinVar</h4>');
-
-            if (attrs.solvebio.clinvar && attrs.solvebio.clinvar.total > 0) {
-                content.push('<ul class=unstyled>');
-                content = content.concat(this._renderClinVarCollection(attrs.solvebio.clinvar.results));
-                content.push('</ul>');
-            } else {
-                content.push('<p class=muted>No ClinVar assertions</p>');
-            }
-
-            return content.join('');
-        },
-
         fetchMetricsError: function() {
             $('#assessment-metrics').html('<p class=text-error>Error loading metrics.</p>');
         },
@@ -89,22 +52,6 @@ define([
 
             return content.join('');
         },
-
-        _renderExpandCollapse: function() {
-            var content = [];
-
-            content.push('<div class=expand-collapse-container>');
-            content.push('<a href="#" data-target=expand-collapse-link>MORE</a>');
-            content.push('</div>');
-
-            return content.join('');
-        },
-
-        render: function() {
-
-            if (attrs.solvebio) {
-                $row2.append(this._span(this.renderClinVar(attrs), 3).addClass('expandable-details-item').append(this._renderExpandCollapse));
-            }
 
             $row3.append(this._span(this.renderAssessmentMetricsContainer(), 12));
 
@@ -151,7 +98,8 @@ define([
             scores: '[data-target=prediction-scores]',
             cohorts: '[data-target=cohorts]',
             frequencies: '[data-target=frequencies]',
-            articles: '[data-target=articles]'
+            articles: '[data-target=articles]',
+            clinvar: '[data-target=clinvar]'
         },
 
         events: {
@@ -194,9 +142,6 @@ define([
                 for (var i = 0; i < element.children.length; i++) {
                     child = element.children[i];
 
-                    console.log(child);
-                    console.log(child.offsetTop + child.offsetHeight);
-                    console.log(this.maxExpandableHeight);
                     if ((child.offsetTop + child.offsetHeight) >
                             this.maxExpandableHeight) {
                         hasOverflow = true;
@@ -285,6 +230,16 @@ define([
                 collection: new Backbone.Collection(
                     utils.groupArticlesByType(this.model.get('variant'))
                 )
+            }));
+
+            var clinvarResults;
+            if (this.model.get('solvebio') &&
+                    this.model.get('solvebio').clinvar) {
+                clinvarResults = this.model.get('solvebio').clinvar.results;
+            }
+            clinvarResults = clinvarResults || [];
+            this.clinvar.show(new variant.Clinvar({
+                collection: new Backbone.Collection(clinvarResults)
             }));
 
             this.$el.modal('show');
