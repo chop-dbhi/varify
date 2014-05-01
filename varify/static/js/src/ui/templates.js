@@ -26,6 +26,8 @@ define([
     'tpl!../../../templates/variant/phenotype-group.html',
     'tpl!../../../templates/variant/phenotypes.html',
     'tpl!../../../templates/variant/scores.html',
+    'tpl!../../../templates/variant/clinvar.html',
+    'tpl!../../../templates/variant/clinvar-item.html',
     'tpl!../../../templates/variant/summary.html',
     'tpl!../../../templates/workflows/results.html'
 ], function(c, polyphen, sift, exportDialog, phenotype, result, sample,
@@ -33,7 +35,8 @@ define([
             articleGroup, variantArticles, cohortItem, cohortPopoverItem,
             variantCohorts, effectItem, effectType, variantEffects,
             variantFrequencies, phenotypeItem, phenotypeGroup,
-            variantPhenotypes, variantScores, variantSummary, results) {
+            variantPhenotypes, variantScores, clinvar, clinvarItem,
+            variantSummary, results) {
 
     // Define custom templates
     c.templates.set('varify/controls/polyphen', polyphen);
@@ -65,6 +68,8 @@ define([
     c.templates.set('varify/variant/phenotype-group', phenotypeGroup);
     c.templates.set('varify/variant/phenotypes', variantPhenotypes);
     c.templates.set('varify/variant/scores', variantScores);
+    c.templates.set('varify/variant/clinvar', clinvar);
+    c.templates.set('varify/variant/clinvar-item', clinvarItem);
     c.templates.set('varify/variant/summary', variantSummary);
 
     c.templates.set('varify/workflows/results', results);

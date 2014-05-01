@@ -3,6 +3,7 @@
 define([
     'underscore',
     './variant/articles',
+    './variant/solvebio',
     './variant/cohorts',
     './variant/effects',
     './variant/frequencies',
