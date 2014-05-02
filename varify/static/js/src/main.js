@@ -179,6 +179,8 @@ require({
                     collection: this.data.queries
                 }),
 
+                deleteQuery: new c.ui.DeleteQueryDialog(),
+
                 resultDetails: new ui.ResultDetails,
 
                 phenotype: new ui.Phenotype({
