@@ -129,8 +129,6 @@ class VariantAssessmentMetricsResource(ThrottledResource):
         pathogenicities = Pathogenicity.objects.all()
         assessments = Assessment.objects.select_related('sample_result') \
             .filter(sample_result__variant=pk)
-        print(assessments[0].sample_result.pk)
-        print(len(assessments))
         data = {
             'num_assessments': 0
         }

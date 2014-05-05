@@ -9,63 +9,6 @@ define([
     '../variant'
 ], function($, _, Backbone, Marionette, utils, variant) {
 
-    /*
-        fetchMetricsError: function() {
-            $('#assessment-metrics').html('<p class=text-error>Error loading metrics.</p>');
-        },
-
-        fetchMetricsSuccess: function() {
-            var content, metrics;
-
-            $('#assessment-metrics').html('');
-
-            if (_.isEmpty(this.metrics.get('metrics'))) {
-                $('#assessment-metrics').html('<p class=muted>No assessments have been made on this variant</p>');
-            }
-            else {
-                metrics = this.metrics.get('metrics');
-                content = [];
-                content.push('<div class=row-fluid>');
-                content.push('<div class=span4>');
-                content.push('<strong>Pathogenicities</strong>' + (Templates.assessmentMetrics(metrics.pathogenicities, true)));
-                content.push('</div>');
-                content.push('<div class=span4>');
-                content.push('<strong>Categories</strong>' + (Templates.assessmentMetrics(metrics.categories, true)));
-                content.push('</div>');
-                content.push('</div>');
-                content.push('<div class=row-fluid>');
-                content.push('<table class=assessment-details-table>');
-                content.push('<thead><tr><th></th><th>Sample</th><th>User</th><th>Pathogenicity</th><th>Category</th><th>Mother</th><th>Father</th><th>Sanger Requested</th></tr></thead>');
-                content.push('<tbody>' + (Templates.assessmentRows(metrics.assessments)) + '</tbody>');
-                content.push('</table>');
-                content.push('</div>');
-                $('#assessment-metrics').append(content.join(' '));
-                $('.username-popover').popover();
-            }
-        },
-
-        renderAssessmentMetricsContainer: function() {
-            var content = [];
-
-            content.push('<h4>Assessments</h4>');
-            content.push('<div id=assessment-metrics><img src="' + (utils.toAbsolutePath('static/images/loader-tiny.gif')) + '" /></div>');
-
-            return content.join('');
-        },
-
-            $row3.append(this._span(this.renderAssessmentMetricsContainer(), 12));
-
-            this.metrics.fetch({
-                success: this.fetchMetricsSuccess,
-                error: this.fetchMetricsError
-            });
-
-            return this.$el;
-        }
-
-    });
-*/
-
     var ResultDetails = Marionette.Layout.extend({
         id: 'result-details-modal',
 
@@ -86,11 +29,6 @@ define([
             linkContainer: '.expand-collapse-container'
         },
 
-        ui: {
-            // TODO: Can this reference the link selector above?
-            expandLinks: '[data-target=expand-collapse-link]'
-        },
-
         regions: {
             summary: '[data-target=summary]',
             effects: '[data-target=effects]',
@@ -105,7 +43,8 @@ define([
 
         events: {
             'click [data-action=close-result-modal]': 'close',
-            'click @ui.expandLinks': 'toggleExpandedState'
+            // TODO: Can this reference selector above?
+            'click [data-target=expand-collapse-link]': 'toggleExpandedState'
         },
 
         close: function() {

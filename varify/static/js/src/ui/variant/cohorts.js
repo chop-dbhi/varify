@@ -24,7 +24,7 @@ define([
     });
 
     var CohortPopoverCollection = Marionette.CollectionView.extend({
-        className: 'unstyled',
+        className: 'unstyled cohort-popover-content',
 
         tagName: 'ul',
 

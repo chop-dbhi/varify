@@ -32,7 +32,7 @@ body, #concept-panel, #context-panel {
         width: 96.5%;
         top: 0;
         bottom: 70px;
-        overflow: scroll;
+        overflow: auto;
     }
 
     .modal-footer {
@@ -64,15 +64,32 @@ body, #concept-panel, #context-panel {
         background: white;
     }
 
-    // Cohort popover styles
+    // Override default bootstrap popover width to something very large so
+    // individual popovers can shrink as needed.
     .popover {
-        max-height: 250px;
-        max-width: 200px;
+        max-width: 600px;
     }
 
-    .popover-content > ul {
-        max-height: 200px;
+    .cohort-popover-content, .percentage-popover-content {
+        max-height: 250px;
+        max-width: 200px;
         overflow-y: auto;
+    }
+
+    .details-popover-content {
+        max-width: 500px;
+        max-height: 250px;
+        overflow: auto;
+    }
+
+    .assessment-table {
+        th, td {
+            text-align: left;
+            padding-right: 20px;
+        }
+        tbody > tr {
+            border-top: 1px solid #eee;
+        }
     }
 }
 
