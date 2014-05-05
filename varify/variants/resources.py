@@ -129,8 +129,11 @@ class VariantAssessmentMetricsResource(ThrottledResource):
         pathogenicities = Pathogenicity.objects.all()
         assessments = Assessment.objects.select_related('sample_result') \
             .filter(sample_result__variant=pk)
-
-        data = {}
+        print(assessments[0].sample_result.pk)
+        print(len(assessments))
+        data = {
+            'num_assessments': 0
+        }
 
         num_assessments = len(assessments)
 
@@ -141,35 +144,27 @@ class VariantAssessmentMetricsResource(ThrottledResource):
 
             # Create the pathogenic summary excluding pathogenicities with
             # no calls associated with them.
-            pathogenicity_data = {}
+            data['pathogenicities'] = []
             for p in pathogenicities:
                 filter_results = assessments.filter(pathogenicity=p.id)
 
                 if filter_results.exists():
-                    pathogenicity_data[p.name] = self.get_assessment_data(
+                    assessment_data = self.get_assessment_data(
                         filter_results, num_assessments, request.user.id)
-
-            data['pathogenicities'] = pathogenicity_data
+                    assessment_data['name'] = p.name
+                    data['pathogenicities'].append(assessment_data)
 
             # Create the assessment category summary excluding categories with
             # no calls associated with them.
-            category_data = {}
+            data['categories'] = []
             for c in categories:
                 filter_results = assessments.filter(assessment_category=c.id)
 
                 if filter_results.exists():
-                    category_data[c.name] = self.get_assessment_data(
+                    assessment_data = self.get_assessment_data(
                         filter_results, num_assessments, request.user.id)
-
-            # Handle empty categories since category isn't required
-            filter_results = assessments.filter(
-                assessment_category__isnull=True)
-
-            if filter_results.exists():
-                category_data[''] = self.get_assessment_data(
-                    filter_results, num_assessments, request.user.id)
-
-            data['categories'] = category_data
+                    assessment_data['name'] = c.name
+                    data['categories'].append(assessment_data)
 
             # Get the list of all the projects the user has access to. We will
             # use this later to make sure that we don't expose the assessment
@@ -201,9 +196,7 @@ class VariantAssessmentMetricsResource(ThrottledResource):
 
                 data['assessments'].append(a_data)
 
-        return {
-            'metrics': data,
-        }
+        return data
 
     def get_assessment_data(self, queryset, total_count, user_id):
         """
@@ -212,15 +205,17 @@ class VariantAssessmentMetricsResource(ThrottledResource):
                 'count': <the number of items in the queryset>
                 'percentage': <percentage of total_count queryset represents>
                 'is_user_call': <true if user made this call, false otherwise>
-                'usernames': <set of all usernames who made this call>
+                'users': <set of all users who made this call>
             }
         """
 
         # We need to convert the usernames to strings here because the JSON
         # encoder will choke when serializing this data if the usernames are
         # unicode as they are when we get them back from the distinct call.
-        usernames = [str(u) for u in queryset.values_list(
-            'user__username', flat=True).distinct()]
+        users = [{'username': str(username), 'email': email}
+                     for username, email
+                     in queryset.values_list(
+                         'user__username', 'user__email').distinct()]
 
         count = queryset.count()
         is_user_call = queryset.filter(user=user_id).exists()
@@ -229,7 +224,7 @@ class VariantAssessmentMetricsResource(ThrottledResource):
             'count': count,
             'percentage': count / float(total_count) * 100.0,
             'is_user_call': is_user_call,
-            'usernames': usernames,
+            'users': users,
         }
 
 

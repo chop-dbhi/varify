@@ -28,7 +28,7 @@ define([
 
         tagName: 'ul',
 
-        template: 'varify/variant/cohort-popover-collection',
+        template: function() {},
 
         itemView: CohortPopoverItem
     });
@@ -74,7 +74,12 @@ define([
         },
 
         hidePopover: function(event) {
-            $(this.popoverSelector).not(event.target).popover('hide');
+            // Since we have embedded tags in the cohort link, we need to
+            // exclude clicks not only on this element but also when the parent
+            // of the clicked element is the popover link.
+            $(this.popoverSelector).not(event.target)
+                .not(event.target.parentElement)
+                .popover('hide');
         },
 
         onRender: function() {

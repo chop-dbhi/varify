@@ -1,0 +1,1 @@
+define(["cilantro","marionette"],function(e,t){var n=e.ui.EmptyView.extend({className:"muted",icon:"",align:"left"}),r=t.ItemView.extend({tagName:"li",template:"varify/variant/clinvar-item"}),i=t.CompositeView.extend({template:"varify/variant/clinvar",itemView:r,itemViewContainer:"[data-target=items]",emptyView:n});return{Clinvar:i}})

@@ -47,14 +47,12 @@ define([
 
     var AssessmentMetrics = Backbone.Model.extend({
         url: function() {
-          return '' + utils.getRootUrl() + 'api/variants/' + this.variant_id + '/assessment-metrics/';
+            return '' + utils.getRootUrl() + 'api/variants/' +
+                   this.variantId + '/assessment-metrics/';
         },
 
         initialize: function(attrs, options) {
-            if (!(this.result = options.result_id)) {
-                throw new Error("Result ID required");
-            }
-            if (!(this.variant_id = options.variant_id)) {
+            if (!(this.variantId = options.variantId)) {
                 throw new Error("Variant ID required");
             }
         }
