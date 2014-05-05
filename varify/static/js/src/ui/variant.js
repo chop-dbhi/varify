@@ -3,6 +3,7 @@
 define([
     'underscore',
     './variant/articles',
+    './variant/assessment-metrics',
     './variant/solvebio',
     './variant/cohorts',
     './variant/effects',

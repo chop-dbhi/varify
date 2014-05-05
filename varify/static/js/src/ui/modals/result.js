@@ -99,7 +99,8 @@ define([
             cohorts: '[data-target=cohorts]',
             frequencies: '[data-target=frequencies]',
             articles: '[data-target=articles]',
-            clinvar: '[data-target=clinvar]'
+            clinvar: '[data-target=clinvar]',
+            assessmentMetrics: '[data-target=assessment-metrics]'
         },
 
         events: {
@@ -241,6 +242,11 @@ define([
             this.clinvar.show(new variant.Clinvar({
                 collection: new Backbone.Collection(clinvarResults)
             }));
+
+            var metricsView = new variant.AssessmentMetrics({
+                variantId: this.model.get('variant').id,
+            });
+            this.assessmentMetrics.show(metricsView);
 
             this.$el.modal('show');
 
