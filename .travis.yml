@@ -7,9 +7,6 @@ python:
 env:
     - DJANGO=1.4.11
 
-virtualenv:
-    system_site_packages: true
-
 before_install:
     - env | sort
     - sudo apt-get update -qq
