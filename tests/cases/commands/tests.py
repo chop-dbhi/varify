@@ -11,6 +11,7 @@ from varify.assessments.models import Assessment, Pathogenicity, \
     ParentalResult, AssessmentCategory
 from varify.samples.models import Sample, CohortSample, Result, SampleRun, \
     SampleManifest, Project, Cohort, Batch, CohortVariant, ResultScore
+from varify.variants.models import Variant
 from varify.samples.management.subcommands import gene_ranks
 from ..sample_load_process.tests import QueueTestCase
 from ...models import MockHandler
@@ -666,3 +667,45 @@ class AlleleTestCase(QueueTestCase):
         self.assertNotEqual(firstCount, 0)
         management.call_command('samples', 'allele-freqs')
         self.assertEqual(firstCount, CohortVariant.objects.count())
+
+
+@override_settings(VARIFY_SAMPLE_DIRS=SAMPLE_DIRS)
+class BigAutoFieldsTestCase(QueueTestCase):
+    def setUp(self):
+        super(BigAutoFieldsTestCase, self).setUp()
+
+        # Immediately validates and creates a sample
+        management.call_command('samples', 'queue',
+                                burst=True, startworkers=True)
+
+    def test_big_auto_fields(self):
+        # Test that BigAutoFields can exceed Django's default integer limit
+        resultCountBefore = Result.objects.count()
+        cohortVariantCountBefore = CohortVariant.objects.count()
+
+        newSample = Sample(
+            id=2000000000, label='',batch_id=1,version=1,
+            count=1, published=True, name='',project_id=1
+            )
+        newSample.save()
+        
+        newVariant = Variant(
+            id=2000000000,chr_id=1,pos=1,ref='',alt='',md5=''
+            )
+        newVariant.save()
+
+        newResult = Result(
+            id=3000000000,sample_id=2000000000,variant_id=2000000000
+            )
+        newResult.save()
+        
+        newCohortVariant = CohortVariant(
+            id=3000000000,variant_id=2000000000,cohort_id=1
+            )
+        newCohortVariant.save()
+        
+        resultCountAfter = Result.objects.count()        
+        cohortVariantCountAfter = CohortVariant.objects.count()
+    
+        self.assertEqual(resultCountBefore+1, resultCountAfter)
+        self.assertEqual(cohortVariantCountBefore+1, cohortVariantCountAfter)

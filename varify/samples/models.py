@@ -4,7 +4,7 @@ from django.conf import settings
 from django.db import router, models, transaction, connections, DatabaseError
 from sts.contextmanagers import transition
 from objectset.models import ObjectSet, SetObject
-from varify.core.models import TimestampedModel, LabeledModel
+from varify.core.models import TimestampedModel, LabeledModel, BigAutoField
 from varify.genome.models import Genome, Genotype
 from varify.variants.models import Variant
 
@@ -284,6 +284,10 @@ class CohortVariant(models.Model):
     """Cohort-level aggregated data relative to specific variants. This
     currently only includes 'allele frequency' for the given cohort.
     """
+
+    # Explictly declare BigAutoField primary key to avoid reaching max int
+    id = BigAutoField(primary_key=True)
+
     variant = models.ForeignKey(Variant, related_name='cohort_details')
     cohort = models.ForeignKey(Cohort)
     af = models.FloatField(null=True, db_index=True)
@@ -307,6 +311,9 @@ class SampleRun(TimestampedModel):
 
 
 class Result(TimestampedModel):
+    # Explictly declare BigAutoField primary key to avoid reaching max int
+    id = BigAutoField(primary_key=True)
+
     # Reference to the sample
     sample = models.ForeignKey(Sample, related_name='results')
 
