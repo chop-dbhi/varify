@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from varify.core.models import BigForeignKey
 from varify.samples.models import Result
 from varify.core.models import TimestampedModel
 import reversion
@@ -52,7 +53,8 @@ class Assessment(TimestampedModel):
     father_result = models.ForeignKey(ParentalResult, related_name='father')
     mother_result = models.ForeignKey(ParentalResult, related_name='mother')
     pathogenicity = models.ForeignKey(Pathogenicity)
-    sample_result = models.ForeignKey(Result)
+    sample_result = BigForeignKey(Result)
+
     sanger_result = models.ForeignKey(SangerResult, null=True, blank=True)
     user = models.ForeignKey(User)
 
