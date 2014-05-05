@@ -22,8 +22,16 @@ define([
 
         template: 'varify/modals/result',
 
+        ui: {
+            expandableRows: '[data-target=expandable-row]'
+        },
+
+        // These are selectors that are used to lookup elements external to
+        // this view itself that are not guaranteed to be available when the
+        // ui elements are registered. Because of that, we store them all
+        // on selectors so it is clear why they are being referenced
+        // throughout the code below.
         selectors: {
-            expandableRow: '[data-target=expandable-row]',
             expandableItem: '.expandable-item',
             expandCollapseLink: '[data-target=expand-collapse-link]',
             linkContainer: '.expand-collapse-container'
@@ -108,7 +116,7 @@ define([
             var element, parent;
 
             element = $(event.target);
-            parent = element.closest(this.selectors.expandableRow);
+            parent = element.closest(this.ui.expandableRows);
 
             // We essentially link all the expand/collapse links in a single
             // row to take the same action. So, when one is used to expand, all
@@ -191,7 +199,7 @@ define([
 
             // Reset the row and item heights and overflow styles as they may
             // have been toggled previously.
-            this.$el.find(this.selectors.expandableRow)
+            this.$el.find(this.ui.expandableRows)
                 .css('height', '' + this.maxExpandableHeight + 'px')
                 .css('overflow', 'hidden');
             this.$el.find(this.selectors.expandCollapseLink)
