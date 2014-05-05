@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models import fields
+from south.modelsinspector import add_introspection_rules
 
 
 class TimestampedModel(models.Model):
@@ -28,3 +30,21 @@ class LabeledModel(models.Model):
 
     def __unicode__(self):
         return self.label
+
+
+class BigAutoField(fields.AutoField):
+    # ONLY PostgreSQL is supported (MySQL, Oracle & SQLite are NOT supported)
+    def db_type(self, connection):
+        if 'mysql' in connection.__class__.__module__:
+            return 'bigint AUTO_INCREMENT'
+        elif 'oracle' in connection.__class__.__module__:
+            return 'NUMBER(19)'
+        elif 'postgres' in connection.__class__.__module__:
+            return 'bigserial'
+        elif 'sqlite3' in connection.__class__.__modeule__:
+            return 'integer'
+        else:
+            raise NotImplemented
+        return super(BigAutoField, self).db_type(connection)
+
+add_introspection_rules([], ["^varify\.core\.models\.BigAutoField"])
