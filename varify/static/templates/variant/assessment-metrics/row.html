@@ -1,0 +1,24 @@
+<td>
+    <a href='<%= data.sampleUrl %>'>
+        <%= data.sample.name %>
+    </a>
+</td>
+<td>
+    <% if (data.user.email) { %>
+        <a href='mailto:<%= data.user.email %>'>
+            <%= data.user.username %>
+        </a>
+    <% } else { %>
+        <%= data.user.username %>
+    <% } %>
+</td>
+<td><%= data.pathogenicity %></td>
+<td><%= data.category %></td>
+<td><%= data.mother_result %></td>
+<td><%= data.father_result %></td>
+<td><%= data.sanger %></td>
+<td>
+    <a href='#' data-target=details-popover>
+        Details...
+    </a>
+</td>

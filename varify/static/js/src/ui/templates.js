@@ -18,6 +18,8 @@ define([
     'tpl!../../../templates/variant/assessment-metrics.html',
     'tpl!../../../templates/variant/assessment-metrics/percentages.html',
     'tpl!../../../templates/variant/assessment-metrics/percentage-item.html',
+    'tpl!../../../templates/variant/assessment-metrics/row.html',
+    'tpl!../../../templates/variant/assessment-metrics/table.html',
     'tpl!../../../templates/variant/assessment-metrics/user-popover-item.html',
     'tpl!../../../templates/variant/cohort-item.html',
     'tpl!../../../templates/variant/cohort-popover-item.html',
@@ -37,11 +39,11 @@ define([
 ], function(c, polyphen, sift, exportDialog, phenotype, result, sample,
             sampleLoader, sampleRow, sampleTable, header, articleItem,
             articleGroup, variantArticles, assessmentMetrics,
-            metricsPercentages, metricsPercentageItem, userPopoverItem,
-            cohortItem, cohortPopoverItem, variantCohorts, effectItem,
-            effectType, variantEffects, variantFrequencies, phenotypeItem,
-            phenotypeGroup, variantPhenotypes, variantScores, clinvar,
-            clinvarItem, variantSummary, results) {
+            metricsPercentages, metricsPercentageItem, metricsRow, metricsTable,
+            userPopoverItem, cohortItem, cohortPopoverItem, variantCohorts,
+            effectItem, effectType, variantEffects, variantFrequencies,
+            phenotypeItem, phenotypeGroup, variantPhenotypes, variantScores,
+            clinvar, clinvarItem, variantSummary, results) {
 
     // Define custom templates
     c.templates.set('varify/controls/polyphen', polyphen);
@@ -66,6 +68,8 @@ define([
         metricsPercentages);
     c.templates.set('varify/variant/assessment-metrics/percentage-item',
         metricsPercentageItem);
+    c.templates.set('varify/variant/assessment-metrics/row', metricsRow);
+    c.templates.set('varify/variant/assessment-metrics/table', metricsTable);
     c.templates.set('varify/variant/assessment-metrics/user-popover-item',
         userPopoverItem);
     c.templates.set('varify/variant/assessment-metrics', assessmentMetrics);
