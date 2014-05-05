@@ -5,8 +5,9 @@ define([
     'underscore',
     'backbone',
     'marionette',
-    '../../models'
-], function($, _, Backbone, Marionette, models) {
+    '../../models',
+    '../../utils'
+], function($, _, Backbone, Marionette, models, utils) {
 
     var UserPopoverItem = Marionette.ItemView.extend({
         tagName: 'li',
@@ -50,10 +51,92 @@ define([
 
         itemViewContainer: '[data-target=items]',
 
+        popoverSelector: '[data-target=user-popover]',
+
+        initialize: function() {
+            _.bindAll(this, 'hidePopover');
+
+            $(document).on('click', this.hidePopover);
+        },
+
         templateHelpers: function() {
             return {
                 title: this.options.title
             };
+        },
+
+        hidePopover: function(event) {
+            // Since we have embedded tags in the popover link, we need to
+            // exclude clicks not only on this element but also when the parent
+            // of the clicked element is the popover link.
+            $(this.popoverSelector).not(event.target)
+                .not(event.target.parentElement)
+                .popover('hide');
+        },
+
+        onRender: function() {
+            this.$el.find(this.popoverSelector).popover({
+                container: '#result-details-modal',
+                html: true,
+                title: 'Users who made this call'
+            });
+        }
+    });
+
+    var AssessmentRow = Marionette.ItemView.extend({
+        tagName: 'tr',
+
+        template: 'varify/variant/assessment-metrics/row',
+
+        ui: {
+            popover: '[data-target=details-popover]'
+        },
+
+        templateHelpers: function() {
+            var samplePath = 'samples/' + this.model.get('sample').id;
+
+            return {
+                sampleUrl: utils.toAbsolutePath(samplePath)
+            };
+        },
+
+        onRender: function() {
+            this.ui.popover.attr('data-content', '<p class=details-popover-content>' +
+                this.model.get('details') + '</p>');
+        }
+    });
+
+    var AssessmentTable = Marionette.CompositeView.extend({
+        template: 'varify/variant/assessment-metrics/table',
+
+        itemView: AssessmentRow,
+
+        itemViewContainer: '[data-target=items]',
+
+        popoverSelector: '[data-target=details-popover]',
+
+        initialize: function() {
+            _.bindAll(this, 'hidePopover');
+
+            $(document).on('click', this.hidePopover);
+        },
+
+        hidePopover: function(event) {
+            // Since we have embedded tags in the popover link, we need to
+            // exclude clicks not only on this element but also when the parent
+            // of the clicked element is the popover link.
+            $(this.popoverSelector).not(event.target)
+                .not(event.target.parentElement)
+                .popover('hide');
+        },
+
+        onRender: function() {
+            this.$el.find(this.popoverSelector).popover({
+                container: '#result-details-modal',
+                placement: 'top',
+                html: true,
+                title: 'Evidence Details'
+            });
         }
     });
 
@@ -69,7 +152,8 @@ define([
 
         regions: {
             categories: '[data-target=categories]',
-            pathogenicities: '[data-target=pathogenicities]'
+            pathogenicities: '[data-target=pathogenicities]',
+            table: '[data-target=assessment-table]'
         },
 
         modelEvents: {
@@ -78,10 +162,8 @@ define([
             'sync': 'onSync'
         },
 
-        popoverSelector: '[data-target=user-popover]',
-
         initialize: function() {
-            _.bindAll(this, 'onError', 'onRequest', 'onSync', 'hidePopover');
+            _.bindAll(this, 'onError', 'onRequest', 'onSync');
 
             if (!this.options.variantId) {
                 throw new Error('Variant ID Required');
@@ -90,17 +172,6 @@ define([
             this.model= new models.AssessmentMetrics({}, {
                 variantId: this.options.variantId
             });
-
-            $(document).on('click', this.hidePopover);
-        },
-
-        hidePopover: function(event) {
-            // Since we have embedded tags in the popover link, we need to
-            // exclude clicks not only on this element but also when the parent
-            // of the clicked element is the popover link.
-            $(this.popoverSelector).not(event.target)
-                .not(event.target.parentElement)
-                .popover('hide');
         },
 
         onError: function() {
@@ -138,11 +209,11 @@ define([
                     title: 'Pathogenicities'
                 }));
 
-                this.$el.find(this.popoverSelector).popover({
-                    container: '#result-details-modal',
-                    html: true,
-                    title: 'Users who made this call'
-                });
+                this.table.show(new AssessmentTable({
+                    collection: new Backbone.Collection(
+                        this.model.get('assessments')
+                    )
+                }));
 
                 this.ui.metrics.show();
             }
