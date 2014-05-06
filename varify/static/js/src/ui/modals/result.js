@@ -5,9 +5,9 @@ define([
     'underscore',
     'backbone',
     'marionette',
-    '../../utils',
+    '../../models',
     '../variant'
-], function($, _, Backbone, Marionette, utils, variant) {
+], function($, _, Backbone, Marionette, models, details) {
 
     var ResultDetails = Marionette.Layout.extend({
         id: 'result-details-modal',
@@ -135,60 +135,45 @@ define([
 
         open: function(result) {
             this.model = result;
+            var variant = new models.Variant(this.model.get('variant'));
 
-            this.summary.show(new variant.Summary({
+            this.summary.show(new details.Summary({
                 model: this.model
             }));
 
             // We exclude effects that don't have a transcript because the
             // minimum required data we need to display an effect is held
             // within the transcript object.
-            this.effects.show(new variant.Effects({
-                collection: new Backbone.Collection(utils.groupEffectsByType(
-                    _.filter(this.model.get('variant').effects, function(effect) {
-                        return effect.transcript !== null;
-                    })
-                ))
+            this.effects.show(new details.Effects({
+                collection: variant.effects
             }));
 
-            this.phenotypes.show(new variant.Phenotypes({
-                collection: new Backbone.Collection(
-                    utils.groupPhenotypesByType(this.model.get('variant'))
-                )
+            this.phenotypes.show(new details.Phenotypes({
+                collection: variant.phenotypes
             }));
 
-            this.scores.show(new variant.PredictionScores({
-                model: new Backbone.Model(this.model.get('variant'))
+            this.scores.show(new details.PredictionScores({
+                model: variant
             }));
 
-            this.cohorts.show(new variant.Cohorts({
-                collection: new Backbone.Collection(
-                    this.model.get('variant').cohorts
-                )
+            this.cohorts.show(new details.Cohorts({
+                collection: variant.cohorts
             }));
 
-            this.frequencies.show(new variant.Frequencies({
-                model: new Backbone.Model(this.model.get('variant'))
+            this.frequencies.show(new details.Frequencies({
+                model: variant
             }));
 
-            this.articles.show(new variant.Articles({
-                collection: new Backbone.Collection(
-                    utils.groupArticlesByType(this.model.get('variant'))
-                )
+            this.articles.show(new details.Articles({
+                collection: variant.articles
             }));
 
-            var clinvarResults;
-            if (this.model.get('solvebio') &&
-                    this.model.get('solvebio').clinvar) {
-                clinvarResults = this.model.get('solvebio').clinvar.results;
-            }
-            clinvarResults = clinvarResults || [];
-            this.clinvar.show(new variant.Clinvar({
-                collection: new Backbone.Collection(clinvarResults)
+            this.clinvar.show(new details.Clinvar({
+                collection: variant.clinvarResults
             }));
 
-            this.assessmentMetrics.show(new variant.AssessmentMetrics({
-                variantId: this.model.get('variant').id,
+            this.assessmentMetrics.show(new details.AssessmentMetrics({
+                variantId: variant.id,
             }));
 
             this.$el.modal('show');
