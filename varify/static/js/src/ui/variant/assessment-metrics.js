@@ -20,8 +20,6 @@ define([
 
         tagName: 'ul',
 
-        template: function() {},
-
         itemView: UserPopoverItem
     });
 
