@@ -51,7 +51,9 @@ define([
 
         itemViewContainer: '[data-target=items]',
 
-        popoverSelector: '[data-target=user-popover]',
+        ui: {
+            popover: '[data-target=user-popover]',
+        },
 
         initialize: function() {
             _.bindAll(this, 'hidePopover');
@@ -69,13 +71,15 @@ define([
             // Since we have embedded tags in the popover link, we need to
             // exclude clicks not only on this element but also when the parent
             // of the clicked element is the popover link.
-            $(this.popoverSelector).not(event.target)
+            this.ui.popover.not(event.target)
                 .not(event.target.parentElement)
                 .popover('hide');
         },
 
         onRender: function() {
-            this.$el.find(this.popoverSelector).popover({
+            this.bindUIElements();
+
+            this.ui.popover.popover({
                 container: '#result-details-modal',
                 html: true,
                 title: 'Users who made this call'
@@ -113,7 +117,9 @@ define([
 
         itemViewContainer: '[data-target=items]',
 
-        popoverSelector: '[data-target=details-popover]',
+        ui: {
+            popover: '[data-target=details-popover]',
+        },
 
         initialize: function() {
             _.bindAll(this, 'hidePopover');
@@ -125,13 +131,15 @@ define([
             // Since we have embedded tags in the popover link, we need to
             // exclude clicks not only on this element but also when the parent
             // of the clicked element is the popover link.
-            $(this.popoverSelector).not(event.target)
+            this.ui.popover.not(event.target)
                 .not(event.target.parentElement)
                 .popover('hide');
         },
 
         onRender: function() {
-            this.$el.find(this.popoverSelector).popover({
+            this.bindUIElements();
+
+            this.ui.popover.popover({
                 container: '#result-details-modal',
                 placement: 'top',
                 html: true,
