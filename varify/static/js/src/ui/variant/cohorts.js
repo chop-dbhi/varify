@@ -28,8 +28,6 @@ define([
 
         tagName: 'ul',
 
-        template: function() {},
-
         itemView: CohortPopoverItem
     });
 
