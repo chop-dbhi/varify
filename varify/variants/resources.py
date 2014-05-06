@@ -211,9 +211,9 @@ class VariantAssessmentMetricsResource(ThrottledResource):
         # encoder will choke when serializing this data if the usernames are
         # unicode as they are when we get them back from the distinct call.
         users = [{'username': str(username), 'email': email}
-                     for username, email
-                     in queryset.values_list(
-                         'user__username', 'user__email').distinct()]
+                 for username, email
+                 in queryset.values_list('user__username', 'user__email')
+                            .distinct()]
 
         count = queryset.count()
         is_user_call = queryset.filter(user=user_id).exists()
