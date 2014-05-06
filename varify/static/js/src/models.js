@@ -5,7 +5,8 @@ define([
     './models/result',
     './models/assessment',
     './models/phenotype',
-    './models/sample'
+    './models/sample',
+    './models/variant'
 ], function(_) {
 
     var mods = [].slice.call(arguments, 1);
