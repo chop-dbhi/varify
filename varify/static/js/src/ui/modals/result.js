@@ -23,18 +23,10 @@ define([
         template: 'varify/modals/result',
 
         ui: {
-            expandableRows: '[data-target=expandable-row]'
-        },
-
-        // These are selectors that are used to lookup elements external to
-        // this view itself that are not guaranteed to be available when the
-        // ui elements are registered. Because of that, we store them all
-        // on selectors so it is clear why they are being referenced
-        // throughout the code below.
-        selectors: {
-            expandableItem: '.expandable-item',
-            expandCollapseLink: '[data-target=expand-collapse-link]',
-            linkContainer: '.expand-collapse-container'
+            expandableRows: '[data-target=expandable-row]',
+            expandableItems: '.expandable-item',
+            expandCollapseLinks: '[data-target=expand-collapse-link]',
+            linkContainers: '.expand-collapse-container'
         },
 
         regions: {
@@ -51,8 +43,7 @@ define([
 
         events: {
             'click [data-action=close-result-modal]': 'close',
-            // TODO: Can this reference selector above?
-            'click [data-target=expand-collapse-link]': 'toggleExpandedState'
+            'click @ui.expandCollapseLinks': 'toggleExpandedState'
         },
 
         close: function() {
@@ -67,14 +58,20 @@ define([
             });
         },
 
+        /* jshint ignore:start */
+
         /*
+         *
          * Reset state of all the expand/collapse links based on whether their
          * item is overflowing. Overflow detection code adapted from Mohsen's
          * answer here:
          *      http://stackoverflow.com/questions/7668636/check-with-jquery-if-div-has-overflowing-elements
+         *
          */
+
+        /* jshint ignore:end */
         _checkForOverflow: function() {
-            _.each($(this.selectors.expandableItem), function(element) {
+            _.each(this.ui.expandableItems, function(element) {
                 var child, hasOverflow = false;
 
                 /*
@@ -101,10 +98,10 @@ define([
                 // have been bounded and is now overflown or vice-versa and we
                 // want to match the current regardless of previous states.
                 if (hasOverflow) {
-                    $(element).find(this.selectors.linkContainer).show();
+                    $(element).find(this.ui.linkContainers).show();
                 }
                 else {
-                    $(element).find(this.selectors.linkContainer).hide();
+                    $(element).find(this.ui.linkContainers).hide();
                 }
 
             }, this);
@@ -123,13 +120,13 @@ define([
             // other links in the row get updated in the same fasion to keep
             // them all in sync.
             if (element.text() === this.showMoreText) {
-                parent.find(this.selectors.expandCollapseLink)
+                parent.find(this.ui.expandCollapseLinks)
                       .text(this.showLessText);
                 parent.css('height', 'auto')
                       .css('overflow', 'visible');
             }
             else {
-                parent.find(this.selectors.expandCollapseLink)
+                parent.find(this.ui.expandCollapseLinks)
                       .text(this.showMoreText);
                 parent.css('height', this.maxExpandableHeight)
                       .css('overflow', 'hidden');
@@ -190,20 +187,26 @@ define([
                 collection: new Backbone.Collection(clinvarResults)
             }));
 
-            var metricsView = new variant.AssessmentMetrics({
+            this.assessmentMetrics.show(new variant.AssessmentMetrics({
                 variantId: this.model.get('variant').id,
-            });
-            this.assessmentMetrics.show(metricsView);
+            }));
 
             this.$el.modal('show');
 
+            // Since the UI elements are bound before rendering, many of the
+            // UI elements we need access to to will not be found at this point
+            // as they did not exist in the templates and therefore would not
+            // be found during the normal UI binding call. We rebind here so
+            // since all the elements should now be available as all the
+            // regions have been populated and their views shown.
+            this.bindUIElements();
+
             // Reset the row and item heights and overflow styles as they may
             // have been toggled previously.
-            this.$el.find(this.ui.expandableRows)
+            this.ui.expandableRows
                 .css('height', '' + this.maxExpandableHeight + 'px')
                 .css('overflow', 'hidden');
-            this.$el.find(this.selectors.expandCollapseLink)
-                .text(this.showMoreText);
+            this.ui.expandCollapseLinks.text(this.showMoreText);
 
             this._checkForOverflow();
         }
