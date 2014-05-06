@@ -13,8 +13,6 @@ define([
     });
 
     var GeneList = Marionette.CollectionView.extend({
-        template: function() {},
-
         itemView: GeneItem,
 
         emptyView: EmptyGene

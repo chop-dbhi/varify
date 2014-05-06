@@ -11,8 +11,6 @@ define([
     var ResultBody = Marionette.CollectionView.extend({
         tagName: 'tbody',
 
-        template: function() {},
-
         itemView: row.ResultRow,
 
         itemViewOptions: function (model, index) {
