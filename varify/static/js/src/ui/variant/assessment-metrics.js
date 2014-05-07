@@ -74,6 +74,14 @@ define([
                 .popover('hide');
         },
 
+        onClose: function() {
+            // Clean up after ourselves. If we don't remove the event handler
+            // then we will still receive click notifications even long after
+            // we are dead and gone and the hidePopover method will throw a
+            // fit because ui.popover is no longer bound.
+            $(document).off('click', this.hidePopover);
+        },
+
         onRender: function() {
             this.bindUIElements();
 
@@ -132,6 +140,14 @@ define([
             this.ui.popover.not(event.target)
                 .not(event.target.parentElement)
                 .popover('hide');
+        },
+
+        onClose: function() {
+            // Clean up after ourselves. If we don't remove the event handler
+            // then we will still receive click notifications even long after
+            // we are dead and gone and the hidePopover method will throw a
+            // fit because ui.popover is no longer bound.
+            $(document).off('click', this.hidePopover);
         },
 
         onRender: function() {
