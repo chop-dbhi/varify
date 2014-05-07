@@ -32,8 +32,9 @@ define([
                 gene = transcript.gene;
             }
 
-            var proteinChange, changeString =
-                this.model.get('hgvs_p') || this.model.get('amino_acid_change');
+            var proteinChange,
+                changeString = this.model.get('hgvs_p') ||
+                    this.model.get('amino_acid_change');
 
             if (changeString) {
                 /*
