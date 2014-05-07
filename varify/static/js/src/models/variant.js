@@ -38,7 +38,6 @@ define([
             if (attrs.solvebio && attrs.solvebio.clinvar) {
                 clinvarResults = attrs.solvebio.clinvar.results;
             }
-            clinvarResults = clinvarResults || [];
             this.clinvarResults.reset(clinvarResults);
 
             return attrs;
