@@ -69,8 +69,6 @@ define([
 
         initialize: function() {
             _.bindAll(this, 'hidePopover');
-
-            $(document).on('click', this.hidePopover);
         },
 
         hidePopover: function(event) {
@@ -91,6 +89,8 @@ define([
         },
 
         onRender: function() {
+            $(document).on('click', this.hidePopover);
+
             this.bindUIElements();
 
             this.ui.popover.popover({
