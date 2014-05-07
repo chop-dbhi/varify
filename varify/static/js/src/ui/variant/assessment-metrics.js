@@ -191,7 +191,7 @@ define([
                 throw new Error('Variant ID Required');
             }
 
-            this.model= new models.AssessmentMetrics({}, {
+            this.model = new models.AssessmentMetrics(null, {
                 variantId: this.options.variantId
             });
         },
