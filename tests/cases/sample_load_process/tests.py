@@ -168,7 +168,7 @@ class SnpeffReloadTest(QueueTestCase):
         "Load a single VCF, reload the snpEff data using the same VCF."
         management.call_command('samples', 'queue',
                                 os.path.join(SAMPLE_DIRS[0], 'batch1/locus_1'),
-                                burst=True, startworkers=True)
+                                startworkers=True)
 
         expected_variant_effects_count = 5426
 

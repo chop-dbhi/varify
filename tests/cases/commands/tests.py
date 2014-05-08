@@ -528,7 +528,7 @@ class DeleteTestCase(QueueTestCase):
 
         # Immediately validates and creates a sample
         management.call_command('samples', 'queue',
-                                burst=True, startworkers=True)
+                                startworkers=True)
 
         # Create and record some data that will be used to create knowledge
         # capture assessments later on.
@@ -659,7 +659,7 @@ class AlleleTestCase(QueueTestCase):
 
         # Immediately validates and creates a sample
         management.call_command('samples', 'queue',
-                                burst=True, startworkers=True)
+                                startworkers=True)
 
     def test_allele_freqs(self):
         management.call_command('samples', 'allele-freqs')
@@ -686,7 +686,7 @@ class BigAutoFieldsTestCase(TestCase):
         new_sample = Sample.objects.create(
             id=1, label='',batch_id=self.batch.id, version=1,
             count=1, published=True, name='', project_id=self.project.id)
-        
+
         new_variant = Variant.objects.create(
             id=1, chr_id=1, pos=1, ref='', alt='', md5='')
 
@@ -696,12 +696,12 @@ class BigAutoFieldsTestCase(TestCase):
 
         new_score = ResultScore.objects.create(
             id=1, result_id=new_result.id, rank=0, score=0)
-        
+
         new_cohort_variant = CohortVariant.objects.create(
             id=two_hundred_billion, variant_id=new_variant.id, cohort_id=1)
-        
-        result_count_after = Result.objects.count()        
+
+        result_count_after = Result.objects.count()
         cohort_variant_count_after = CohortVariant.objects.count()
-    
+
         self.assertEqual(result_count_before+1, result_count_after)
         self.assertEqual(cohort_variant_count_before+1, cohort_variant_count_after)

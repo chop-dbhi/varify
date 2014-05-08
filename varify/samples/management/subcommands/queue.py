@@ -24,16 +24,14 @@ class Command(BaseCommand):
         make_option('--max', action='store', dest='max', default=None,
                     type='int',
                     help='Specifies the maximum number of samples to queue.'),
-        make_option('--burst', action='store_true', dest='burst',
-                    default=False,
-                    help='Include --burst flag to run workers in burst mode. '
-                         'Used in conjuction with --startworkers. This flag '
-                         'has no effect if --startworkers is not present.'),
         make_option('--startworkers', action='store_true', dest='startworkers',
                     default=False,
                     help='Include --startworkers flag to automatically start '
                          'the variant and default workers if they are not '
-                         'already running. '),
+                         'already running. The workers will automatically '
+                         'burst after the job is finished but will block the '
+                         'terminal until the queues are emptied and all jobs '
+                         'are finished.'),
     )
 
     def _queue(self, dirs, max_count, database, verbosity):
@@ -87,7 +85,7 @@ class Command(BaseCommand):
 
         return count, scanned
 
-    def startWorkers(self, burst):
+    def startWorkers(self):
         # Find the number of current workers
         queues = getattr(settings, 'RQ_QUEUES', {})
         default = queues['default'] if 'default' in queues else None
@@ -125,17 +123,16 @@ class Command(BaseCommand):
         # Start the required worker
         if not found_variant:
             log.debug('Did not find variants worker. Starting ... ')
-            get_worker('variants').work(burst=burst)
+            get_worker('variants').work(burst=True)
 
         if not found_default:
             log.debug('Did not find default worker. Starting ... ')
-            get_worker('default').work(burst=burst)
+            get_worker('default').work(burst=True)
 
     def handle(self, *dirs, **options):
         database = options.get('database')
         max_count = options.get('max')
         verbosity = int(options.get('verbosity'))
-        burst = options.get('burst')
         workers = options.get('startworkers')
 
         if not dirs:
@@ -156,4 +153,4 @@ class Command(BaseCommand):
 
         # Start workers when appropriate
         if workers:
-            self.startWorkers(burst)
+            self.startWorkers()
