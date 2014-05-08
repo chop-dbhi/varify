@@ -2,7 +2,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['underscore', 'marionette', './row'], function(_, Marionette, row) {
-  var Header, HeaderCell, HeaderRow;
+  var Header, HeaderCell, HeaderRow, _ref, _ref1;
   HeaderCell = (function(_super) {
     __extends(HeaderCell, _super);
 
@@ -51,12 +51,11 @@ define(['underscore', 'marionette', './row'], function(_, Marionette, row) {
     };
 
     HeaderCell.prototype.getSortIconClass = function() {
-      var direction, model;
-      model = _.find(this.view.facets.models, (function(_this) {
-        return function(m) {
-          return _this.model.id === m.get('concept');
-        };
-      })(this));
+      var direction, model,
+        _this = this;
+      model = _.find(this.view.facets.models, function(m) {
+        return _this.model.id === m.get('concept');
+      });
       if (model == null) {
         return;
       }
@@ -91,7 +90,8 @@ define(['underscore', 'marionette', './row'], function(_, Marionette, row) {
     __extends(HeaderRow, _super);
 
     function HeaderRow() {
-      return HeaderRow.__super__.constructor.apply(this, arguments);
+      _ref = HeaderRow.__super__.constructor.apply(this, arguments);
+      return _ref;
     }
 
     HeaderRow.prototype.itemView = HeaderCell;
@@ -103,7 +103,8 @@ define(['underscore', 'marionette', './row'], function(_, Marionette, row) {
     __extends(Header, _super);
 
     function Header() {
-      return Header.__super__.constructor.apply(this, arguments);
+      _ref1 = Header.__super__.constructor.apply(this, arguments);
+      return _ref1;
     }
 
     Header.prototype.tagName = 'thead';

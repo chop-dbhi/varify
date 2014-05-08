@@ -2,7 +2,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['underscore', 'backbone', '../core', './base', './stats'], function(_, Backbone, c, base, stats) {
-  var FieldCollection, FieldModel, getLogicalType;
+  var FieldCollection, FieldModel, getLogicalType, _ref;
   getLogicalType = function(attrs) {
     var type;
     if ((type = c.config.get("fields.instances." + attrs.id + ".type"))) {
@@ -21,14 +21,13 @@ define(['underscore', 'backbone', '../core', './base', './stats'], function(_, B
     __extends(FieldModel, _super);
 
     function FieldModel() {
+      var _this = this;
       FieldModel.__super__.constructor.apply(this, arguments);
       if (this.links.stats) {
         this.stats = new stats.StatCollection;
-        this.stats.url = (function(_this) {
-          return function() {
-            return _this.links.stats;
-          };
-        })(this);
+        this.stats.url = function() {
+          return _this.links.stats;
+        };
       }
     }
 
@@ -41,6 +40,7 @@ define(['underscore', 'backbone', '../core', './base', './stats'], function(_, B
     };
 
     FieldModel.prototype.distribution = function(handler, cache) {
+      var _this = this;
       if (cache == null) {
         cache = true;
       }
@@ -53,18 +53,17 @@ define(['underscore', 'backbone', '../core', './base', './stats'], function(_, B
         Backbone.ajax({
           url: this.links.distribution,
           dataType: 'json',
-          success: (function(_this) {
-            return function(resp) {
-              _this._cache.distribution = cache ? resp : null;
-              return handler(resp);
-            };
-          })(this)
+          success: function(resp) {
+            _this._cache.distribution = cache ? resp : null;
+            return handler(resp);
+          }
         });
       }
     };
 
     FieldModel.prototype.values = function(params, handler, cache) {
-      var deferred;
+      var deferred,
+        _this = this;
       if (cache == null) {
         cache = true;
       }
@@ -94,19 +93,15 @@ define(['underscore', 'backbone', '../core', './base', './stats'], function(_, B
           url: this.links.values,
           data: params,
           dataType: 'json',
-          success: (function(_this) {
-            return function(resp) {
-              if (cache) {
-                _this._cache.values = resp;
-              }
-              return deferred.resolve(resp);
-            };
-          })(this),
-          error: (function(_this) {
-            return function() {
-              return deferred.reject();
-            };
-          })(this)
+          success: function(resp) {
+            if (cache) {
+              _this._cache.values = resp;
+            }
+            return deferred.resolve(resp);
+          },
+          error: function() {
+            return deferred.reject();
+          }
         });
       }
       return deferred.promise();
@@ -119,7 +114,8 @@ define(['underscore', 'backbone', '../core', './base', './stats'], function(_, B
     __extends(FieldCollection, _super);
 
     function FieldCollection() {
-      return FieldCollection.__super__.constructor.apply(this, arguments);
+      _ref = FieldCollection.__super__.constructor.apply(this, arguments);
+      return _ref;
     }
 
     FieldCollection.prototype.model = FieldModel;

@@ -7,7 +7,7 @@ define(['./core'], function(c) {
       if (count == null) {
         return $el.html(fallback);
       } else {
-        return $el.html(c.utils.prettyNumber(count)).attr('title', c.utils.toDelimitedNumber(count));
+        return $el.html(c.utils.prettyNumber(count, c.config.get('threshold'))).attr('title', c.utils.toDelimitedNumber(count));
       }
     }
   };
