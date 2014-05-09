@@ -208,7 +208,7 @@ define([
                 });
 
                 if (this.data.context.hasFilterChanged(this.data.filter, keys)) {
-                    if (this.data.filter.get('value').length > 0) {
+                    if (this.validateFilter({silent: true})) {
                         this.ui.apply.prop('disabled', false);
                         this.ui.update.prop('disabled', false);
                     }
@@ -217,14 +217,15 @@ define([
             else {
                 this.ui.apply.show();
                 this.ui.update.hide();
-                if ('value' in this.data.filter.attributes && 
-                    this.data.filter.get('value').length > 0) {
+                if (this.validateFilter({silent: true})) {
                     this.ui.apply.prop('disabled', false);
                 }
             }
         },
 
-        validateFilter: function() {
+        validateFilter: function(options) {
+            options = _.extend({}, options);
+
             var message,
                 messages = [],
                 attrs = this.data.filter.toJSON();
@@ -239,7 +240,9 @@ define([
 
             if (messages.length) {
                 this.validationErrors = messages;
-                this.ui.state.html(messages.join('<br>')).show();
+                if (!options.silent) {
+                    this.ui.state.html(messages.join('<br>')).show();
+                }
                 return false;
             }
 
