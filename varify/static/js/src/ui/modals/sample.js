@@ -5,10 +5,11 @@ define([
     'underscore',
     'marionette',
     'cilantro',
-    '../../models'
-], function($, _, Marionette, c) {
+    '../sample'
+], function($, _, Marionette, c, sample) {
 
-    var SampleRow = Marionette.ItemView.extend({
+
+    var SampleRow = sample.SampleView.extend({
         tagName: 'tr',
 
         template: 'varify/sample/row',
@@ -20,15 +21,6 @@ define([
 
         events: {
             click: 'triggerSelected'
-        },
-
-        serializeData: function() {
-            var data = this.model.pick('label', 'project', 'batch'),
-                loaded = new Date(this.model.get('created'));
-
-            data.loaded = loaded.getFullYear() + '-' + (loaded.getMonth() + 1) +
-                          '-' + loaded.getDate();
-            return data;
         },
 
         renderSelected: function() {
@@ -303,6 +295,7 @@ define([
             this.$el.modal('hide');
         }
     });
+
 
     return {
         SampleDialog: SampleDialog

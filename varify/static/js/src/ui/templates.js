@@ -54,7 +54,7 @@ define([
 
     'tpl!../../../templates/sample/row.html',
     'tpl!../../../templates/sample/detail.html',
-    'tpl!../../../templates/sample/variant-sets.html'
+    'tpl!../../../templates/sample/variant-set.html'
 ], function(c) {
 
     var templates = [].slice.call(arguments, 1);

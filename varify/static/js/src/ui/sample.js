@@ -7,6 +7,48 @@ define([
     '../models'
 ], function(_, Marionette, c, models) {
 
+    var SampleView = Marionette.ItemView.extend({
+        serializeData: function() {
+            var data = this.model.toJSON();
+            data.loaded = (new Date(data.created)).toLocaleDateString();
+            return data;
+        }
+    });
+
+
+    var SampleDetail = SampleView.extend({
+        template: 'varify/sample/detail'
+    });
+
+
+    var SampleVariantSet = Marionette.ItemView.extend({
+        template: 'varify/sample/variant-set',
+
+        serializeData: function() {
+            var data = this.model.toJSON();
+            data.modified = (new Date(data.modified)).toLocaleString();
+            data.created = (new Date(data.created)).toLocaleString();
+            data.url = this.model.url();
+            return data;
+        }
+    });
+
+    var EmptySampleVariantSets = c.ui.EmptyView.extend({
+        align: 'left',
+
+        icon: '',
+
+        message: 'No variant sets have been created for this sample.'
+    });
+
+
+    var SampleVariantSets = Marionette.CollectionView.extend({
+        itemView: SampleVariantSet,
+
+        emptyView: EmptySampleVariantSets
+    });
+
+
     var SampleLoader = Marionette.ItemView.extend({
         className: 'sample-loader',
 
@@ -92,7 +134,12 @@ define([
         }
     });
 
+
     return {
+        SampleView: SampleView,
+        SampleDetail: SampleDetail,
+        SampleVariantSet: SampleVariantSet,
+        SampleVariantSets: SampleVariantSets,
         SampleLoader: SampleLoader
     };
 
