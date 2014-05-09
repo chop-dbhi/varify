@@ -21,9 +21,9 @@ require({
     'jquery',
     'underscore',
     'cilantro',
-    'project/ui',
-    'project/models',
-    'project/csrf'
+    'varify/ui',
+    'varify/models',
+    'varify/csrf'
 ], function($, _, c, ui, models) {
 
     var SAMPLE_CONCEPT_ID = 2,

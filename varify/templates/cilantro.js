@@ -3,7 +3,7 @@ var csrf_token = '{{ csrf_token }}',
     require = {
         baseUrl: '{{ STATIC_URL }}cilantro/js',
         paths: {
-            'project': '{{ JAVASCRIPT_URL }}'
+            'varify': '{{ JAVASCRIPT_URL }}'
         },
         config: {
             tpl: {
