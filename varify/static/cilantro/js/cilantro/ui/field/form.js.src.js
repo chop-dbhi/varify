@@ -53,9 +53,9 @@ define([
         },
 
         filterEvents: {
-            'applied': 'validateFilter',
-            'unapplied': 'validateFilter',
-            'change': 'validateFilter'
+            'applied': 'renderFilter',
+            'unapplied': 'renderFilter',
+            'change': 'renderFilter'
         },
 
         regions: {
@@ -91,6 +91,9 @@ define([
             }
 
             this.data.filter = options.filter;
+
+            Marionette.bindEntityEvents(this, this.data.filter,
+                Marionette.getOption(this, 'filterEvents'));
         },
 
         onRender: function() {
@@ -103,10 +106,7 @@ define([
             if (this.options.controls) this.renderControls();
             if (this.options.chart && this.model.links.distribution) this.renderChart();
 
-            this.validateFilter();
-
-            Marionette.bindEntityEvents(this, this.data.filter,
-                Marionette.getOption(this, 'filterEvents'));
+            this.renderFilter();
         },
 
         renderInfo: function() {
@@ -188,15 +188,11 @@ define([
         },
 
         renderFilter: function() {
-            this.ui.state.hide();
             this.ui.apply.prop('disabled', true);
             this.ui.update.prop('disabled', true);
+            this.ui.state.hide();
 
-            var isApplied = this.data.context.isFilterApplied(this.data.filter),
-                isValid = !this.isEmpty && !this.validationErrors;
-
-            // Swap buttons
-            if (isApplied) {
+            if (this.data.context.isFilterApplied(this.data.filter)) {
                 this.ui.apply.hide();
                 this.ui.update.show();
 
@@ -212,48 +208,47 @@ define([
                 });
 
                 if (this.data.context.hasFilterChanged(this.data.filter, keys)) {
-                    if (isValid) {
+                    if (this.validateFilter({silent: true})) {
+                        this.ui.apply.prop('disabled', false);
                         this.ui.update.prop('disabled', false);
-                    }
-                    else if (this.validationErrors) {
-                        this.ui.state.html(this.validationErrors.join('<br>')).show();
                     }
                 }
             }
             else {
                 this.ui.apply.show();
                 this.ui.update.hide();
-
-                if (isValid) {
+                if (this.validateFilter({silent: true})) {
                     this.ui.apply.prop('disabled', false);
-                }
-                else if (!this.isEmpty && this.validationErrors) {
-                    this.ui.state.html(this.validationErrors.join('<br>')).show();
                 }
             }
         },
 
-        validateFilter: function() {
-            var empty,
-                message,
+        validateFilter: function(options) {
+            options = _.extend({}, options);
+
+            var message,
                 messages = [],
                 attrs = this.data.filter.toJSON();
 
             // Children are proxies to the control..
             this.controls.currentView.children.each(function(proxy) {
-                if (!proxy.view) return;
-                message = proxy.view.validate(attrs);
-                if (message) messages.push(message);
-                // It is assume controls are not returning a conflicting result.
-                empty = proxy.view.isEmpty(attrs);
+                if (proxy.view) {
+                    message = proxy.view.validate(attrs);
+                    if (message) messages.push(message);
+                }
             });
 
-            this.isEmpty = empty;
-            this.validationErrors = messages.length ? messages : null;
+            if (messages.length) {
+                this.validationErrors = messages;
+                if (!options.silent) {
+                    this.ui.state.html(messages.join('<br>')).show();
+                }
+                return false;
+            }
 
-            this.renderFilter();
-
-            return !this.validationErrors && !this.isEmpty;
+            this.validationErrors = null;
+            this.ui.state.text('').hide();
+            return true;
         },
 
         applyFilter: function(event) {
@@ -289,8 +284,6 @@ define([
             if (!(this.data.context = this.options.context)) {
                 throw new Error('context required');
             }
-
-            this._children = [];
         },
 
         render: function() {
@@ -303,18 +296,6 @@ define([
             }
 
             return this;
-        },
-
-        close: function() {
-            if (this.isClosed) return;
-
-            var view;
-
-            while ((view = this._children.pop())) {
-                view.close();
-            }
-
-            Marionette.View.prototype.close.call(this);
         },
 
         // Renders an item.
@@ -364,7 +345,6 @@ define([
             try {
                 var view = new viewClass(options);
                 view.render();
-                this._children.push(view);
                 c.dom.insertAt(this.$el, options.index, view.el);
             }
             catch (err) {
@@ -376,7 +356,6 @@ define([
         showErrorView: function(model) {
             var view = new this.errorView({model: model});
             view.render();
-            this._children.push(view);
             this.$el.html(view.el);
         }
     });

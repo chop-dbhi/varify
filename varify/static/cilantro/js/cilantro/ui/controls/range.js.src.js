@@ -157,6 +157,9 @@ define([
             else if (_.exists(upper)) {
                 value = upper;
             }
+            else {
+                value = null;
+            }
 
             return value;
         },

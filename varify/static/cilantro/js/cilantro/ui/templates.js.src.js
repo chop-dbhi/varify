@@ -66,12 +66,6 @@ define([
     'tpl!templates/controls/text/preview-list.html',
     'tpl!templates/controls/text/preview-item.html',
 
-    'tpl!templates/controls/vocab/layout.html',
-    'tpl!templates/controls/vocab/path.html',
-    'tpl!templates/controls/vocab/item.html',
-    'tpl!templates/controls/vocab/bucket.html',
-    'tpl!templates/controls/vocab/bucket-item.html',
-
     'tpl!templates/field/form-condensed.html',
     'tpl!templates/field/form.html',
     'tpl!templates/field/info.html',
@@ -85,7 +79,6 @@ define([
     'tpl!templates/query/list.html',
     'tpl!templates/query/loader.html',
 
-    'tpl!templates/values/item.html',
     'tpl!templates/values/list.html',
 
     'tpl!templates/workflows/query.html',
