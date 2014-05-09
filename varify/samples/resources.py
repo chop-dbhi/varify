@@ -55,15 +55,15 @@ class SampleBaseResource(ThrottledResource):
 
     def get_queryset(self, request, **kwargs):
         projects = get_objects_for_user(request.user, 'samples.view_project')
-        return self.model.objects.filter(project__in=projects)
+        return self.model.objects.select_related('batch', 'project')\
+            .filter(project__in=projects)
 
     def get_object(self, request, pk):
         if not hasattr(request, 'instance'):
             queryset = self.get_queryset(request)
 
             try:
-                instance = queryset.select_related('batch', 'project')\
-                    .get(pk=pk)
+                instance = queryset.get(pk=pk)
             except self.model.DoesNotExist:
                 instance = None
 
