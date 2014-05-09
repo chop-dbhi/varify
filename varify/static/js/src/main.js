@@ -21,9 +21,10 @@ require({
     'jquery',
     'underscore',
     'cilantro',
-    'project/ui',
-    'project/csrf'
-], function($, _, c, ui) {
+    'varify/ui',
+    'varify/models',
+    'varify/csrf'
+], function($, _, c, ui, models) {
 
     var SAMPLE_CONCEPT_ID = 2,
         SAMPLE_FIELD_ID = 111;
@@ -100,6 +101,13 @@ require({
         }
     };
 
+    // Use sample dialog as means of selecting the sample
+    c.on(c.CONCEPT_FOCUS, function(concept) {
+        if (concept === SAMPLE_CONCEPT_ID) {
+            c.dialogs.sample.open();
+        }
+    });
+
     // Mark the Sample concept as required and display a notification to the
     // user when it is not populated.
     c.config.set('filters.required', [{concept: SAMPLE_CONCEPT_ID}]);
@@ -118,6 +126,10 @@ require({
             // "duplicate" rows in the results table that sometimes occured due to
             // the user's view.
             c.config.set('session.defaults.data.preview', augmentFixedView);
+
+            // Add additional data to the session
+            this.data.samples = new models.Samples();
+            this.data.samples.fetch({reset: true});
 
             // Ensure the session context is valid
             this.data.contexts.once('sync', function() {
@@ -162,7 +174,8 @@ require({
                 }),
 
                 sample: new ui.SampleDialog({
-                    context: this.data.contexts.session
+                    context: this.data.contexts.session,
+                    samples: this.data.samples
                 })
             };
 
@@ -186,6 +199,14 @@ require({
             main.append.apply(main, elements);
 
             c.workflows = {
+                workspace: new ui.WorkspaceWorkflow({
+                    queries: this.data.queries,
+                    context: this.data.contexts.session,
+                    view: this.data.views.session,
+                    public_queries: this.data.public_queries,
+                    samples: this.data.samples
+                }),
+
                 query: new c.ui.QueryWorkflow({
                     context: this.data.contexts.session,
                     concepts: this.data.concepts.queryable
@@ -201,11 +222,21 @@ require({
 
                 sampleload: new ui.SampleLoader({
                     context: this.data.contexts.session
+                }),
+
+                queryload: new c.ui.QueryLoader({
+                    queries: this.data.queries,
+                    context: this.data.contexts.session,
+                    view: this.data.views.session
                 })
             };
 
             // Define routes
             var routes = [{
+                id: 'workspace',
+                route: 'workspace/',
+                view: c.workflows.workspace
+            }, {
                 id: 'query',
                 route: 'query/',
                 view: c.workflows.query
@@ -217,32 +248,11 @@ require({
                 id: 'sample-load',
                 route: 'sample/:sample_id/',
                 view: c.workflows.sampleload
-            }];
-
-            c.workflows.workspace = new c.ui.WorkspaceWorkflow({
-                queries: this.data.queries,
-                context: this.data.contexts.session,
-                view: this.data.views.session,
-                public_queries: this.data.public_queries
-            });
-
-            routes.push({
-                id: 'workspace',
-                route: 'workspace/',
-                view: c.workflows.workspace
-            });
-
-            c.workflows.queryload = new c.ui.QueryLoader({
-                queries: this.data.queries,
-                context: this.data.contexts.session,
-                view: this.data.views.session
-            });
-
-            routes.push({
+            }, {
                 id: 'query-load',
                 route: 'results/:query_id/',
                 view: c.workflows.queryload
-            });
+            }];
 
             // Register routes and start the session
             this.start(routes);

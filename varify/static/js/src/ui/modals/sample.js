@@ -5,11 +5,11 @@ define([
     'underscore',
     'marionette',
     'cilantro',
-    '../../models'
-], function($, _, Marionette, c, models) {
+    '../sample'
+], function($, _, Marionette, c, sample) {
 
 
-    var SampleRow = Marionette.ItemView.extend({
+    var SampleRow = sample.SampleView.extend({
         tagName: 'tr',
 
         template: 'varify/sample/row',
@@ -21,15 +21,6 @@ define([
 
         events: {
             click: 'triggerSelected'
-        },
-
-        serializeData: function() {
-            var data = this.model.pick('label', 'project', 'batch'),
-                loaded = new Date(this.model.get('created'));
-
-            data.loaded = loaded.getFullYear() + '-' + (loaded.getMonth() + 1) +
-                          '-' + loaded.getDate();
-            return data;
         },
 
         renderSelected: function() {
@@ -191,20 +182,20 @@ define([
                 throw new Error('context model required');
             }
 
+            if (!(this.data.samples = this.options.samples)) {
+                throw new Error('samples collection required');
+            }
+
             // Define (get or create) the internal filter for the sample concept
             this.data.filter = this.data.context.define({
                 concept: c.config.get('varify.sample.concept'),
                 field: c.config.get('varify.sample.field')
             });
 
-            this.data.samples = new models.Samples();
-
             // Flag the currently selected sample if one exists onces the samples
             // load
             this.listenTo(this.data.samples, 'reset', this.getSelected);
             this.listenTo(this.data.samples, 'select', this.setSelected);
-
-            this.data.samples.fetch({reset: true});
         },
 
         onRender: function() {
@@ -304,6 +295,7 @@ define([
             this.$el.modal('hide');
         }
     });
+
 
     return {
         SampleDialog: SampleDialog

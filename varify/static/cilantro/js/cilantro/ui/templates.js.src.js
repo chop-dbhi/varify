@@ -62,6 +62,10 @@ define([
 
     'tpl!templates/controls/null/layout.html',
 
+    'tpl!templates/controls/text/layout.html',
+    'tpl!templates/controls/text/preview-list.html',
+    'tpl!templates/controls/text/preview-item.html',
+
     'tpl!templates/field/form-condensed.html',
     'tpl!templates/field/form.html',
     'tpl!templates/field/info.html',
@@ -90,8 +94,16 @@ define([
     // Derives a template id from the template's path. This is an internal
     // function that assumes the base directory is under templates/
     var pathToId = function(name) {
-        // Remove templates dir prefix, strip extension
-        return name.replace(/^templates\//, '').replace(/\.html$/, '');
+        // Remove leading slash
+        if (name.charAt(0) === '/') {
+            name = name.substr(1);
+        }
+
+        // Remove relative paths
+        name = name.replace(/\.\.\//g, '');
+
+        // Remove templates prefix, strip extension
+        return name.replace(/templates\//, '').replace(/\.html$/, '');
     };
 
     // Registers all built-in templates using the augmented _moduleName from
@@ -115,7 +127,14 @@ define([
         require([
             module
         ], function(func) {
-            customTemplates[id] = func;
+            // No id, anonymous function, assume loaded via the tpl! plugin
+            if (!id) {
+                id = func;
+                func = null;
+            }
+
+            _set(id, func);
+
             pendingRemotes--;
         }, function(err) {
             loglevel.debug(err);
@@ -125,6 +144,20 @@ define([
 
     // Handles the case when the registered function is *not* a function.
     var _set = function(id, func) {
+        // Assume template loaded via the tpl! plugin
+        if (typeof id === 'function') {
+            func = id;
+            if (!func._moduleName) {
+                throw new Error('cannot register anonymous template');
+            }
+            id = pathToId(func._moduleName);
+        }
+        // Assume bare id is a remote path
+        else if (!func) {
+            func = id;
+            id = null;
+        }
+
         switch (typeof func) {
             case 'function':
                 customTemplates[id] = func;
@@ -146,10 +179,18 @@ define([
 
         // Sets a template in cache.
         set: function(id, func) {
-            if (typeof id === 'object') {
+            if (_.isArray(id)) {
+                _.each(id, function(func) {
+                    this.set(func);
+                }, this);
+            }
+            else if (_.isFunction(id)) {
+                _set(id);
+            }
+            else if (_.isObject(id)) {
                 _.each(id, function(func, key) {
-                    _set(key, func);
-                });
+                    this.set(key, func);
+                }, this);
             }
             else {
                 _set(id, func);

@@ -249,7 +249,8 @@ define([
 
         events: {
             'click @ui.save': 'exportData',
-            'click @ui.pageOption': 'togglePageOption'
+            'click @ui.pageOption': 'togglePageOption',
+            'click [data-action=change-columns]': 'changeColumnsClicked'
         },
 
         regions: {
@@ -310,6 +311,31 @@ define([
             return pageRangePattern.test(this.getPageRange());
         },
 
+        changeColumnsClicked: function() {
+            c.dialogs.columns.open();
+        },
+
+        validate: function() {
+            var errors = [];
+
+            // Get export options that were selected
+            var options = this.getSelectedOptions();
+
+            if (this.pageRangeSelected() && !this.isPageRangeValid()) {
+                errors.push('<p>The page range entered is invalid. It must be a ' +
+                            'single page, e.g. 1, or a range of pages, e.g. 2...5.</p>');
+            }
+            if (options.length === 0) {
+                errors.push('<p>An export type must be selected.</p>');
+            }
+            if (c.data.views.session.facets.length === 0){
+                errors.push('<p>One or more columns must be selected. Click ' +
+                            '<a data-action=change-columns>here</a> to select '+
+                            'columns.</p>');
+            }
+            return errors;
+        },
+
         // Starts a data export for all selected options
         exportData: function() {
             // Clear any of the old iframes. If we are exporting again, these
@@ -317,18 +343,15 @@ define([
             // during active exports.
             this.ui.error.hide();
 
-            // Get export options that were selected
+            // Get export options selected by user
             var options = this.getSelectedOptions();
 
-            if (options.length === 0) {
-                this.ui.error.html('An export type must be selected.').show();
-                return;
-            }
+            // Return a list of errors
+            var errors = this.validate();
 
-            if (this.pageRangeSelected() && !this.isPageRangeValid()) {
-                this.ui.error.html('The page range entered is invalid. It must be a ' +
-                                   'single page, e.g. 1, or a range of pages, ' +
-                                   'e.g. 2...5.').show();
+            // Show a list of errors if they exist
+            if (errors.length) {
+                this.ui.error.html(errors).show();
                 return;
             }
 

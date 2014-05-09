@@ -289,3 +289,12 @@ body, #concept-panel, #context-panel {
         }
     }
 }
+
+.workspace-workflow {
+    .span6 > * {
+        margin-top: 20px;
+    }
+    .span6 > :first-child {
+        margin-top: 0;
+    }
+}

@@ -111,6 +111,12 @@ define(['underscore', 'backbone', 'marionette', '../../core', './base'], functio
       return this.ui.items.val(value);
     };
 
+    SingleSelectionList.prototype.validate = function(attrs) {
+      if (_.isNull(attrs.value) || _.isUndefined(attrs.value)) {
+        return 'An option must be selected';
+      }
+    };
+
     return SingleSelectionList;
 
   })(base.ControlCompositeView);
@@ -158,6 +164,12 @@ define(['underscore', 'backbone', 'marionette', '../../core', './base'], functio
         var _ref;
         return model.set('selected', (_ref = model.get('value'), __indexOf.call(values, _ref) >= 0));
       });
+    };
+
+    MultiSelectionList.prototype.validate = function(attrs) {
+      if (!attrs.value || !attrs.value.length) {
+        return 'At least one option must be selected';
+      }
     };
 
     return MultiSelectionList;

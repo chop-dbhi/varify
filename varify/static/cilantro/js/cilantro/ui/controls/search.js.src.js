@@ -146,6 +146,10 @@ define([
 
         searchPaginator: SearchPaginator,
 
+        events: {
+            'click [data-action=clear]': 'clearValues'
+        },
+
         regions: {
             search: '.search-region',
             paginator: '.paginator-region',
@@ -210,6 +214,10 @@ define([
             this.values.show(valuesRegion);
         },
 
+        clearValues: function() {
+           this.values.currentView.clear();
+        },
+
         getField: function() {
             if (this.model) return this.model.id;
         },
@@ -232,7 +240,7 @@ define([
             this.collection.set(value, {merge: false});
         },
 
-        validate: function() {
+        validate: function(attrs) {
             var pending, invalid = [];
 
             // If a call is still pending, warn the user that they are too
@@ -259,6 +267,10 @@ define([
             if (invalid.length) {
                 return 'Remove the following invalid labels then click ' +
                        '&quot;Apply Filter&quot; again: ' + invalid.join(', ');
+            }
+
+            if (attrs && (!attrs.value || !attrs.value.length)) {
+                return 'At least one value must be selected';
             }
         }
 
