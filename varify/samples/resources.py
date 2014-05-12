@@ -1,6 +1,8 @@
 import functools
+import openpyxl
 import logging
 import requests
+import itertools
 from django.core import management
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.conf.urls import patterns, url
@@ -18,7 +20,9 @@ from serrano.resources.base import ThrottledResource
 from varify.variants.resources import VariantResource
 from varify import api
 from vdw.assessments.models import Assessment
+from vdw.genome.models import Chromosome
 from vdw.samples.models import Sample, Result, ResultScore, ResultSet
+from vdw.variants.models import Variant
 
 
 log = logging.getLogger(__name__)
@@ -391,6 +395,193 @@ class SampleResultSetResource(ThrottledResource):
         return serialize(instance, **self.template)
 
 
+class SampleResultSetUploadResource(SampleBaseResource):
+    INSERTION = 'Insertion'
+    DELETION = 'Deletion'
+
+    supported_content_types = (
+        'multipart/form-data',
+        'application/vnd.openxmlformats-officedocumentspreadsheetml.sheet')
+
+    def get_change_type(self, ref, a1, a2):
+        """
+        Given ref allele1 and allele2, returns the type of change.
+        The only case of an amino acid insertion is when the ref is
+        represented as a '.'.
+        """
+        if ref == '.':
+            return self.INSERTION
+        elif a1 == '.' or a2 == '.':
+            return self.DELETION
+
+    def is_not_found(self, request, response, pk):
+        return not self.get_object(request, pk=pk)
+
+    # Consume the variants excel file and search the database for
+    # matching queries.
+    def post(self, request, pk):
+        sample = self.get_object(request, pk=pk)
+
+        # Try opening the excel file that was uploaded.
+        try:
+            variant_book = request.FILES['result_set_file']
+            workbook = openpyxl.load_workbook(variant_book,
+                                              use_iterators=True)
+        except:
+            return self.render(request, 'Could not process the file. Make '
+                               'sure that the file is a valid excel file',
+                               status=codes.unprocessable_entity)
+
+        sheet = workbook.get_active_sheet()
+
+        start_row = 0
+        fields = []
+
+        # Skip the header information of the data file (if there is any)
+        # and find the row where the data starts by finding the first instance
+        # of a column title.
+        for row in sheet.iter_rows():
+            if row[0].internal_value == 'Chromosome':
+                # Retrieve all the column titles from the sheet.
+                fields = [r.internal_value.lower() for r in row]
+                break
+            start_row += 1
+
+        allele1_index = fields.index('allele 1') \
+            if 'allele 1' in fields else None
+        allele2_index = fields.index('allele 2') \
+            if 'allele 2' in fields else None
+        dbsnp_index = fields.index('dbsnp')
+        ref_index = fields.index('reference')
+        start_index = fields.index('start')
+        chr_index = fields.index('chromosome')
+
+        matches = set()
+        no_matches = []
+
+        # Verison 1.6.1 of openpyxl does not support slicing thus, a workaround
+        # proposed here: https://bitbucket.org/ericgazoni/openpyxl/issue/273/allow-slicing-in-iterableworksheet # noqa
+        for row in itertools.islice(sheet.iter_rows(), start_row + 1, None):
+            # Retrieve rsid, ref, start and chr from our spreadsheet
+            # so we can retrieve objects from our database.
+            dbsnp_value = row[dbsnp_index].internal_value
+            ref_value = row[ref_index].internal_value
+            start_value = row[start_index].internal_value
+
+            # In the case that the position changes and there was no matching
+            # query. Save the original to return back to the user.
+            old_position = start_value
+
+            chr_label = int(row[chr_index].internal_value)
+
+            chr_match = Chromosome.objects.get(value=chr_label)
+
+            allele1 = row[allele1_index].internal_value \
+                if allele1_index else None
+            allele2 = row[allele2_index].internal_value \
+                if allele1_index else None
+
+            is_found = False
+
+            # Fetch the variant w/ matching dbsnp id and the
+            # result which have the variant.
+            if dbsnp_value:
+                try:
+                    result = Result.objects.get(sample=sample,
+                                                variant__rsid=dbsnp_value)
+                    matches.add(result)
+                    is_found = True
+                except Result.DoesNotExist:
+                    pass
+
+            if allele1 and not is_found:
+                # Determine the type of change. This is required to resolve
+                # the case where two variants have the same genomic start
+                # position.
+                change_type = self.get_change_type(ref_value, allele1, allele2)
+
+                if change_type:
+                    # In the case of an insertion or a deletion, the start
+                    # position is always decremented by 1 and the query is
+                    # is made using only the position and chromosome.
+                    start_value -= 1
+
+                else:
+                    # Now using the two alleles, construct the alt.
+                    if allele1 == ref_value:
+                        alt_value = allele2
+                    elif allele1 != allele2:
+                        alt_value = '{0},{1}'.format(allele1, allele2)
+                    else:
+                        alt_value = allele1
+
+                # Retrieve variant needed for our result query.
+                try:
+                    correct_variant = None
+
+                    # If there was a deletion or an insertion, make the query
+                    # using the position and the chromosome and resolve any
+                    # conflicts.
+                    if change_type:
+                        variant_match = Variant.objects.filter(
+                            pos=start_value,
+                            chr=chr_match)
+
+                        if len(variant_match) == 1:
+                            correct_variant = variant_match[0]
+
+                        elif len(variant_match) > 1:
+                            for match in variant_match:
+                                # In the case of an insertion, the variants
+                                # reference string should have increased by 1
+                                # amino acid.
+                                if change_type == self.INSERTION and \
+                                        len(match.ref) == len(ref_value) + 1:
+                                    correct_variant = match
+                                    break
+                                # In the case of a deletion (where the value
+                                # of the reference is '.'. The reference should
+                                # have a length of 1 amino acid.
+                                elif change_type == self.DELETION and \
+                                        len(match.ref) == 1:
+                                    correct_variant = match
+                                    break
+
+                    else:
+                        correct_variant = Variant.objects.get(
+                            pos=start_value,
+                            ref=ref_value,
+                            alt=alt_value,
+                            chr=chr_match)
+
+                    result = Result.objects.get(
+                        sample=sample,
+                        variant=correct_variant)
+
+                    matches.add(result)
+                    is_found = True
+                except (Variant.DoesNotExist, Result.DoesNotExist):
+                    pass
+
+            # Queries were unsuccessful so save this row to return back to the
+            # user to edit/fix them.
+            if not is_found:
+                no_matches.append({
+                    'chr_label': chr_label,
+                    'Start': old_position,
+                    'Reference': ref_value,
+                    'Allele 1': allele1,
+                    'Allele 2': allele2,
+                    'dbSNP': dbsnp_value
+                    })
+
+        return {
+            'total_processed': len(matches) + len(no_matches),
+            'match_count': len(matches),
+            'unknown': no_matches
+        }
+
+upload_resource = never_cache(SampleResultSetUploadResource())
 sample_resource = never_cache(SampleResource())
 samples_resource = never_cache(SamplesResource())
 named_sample_resource = never_cache(NamedSampleResource())
@@ -418,6 +609,10 @@ urlpatterns = patterns(
     url(r'^(?P<pk>\d+)/variants/$',
         sample_results_resource,
         name='variants'),
+
+    url(r'^(?P<pk>\d+)/variants/sets/upload/$',
+        upload_resource,
+        name='variant-set-upload'),
 
     url(r'^variants/(?P<pk>\d+)/$',
         sample_result_resource,

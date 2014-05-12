@@ -10,6 +10,7 @@ DATABASES = {
 INSTALLED_APPS = (
     'tests',
     'tests.cases.assessments',
+    'tests.cases.samples',
     'tests.cases.south_tests',
     'tests.cases.geneset_form',
     'tests.cases.resources',
