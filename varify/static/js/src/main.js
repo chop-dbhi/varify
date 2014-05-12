@@ -47,7 +47,7 @@ require({
         };
 
         var json;
-        if (c.session && (json = c.session.data.views.session.get('json')) != null) {
+        if (c.session && (json = c.session.data.views.session.get('json')) !== null) {
             newView.view.ordering = json.ordering;
         }
 
@@ -203,7 +203,7 @@ require({
                     queries: this.data.queries,
                     context: this.data.contexts.session,
                     view: this.data.views.session,
-                    public_queries: this.data.public_queries,
+                    public_queries: this.data.public_queries,   // jshint ignore:line
                     samples: this.data.samples
                 }),
 

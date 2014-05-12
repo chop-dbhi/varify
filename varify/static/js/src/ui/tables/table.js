@@ -20,7 +20,7 @@ define([
 
         itemView: body.ResultBody,
 
-        itemViewOptions: function(item, index) {
+        itemViewOptions: function(item) {
             return _.defaults({collection: item.series}, this.options);
         },
 
@@ -49,7 +49,7 @@ define([
             });
         },
 
-        showCurrentPage: function(model, num, options) {
+        showCurrentPage: function(model, num) {
             this.children.each(function(view) {
                 view.$el.toggle(view.model.id === num);
             });

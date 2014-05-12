@@ -182,7 +182,7 @@ define([
             return html.join('');
         },
 
-        onFetchSuccess: function(model, response, recalculateRankings) {
+        onFetchSuccess: function(model) {
             delete this.request;
 
             this.ui.recalculateButton.prop('disabled', false);
@@ -250,8 +250,8 @@ define([
                         recalculate_rankings: recalculateRankings   // jshint ignore: line
                     },
                     processData: true,
-                    success: function(model, response) {
-                        _this.onFetchSuccess(model, response, recalculateRankings);
+                    success: function(model) {
+                        _this.onFetchSuccess(model);
                     },
                     error: this.onFetchError
                 });

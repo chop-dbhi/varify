@@ -1,12 +1,13 @@
 /* global define */
 
 define([
+    'jquery',
     'underscore',
     'cilantro',
     'cilantro/ui/numbers',
     '../tables',
     '../../utils'
-], function(_, c, numbers, tables, utils) {
+], function($, _, c, numbers, tables, utils) {
 
     var ResultCount = c.ui.ResultCount.extend({
         initialize: function() {
