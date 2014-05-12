@@ -79,10 +79,18 @@ define([
         },
 
         hideLoader: function() {
+            // If we have been "closed" then there are no samples so we can
+            // safely ignore the events that led us here.
+            if (this.isClosed) return;
+
             this.ui.loader.hide();
         },
 
         handleFilter: function() {
+            // If we have been "closed" then there are no samples so we can
+            // safely ignore the events that led us here.
+            if (this.isClosed) return;
+
             this.applyFilter(this.ui.input.val());
         },
 
@@ -163,8 +171,9 @@ define([
         },
 
         ui: {
+            empty: '[data-target=empty-message]',
             selectedSample: '.modal-footer [data-target=selected-sample]',
-            saveButton: '[data-target=save]'
+            saveButton: '[data-target=save]',
         },
 
         events: {
@@ -194,7 +203,7 @@ define([
 
             // Flag the currently selected sample if one exists onces the samples
             // load
-            this.listenTo(this.data.samples, 'reset', this.getSelected);
+            this.listenTo(this.data.samples, 'reset', this.onSamplesReset);
             this.listenTo(this.data.samples, 'select', this.setSelected);
         },
 
@@ -210,6 +219,16 @@ define([
             });
 
             this.samples.show(samples);
+        },
+
+        onSamplesReset: function() {
+            if (this.data.samples.length === 0) {
+                this.samples.close();
+                this.ui.empty.show();
+            }
+            else {
+                this.getSelected();
+            }
         },
 
         // Get the currently selected sample from the context and updates the
