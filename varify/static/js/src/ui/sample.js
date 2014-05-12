@@ -9,6 +9,8 @@ define([
 
     var SampleView = Marionette.ItemView.extend({
         serializeData: function() {
+            if (!this.model) return;
+
             var data = this.model.toJSON();
             data.loaded = (new Date(data.created)).toLocaleDateString();
             return data;

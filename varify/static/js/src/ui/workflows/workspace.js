@@ -57,6 +57,8 @@ define([
         },
 
         renderSampleVariantSets: function(model) {
+            if (!model) return;
+
             var sampleVariantSets = new this.regionViews.sampleVariantSets({
                 collection: model.variantSets
             });
