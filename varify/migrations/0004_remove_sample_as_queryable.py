@@ -8,12 +8,12 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         "Write your forwards methods here."
-        orms['DataConcept'].objects.filter(name='Sample')\
+        orm['avocado.DataConcept'].objects.filter(name='Sample')\
                 .update(queryable=False)
 
     def backwards(self, orm):
         "Write your backwards methods here."
-        orms['DataConcept'].objects.filter(name='Sample')\
+        orm['avocado.DataConcept'].objects.filter(name='Sample')\
                 .update(queryable=True)
 
     models = {
