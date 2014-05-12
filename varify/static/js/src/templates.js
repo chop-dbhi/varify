@@ -10,16 +10,20 @@ define([
     // Renders a genomic position hyperlink based on chr and pos.
     var genomicPosition = function(chr, pos) {
         var pchr = Numbers.toDelimitedNumber(pos);
-        return '<td class=genomic-position><a target=_blank href="http://genome.ucsc.edu/cgi-bin/hgTracks?position=chr' + chr + '%3A' + pos + '">chr' + chr + ' <span class=muted>@</span> ' + pchr + '</a></td>';
+        return '<td class=genomic-position><a target=_blank href=' +
+               '"http://genome.ucsc.edu/cgi-bin/hgTracks?position=chr' + chr +
+               '%3A' + pos + '">chr' + chr + ' <span class=muted>@</span> ' +
+               pchr + '</a></td>';
     };
 
     var phenotypeScore = function(resultScore) {
-        if (resultScore != null) {
+        if (resultScore !== null) {
             var rank = parseInt(resultScore.rank, 10);
             var score = parseFloat(resultScore.score);
 
             if (!isNaN(rank) && !isNaN(score)) {
-                return '<td>' + rank + ' <small class=muted>(' + (Numbers.prettyNumber(score)) + ')</small></td>';
+                return '<td>' + rank + ' <small class=muted>(' +
+                       (Numbers.prettyNumber(score)) + ')</small></td>';
             }
         }
 
@@ -29,20 +33,22 @@ define([
     var _renderGene = function(gene) {
         var name = gene.name || '';
 
-        if (gene.hgnc_id) {
-            return '<a title="' + name + '" target=_blank href="http://www.genenames.org/data/hgnc_data.php?hgnc_id=' + gene.hgnc_id + '">' + gene.symbol + '</a>';
+        if (gene.hgnc_id) {     // jshint ignore:line
+            return '<a title="' + name + '" target=_blank href=' +
+                   '"http://www.genenames.org/data/hgnc_data.php?hgnc_id=' +
+                   gene.hgnc_id + '">' + gene.symbol + '</a>';  // jshint ignore:line
         }
 
         return '<span title="' + name + '">' + gene.symbol + '</span>';
     };
 
     var category = function(assessment) {
-        if ((assessment != null) && (assessment.assessment_category != null)) {
+        if ((assessment !== null) && (assessment.assessment_category !== null)) {   // jshint ignore:line
             var html = [];
             html.push('<br />Category:');
-            html.push(assessment.assessment_category.name);
+            html.push(assessment.assessment_category.name);     // jshint ignore:line
 
-            if (assessment.assessment_category.id > 2) {
+            if (assessment.assessment_category.id > 2) {    // jshint ignore:line
                 html.push('<span class=muted>(Incidental Finding)</span>');
             }
 
@@ -53,7 +59,7 @@ define([
     };
 
     var pathogenicity = function(assessment) {
-        if ((assessment != null) && (assessment.pathogenicity != null)) {
+        if ((assessment !== null) && (assessment.pathogenicity !== null)) {
             var html = [];
             html.push('<br />Pathogenicity: ');
             html.push(assessment.pathogenicity.name);
@@ -66,7 +72,7 @@ define([
     // Takes an array of gene objects with `symbol`, `hgnc_id` and `name` and
     // renders a list of gene names hyperlinks.
     var geneLinks = function(genes, collapse) {
-        if (collapse == null) {
+        if (collapse === null) {
             collapse = false;
         }
 
@@ -93,8 +99,8 @@ define([
     };
 
     var hgvsC = function(eff) {
-        if (eff != null) {
-            text = eff.hgvs_c || '';
+        if (eff !== null) {
+            var text = eff.hgvs_c || '';    // jshint ignore:line
             return '<td title="' + text + '">' + text + '</td>';
         }
 
@@ -103,12 +109,13 @@ define([
 
     var genotype = function(value, description) {
         var title = '' + value + ' (' + description + ')';
-        return '<td title="' + title + '">' + value + ' <small>(' + description + ')</small></td>';
+        return '<td title="' + title + '">' + value + ' <small>(' +
+               description + ')</small></td>';
     };
 
     var hgvsP = function(eff) {
-        if (eff != null) {
-            return '<td>' + (eff.hgvs_p || eff.amino_acid_change || '') + '</td>';
+        if (eff !== null) {
+            return '<td>' + (eff.hgvs_p || eff.amino_acid_change || '') + '</td>';  // jshint ignore:line
         }
 
         return '<td></td>';
@@ -118,11 +125,11 @@ define([
         var html = [];
         html.push('' + eff.type);
 
-        if (eff.transcript != null) {
+        if (eff.transcript !== null) {
             html.push('<small>');
             html.push(eff.transcript.transcript);
 
-            if (eff.segment != null) {
+            if (eff.segment !== null) {
                 html.push(' @ ' + eff.segment);
             }
 
@@ -134,7 +141,7 @@ define([
     };
 
     var variantEffects = function(effects, collapse) {
-        if (collapse == null) {
+        if (collapse === null) {
             collapse = false;
         }
 
@@ -145,8 +152,10 @@ define([
             return '<span class=muted>No Effects</span>';
         }
         else if (collapse || len === 1) {
-            var labelClass = utils.priorityClass(utils.effectImpactPriority(effects[0].impact));
-            html.push('<span class="' + labelClass + '">' + (_renderVariantEffect(effects[0])) + '</span>');
+            var labelClass = utils.priorityClass(
+                utils.effectImpactPriority(effects[0].impact));
+            html.push('<span class="' + labelClass + '">' +
+                      (_renderVariantEffect(effects[0])) + '</span>');
         }
         else {
             var results = [];
@@ -163,10 +172,10 @@ define([
 
     var condensedFlags = function(attrs) {
         var flags = [];
-        flags.push(['dbSNP', attrs['rsid'] != null]);
-        flags.push(['HGMD', _.pluck(attrs['phenotypes'], 'hgmd_id').length > 0]);
+        flags.push(['dbSNP', attrs.rsid !== null]);
+        flags.push(['HGMD', _.pluck(attrs.phenotypes, 'hgmd_id').length > 0]);
         flags.push(['1000g', attrs['1000g'].length > 0]);
-        flags.push(['EVS', attrs['evs'].length > 0]);
+        flags.push(['EVS', attrs.evs.length > 0]);
 
         if (attrs.solvebio && attrs.solvebio.clinvar) {
             flags.push(['ClinVar', attrs.solvebio.clinvar.total > 0]);
@@ -182,11 +191,14 @@ define([
             html.push('<span class="flag ' + klass + '">' + label + '</span>');
         }
 
-        return '<td class=flags-container><span class=flags>' + (html.join('')) + '<span></td>';
+        return '<td class=flags-container><span class=flags>' +
+               (html.join('')) + '<span></td>';
     };
 
     var dbSNPLink = function(rsid) {
-        return '<a target=_blank href="http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=' + rsid + '">' + rsid + '</a>';
+        return '<a target=_blank href=' +
+               '"http://www.ncbi.nlm.nih.gov/projects/SNP/snp_ref.cgi?rs=' +
+               rsid + '">' + rsid + '</a>';
     };
 
     return {

@@ -24,7 +24,7 @@ define([
         },
 
         parse: function(response) {
-            if (response != null) {
+            if (response !== null) {
                 var data = response;
 
                 var objFields = [
@@ -36,7 +36,7 @@ define([
 
                 _.each(objFields, function(field) {
                     if (response[field]) {
-                        data[field] = response[field]['id'];
+                        data[field] = response[field].id;
                     }
                 });
 

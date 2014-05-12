@@ -32,11 +32,16 @@ define([
             var data = Marionette.ItemView.prototype.serializeData.apply(
                 this, arguments);
 
-            if (data.hpo_id) {
-                // Zero-pad the HPO ID to force it to be 7 digits. This trick
-                // is from:
-                //      http://dev.enekoalonso.com/2010/07/20/little-tricks-string-padding-in-javascript/
-                data.hpo_id = String('0000000' + data.hpo_id).slice(-7);
+            if (data.hpo_id) {  // jshint ignore:line
+                /* jshint ignore:start */
+                /*
+                 * Zero-pad the HPO ID to force it to be 7 digits. This trick
+                 * is from:
+                 *
+                 *      http://dev.enekoalonso.com/2010/07/20/little-tricks-string-padding-in-javascript/
+                 */
+                /* jshint ignore:end */
+                data.hpo_id = String('0000000' + data.hpo_id).slice(-7);    // jshint ignore:line
             }
 
             return data;

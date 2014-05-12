@@ -13,7 +13,7 @@ define([
 
         itemView: row.ResultRow,
 
-        itemViewOptions: function (model, index) {
+        itemViewOptions: function (model) {
             return _.defaults({resultPk: model.get('pk')}, this.options);
         }
     });

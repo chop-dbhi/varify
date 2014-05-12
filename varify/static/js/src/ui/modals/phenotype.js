@@ -2,39 +2,30 @@
 
 define([
     'underscore',
-    'backbone',
     'marionette',
-    './phenotype/diagnoses',
-    './phenotype/annotations',
     '../../models',
     '../../utils'
-], function(_, Backbone, Marionette, diagnoses, annotations, models, utils) {
+], function(_, Marionette, models, utils) {
 
-    var Phenotype = Marionette.Layout.extend({
+    var Phenotype = Marionette.ItemView.extend({
         className: 'modal hide',
 
         template: 'varify/modals/phenotype',
 
         ui: {
+            annotations: '[data-target=annotations]',
             closeButton: '[data-target=close-phenotypes]',
             content: '[data-target=content]',
-            personalInfo: '[data-target=personal-info]',
+            diagnoses: '[data-target=diagnoses]',
             error: '[data-target=error]',
-            notes: '[data-target=notes]',
-            pedigree: '[data-target=pedigree]',
             headerLabel: '[data-target=header-label]',
             loading: '[data-target=loading]',
-            thumbnail: '[data-target=thumbnail]',
+            notes: '[data-target=notes]',
+            pedigree: '[data-target=pedigree]',
             recalculateButton: '[data-target=recalculate]',
+            updateTimes: '[data-target=update-times]',
             warning: '[data-target=warning]',
             hideOnRetrieve: '[data-action=hide-on-retrieve]'
-        },
-
-        regions: {
-            confirmedDiagnoses: '[data-target=confirmed-diagnoses]',
-            suspectedDiagnoses: '[data-target=suspected-diagnoses]',
-            ruledOutDiagnoses: '[data-target=ruled-out-diagnoses]',
-            annotations: '[data-target=annotations]'
         },
 
         events: {
@@ -69,11 +60,46 @@ define([
         initialize: function() {
             this.data = {};
 
-            _.bindAll(this, 'onFetchError');
+            _.bindAll(this, 'onFetchError', 'onFetchSuccess');
 
             if (!(this.data.context = this.options.context)) {
                 throw new Error('context model required');
             }
+        },
+
+        renderHPO: function(annotations) {
+            var html = [], key, priority;
+
+            html.push('<div class=span6>');
+            html.push('<h6>HPO:</h6>');
+
+            if (annotations && annotations.length) {
+                html.push('<ul>');
+
+                for (key in annotations) {
+                    html.push('<li>');
+
+                    html.push('<a href="http://www.human-phenotype-ontology.org/hpoweb/showterm?id=' +  // jshint ignore: line
+                              annotations[key].hpo_id + '" target="_blank">' +  // jshint ignore: line
+                              annotations[key].name + '</a>');
+
+                    if ((priority = annotations[key].priority)) {
+                        html.push('<span class="badge badge-important">' +
+                                  priority + '</span>');
+                    }
+
+                    html.push('</li>');
+                }
+
+                html.push('</ul>');
+            }
+            else {
+                html.push('<span class=muted>No HPO annotations</span>');
+            }
+
+            html.push('</div>');
+
+            return html.join('');
         },
 
         renderNotes: function(notes) {
@@ -92,57 +118,104 @@ define([
             return html.join('');
         },
 
-        onFetchError: function() {
-            delete this.request;
+        _renderDiagnoses: function(diagnoses) {
+            if (diagnoses && diagnoses.length) {
+                var html = [], key, priority;
 
-            this.ui.loading.hide();
-            this.ui.error.html('There was an error retrieving the phenotypes.').show();
+                html.push('<ul>');
+
+                for (key in diagnoses) {
+                    html.push('<li>');
+                    html.push('<a href="http://purl.bioontology.org/ontology/OMIM/' +
+                              diagnoses[key].omim_id + '" target="_blank">' +   // jshint ignore: line
+                              diagnoses[key].name + '</a>');
+
+                    if ((priority = diagnoses[key].priority)) {
+                        html.push('<span class="badge badge-important">' +
+                                  priority + '</span>');
+                    }
+
+                    html.push('</li>');
+                }
+
+                html.push('</ul>');
+
+                return html.join('');
+            }
+            else {
+                return '<span class=muted>No diagnoses</span>';
+            }
         },
 
-        recalculate: function() {
-            this.retrievePhenotypes(true);
+        renderDiagnoses: function(attr) {
+            var html = [];
+
+            html.push('<div class=span4>');
+            html.push('<h6>Confirmed Diagnoses:</h6>');
+            html.push(this._renderDiagnoses(attr.confirmedDiagnoses));
+            html.push('</div>');
+
+            html.push('<div class=span4>');
+            html.push('<h6>Suspected Diagnoses:</h6>');
+            html.push(this._renderDiagnoses(attr.suspectedDiagnoses));
+            html.push('</div>');
+
+            html.push('<div class=span4>');
+            html.push('<h6>Ruled Out Diagnoses:</h6>');
+            html.push(this._renderDiagnoses(attr.ruledOutDiagnoses));
+            html.push('</div>');
+
+            return html.join('');
         },
 
-        onRender: function(){
+        renderUpdateTimes: function(attr) {
+            var html = [];
+
+            html.push('<div class=span6>');
+            html.push('<h6>Phenotypes Updated: </h6>' + attr.last_modified);    // jshint ignore: line
+            html.push('</div>');
+
+            html.push('<div class=span6>');
+            html.push('<h6>Rankings Updated: </h6>' + attr.phenotype_modified); // jshint ignore: line
+            html.push('</div>');
+
+            return html.join('');
+        },
+
+        onFetchSuccess: function(model) {
             delete this.request;
 
             this.ui.recalculateButton.prop('disabled', false);
             this.ui.loading.hide();
 
-            // Initially, the model is not set to anything. It is only after the
-            // request for the phenotype is successful that we have a model.
-            if (!this.model) return;
+            var attr = model.attributes;
 
+            this.ui.annotations.html(this.renderHPO(attr.hpoAnnotations));
+            this.ui.notes.html(this.renderNotes(attr.notes));
+            this.ui.diagnoses.html(this.renderDiagnoses(attr));
+            this.ui.updateTimes.html(this.renderUpdateTimes(attr));
 
-            // Render each region
-            this.annotations.show(new annotations.Annotations({
-                name: "HPO Annotations",
-                collection: new Backbone.Collection(this.model.get('hpoAnnotations')),
-            }));
-
-            this.confirmedDiagnoses.show(new diagnoses.Diagnoses({
-                name: 'Confirmed Diagnoses',
-                collection: new Backbone.Collection(this.model.get('confirmedDiagnoses'))
-            }));
-
-            this.suspectedDiagnoses.show(new diagnoses.Diagnoses({
-                name: 'Suspected Diagnoses',
-                collection: new Backbone.Collection(this.model.get('suspectedDiagnoses')),
-            }));
-
-            this.ruledOutDiagnoses.show(new diagnoses.Diagnoses({
-                name: 'Ruled Out Diagnoses',
-                collection: new Backbone.Collection(this.model.get('ruledOutDiagnoses')),
-            }));
-
-            this.ui.notes.html(this.renderNotes(this.model.get('notes')));
-
-            if (!this.model.get('pedigree')) {
+            if (attr.pedigree) {
+                this.ui.pedigree.attr('href', attr.pedigree);
+                this.ui.pedigree.show();
+            }
+            else {
                 this.ui.pedigree.hide();
-                this.ui.thumbnail.hide();
             }
 
             this.ui.content.show();
+        },
+
+        onFetchError: function() {
+            delete this.request;
+
+            this.ui.loading.hide();
+            this.ui.error.html('There was an error retrieving the phenotypes.');
+            this.ui.error.show();
+        },
+
+        recalculate: function() {
+            this.retrievePhenotypes(true);
         },
 
         retrievePhenotypes: function(recalculateRankings) {
@@ -178,11 +251,7 @@ define([
                     },
                     processData: true,
                     success: function(model) {
-                        // Set the the model so that the serializeData function
-                        // has access to the attributes.
-                        _this.model = model;
-                        _this.render();
-                        _this.ui.headerLabel.text('Phenotypes for ' + samples[0]);
+                        _this.onFetchSuccess(model);
                     },
                     error: this.onFetchError
                 });
@@ -190,12 +259,10 @@ define([
             else {
                 this.ui.headerLabel.text('Phenotypes');
 
-                if (samples.length === 0) {
-                    this.ui.error.html(this.alerts.missingSample);
-                }
-                else {
-                    this.ui.error.html(this.alerts.multipleSamples).show();
-                }
+                if (samples.length === 0) this.ui.error.html(this.alerts.missingSample);
+                else this.ui.error.html(this.alerts.multipleSamples);
+
+                this.ui.error.show();
             }
         },
 
@@ -212,6 +279,7 @@ define([
 
             this.$el.modal('hide');
         }
+
     });
 
     return {
