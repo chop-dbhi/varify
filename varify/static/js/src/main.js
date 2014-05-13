@@ -47,7 +47,7 @@ require({
         };
 
         var json;
-        if (c.session && (json = c.session.data.views.session.get('json')) !== null) {
+        if (c.session && (json = c.session.data.views.session.get('json'))) {
             newView.view.ordering = json.ordering;
         }
 
