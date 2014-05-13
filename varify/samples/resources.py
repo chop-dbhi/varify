@@ -355,7 +355,7 @@ class SampleResultSetsResource(ThrottledResource):
     template = api.templates.ResultSet
 
     def get_queryset(self, request, pk):
-        return self.model.objects.filter(user=request.user, sample__pk=pk)
+        return self.model.objects.filter(sample__pk=pk)
 
     def get(self, request, pk):
         queryset = self.get_queryset(request, pk)
