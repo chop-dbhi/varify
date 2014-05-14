@@ -16,7 +16,7 @@ define([
         },
 
         parsePriority: function(value) {
-            return parseInt(value.priority, 10) || this.lowestPriority + 1;
+            return parseInt(value.priority, 10) || this.lowestPriority;
         },
 
         parse: function(attrs) {
