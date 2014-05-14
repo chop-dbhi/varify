@@ -1,0 +1,333 @@
+[
+    {
+        "pk": 1,
+        "model": "samples.project",
+        "fields": {"notes": null,
+            "label": "Something else",
+            "modified": "2014-02-25T14:38:56.910",
+            "name": "Default",
+            "created": "2014-02-25T14:38:56.910"}
+    },
+    {
+        "pk": 1,
+        "model": "samples.batch",
+        "fields":
+        {"count": 3,
+          "name": "locus_1",
+          "investigator": null,
+          "notes": null,
+          "created": "2014-02-25T14:39:46.700",
+          "modified": "2014-02-25T14:40:16.208",
+          "label": "locus_1",
+          "project": 1,
+          "published": true
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 1,
+        "fields": {
+            "label": "1",
+            "value": "1",
+            "order": 1,
+            "code": 1
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 3,
+        "fields": {
+            "label": "3",
+            "value": "3",
+            "order": 3,
+            "code": 3
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 2,
+        "fields": {
+            "label": "Het Ref",
+            "value": "0/1",
+            "order": 2,
+            "code": 2
+        }
+    },
+    {
+        "model": "variants.varianttype",
+        "pk": 1,
+        "fields": {
+            "value": "SNP",
+            "label": "SNP",
+            "code": 1,
+            "order": 1
+        }
+     },
+    {
+        "pk": 1,
+        "model": "variants.variant",
+        "fields": {
+            "articles": [],
+            "liftover": null,
+            "type": 1,
+            "chr": 1,
+            "pos": 19999,
+            "rsid": "rs91603",
+            "alt": "AAC",
+            "ref": "A",
+            "md5": "8d908ff5406b"
+        }
+    },
+    {
+        "pk": 6,
+        "model": "variants.variant",
+        "fields": {
+            "articles": [],
+            "liftover": null,
+            "type": 1,
+            "chr": 1,
+            "pos": 19999,
+            "rsid": "rs91603",
+            "alt": "T",
+            "ref": "TA",
+            "md5": "8d908ff5406b"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "variants.variant",
+        "fields": {
+            "articles": [],
+            "liftover": null,
+            "type": 1,
+            "chr": 1,
+            "pos": 20002,
+            "rsid": "rs9160399",
+            "alt": "CTTTCTT",
+            "ref": "C",
+            "md5": "8d908ff5406b"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "variants.variant",
+        "fields": {
+            "articles": [],
+            "liftover": null,
+            "type": 1,
+            "chr": 3,
+            "pos": 20001,
+            "rsid": "rs9160300",
+            "alt": "A",
+            "ref": "AGAT",
+            "md5": "8d908ff5406b"
+        }
+    },
+    {
+        "pk": 11,
+        "model": "variants.variant",
+        "fields": {
+            "articles": [],
+            "liftover": null,
+            "type": 1,
+            "chr": 3,
+            "pos": 20004,
+            "rsid": "rs916000",
+            "alt": "C",
+            "ref": "A",
+            "md5": "8d908ff5406b"
+        }
+    },
+    {
+        "pk": 4,
+        "model": "variants.variant",
+        "fields": {
+            "articles": [],
+            "liftover": null,
+            "type": 1,
+            "chr": 3,
+            "pos": 20006,
+            "rsid": "rs9160300",
+            "alt": "CGTCATTGGAACAGTC",
+            "ref": "C,CGTTGTCATTGGAACAGTC",
+            "md5": "8d908ff5406b"
+        }
+    },
+    {
+        "model": "samples.person",
+        "pk":1,
+        "fields": {
+            "mrn": "blah",
+            "sex": "Female",
+            "created": "2014-02-25T14:39:46.700",
+            "modified": "2014-02-25T14:40:16.208"
+        }
+    },
+    {
+        "pk": 9,
+        "model": "samples.sample",
+        "fields": {
+            "count": 13,
+            "bio_sample": null,
+            "name": "NA999",
+            "created": "2014-02-25T14:39:46.766",
+            "notes": null,
+            "published": true,
+            "modified": "2014-02-25T14:40:16.191",
+            "label": "NA999",
+            "project": 1,
+            "person": 1,
+            "version": 0,
+            "vcf_colname": "78",
+            "batch": 1,
+            "phenotype_modified": null,
+            "md5": null
+        }
+    },
+    {
+        "pk": 1,
+        "model": "samples.result",
+        "fields": {
+            "haplotype_score": null,
+            "read_depth": null,
+            "coverage_alt": null,
+            "homopolymer_run": null,
+            "sample": 9,
+            "genotype": null,
+            "quality": null,
+            "base_counts": 43,
+            "variant": 1,
+            "mq0": null,
+            "read_pos_rank_sum": null,
+            "strand_bias": null,
+            "notes": null,
+            "created": "2014-02-25T14:40:07.630",
+            "modified": "2014-02-25T14:40:07.630",
+            "mq_rank_sum": null,
+            "baseq_rank_sum": null,
+            "raw_read_depth": 147
+        }
+    },
+    {
+        "pk": 2,
+        "model": "samples.result",
+        "fields": {
+            "haplotype_score": null,
+            "read_depth": null,
+            "coverage_alt": null,
+            "homopolymer_run": null,
+            "sample": 9,
+            "genotype": null,
+            "quality": null,
+            "base_counts": 43,
+            "variant": 2,
+            "mq0": null,
+            "read_pos_rank_sum": null,
+            "strand_bias": null,
+            "notes": null,
+            "created": "2014-02-25T14:40:07.630",
+            "modified": "2014-02-25T14:40:07.630",
+            "mq_rank_sum": null,
+            "baseq_rank_sum": null,
+            "raw_read_depth": 149
+        }
+    },
+    {
+        "pk": 3,
+        "model": "samples.result",
+        "fields": {
+            "haplotype_score": null,
+            "read_depth": null,
+            "coverage_alt": null,
+            "homopolymer_run": null,
+            "sample": 9,
+            "genotype": null,
+            "quality": null,
+            "base_counts": 883,
+            "variant": 3,
+            "mq0": null,
+            "read_pos_rank_sum": null,
+            "strand_bias": null,
+            "notes": null,
+            "created": "2014-02-25T14:40:07.630",
+            "modified": "2014-02-25T14:40:07.630",
+            "mq_rank_sum": null,
+            "baseq_rank_sum": null,
+            "raw_read_depth": 349
+        }
+    },
+    {
+        "pk": 4,
+        "model": "samples.result",
+        "fields": {
+            "haplotype_score": null,
+            "read_depth": null,
+            "coverage_alt": null,
+            "homopolymer_run": null,
+            "sample": 9,
+            "genotype": null,
+            "quality": null,
+            "base_counts": 883,
+            "variant": 4,
+            "mq0": null,
+            "read_pos_rank_sum": null,
+            "strand_bias": null,
+            "notes": null,
+            "created": "2014-02-25T14:40:07.630",
+            "modified": "2014-02-25T14:40:07.630",
+            "mq_rank_sum": null,
+            "baseq_rank_sum": null,
+            "raw_read_depth": 549
+        }
+    },
+    {
+        "pk": 5,
+        "model": "samples.result",
+        "fields": {
+            "haplotype_score": null,
+            "read_depth": null,
+            "coverage_alt": null,
+            "homopolymer_run": null,
+            "sample": 9,
+            "genotype": null,
+            "quality": null,
+            "base_counts": 3883,
+            "variant": 6,
+            "mq0": null,
+            "read_pos_rank_sum": null,
+            "strand_bias": null,
+            "notes": null,
+            "created": "2014-02-25T14:40:07.630",
+            "modified": "2014-02-25T14:40:07.630",
+            "mq_rank_sum": null,
+            "baseq_rank_sum": null,
+            "raw_read_depth": 33349
+        }
+    },
+    {
+        "pk": 6,
+        "model": "samples.result",
+        "fields": {
+            "haplotype_score": null,
+            "read_depth": null,
+            "coverage_alt": null,
+            "homopolymer_run": null,
+            "sample": 9,
+            "genotype": null,
+            "quality": null,
+            "base_counts": 11883,
+            "variant": 11,
+            "mq0": null,
+            "read_pos_rank_sum": null,
+            "strand_bias": null,
+            "notes": null,
+            "created": "2014-02-25T14:40:07.630",
+            "modified": "2014-02-25T14:40:07.630",
+            "mq_rank_sum": null,
+            "baseq_rank_sum": null,
+            "raw_read_depth": 933349
+        }
+    }
+
+
+]
