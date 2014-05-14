@@ -1,5 +1,5 @@
 # Core requirements
-django>=1.4.11,<1.5
+django>=1.4.12,<1.5
 markdown==2.1.1
 south==0.8.2
 python-memcached==1.48
