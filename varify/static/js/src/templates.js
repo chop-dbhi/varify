@@ -17,7 +17,7 @@ define([
     };
 
     var phenotypeScore = function(resultScore) {
-        if (resultScore !== null) {
+        if (resultScore) {
             var rank = parseInt(resultScore.rank, 10);
             var score = parseFloat(resultScore.score);
 
@@ -43,7 +43,7 @@ define([
     };
 
     var category = function(assessment) {
-        if ((assessment !== null) && (assessment.assessment_category !== null)) {   // jshint ignore:line
+        if ((assessment !== null) && (assessment.assessment_category)) {   // jshint ignore:line
             var html = [];
             html.push('<br />Category:');
             html.push(assessment.assessment_category.name);     // jshint ignore:line
@@ -59,7 +59,7 @@ define([
     };
 
     var pathogenicity = function(assessment) {
-        if ((assessment !== null) && (assessment.pathogenicity !== null)) {
+        if ((assessment !== null) && (assessment.pathogenicity)) {
             var html = [];
             html.push('<br />Pathogenicity: ');
             html.push(assessment.pathogenicity.name);
