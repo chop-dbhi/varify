@@ -1,0 +1,4 @@
+<a href='http://purl.bioontology.org/ontology/OMIM/<%= data.omim_id %>' target=_blank><%= data.name %></a>
+<% if (data.priority) { %>
+    <span class='badge badge-important'><%= data.priority %></span>
+<% } %>

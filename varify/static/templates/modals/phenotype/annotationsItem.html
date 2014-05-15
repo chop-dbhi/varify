@@ -1,0 +1,4 @@
+<a href='http://www.human-phenotype-ontology.org/hpoweb/showterm?id=<%= data.hpo_id %>' target=_blank><%= data.name %></a>
+<% if (data.priority) { %>
+    <span class='badge badge-important'><%= data.priority %></span>
+<% } %>
