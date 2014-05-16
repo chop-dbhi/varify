@@ -176,7 +176,9 @@ require({
                 sample: new ui.SampleDialog({
                     context: this.data.contexts.session,
                     samples: this.data.samples
-                })
+                }),
+
+                variantSet: new ui.VariantSetDialog()
             };
 
             var elements = [];

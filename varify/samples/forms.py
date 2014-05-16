@@ -1,6 +1,6 @@
 from django import forms
 from django.db import transaction
-from .models import Cohort, Sample
+from .models import Cohort, Sample, ResultSet
 
 
 class CohortForm(forms.ModelForm):
@@ -38,4 +38,10 @@ class CohortForm(forms.ModelForm):
 
     class Meta(object):
         model = Cohort
-        fields = ('name', 'description', 'user', 'published')
+        fields = ('name', 'user', 'published')
+
+
+class ResultSetForm(forms.ModelForm):
+    class Meta(object):
+        model = ResultSet
+        exclude = ('results', 'user')

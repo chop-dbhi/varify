@@ -290,6 +290,30 @@ body, #concept-panel, #context-panel {
     }
 }
 
+#variant-set-dialog {
+    width: 800px;
+    margin-left: -400px;
+
+    .radio {
+        margin-left: 25px;
+    }
+
+    table {
+        table-layout: fixed;
+    }
+
+    th, td {
+        width: 150px;
+        text-align: left;
+    }
+
+    td {
+        padding-left: 5px;
+        max-width: 150px;
+        word-wrap: break-word;
+    }
+}
+
 .workspace-workflow {
     .span6 > * {
         margin-top: 20px;
