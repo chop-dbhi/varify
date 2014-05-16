@@ -11,7 +11,12 @@ define([
         template: 'varify/workflows/workspace',
 
         ui: {
-            sampleVariantSetHelp: '[data-target=sample-variant-set-help]'
+            sampleVariantSetHelp: '[data-target=sample-variant-set-help]',
+            createVariantSetButton: '[data-target=create-variant-set]'
+        },
+
+        events: {
+            'click @ui.createVariantSetButton': 'onCreateVariantSetClicked'
         },
 
         regions: {
@@ -36,6 +41,10 @@ define([
             }
         },
 
+        onCreateVariantSetClicked: function() {
+            c.dialogs.variantSet.open(this.sample);
+        },
+
         onRender: function() {
             c.ui.WorkspaceWorkflow.prototype.onRender.call(this);
 
@@ -44,27 +53,32 @@ define([
                        'can be annotated and augmented at the creator\'s discretion.'
             });
 
-            this.listenTo(this.data.samples, 'select', this.renderSampleDetail);
-            this.listenTo(this.data.samples, 'select', this.renderSampleVariantSets);
+            this.listenTo(this.data.samples, 'select', this.onSampleSelected);
         },
 
-        renderSampleDetail: function(model) {
+        onSampleSelected: function(model) {
+            this.sample = model;
+            this.renderSampleDetail();
+            this.renderSampleVariantSets();
+        },
+
+        renderSampleDetail: function() {
             var sampleDetail = new this.regionViews.sampleDetail({
-                model: model
+                model: this.sample
             });
 
             this.sampleDetail.show(sampleDetail);
         },
 
-        renderSampleVariantSets: function(model) {
-            if (!model) return;
+        renderSampleVariantSets: function() {
+            if (!this.sample) return;
 
             var sampleVariantSets = new this.regionViews.sampleVariantSets({
-                collection: model.variantSets
+                collection: this.sample.variantSets
             });
 
             // Fetch the variant sets for this sample
-            model.variantSets.fetch({reset: true});
+            this.sample.variantSets.fetch({reset: true});
 
             this.sampleVariantSets.show(sampleVariantSets);
         }
