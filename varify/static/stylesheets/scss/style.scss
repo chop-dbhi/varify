@@ -149,6 +149,14 @@ body, #concept-panel, #context-panel {
     }
 }
 
+.phenotype-detail-modal {
+    .content-display {
+        .horizontal-list-display {
+            display: inline-flex;
+        }
+    }
+}
+
 .variant-container {
     @include transition((margin, display) 0.6s ease-in-out);
     @include box-shadow(none);

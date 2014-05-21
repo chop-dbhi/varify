@@ -24,13 +24,19 @@ require({
     'tpl!../../templates/tables/header.html',
     'tpl!../../templates/modals/result.html',
     'tpl!../../templates/modals/phenotypes.html',
+    'tpl!../../templates/modals/phenotype/annotations.html',
+    'tpl!../../templates/modals/phenotype/annotationsItem.html',
+    'tpl!../../templates/modals/phenotype/diagnoses.html',
+    'tpl!../../templates/modals/phenotype/diagnosesItem.html',
+    'tpl!../../templates/modals/phenotype/empty.html',
     'tpl!../../templates/controls/sift.html',
     'tpl!../../templates/controls/polyphen.html',
     'tpl!../../templates/workflows/results.html',
     'tpl!../../templates/export/dialog.html',
     'tpl!../../templates/sample/loader.html'
-], function(c, ui, csrf, header, result, phenotype, sift, polyphen, results,
-            exportDialog, sampleLoader) {
+], function(c, ui, csrf, header, result, phenotype, annotations, annotationsItem,
+       diagnoses, diagnosesItem, empty, sift, polyphen, results, exportDialog,
+       sampleLoader) {
 
     // Session options
     var options = {
@@ -58,6 +64,11 @@ require({
     c.templates.set('varify/tables/header', header);
     c.templates.set('varify/modals/result', result);
     c.templates.set('varify/modals/phenotype', phenotype);
+    c.templates.set('varify/modals/phenotype/annotations', annotations);
+    c.templates.set('varify/modals/phenotype/annotationsItem', annotationsItem);
+    c.templates.set('varify/modals/phenotype/diagnoses', diagnoses);
+    c.templates.set('varify/modals/phenotype/diagnosesItem', diagnosesItem);
+    c.templates.set('varify/modals/phenotype/empty', empty);
     c.templates.set('varify/controls/sift', sift);
     c.templates.set('varify/controls/polyphen', polyphen);
     c.templates.set('varify/workflows/results', results);

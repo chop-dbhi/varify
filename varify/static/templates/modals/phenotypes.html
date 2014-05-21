@@ -4,25 +4,67 @@
     <h3 data-target=header-label></h3>
 </div>
 
-<div class=modal-body>
+<div class='modal-body phenotype-detail-modal'>
     <div class=span12>
         <div data-target=warning data-action=hide-on-retrieve class='alert alert-warning alert-block hide'></div>
         <div data-target=error data-action=hide-on-retrieve class='alert alert-error alert-block hide'></div>
         <div data-target=loading data-action=hide-on-retrieve>
-            <h5><i class="icon-spinner icon-spin"></i> Loading Phenotypes...</h5>
+            <h5><i class='icon-spinner icon-spin'></i> Loading Phenotypes...</h5>
         </div>
-        <div data-target=content data-action=hide-on-retrieve>
+        <div class=content-display data-target=content data-action=hide-on-retrieve>
             <div class=row-fluid>
                 <div class=span6 data-target=annotations></div>
                 <div class=span6 data-target=notes></div>
             </div>
-            <div class=row-fluid data-target=diagnoses></div>
-            <div class=row-fluid data-target=update-times></div>
+
+            <div class='row-fluid horizontal-list-display' data-target=personal-info>
+                <div class=span8><h6>Sex:</h6><%= data.sex %></div>
+                <div class=span8><h6>Ethnicity:</h6><%= data.ethnicity %></div>
+                <div class=span8><h6>Chief Complaint:</h6><%= data.chief_complaint %></div>
+            </div>
+
+            <div class='row-fluid horizontal-list-display' data-target=age>
+                <div class=span5><h6>Initial Evaluation:</h6><%= data.age_at_initial_evaluation + ' ' + data.age_at_initial_evaluation_units %></div>
+                <div class=span5><h6>Last Evaluation:</h6><%= data.age_at_last_evaluation + ' ' + data.age_at_last_evaluation_units %></div>
+                <div class=span5><h6>Genetic Testing:</h6><%= data.genetic_testing %></div>
+            </div>
+
+            <div class='row-fluid horizontal-list-display'>
+                <div class=span4 data-target=confirmed-diagnoses></div>
+                <div class=span4 data-target=suspected-diagnoses></div>
+                <div class=span4 data-target=ruled-out-diagnoses></div>
+            </div>
+
+            <div class='row-fluid horizontal-list-display' data-target=findings>
+                <div class=span9><h6>Imaging Studies:</h6><%= data.imaging_studies %></div>
+                <div class=span9><h6>Procedures:</h6><%= data.procedures %></div>
+                <div class=span9><h6>Significant PE findings:</h6><%= data.significant_pe_findings %></div>
+            </div>
+
+            <div class='row-fluid horizontal-list-display' data-target=history>
+                <div class=span7><h6>Birth Pregnancy hx:</h6><%= data.birth_pregnancy_hx %></div>
+                <div class=span7><h6>Developmental hx:</h6><%= data.developmental_hx %></div>
+                <div class=span7><h6>Family hx:</h6><%= data.family_hx %></div>
+                <div class=span8><h6>Medical hx:</h6><%= data.medical_hx %></div>
+            </div>
+
+            <div class='row-fluid horizontal-list-display' data-target=update-times>
+                <div class=span6><h6>Phenotypes Updated:</h6><%= data.last_modified %></div>
+                <div class=span6><h6>Phenotypes Modified:</h6><%= data.phenotype_modified %></div>
+            </div>
+
+            <div class='row-fluid pedigree-display'>
+                <h6>Pedigree:</h6>
+                <a href='<%= data.pedigree %>' class=pull-left data-target=pedigree data-action=hide-on-retrieve>View Full Size Pedigree</a>
+                <br>
+                <a href='<%= data.pedigree %>' data-action=hide-on-retrieve>
+                    <img data-target=thumbnail src='<%= data.pedigree_thumbnail %>' alt='No Pedigree to Display' height='180' width='150'>
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
 <div class=modal-footer>
-    <a href='#' class=pull-left data-target=pedigree data-action=hide-on-retrieve>View Pedigree</a>
     <button data-target='recalculate' class='btn btn-primary' disabled=disabled>Recalculate Ranks</button>
 </div>
