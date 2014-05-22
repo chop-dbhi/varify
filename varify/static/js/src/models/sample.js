@@ -1,8 +1,9 @@
 /* global define */
 
 define([
-    'backbone'
-], function(Backbone) {
+    'backbone',
+    '../utils'
+], function(Backbone, utils) {
 
     var SampleVariantSet = Backbone.Model.extend({
 
@@ -16,7 +17,7 @@ define([
 
     var Sample = Backbone.Model.extend({
         url: function() {
-            return '/api/samples/' + this.get('id') + '/';
+            return utils.toAbsolutePath('api/samples/' + this.get('id') + '/');
         },
 
         constructor: function() {
@@ -36,7 +37,7 @@ define([
         model: Sample,
 
         url: function() {
-            return '/api/samples/';
+            return utils.toAbsolutePath('api/samples/');
         }
     });
 
