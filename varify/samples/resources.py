@@ -22,7 +22,8 @@ from varify import api
 from varify.assessments.models import Assessment
 from varify.variants.models import Variant
 from varify.genome.models import Chromosome
-from .models import Sample, Result, ResultScore, ResultSet
+from .models import Sample, Result, ResultSet, ResultScore
+from .forms import ResultSetForm
 
 log = logging.getLogger(__name__)
 
@@ -357,50 +358,12 @@ class SampleResultSetsResource(ThrottledResource):
 
     template = api.templates.ResultSet
 
-    def get_queryset(self, request, pk):
-        return self.model.objects.filter(sample__pk=pk)
-
-    def get(self, request, pk):
-        queryset = self.get_queryset(request, pk)
-        return serialize(queryset, **self.template)
-
-
-class SampleResultSetResource(ThrottledResource):
-    model = ResultSet
-
-    template = api.templates.ResultSet
-
-    def get_queryset(self, request):
-        return self.model.objects.filter(user=request.user)
-
-    def get_object(self, request, pk):
-        if not hasattr(request, 'instance'):
-            queryset = self.get_queryset(request)
-
-            try:
-                instance = queryset.get(pk=pk)
-            except self.model.DoesNotExist:
-                instance = None
-
-            request.instance = instance
-
-        return request.instance
-
-    def is_not_found(self, request, response, pk):
-        return not self.get_object(request, pk)
-
-    def get(self, request, pk):
-        instance = self.get_object(request, pk)
-        return serialize(instance, **self.template)
-
-
-class SampleResultSetUploadResource(SampleBaseResource):
     INSERTION = 'Insertion'
     DELETION = 'Deletion'
 
     supported_content_types = (
-        'multipart/form-data',
-        'application/vnd.openxmlformats-officedocumentspreadsheetml.sheet')
+        'application/json',
+        'multipart/form-data',)
 
     def get_change_type(self, ref, a1, a2):
         """
@@ -413,17 +376,32 @@ class SampleResultSetUploadResource(SampleBaseResource):
         elif a1 == '.' or a2 == '.':
             return self.DELETION
 
-    def is_not_found(self, request, response, pk):
-        return not self.get_object(request, pk=pk)
+    def get_object(self, request, pk):
+        if not hasattr(request, 'instance'):
+            try:
+                instance = Sample.objects.get(pk=pk)
+            except self.model.DoesNotExist:
+                instance = None
+
+            request.instance = instance
+
+        return request.instance
+
+    def get_queryset(self, request, pk):
+        return self.model.objects.filter(sample__pk=pk)
+
+    def get(self, request, pk):
+        queryset = self.get_queryset(request, pk)
+        return serialize(queryset, **self.template)
 
     # Consume the variants excel file and search the database for
     # matching queries.
-    def post(self, request, pk):
+    def _create_from_file(self, request, pk, instance):
         sample = self.get_object(request, pk=pk)
 
         # Try opening the excel file that was uploaded.
         try:
-            variant_book = request.FILES['result_set_file']
+            variant_book = request.FILES['source']
             workbook = openpyxl.load_workbook(variant_book,
                                               use_iterators=True)
         except:
@@ -459,7 +437,11 @@ class SampleResultSetUploadResource(SampleBaseResource):
         no_matches = []
 
         # Verison 1.6.1 of openpyxl does not support slicing thus, a workaround
-        # proposed here: https://bitbucket.org/ericgazoni/openpyxl/issue/273/allow-slicing-in-iterableworksheet # noqa
+        # proposed here:
+        #
+        #       https://bitbucket.org/ericgazoni/openpyxl/issue/273/allow-slicing-in-iterableworksheet      # noqa
+        # TODO: Speed this up. This code is painfully slow, takes upwards of
+        # 4 minutes to process ~5,000 records.
         for row in itertools.islice(sheet.iter_rows(), start_row + 1, None):
             # Retrieve rsid, ref, start and chr from our spreadsheet
             # so we can retrieve objects from our database.
@@ -471,7 +453,7 @@ class SampleResultSetUploadResource(SampleBaseResource):
             # query. Save the original to return back to the user.
             old_position = start_value
 
-            chr_label = int(row[chr_index].internal_value)
+            chr_label = row[chr_index].internal_value
 
             chr_match = Chromosome.objects.get(value=chr_label)
 
@@ -566,21 +548,89 @@ class SampleResultSetUploadResource(SampleBaseResource):
             # user to edit/fix them.
             if not is_found:
                 no_matches.append({
-                    'chr_label': chr_label,
-                    'Start': old_position,
-                    'Reference': ref_value,
-                    'Allele 1': allele1,
-                    'Allele 2': allele2,
-                    'dbSNP': dbsnp_value
-                    })
+                    'chr': chr_label,
+                    'start': old_position,
+                    'ref': ref_value,
+                    'allele1': allele1,
+                    'allele2': allele2,
+                    'dbsnp': dbsnp_value,
+                })
 
-        return {
-            'total_processed': len(matches) + len(no_matches),
-            'match_count': len(matches),
-            'unknown': no_matches
-        }
+        instance.bulk(matches)
 
-upload_resource = never_cache(SampleResultSetUploadResource())
+        content = serialize(instance, **self.template)
+        content['num_total_records'] = len(matches) + len(no_matches)
+        content['invalid_records'] = no_matches
+
+        return self.render(request, content=content, status=codes.created)
+
+    def _create_from_context(self, request, instance):
+        context = self.get_context(request)
+        results = context.apply()
+        instance.bulk(results)
+
+        content = serialize(instance, **self.template)
+        return self.render(request, content=content, status=codes.created)
+
+    def post(self, request, pk):
+        if 'source' in request.FILES and request.FILES['source']:
+            data = request.POST
+        else:
+            data = request.data
+
+        data['sample'] = self.get_object(request, pk=pk).id
+
+        form = ResultSetForm(data)
+
+        if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = request.user
+            instance.save()
+
+            # Determine which type of post request we are dealing with and then
+            # pass the necessary data on to the internal create methods. We
+            # either create a variant set from an uploaded file or we create
+            # one from the request user's context.
+            if 'source' in request.FILES and request.FILES['source']:
+                return self._create_from_file(request, pk, instance)
+            else:
+                return self._create_from_context(request, instance)
+        else:
+            log.error('Invalid variant set input. Form errors: {0}'.format(
+                dict(form.errors)))
+            return self.render(request, {'message': 'Request data is invalid'},
+                               codes.unprocessable_entity)
+
+
+class SampleResultSetResource(SampleResultSetsResource):
+    model = ResultSet
+
+    template = api.templates.ResultSet
+
+    def get_queryset(self, request):
+        return self.model.objects.filter(user=request.user)
+
+    def get_object(self, request, pk):
+        if not hasattr(request, 'instance'):
+            queryset = self.get_queryset(request)
+
+            try:
+                instance = queryset.get(pk=pk)
+            except self.model.DoesNotExist:
+                instance = None
+
+            request.instance = instance
+
+        return request.instance
+
+    def is_not_found(self, request, response, pk):
+        return not self.get_object(request, pk)
+
+    def get(self, request, pk):
+        instance = self.get_object(request, pk)
+        return serialize(instance, **self.template)
+
+
 sample_resource = never_cache(SampleResource())
 samples_resource = never_cache(SamplesResource())
 named_sample_resource = never_cache(NamedSampleResource())
@@ -608,10 +658,6 @@ urlpatterns = patterns(
     url(r'^(?P<pk>\d+)/variants/$',
         sample_results_resource,
         name='variants'),
-
-    url(r'^(?P<pk>\d+)/variants/sets/upload/$',
-        upload_resource,
-        name='variant-set-upload'),
 
     url(r'^variants/(?P<pk>\d+)/$',
         sample_result_resource,

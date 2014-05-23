@@ -10,6 +10,7 @@ define([
     'tpl!../../../templates/modals/phenotype.html',
     'tpl!../../../templates/modals/result.html',
     'tpl!../../../templates/modals/sample.html',
+    'tpl!../../../templates/modals/variant-set.html',
 
     'tpl!../../../templates/sample/loader.html',
     'tpl!../../../templates/sample/row.html',
