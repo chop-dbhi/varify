@@ -1,0 +1,68 @@
+Loading 1000g...ERROR relation "raw.1000g" does not exist
+LINE 5:                 INNER JOIN "raw"."1000g" r ON ("variant".md5...
+                                   ^
+Traceback (most recent call last):
+  File "./varify/variants/management/subcommands/load.py", line 212, in handle
+    count = handler(cursor, truncate)
+  File "./varify/variants/management/subcommands/load.py", line 72, in load_1000g
+    ''')
+  File "/home/vagrant/webapps/varify-os/lib/python2.7/site-packages/django/db/backends/util.py", line 40, in execute
+    return self.cursor.execute(sql, params)
+  File "/home/vagrant/webapps/varify-os/lib/python2.7/site-packages/django/db/backends/postgresql_psycopg2/base.py", line 52, in execute
+    return self.cursor.execute(query, args)
+DatabaseError: relation "raw.1000g" does not exist
+LINE 5:                 INNER JOIN "raw"."1000g" r ON ("variant".md5...
+                                   ^
+
+ FAIL
+Loading PolyPhen2...ERROR relation "raw.polyphen2" does not exist
+LINE 4:                 INNER JOIN "raw"."polyphen2" r ON ("variant"...
+                                   ^
+Traceback (most recent call last):
+  File "./varify/variants/management/subcommands/load.py", line 212, in handle
+    count = handler(cursor, truncate)
+  File "./varify/variants/management/subcommands/load.py", line 158, in load_polyphen2
+    ''')
+  File "/home/vagrant/webapps/varify-os/lib/python2.7/site-packages/django/db/backends/util.py", line 40, in execute
+    return self.cursor.execute(sql, params)
+  File "/home/vagrant/webapps/varify-os/lib/python2.7/site-packages/django/db/backends/postgresql_psycopg2/base.py", line 52, in execute
+    return self.cursor.execute(query, args)
+DatabaseError: relation "raw.polyphen2" does not exist
+LINE 4:                 INNER JOIN "raw"."polyphen2" r ON ("variant"...
+                                   ^
+
+ FAIL
+Loading EVS...ERROR relation "raw.evs" does not exist
+LINE 7:                 INNER JOIN "raw"."evs" r ON ("variant".md5 =...
+                                   ^
+Traceback (most recent call last):
+  File "./varify/variants/management/subcommands/load.py", line 212, in handle
+    count = handler(cursor, truncate)
+  File "./varify/variants/management/subcommands/load.py", line 101, in load_evs
+    ''')
+  File "/home/vagrant/webapps/varify-os/lib/python2.7/site-packages/django/db/backends/util.py", line 40, in execute
+    return self.cursor.execute(sql, params)
+  File "/home/vagrant/webapps/varify-os/lib/python2.7/site-packages/django/db/backends/postgresql_psycopg2/base.py", line 52, in execute
+    return self.cursor.execute(query, args)
+DatabaseError: relation "raw.evs" does not exist
+LINE 7:                 INNER JOIN "raw"."evs" r ON ("variant".md5 =...
+                                   ^
+
+ FAIL
+Loading SIFT...ERROR relation "raw.sift" does not exist
+LINE 4:                 INNER JOIN "raw"."sift" r ON ("variant".md5 ...
+                                   ^
+Traceback (most recent call last):
+  File "./varify/variants/management/subcommands/load.py", line 212, in handle
+    count = handler(cursor, truncate)
+  File "./varify/variants/management/subcommands/load.py", line 182, in load_sift
+    ''')
+  File "/home/vagrant/webapps/varify-os/lib/python2.7/site-packages/django/db/backends/util.py", line 40, in execute
+    return self.cursor.execute(sql, params)
+  File "/home/vagrant/webapps/varify-os/lib/python2.7/site-packages/django/db/backends/postgresql_psycopg2/base.py", line 52, in execute
+    return self.cursor.execute(query, args)
+DatabaseError: relation "raw.sift" does not exist
+LINE 4:                 INNER JOIN "raw"."sift" r ON ("variant".md5 ...
+                                   ^
+
+ FAIL
