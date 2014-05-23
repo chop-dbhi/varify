@@ -1,9 +1,55 @@
 # Harvest
 
-# Use the base docker container
-from reslnops01.research.chop.edu:5000/harvest_minimal
+FROM phusion/baseimage
 
 MAINTAINER Le Mar Davidson "davidsonl2@email.chop.edu"
+
+# Base Harvest System Software
+RUN apt-get update -qq --fix-missing
+RUN apt-get install -y curl python-dev python-setuptools supervisor git-core libpq-dev openldap openldap-devel libsasl2-dev openssl memcached
+RUN easy_install pip
+RUN pip install virtualenv
+RUN pip install uwsgi
+RUN virtualenv --no-site-packages /opt/ve/harvest-app
+
+# Base Harvest Python dependencies
+RUN /opt/ve/harvest-app/bin/pip install "django==1.5.6"
+RUN /opt/ve/harvest-app/bin/pip install "dj-database-url==0.2.2"
+RUN /opt/ve/harvest-app/bin/pip install "south==0.8.4"
+RUN /opt/ve/harvest-app/bin/pip install "fabric==1.8.0"
+RUN /opt/ve/harvest-app/bin/pip install "uWSGI"
+RUN /opt/ve/harvest-app/bin/pip install "restlib2==0.3.9"
+RUN /opt/ve/harvest-app/bin/pip install "python-etcd==0.3.0"
+RUN /opt/ve/harvest-app/bin/pip install "psycopg2==2.5.1"
+RUN /opt/ve/harvest-app/bin/pip install "python-ldap==2.4.13"
+RUN /opt/ve/harvest-app/bin/pip install "pycrypto==2.3"
+RUN /opt/ve/harvest-app/bin/pip install "avocado>=2.3.0,<2.4"
+RUN /opt/ve/harvest-app/bin/pip install "serrano>=2.3.0,<2.4"
+RUN /opt/ve/harvest-app/bin/pip install "modeltree>=1.1.7,<1.2"
+RUN /opt/ve/harvest-app/bin/pip install "django-haystack>=2.0"
+RUN /opt/ve/harvest-app/bin/pip install "python-memcached==1.53"
+RUN /opt/ve/harvest-app/bin/pip install "django_extensions"
+RUN /opt/ve/harvest-app/bin/pip install "django-siteauth==0.9b1"
+RUN /opt/ve/harvest-app/bin/pip install "whoosh>=2.5"
+RUN /opt/ve/harvest-app/bin/pip install "Markdown"
+RUN /opt/ve/harvest-app/bin/pip install "pycap"
+RUN /opt/ve/harvest-app/bin/pip install "csvkit"
+
+# Anything run after the "Add" command is not cached.
+ADD continuous_deployment/configuration/supervisor_deploy.conf /opt/supervisor_deploy.conf
+ADD continuous_deployment/configuration/supervisor_run.conf /opt/supervisor_run.conf
+ADD continuous_deployment/scripts/start.sh /usr/local/bin/start
+ADD continuous_deployment/scripts/test.sh /usr/local/bin/test
+ADD continuous_deployment/scripts/etl.sh /usr/local/bin/etl
+ADD continuous_deployment/scripts/debug.sh /usr/local/bin/debug
+ADD continuous_deployment/scripts/heartbeat.sh /usr/local/bin/heartbeat
+
+RUN chmod +x /usr/local/bin/debug
+RUN chmod +x /usr/local/bin/start
+RUN chmod +x /usr/local/bin/test
+RUN chmod +x /usr/local/bin/heartbeat
+RUN chmod +x /usr/local/bin/etl
+
 
 # Scala needed for DataExpress scripts
 RUN apt-get update -qq
@@ -64,8 +110,11 @@ ENV APP_NAME varify
 RUN /opt/ve/harvest-app/bin/pip install -r /opt/apps/harvest-app/requirements.txt --use-mirrors
 
 # Add customer start script for continuous deployment/override default
-ADD continuous_integration/.docker/scripts/start.sh /usr/local/bin/start
+ADD continuous_deployment/custom/scripts/start.sh /usr/local/bin/start
 
 RUN chmod +x /usr/local/bin/start
+
+
+ENV ETCD_HOST ''
 
 EXPOSE 8000
