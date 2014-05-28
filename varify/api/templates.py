@@ -355,9 +355,16 @@ SampleResultVariant['related']['variant'] = {
 }
 
 
-ResultSet = {
+SimpleResultSet = {
     'fields': [':local', 'created', 'modified'],
     'exclude': ['user', 'results'],
+    'related': {
+        'sample': Sample
+    }
+}
+
+ResultSet = {
+    'fields': [':local', 'created', 'modified'],
     'related': {
         'sample': Sample
     }

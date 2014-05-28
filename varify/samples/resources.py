@@ -356,7 +356,7 @@ class PedigreeResource(ThrottledResource):
 class SampleResultSetsResource(ThrottledResource):
     model = ResultSet
 
-    template = api.templates.ResultSet
+    template = api.templates.SimpleResultSet
 
     INSERTION = 'Insertion'
     DELETION = 'Deletion'
