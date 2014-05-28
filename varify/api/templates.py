@@ -366,6 +366,7 @@ SimpleResultSet = {
 ResultSet = {
     'fields': [':local', 'created', 'modified'],
     'related': {
-        'sample': Sample
+        'sample': Sample,
+        'results': SampleResult
     }
 }
