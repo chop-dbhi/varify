@@ -330,3 +330,33 @@ body, #concept-panel, #context-panel {
         margin-top: 0;
     }
 }
+
+.variant-set-workflow {
+    position: fixed;
+    height: 100%;
+    left: 0;
+    right: 0;
+
+    .variant-list-region {
+        position: absolute;
+        width: 30%;
+        height: 100%;
+        border-right: 1px solid #c9c9c9;
+    }
+
+    .variant-details-region {
+        position: absolute;
+        height: 50%;
+        width: 70%;
+        right: 0;
+        border-bottom: 1px solid #c9c9c9;
+    }
+
+    .knowledge-capture-region {
+        position: absolute;
+        height: 50%;
+        width: 70%;
+        bottom: 0;
+        right: 0;
+    }
+}

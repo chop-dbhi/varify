@@ -230,7 +230,9 @@ require({
                     queries: this.data.queries,
                     context: this.data.contexts.session,
                     view: this.data.views.session
-                })
+                }),
+
+                variantset: new ui.VariantSetWorkflow()
             };
 
             // Define routes
@@ -254,6 +256,10 @@ require({
                 id: 'query-load',
                 route: 'results/:query_id/',
                 view: c.workflows.queryload
+            }, {
+                id: 'variant-set',
+                route: 'variant-sets/:variant_set_id',
+                view: c.workflows.variantset
             }];
 
             // Register routes and start the session
