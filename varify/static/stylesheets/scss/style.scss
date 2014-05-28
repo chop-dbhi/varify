@@ -333,15 +333,35 @@ body, #concept-panel, #context-panel {
 
 .variant-set-workflow {
     position: fixed;
-    height: 100%;
+    top: 40px;
+    bottom: 0;
     left: 0;
     right: 0;
 
+    .variant-item {
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    .variant-item.selected {
+        background: #9fd2f0;
+    }
+
+    .variant-item:not(:last-child) {
+        border-bottom: 1px solid #eee;
+    }
+
     .variant-list-region {
         position: absolute;
-        width: 30%;
         height: 100%;
+        width: 30%;
         border-right: 1px solid #c9c9c9;
+        overflow: scroll;
+
+        > div {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
     }
 
     .variant-details-region {
@@ -358,5 +378,9 @@ body, #concept-panel, #context-panel {
         width: 70%;
         bottom: 0;
         right: 0;
+    }
+
+    > .alert-error {
+        margin: 10px;
     }
 }
