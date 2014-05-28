@@ -628,7 +628,14 @@ class SampleResultSetResource(SampleResultSetsResource):
 
     def get(self, request, pk):
         instance = self.get_object(request, pk)
-        return serialize(instance, **self.template)
+        data = serialize(instance, **self.template)
+
+        for i in range(0, len(data['results'])):
+            data['results'][i]['variant'] = VariantResource.get(
+                request, data['results'][i]['variant_id'])
+            data['results'][i].pop('variant_id')
+
+        return data
 
 
 sample_resource = never_cache(SampleResource())
