@@ -1,0 +1,8 @@
+<ul class=unstyled>
+    <li><b>Position:</b> chr<%= data.variant.chr %> @ <%= data.pchr %> in <%= data.getGeneSymbol() %></li>
+    <li>
+        <span><b>HGVS C:</b> <%= data.getHgvsC() %></span>
+        <span class=pull-right><b>HGVS P:</b> <%= data.getHgvsP() %></span>
+    </li>
+    <li><%= data.getAssessmentCount() %></li>
+</ul>
