@@ -103,7 +103,19 @@ define([
 
         itemView: VariantItem,
 
-        itemViewContainer: '[data-target=items]'
+        itemViewContainer: '[data-target=items]',
+
+        ui: {
+            loading: '[data-target=loading]'
+        },
+
+        collectionEvents: {
+            'reset': 'onCollectionReset'
+        },
+
+        onCollectionReset: function() {
+            this.ui.loading.hide();
+        }
     });
 
     var VariantDetails = Marionette.ItemView.extend({
@@ -120,8 +132,7 @@ define([
         template: 'varify/workflows/variant-set',
 
         ui: {
-            error: '[data-target=error-message]',
-            variantContent: '[data-target=variant-content]'
+            error: '.error-message-container'
         },
 
         regions: {
@@ -149,6 +160,8 @@ define([
         },
 
         onFetchSuccess: function(model) {
+            this.ui.error.hide();
+
             this.variants.currentView.collection.reset(model.get('results'));
         },
 
@@ -184,8 +197,9 @@ define([
         },
 
         showError: function(errorHtml) {
-            this.$el.html('<div class="alert alert-error alert-block">' +
-                          errorHtml + '</div>');
+            this.ui.error.show()
+                .html('<div class="alert alert-error alert-block">' + errorHtml +
+                      '</div>');
         }
     });
 

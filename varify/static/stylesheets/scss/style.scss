@@ -356,23 +356,35 @@ body, #concept-panel, #context-panel {
         }
     }
 
-    .variant-details-region {
+    .error-message-container {
         position: absolute;
-        height: 50%;
+        width: 100%;
+        height: 100%;
+
+        // Force the error message to render above everything else and use the
+        // background to obscure anything(borders, etc.) that might still be
+        // visible.
+        background: #fff;
+        z-index: 1;
+    }
+
+    .variant-details-region, .knowledge-capture-region {
+        position: absolute;
         width: 70%;
         right: 0;
+    }
+
+    .variant-details-region {
+        height: 50%;
         border-bottom: 1px solid #c9c9c9;
     }
 
     .knowledge-capture-region {
-        position: absolute;
         height: 50%;
-        width: 70%;
         bottom: 0;
-        right: 0;
     }
 
-    > .alert-error {
+    .alert-error {
         margin: 10px;
     }
 }
