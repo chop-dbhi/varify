@@ -103,19 +103,7 @@ define([
 
         itemView: VariantItem,
 
-        itemViewContainer: '[data-target=items]',
-
-        ui: {
-            loading: '[data-target=loading]'
-        },
-
-        collectionEvents: {
-            'reset': 'onCollectionReset'
-        },
-
-        onCollectionReset: function() {
-            this.ui.loading.hide();
-        }
+        itemViewContainer: '[data-target=items]'
     });
 
     var VariantDetails = Marionette.ItemView.extend({
@@ -132,7 +120,8 @@ define([
         template: 'varify/workflows/variant-set',
 
         ui: {
-            error: '.error-message-container'
+            error: '[data-target=error-message]',
+            loading: '[data-target=loading-message]'
         },
 
         regions: {
@@ -154,12 +143,15 @@ define([
         },
 
         onFetchError: function() {
+            this.ui.loading.hide();
+
             this.showError('There was an error retrieving the variant set ' +
                            'from the server. Reload the page to try loading ' +
                            'the set again.');
         },
 
         onFetchSuccess: function(model) {
+            this.ui.loading.hide();
             this.ui.error.hide();
 
             this.variants.currentView.collection.reset(model.get('results'));
