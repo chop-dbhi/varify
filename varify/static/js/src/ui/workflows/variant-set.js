@@ -22,6 +22,15 @@ define([
     });
 
 
+    var EmptyVariantItem = Marionette.ItemView.extend({
+        className: 'variant-item',
+
+        tagName: 'li',
+
+        template: 'varify/workflows/variant-set/empty-variant-item'
+    });
+
+
     var VariantItem = Marionette.ItemView.extend({
         className: 'variant-item',
 
@@ -98,21 +107,27 @@ define([
         }
     });
 
+
     var VariantList = Marionette.CompositeView.extend({
         template: 'varify/workflows/variant-set/variant-list',
 
         itemView: VariantItem,
 
-        itemViewContainer: '[data-target=items]'
+        itemViewContainer: '[data-target=items]',
+
+        emptyView: EmptyVariantItem
     });
+
 
     var VariantDetails = Marionette.ItemView.extend({
         template: 'varify/workflows/variant-set/variant-details'
     });
 
+
     var KnowledgeCapture = Marionette.ItemView.extend({
         template: 'varify/workflows/variant-set/knowledge-capture'
     });
+
 
     var VariantSetWorkflow = Marionette.Layout.extend({
         className: 'variant-set-workflow row-fluid',
@@ -202,6 +217,7 @@ define([
                       '</div>');
         }
     });
+
 
     return {
         VariantSetWorkflow: VariantSetWorkflow
