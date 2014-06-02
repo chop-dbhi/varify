@@ -343,16 +343,20 @@ body, #concept-panel, #context-panel {
         border-bottom: 1px solid #eee;
     }
 
-    .variant-list-region {
+    .variant-list-container {
         position: absolute;
         height: 100%;
         width: 30%;
         border-right: 1px solid #c9c9c9;
         overflow: scroll;
 
-        > div {
+        > * {
             margin-left: 10px;
             margin-right: 10px;
+        }
+
+        .variant-list-region {
+            border-top: 1px solid #c9c9c9;
         }
     }
 

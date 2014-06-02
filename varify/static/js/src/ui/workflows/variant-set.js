@@ -121,7 +121,11 @@ define([
 
         ui: {
             error: '[data-target=error-message]',
-            loading: '[data-target=loading-message]'
+            loading: '[data-target=loading-message]',
+            name: '[data-target=variant-set-name]',
+            count: '[data-target=variant-set-count]',
+            modified: '[data-target=variant-set-modified]',
+            description: '[data-target=variant-set-description]'
         },
 
         regions: {
@@ -154,6 +158,10 @@ define([
             this.ui.loading.hide();
             this.ui.error.hide();
 
+            this.ui.name.text(model.get('name'));
+            this.ui.count.text(model.get('count'));
+            this.ui.modified.text(model.get('modified'));
+            this.ui.description.text(model.get('description'));
             this.variants.currentView.collection.reset(model.get('results'));
         },
 
