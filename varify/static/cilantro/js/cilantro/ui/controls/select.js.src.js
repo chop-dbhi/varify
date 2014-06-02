@@ -23,7 +23,15 @@ define(['underscore', 'backbone', 'marionette', '../../core', './base'], functio
     };
 
     SelectionListItem.prototype.onRender = function() {
-      this.$el.text(this.model.get('label'));
+      var label;
+      label = this.model.get('label');
+      if (label === '') {
+        this.$el.text('(empty)');
+      } else if (label === 'null') {
+        this.$el.text('(null)');
+      } else {
+        this.$el.text(label);
+      }
       this.$el.attr('value', this.model.get('value'));
       return this.$el.attr('selected', this.model.get('selected'));
     };

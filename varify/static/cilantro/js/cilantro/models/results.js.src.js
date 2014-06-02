@@ -1,99 +1,115 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+/* global define */
 
-define(['underscore', '../core', '../constants', '../structs', './paginator'], function(_, c, constants, structs, paginator) {
-  var Results, ResultsPage, _ref, _ref1;
-  ResultsPage = (function(_super) {
-    __extends(ResultsPage, _super);
+define([
+    'underscore',
+    '../core',
+    '../constants',
+    '../structs',
+    './paginator'
+], function(_, c, constants, structs, paginator) {
 
-    function ResultsPage() {
-      _ref = ResultsPage.__super__.constructor.apply(this, arguments);
-      return _ref;
-    }
+    var ResultsPage = structs.Frame.extend({
+        idAttribute: 'page_num',
 
-    ResultsPage.prototype.idAttribute = 'page_num';
+        url: function() {
+            var url = _.result(this.collection, 'url');
 
-    ResultsPage.prototype.url = function() {
-      var url;
-      url = _.result(this.collection, 'url');
-      return c.utils.alterUrlParams(url, {
-        page: this.id,
-        per_page: this.collection.perPage
-      });
-    };
-
-    return ResultsPage;
-
-  })(structs.Frame);
-  Results = (function(_super) {
-    __extends(Results, _super);
-
-    function Results() {
-      this.fetch = __bind(this.fetch, this);
-      this.markAsDirty = __bind(this.markAsDirty, this);
-      this.onWorkspaceUnload = __bind(this.onWorkspaceUnload, this);
-      this.onWorkspaceLoad = __bind(this.onWorkspaceLoad, this);
-      _ref1 = Results.__super__.constructor.apply(this, arguments);
-      return _ref1;
-    }
-
-    Results.prototype.initialize = function() {
-      this.isDirty = true;
-      this.isWorkspaceOpen = false;
-      this._refresh = _.debounce(_.bind(this.refresh, this), constants.CLICK_DELAY);
-      c.on(c.VIEW_SYNCED, this.markAsDirty);
-      c.on(c.CONTEXT_SYNCED, this.markAsDirty);
-      this.on('workspace:load', this.onWorkspaceLoad);
-      return this.on('workspace:unload', this.onWorkspaceUnload);
-    };
-
-    Results.prototype.onWorkspaceLoad = function() {
-      this.isWorkspaceOpen = true;
-      return this._refresh();
-    };
-
-    Results.prototype.onWorkspaceUnload = function() {
-      return this.isWorkspaceOpen = false;
-    };
-
-    Results.prototype.markAsDirty = function() {
-      this.isDirty = true;
-      return this._refresh();
-    };
-
-    Results.prototype.fetch = function(options) {
-      var data,
-        _this = this;
-      if (options == null) {
-        options = {};
-      }
-      if ((data = c.config.get('session.defaults.data.preview')) != null) {
-        options.type = 'POST';
-        options.contentType = 'application/json';
-        options.data = JSON.stringify(data);
-      }
-      if (this.isDirty && this.isWorkspaceOpen) {
-        this.isDirty = false;
-        if (options.cache == null) {
-          options.cache = false;
+            return c.utils.alterUrlParams(url, {
+                page: this.id,
+                per_page: this.collection.perPage   // jshint ignore:line
+            });
         }
-        return Results.__super__.fetch.call(this, options);
-      } else {
-        return {
-          done: function() {
-            return delete _this.pending;
-          }
-        };
-      }
+    });
+
+    // Array of result frames (pages). The first fetch sets the state of the
+    // collection including the frame size, number of possible frames, etc. A
+    // refresh resets the collection as well as changes to the frame size.
+    var Results = structs.FrameArray.extend({
+        initialize: function() {
+            _.bindAll(this, 'fetch', 'markAsDirty', 'onWorkspaceUnload',
+                      'onWorkspaceLoad', 'refresh');
+
+            // We start in a dirty state because initially, we have not
+            // retrieved the results yet so the view and context are
+            // technically out of sync with this results collection since the
+            // collection is empty and the server may have results.
+            this.isDirty = true;
+            this.isWorkspaceOpen = false;
+
+            // Debounce refresh to ensure changes are reflected up to the last
+            // trigger. This is specifically important when the context and
+            // view are saved simultaneously. The refresh will trigger after
+            // the second.
+            this._refresh = _.debounce(this.refresh, constants.CLICK_DELAY);
+
+            c.on(c.VIEW_SYNCED, this.markAsDirty);
+            c.on(c.CONTEXT_SYNCED, this.markAsDirty);
+
+            this.on('workspace:load', this.onWorkspaceLoad);
+            this.on('workspace:unload', this.onWorkspaceUnload);
+        },
+
+        onWorkspaceLoad: function() {
+            this.isWorkspaceOpen = true;
+            this._refresh();
+        },
+
+        onWorkspaceUnload: function() {
+            this.isWorkspaceOpen = false;
+        },
+
+        markAsDirty: function() {
+            this.isDirty = true;
+            this._refresh();
+        },
+
+        fetch: function(options) {
+            if (!options) options = {};
+
+            var data;
+            if ((data = c.config.get('session.defaults.data.preview')) !== null) {
+                options.type = 'POST';
+                options.contentType = 'application/json';
+                options.data = JSON.stringify(data);
+            }
+
+            if (this.isDirty && this.isWorkspaceOpen) {
+                // Since we are making the fetch call immediately below, the
+                // data will be synced again to the current view/context to
+                // mark the results as clean for the time being.
+                this.isDirty = false;
+
+                if (options.cache === undefined) {
+                    options.cache = false;
+                }
+
+                return structs.FrameArray.prototype.fetch.call(this, arguments);
+            }
+            else {
+                // If the results aren't dirty or the workspace isn't open then
+                // we simply abort this fetch call and remove the pending flag.
+                // If we do not include this done method then calls from
+                // refresh() to fetch that don't actually result in a call to
+                // the server will never call the done() handler in the
+                // refresh() call to fetch().
+                var _this = this;
+                return {
+                    done: function() {
+                        return delete _this.pending;
+                    }
+                };
+            }
+        }
+    });
+
+    // Mix-in paginator functionality for results.
+    _.extend(Results.prototype, paginator.PaginatorMixin);
+
+    // Set the custom model for this Paginator.
+    Results.prototype.model = ResultsPage;
+
+    return {
+        Results: Results
     };
 
-    return Results;
-
-  })(structs.FrameArray);
-  _.extend(Results.prototype, paginator.PaginatorMixin);
-  Results.prototype.model = ResultsPage;
-  return {
-    Results: Results
-  };
 });

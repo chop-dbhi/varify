@@ -74,6 +74,11 @@ define([
                                   "to all users and cause it to be listed here."
                 });
 
+                // We explicitly set the editable option to false below because
+                // users should not be able to edit the public queries
+                // collection.
+                this.publicQueries.show(publicQueryView);
+
                 // When the queries are synced we need to manually update the
                 // public queries collection so that any changes to public
                 // queries are reflected there. Right now, this is done lazily
@@ -84,11 +89,15 @@ define([
                     this.data.publicQueries.fetch({reset: true});
                 });
 
-                // We explicitly set the editable option to false below because
-                // users should not be able to edit the public queries
-                // collection.
-                this.publicQueries.show(publicQueryView);
             }
+
+            this.listenTo(c.data.concepts, 'reset', function() {
+                this.queries.show(queryView);
+
+                if (this.publicQueries) {
+                    this.publicQueries.show(publicQueryView);
+                }
+            });
         }
     });
 

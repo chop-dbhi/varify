@@ -1,2 +1,2 @@
-define(["underscore","./workflows/query","./workflows/results","./workflows/workspace"],function(t){var e=[].slice.call(arguments,1);return t.extend.apply(null,[{}].concat(e))});
+define(["underscore","./workflows/query","./workflows/results","./workflows/workspace"],function(e){var t=[].slice.call(arguments,1);return e.extend.apply(null,[{}].concat(t))});
 //@ sourceMappingURL=workflows.js.map

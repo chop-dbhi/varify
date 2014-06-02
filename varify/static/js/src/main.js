@@ -38,6 +38,13 @@ require({
        diagnoses, diagnosesItem, empty, sift, polyphen, results, exportDialog,
        sampleLoader) {
 
+    var SAMPLE_CONCEPT_ID = 2,
+        SAMPLE_FIELD_ID = 111;
+
+    // Add namespaced variables for reference in other modules
+    c.config.set('varify.sample.concept', SAMPLE_CONCEPT_ID);
+    c.config.set('varify.sample.field', SAMPLE_FIELD_ID);
+
     // Session options
     var options = {
         url: c.config.get('url'),
@@ -47,13 +54,13 @@ require({
     var augmentFixedView = function() {
         var newView = {
             view: {
-                columns: [2]
+                columns: [SAMPLE_CONCEPT_ID]
             }
         };
 
         var json;
-        if ((json = c.session.data.views.session.get('json')) != null) {
-            newView['view']['ordering'] = json['ordering'];
+        if (c.session && (json = c.session.data.views.session.get('json'))) {
+            newView.view.ordering = json.ordering;
         }
 
         return newView;

@@ -24,9 +24,6 @@ profiled_tests.txt
 settings
 local_settings.py
 
-# all Sass files will be compiled into this directory
-varify/static/stylesheets/css
-
 # Collected static files via Django's staticfiles app
 _site/static
 

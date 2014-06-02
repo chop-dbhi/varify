@@ -1,94 +1,59 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['underscore', './range'], function(_, range) {
-  var DateControl, _ref;
-  DateControl = (function(_super) {
-    __extends(DateControl, _super);
+define([
+    'underscore',
+    './range'
+], function(_, range) {
 
-    function DateControl() {
-      _ref = DateControl.__super__.constructor.apply(this, arguments);
-      return _ref;
-    }
+    var DateControl = range.RangeControl.extend({
+        // Add the change event from the datepickers to existing range events
+        events: function() {
+            return _.extend({
+                'changeDate .range-lower,.range-upper': '_change'
+            }, range.RangeControl.prototype.events);
+        },
 
-    DateControl.prototype._events = {
-      'changeDate .range-lower,.range-upper': '_change'
+        onRender: function() {
+            range.RangeControl.prototype.onRender.apply(this, arguments);
+
+            // Initialize the datepickers and make them close automatically
+            this.ui.lowerBound.datepicker({'autoclose': true});
+            this.ui.upperBound.datepicker({'autoclose': true});
+        },
+
+        // Sets the placeholder value on the supplied element to the date value
+        _setPlaceholder: function(element, value) {
+            // String off the time data if it is included.
+            var dateStr = value.replace(/T.*$/, '');
+
+            // Currently the string is in yyyy-mm-dd so we need to split it up
+            // and reorder the properties.
+            var dateFields = dateStr.split('-');
+
+            // Unless there are exaclty 3 fields we will leave the place holder
+            // as it is now rather than trying to figure out what malformed
+            // input we are trying to use.
+            if (dateFields.length === 3) {
+                dateStr = '' + dateFields[1] + '/' + dateFields[2] + '/' + dateFields[0];
+                element.attr('placeholder', dateStr);
+            }
+        },
+
+        // Override the default behavior so the date is formatted correctly
+        // for use in the placeholder.
+        setLowerBoundPlaceholder: function(value) {
+            this._setPlaceholder(this.ui.lowerBound, value);
+        },
+
+        // Override the default behavior so the date is formatted correctly
+        // for use in the placeholder.
+        setUpperBoundPlaceholder: function(value) {
+            this._setPlaceholder(this.ui.upperBound, value);
+        },
+    });
+
+    return {
+        DateControl: DateControl
     };
 
-    DateControl.prototype.initialize = function() {
-      DateControl.__super__.initialize.apply(this, arguments);
-      return this.events = _.extend({}, this._events, this.events);
-    };
-
-    DateControl.prototype.onRender = function() {
-      DateControl.__super__.onRender.apply(this, arguments);
-      this.ui.lowerBound.datepicker({
-        'autoclose': true
-      });
-      return this.ui.upperBound.datepicker({
-        'autoclose': true
-      });
-    };
-
-    DateControl.prototype.getLowerBoundValue = function() {
-      return this.ui.lowerBound.datepicker('getFormattedDate');
-    };
-
-    DateControl.prototype.getUpperBoundValue = function() {
-      return this.ui.upperBound.datepicker('getFormattedDate');
-    };
-
-    DateControl.prototype._parseDate = function(value) {
-      if (value != null) {
-        return value.replace(/-/g, '/');
-      }
-    };
-
-    DateControl.prototype.parseMinStat = function(value) {
-      return this._parseDate(value);
-    };
-
-    DateControl.prototype.parseMaxStat = function(value) {
-      return this._parseDate(value);
-    };
-
-    DateControl.prototype._setPlaceholder = function(element, value) {
-      var date, dateStr;
-      date = new Date(value);
-      dateStr = "" + (date.getMonth() + 1) + "/" + (date.getDate()) + "/" + (date.getFullYear());
-      return element.attr('placeholder', dateStr);
-    };
-
-    DateControl.prototype.setLowerBoundPlaceholder = function(value) {
-      return this._setPlaceholder(this.ui.lowerBound, value);
-    };
-
-    DateControl.prototype.setUpperBoundPlaceholder = function(value) {
-      return this._setPlaceholder(this.ui.upperBound, value);
-    };
-
-    DateControl.prototype._setValue = function(element, value) {
-      var dateString;
-      dateString = value != null ? value.val() : void 0;
-      if ((dateString != null) && dateString !== "") {
-        return element.datepicker('setDate', new Date(dateString));
-      } else {
-        return element.datepicker('_clearDate', this);
-      }
-    };
-
-    DateControl.prototype.setLowerBoundValue = function(value) {
-      return this._setValue(this.ui.lowerBound, value);
-    };
-
-    DateControl.prototype.setUpperBoundValue = function(value) {
-      return this._setValue(this.ui.upperBound, value);
-    };
-
-    return DateControl;
-
-  })(range.RangeControl);
-  return {
-    DateControl: DateControl
-  };
 });

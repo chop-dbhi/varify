@@ -62,6 +62,16 @@ define([
 
     'tpl!templates/controls/null/layout.html',
 
+    'tpl!templates/controls/text/layout.html',
+    'tpl!templates/controls/text/preview-list.html',
+    'tpl!templates/controls/text/preview-item.html',
+
+    'tpl!templates/controls/vocab/layout.html',
+    'tpl!templates/controls/vocab/path.html',
+    'tpl!templates/controls/vocab/item.html',
+    'tpl!templates/controls/vocab/bucket.html',
+    'tpl!templates/controls/vocab/bucket-item.html',
+
     'tpl!templates/field/form-condensed.html',
     'tpl!templates/field/form.html',
     'tpl!templates/field/info.html',
@@ -75,6 +85,7 @@ define([
     'tpl!templates/query/list.html',
     'tpl!templates/query/loader.html',
 
+    'tpl!templates/values/item.html',
     'tpl!templates/values/list.html',
 
     'tpl!templates/workflows/query.html',
@@ -175,10 +186,18 @@ define([
 
         // Sets a template in cache.
         set: function(id, func) {
-            if (typeof id === 'object') {
+            if (_.isArray(id)) {
+                _.each(id, function(func) {
+                    this.set(func);
+                }, this);
+            }
+            else if (_.isFunction(id)) {
+                _set(id);
+            }
+            else if (_.isObject(id)) {
                 _.each(id, function(func, key) {
                     this.set(key, func);
-                });
+                }, this);
             }
             else {
                 _set(id, func);

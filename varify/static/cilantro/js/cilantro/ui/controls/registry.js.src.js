@@ -9,8 +9,11 @@ define([
     './search',
     './select',
     './infograph',
-    './null'
-], function(_, loglevel, c, date, number, search, select, infograph, nullSelector) {
+    './null',
+    './text',
+    './vocab'
+], function(_, loglevel, c, date, number, search, select, infograph, nullSelector,
+            text, vocab) {
 
     var defaultControls = {
         infograph: infograph.InfographControl,
@@ -19,7 +22,9 @@ define([
         search: search.SearchControl,
         singleSelectionList: select.SingleSelectionList,
         multiSelectionList: select.MultiSelectionList,
-        nullSelector: nullSelector.NullSelector
+        nullSelector: nullSelector.NullSelector,
+        text: text.TextControl,
+        vocab: vocab.VocabControl
     };
 
     var customControls = {};

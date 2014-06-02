@@ -1,7 +1,7 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   __slice = [].slice;
 
 define(['underscore', 'backbone', 'marionette', './base', '../button'], function(_, Backbone, Marionette, base, button) {
@@ -65,6 +65,7 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     __extends(Bar, _super);
 
     function Bar() {
+      this.onExcludedChange = __bind(this.onExcludedChange, this);
       _ref2 = Bar.__super__.constructor.apply(this, arguments);
       return _ref2;
     }
@@ -78,7 +79,8 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     };
 
     Bar.prototype.ui = {
-      bar: '.bar'
+      bar: '.bar',
+      barLabel: '.bar-label'
     };
 
     Bar.prototype.events = {
@@ -87,8 +89,11 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
 
     Bar.prototype.modelEvents = {
       'change:selected': 'setSelected',
-      'change:visible': 'setVisible',
-      'change:excluded': 'setExcluded'
+      'change:visible': 'setVisible'
+    };
+
+    Bar.prototype.initialize = function() {
+      return this.listenTo(this.model.collection, 'change:excluded', this.onExcludedChange);
     };
 
     Bar.prototype.serializeData = function() {
@@ -106,7 +111,13 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     };
 
     Bar.prototype.onRender = function() {
-      return this.setSelected(this.model, !!this.model.get('selected'));
+      this.setSelected(this.model, !!this.model.get('selected'));
+      if (this.ui.barLabel.html() === '') {
+        this.ui.barLabel.html('(empty)');
+      }
+      if (this.ui.barLabel.html() === 'null') {
+        return this.ui.barLabel.html('(null)');
+      }
     };
 
     Bar.prototype.getPercentage = function() {
@@ -117,8 +128,8 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
       return this.model.set('selected', !this.model.get('selected'));
     };
 
-    Bar.prototype.setExcluded = function(model, value) {
-      return this.$el.toggleClass('excluded', value);
+    Bar.prototype.onExcludedChange = function() {
+      return this.$el.toggleClass('excluded', this.model.get('excluded'));
     };
 
     Bar.prototype.setSelected = function(model, value) {
@@ -342,9 +353,11 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     BarChartToolbar.prototype.excludeCheckboxChanged = function() {
       var _this = this;
       this.collection.each(function(model) {
-        return model.set('excluded', _this.ui.excludeCheckbox.prop('checked'));
+        return model.set('excluded', _this.ui.excludeCheckbox.prop('checked'), {
+          silent: true
+        });
       });
-      this.collection.trigger('change');
+      this.collection.trigger('change:excluded');
     };
 
     return BarChartToolbar;
