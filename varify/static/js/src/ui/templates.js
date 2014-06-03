@@ -16,6 +16,8 @@ define([
     'tpl!../../../templates/sample/row.html',
     'tpl!../../../templates/sample/table.html',
 
+    'tpl!../../../templates/result-details.html',
+
     'tpl!../../../templates/tables/header.html',
 
     'tpl!../../../templates/variant/article-item.html',

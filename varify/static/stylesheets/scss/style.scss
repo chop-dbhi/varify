@@ -19,37 +19,12 @@ body, #concept-panel, #context-panel {
     margin-top: 10px !important;
 }
 
-#result-details-modal {
-    width: 90%;
-    top: 5%;
-    left: 5%;
-    margin: 0;
-    max-height: 800px;
-    bottom: 5%;
-
-    .variant-details-container {
-        position: absolute;
-        width: 96.5%;
-        top: 0;
-        bottom: 70px;
-        overflow: auto;
-    }
-
-    .modal-footer {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-    }
-
-    .modal-header {
-        border: 0px;
-        padding: 0 10px 0 0;
-    }
-
-    .modal-body {
-        position: static;
-    }
+.result-details {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 
     .expandable-item {
         height: 100%;
@@ -90,6 +65,39 @@ body, #concept-panel, #context-panel {
         tbody > tr {
             border-top: 1px solid #eee;
         }
+    }
+}
+
+#result-details-modal {
+    width: 90%;
+    top: 5%;
+    left: 5%;
+    margin: 0;
+    max-height: 800px;
+    bottom: 5%;
+
+    .variant-details-container {
+        position: absolute;
+        width: 96.5%;
+        top: 0;
+        bottom: 70px;
+        overflow: auto;
+    }
+
+    .modal-footer {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .modal-header {
+        border: 0px;
+        padding: 0 10px 0 0;
+    }
+
+    .modal-body {
+        position: static;
     }
 }
 

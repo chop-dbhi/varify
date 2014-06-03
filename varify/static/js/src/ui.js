@@ -5,6 +5,7 @@ define([
     './ui/controls',
     './ui/exporter',
     './ui/modals',
+    './ui/result-details',
     './ui/sample',
     './ui/tables',
     './ui/templates',
