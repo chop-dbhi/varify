@@ -1,2 +1,2 @@
-define(["backbone"],function(e){var n=e.Model.extend({idAttribute:"key"}),t=e.Collection.extend({model:n,parse:function(e){var n,t,r=[];for(n in e)t=e[n],"_"!==n.charAt(0)&&r.push({key:n,value:t});var o=["min","max"];return r.sort(function(e,n){var t=o.indexOf(e.key),r=o.indexOf(n.key);return t>=0&&r>=0?t-r:0>t&&0>r?e.key>n.key:t>=0?-1:1}),r}});return{StatModel:n,StatCollection:t}});
-//# sourceMappingURL=stats.js.map
+define(["backbone"],function(t){var e=t.Model.extend({idAttribute:"key"}),i=t.Collection.extend({model:e,parse:function(t){var e,i,n=[];for(e in t)i=t[e],"_"!==e.charAt(0)&&n.push({key:e,value:i});var s=["min","max"];return n.sort(function(t,e){var i=s.indexOf(t.key),n=s.indexOf(e.key);return i>=0&&n>=0?i-n:0>i&&0>n?t.key>e.key:i>=0?-1:1}),n}});return{StatModel:e,StatCollection:i}});
+//@ sourceMappingURL=stats.js.map

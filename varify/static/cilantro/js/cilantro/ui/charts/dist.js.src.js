@@ -4,12 +4,13 @@ var __hasProp = {}.hasOwnProperty,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 define(['jquery', 'underscore', '../base', './core', './utils'], function($, _, base, charts, utils) {
-  var ChartLoading, FieldChart;
+  var ChartLoading, FieldChart, _ref, _ref1;
   ChartLoading = (function(_super) {
     __extends(ChartLoading, _super);
 
     function ChartLoading() {
-      return ChartLoading.__super__.constructor.apply(this, arguments);
+      _ref = ChartLoading.__super__.constructor.apply(this, arguments);
+      return _ref;
     }
 
     ChartLoading.prototype.message = 'Chart loading...';
@@ -23,7 +24,8 @@ define(['jquery', 'underscore', '../base', './core', './utils'], function($, _, 
     function FieldChart() {
       this.setValue = __bind(this.setValue, this);
       this.chartClick = __bind(this.chartClick, this);
-      return FieldChart.__super__.constructor.apply(this, arguments);
+      _ref1 = FieldChart.__super__.constructor.apply(this, arguments);
+      return _ref1;
     }
 
     FieldChart.prototype.template = 'charts/chart';
@@ -43,15 +45,15 @@ define(['jquery', 'underscore', '../base', './core', './utils'], function($, _, 
     };
 
     FieldChart.prototype.chartClick = function(event) {
-      var category, _ref;
-      category = (_ref = event.point.category) != null ? _ref : event.point.name;
+      var category, _ref2;
+      category = (_ref2 = event.point.category) != null ? _ref2 : event.point.name;
       event.point.select(!event.point.selected, true);
       return this.change();
     };
 
     FieldChart.prototype.interactive = function(options) {
-      var type, _ref;
-      if ((type = (_ref = options.chart) != null ? _ref.type : void 0) === 'pie') {
+      var type, _ref2;
+      if ((type = (_ref2 = options.chart) != null ? _ref2.type : void 0) === 'pie') {
         return true;
       } else if (type === 'column' && (options.xAxis.categories != null)) {
         return true;
@@ -105,28 +107,27 @@ define(['jquery', 'underscore', '../base', './core', './utils'], function($, _, 
     };
 
     FieldChart.prototype.onRender = function() {
+      var _this = this;
       if (this.options.parentView != null) {
         this.ui.chart.width(this.options.parentView.$el.width());
       }
       this.showLoadView();
-      return this.model.distribution((function(_this) {
-        return function(resp) {
-          var options;
-          if (_this.isClosed) {
-            return;
-          }
-          options = _this.getChartOptions(resp);
-          if (resp.size) {
-            return _this.renderChart(options);
-          } else {
-            return _this.showEmptyView(options);
-          }
-        };
-      })(this));
+      return this.model.distribution(function(resp) {
+        var options;
+        if (_this.isClosed) {
+          return;
+        }
+        options = _this.getChartOptions(resp);
+        if (resp.size) {
+          return _this.renderChart(options);
+        } else {
+          return _this.showEmptyView(options);
+        }
+      });
     };
 
     FieldChart.prototype.setValue = function(value) {
-      var point, points, _i, _len, _ref, _ref1;
+      var point, points, _i, _len, _ref2, _ref3;
       if (!_.isArray(value)) {
         value = [];
       }
@@ -134,7 +135,7 @@ define(['jquery', 'underscore', '../base', './core', './utils'], function($, _, 
         points = this.chart.series[0].points;
         for (_i = 0, _len = points.length; _i < _len; _i++) {
           point = points[_i];
-          point.select((_ref = point.name) != null ? _ref : (_ref1 = point.category, __indexOf.call(value, _ref1) >= 0), true);
+          point.select((_ref2 = point.name) != null ? _ref2 : (_ref3 = point.category, __indexOf.call(value, _ref3) >= 0), true);
         }
       }
     };

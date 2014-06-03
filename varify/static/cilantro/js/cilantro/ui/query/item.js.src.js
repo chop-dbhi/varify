@@ -109,14 +109,9 @@ define([
         },
 
         renderDetails: function() {
-            var html = [];
+            var html = ['<div class=row-fluid><div class=span6>'];
 
-            if (this.model.get('description')) {
-                html.push('<span class=muted>' + this.model.get('description') +
-                          '</span>');
-            }
-
-            html.push('<div class=row-fluid><div class=span6><h6>Filters</h6>');
+            html.push('<h6>Filters</h6>');
 
             var json = this.model.context.get('json');
 

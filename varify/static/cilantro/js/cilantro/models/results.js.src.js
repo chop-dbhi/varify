@@ -67,7 +67,7 @@ define([
             if (!options) options = {};
 
             var data;
-            if ((data = c.config.get('session.defaults.data.preview'))) {
+            if ((data = c.config.get('session.defaults.data.preview')) !== null) {
                 options.type = 'POST';
                 options.contentType = 'application/json';
                 options.data = JSON.stringify(data);
@@ -125,7 +125,7 @@ define([
 
             var fetchOptions = {},
                 data;
-            if ((data = c.config.get('session.defaults.data.preview'))) {
+            if ((data = c.config.get('session.defaults.data.preview')) !== null) {
                 fetchOptions.type = 'POST';
                 fetchOptions.contentType = 'application/json';
                 fetchOptions.data = JSON.stringify(data);

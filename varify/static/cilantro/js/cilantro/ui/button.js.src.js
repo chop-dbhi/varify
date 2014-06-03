@@ -2,12 +2,13 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['underscore', 'backbone', 'marionette'], function(_, Backbone, Marionette) {
-  var ButtonSelect, ButtonSelectEmptyOption, ButtonSelectOption;
+  var ButtonSelect, ButtonSelectEmptyOption, ButtonSelectOption, _ref, _ref1;
   ButtonSelectEmptyOption = (function(_super) {
     __extends(ButtonSelectEmptyOption, _super);
 
     function ButtonSelectEmptyOption() {
-      return ButtonSelectEmptyOption.__super__.constructor.apply(this, arguments);
+      _ref = ButtonSelectEmptyOption.__super__.constructor.apply(this, arguments);
+      return _ref;
     }
 
     ButtonSelectEmptyOption.prototype.className = 'disabled';
@@ -37,7 +38,8 @@ define(['underscore', 'backbone', 'marionette'], function(_, Backbone, Marionett
     __extends(ButtonSelectOption, _super);
 
     function ButtonSelectOption() {
-      return ButtonSelectOption.__super__.constructor.apply(this, arguments);
+      _ref1 = ButtonSelectOption.__super__.constructor.apply(this, arguments);
+      return _ref1;
     }
 
     ButtonSelectOption.prototype.tagName = 'li';
