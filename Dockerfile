@@ -6,7 +6,7 @@ MAINTAINER Le Mar Davidson "davidsonl2@email.chop.edu"
 
 # Base Harvest System Software
 RUN apt-get update -qq --fix-missing
-RUN apt-get install -y curl python-dev python-setuptools supervisor git-core libpq-dev openldap openldap-devel libsasl2-dev openssl memcached
+RUN apt-get install -y curl python-dev python-setuptools supervisor git-core libpq-dev openldap openldap-dev libldap2-dev libsasl2-dev openssl memcached
 RUN easy_install pip
 RUN pip install virtualenv
 RUN pip install uwsgi
