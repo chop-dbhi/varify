@@ -17,6 +17,7 @@ from varify.variants.resources import VariantResource
 from varify import api
 from varify.assessments.models import Assessment
 from .models import Sample, Result, ResultScore
+from restlib2.http import codes
 
 log = logging.getLogger(__name__)
 
@@ -246,6 +247,28 @@ class SampleResultResource(ThrottledResource):
 
         return data
 
+    post = get
+
+
+class ResultsResource(ThrottledResource):
+    template = api.templates.SampleResultVariant
+
+    def post(self, request):
+        ids_not_found = 'ids' not in request.data
+        not_a_list = not isinstance(request.data['ids'], list)
+
+        if ids_not_found or not_a_list:
+            return self.render(
+                {'message': 'An array of "ids" is required'},
+                status=codes.unprocessable_entity)
+
+        data = []
+        resource = SampleResultResource()
+        for id in request.data['ids']:
+            data.append(resource.get(request, id))
+            
+        return data
+
 
 class PhenotypeResource(ThrottledResource):
     def get(self, request, sample_id):
@@ -327,6 +350,7 @@ samples_resource = never_cache(SamplesResource())
 named_sample_resource = never_cache(NamedSampleResource())
 sample_results_resource = never_cache(SampleResultsResource())
 sample_result_resource = never_cache(SampleResultResource())
+results_resource = never_cache(ResultsResource())
 phenotype_resource = never_cache(PhenotypeResource())
 pedigree_resource = never_cache(PedigreeResource())
 
@@ -338,6 +362,7 @@ urlpatterns = patterns(
         named_sample_resource, name='named_sample'),
     url(r'^(?P<pk>\d+)/variants/$', sample_results_resource, name='variants'),
     url(r'^variants/(?P<pk>\d+)/$', sample_result_resource, name='variant'),
+    url(r'^variants/$', results_resource, name='results_resource'),
     url(r'^(?P<sample_id>.+)/phenotypes/$', phenotype_resource,
         name='phenotype'),
     url(r'^pedigrees/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/(?P<name>.+)$',

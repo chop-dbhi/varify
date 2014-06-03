@@ -3,8 +3,9 @@
 define([
     'underscore',
     'marionette',
+    '../../models',
     './row'
-], function(_, Marionette, row) {
+], function(_, Marionette, models, row) {
 
     // Represents a "frame" of rows. The model is referenced for keeping
     // track which frame this is relative to the whole series.
@@ -13,11 +14,18 @@ define([
 
         template: function() {},
 
-        itemView: row.ResultRow,
+        initialize: function(options) {
+            this.collection = new models.ResultCollection();
+            var data = {ids: options.collection.pluck('pk')};
+            this.collection.fetch({
+                data: JSON.stringify(data),
+                type: 'POST',
+                contentType: 'application/json',
+                parse: true
+            });
+        },
 
-        itemViewOptions: function (model, index) {
-            return _.defaults({resultPk: model.get('pk')}, this.options);
-        }
+        itemView: row.ResultRow
     });
 
     return {
