@@ -397,6 +397,11 @@ body, #concept-panel, #context-panel {
     .variant-details-region {
         height: 50%;
         border-bottom: 1px solid #c9c9c9;
+        overflow: auto;
+
+        .result-details {
+            margin: 10px;
+        }
     }
 
     .knowledge-capture-region {

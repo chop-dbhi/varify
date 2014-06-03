@@ -56,7 +56,6 @@ define([
     'tpl!../../../templates/workflows/variant-set.html',
     'tpl!../../../templates/workflows/variant-set/empty-variant-item.html',
     'tpl!../../../templates/workflows/variant-set/knowledge-capture.html',
-    'tpl!../../../templates/workflows/variant-set/variant-details.html',
     'tpl!../../../templates/workflows/variant-set/variant-item.html',
     'tpl!../../../templates/workflows/variant-set/variant-list.html',
     'tpl!../../../templates/workflows/workspace.html',

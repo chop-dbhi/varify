@@ -1,12 +1,15 @@
 /* global define */
 
 define([
+    'jquery',
     'underscore',
     'backbone',
     'marionette',
+    '../../models',
     '../../utils',
+    '../result-details',
     'cilantro/utils/numbers'
-], function(_, Backbone, Marionette, utils, Numbers) {
+], function($, _, Backbone, Marionette, models, utils, details, Numbers) {
 
     var VariantSet = Backbone.Model.extend({
         url: function() {
@@ -38,12 +41,14 @@ define([
 
         template: 'varify/workflows/variant-set/variant-item',
 
-        events: {
-            'click': 'onClick'
-        },
-
         modelEvents: {
             'change:selected': 'onSelectedChange'
+        },
+
+        attributes: function() {
+            return {
+                'data-id': this.model.id
+            };
         },
 
         templateHelpers: {
@@ -86,14 +91,6 @@ define([
             }
         },
 
-        onClick: function() {
-            this.model.collection.each(function(model) {
-                model.set({selected: false});
-            });
-
-            this.model.set({selected: true});
-        },
-
         onSelectedChange: function() {
             this.$el.toggleClass('selected', this.model.get('selected'));
         },
@@ -115,12 +112,33 @@ define([
 
         itemViewContainer: '[data-target=items]',
 
-        emptyView: EmptyVariantItem
-    });
+        emptyView: EmptyVariantItem,
 
+        events: {
+            'click .variant-item': 'onClick'
+        },
 
-    var VariantDetails = Marionette.ItemView.extend({
-        template: 'varify/workflows/variant-set/variant-details'
+        onClick: function(event) {
+            var id = $(event.currentTarget).data('id'),
+                currentSelection = this.collection.findWhere({selected: true});
+
+            // If the user clicks on the currently selected result then we
+            // don't want to do anything.
+            if (currentSelection && currentSelection.id === id) return;
+
+            // Update the selected model and then
+            this.collection.each(function(model) {
+                if (model.id === id) {
+                    model.set({selected: true});
+                    currentSelection = model;
+                }
+                else {
+                    model.set({selected: false});
+                }
+            });
+
+            this.trigger('change:selection', currentSelection);
+        }
     });
 
 
@@ -151,14 +169,21 @@ define([
 
         regionViews: {
             variants: VariantList,
-            variantDetails: VariantDetails,
+            variantDetails: details.ResultDetails,
             knowledgeCapture: KnowledgeCapture
         },
 
         initialize: function() {
-            _.bindAll(this, 'onFetchError', 'onFetchSuccess');
+            _.bindAll(this, 'onChangeSelection', 'onFetchError',
+                      'onFetchSuccess');
 
             this.on('router:load', this.onRouterLoad);
+        },
+
+        onChangeSelection: function(model) {
+            this.variantDetails.show(new this.regionViews.variantDetails({
+                result: new models.Result(model.attributes, {parse: true})
+            }));
         },
 
         onFetchError: function() {
@@ -184,8 +209,8 @@ define([
             this.variants.show(new this.regionViews.variants({
                 collection: new Backbone.Collection()
             }));
-
-            this.variantDetails.show(new this.regionViews.variantDetails());
+            this.variants.currentView.on('change:selection',
+                                         this.onChangeSelection);
 
             this.knowledgeCapture.show(new this.regionViews.knowledgeCapture());
         },
