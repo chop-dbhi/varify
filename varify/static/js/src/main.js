@@ -167,7 +167,7 @@ require({
 
                 deleteQuery: new c.ui.DeleteQueryDialog(),
 
-                resultDetails: new ui.ResultDetails(),
+                resultDetails: new ui.ResultDetailsModal(),
 
                 phenotype: new ui.Phenotype({
                     context: this.data.contexts.session
