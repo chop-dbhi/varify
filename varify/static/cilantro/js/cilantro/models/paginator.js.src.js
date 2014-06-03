@@ -1,174 +1,207 @@
-var __slice = [].slice,
-  __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['../core', 'underscore', 'backbone'], function(c, _, Backbone) {
-  var Page, Paginator, PaginatorMixin;
-  PaginatorMixin = {
-    comparator: 'page_num',
-    refresh: function() {
-      if (!this.pending) {
-        this.pending = true;
-        return this.fetch({
-          reset: true
-        }).done((function(_this) {
-          return function() {
-            delete _this.pending;
-            return _this.setCurrentPage(_this.models[0].id);
-          };
-        })(this));
-      }
-    },
-    parse: function(resp, options) {
-      if (!options.reset) {
-        this.reset(null, {
-          silent: true
-        });
-      }
-      this.perPage = resp.per_page;
-      this.trigger('change:pagesize', this, this.perPage);
-      this.numPages = resp.num_pages;
-      this.trigger('change:pagecount', this, this.numPages);
-      this.objectCount = resp.object_count;
-      this.trigger('change:objectcount', this, this.objectCount);
-      this.currentPageNum = null;
-      this.setCurrentPage(resp.page_num);
-      return [resp];
-    },
-    hasPage: function(num) {
-      return (1 <= num && num <= this.numPages);
-    },
-    hasNextPage: function(num) {
-      if (num == null) {
-        num = this.currentPageNum;
-      }
-      return num < this.numPages;
-    },
-    hasPreviousPage: function(num) {
-      if (num == null) {
-        num = this.currentPageNum;
-      }
-      return num > 1;
-    },
-    setCurrentPage: function(num) {
-      if (num === this.currentPageNum) {
-        return;
-      }
-      if (!this.hasPage(num)) {
-        throw new Error('Cannot set the current page out of bounds');
-      }
-      this.previousPageNum = this.currentPageNum;
-      this.currentPageNum = num;
-      return this.trigger.apply(this, ['change:currentpage', this].concat(__slice.call(this.getCurrentPageStats())));
-    },
-    getPage: function(num, options) {
-      var model;
-      if (options == null) {
-        options = {};
-      }
-      if (!this.hasPage(num)) {
-        return;
-      }
-      if (!(model = this.get(num)) && options.load !== false) {
-        model = new this.model({
-          page_num: num
-        });
-        model.pending = true;
-        this.add(model);
-        model.fetch().done((function(_this) {
-          return function() {
-            return delete model.pending;
-          };
-        })(this));
-      }
-      if (model && options.active !== false) {
-        this.setCurrentPage(num);
-      }
-      return model;
-    },
-    getCurrentPage: function(options) {
-      return this.getPage(this.currentPageNum, options);
-    },
-    getFirstPage: function(options) {
-      return this.getPage(1, options);
-    },
-    getLastPage: function(options) {
-      return this.getPage(this.numPages, options);
-    },
-    getNextPage: function(num, options) {
-      if (num == null) {
-        num = this.currentPageNum;
-      }
-      return this.getPage(num + 1, options);
-    },
-    getPreviousPage: function(num, options) {
-      if (num == null) {
-        num = this.currentPageNum;
-      }
-      return this.getPage(num - 1, options);
-    },
-    pageIsLoading: function(num) {
-      var page;
-      if (num == null) {
-        num = this.currentPageNum;
-      }
-      if ((page = this.getPage(num, {
-        active: false,
-        load: false
-      }))) {
-        return !!page.pending;
-      }
-    },
-    getPageCount: function() {
-      return this.numPages;
-    },
-    getCurrentPageStats: function() {
-      return [
-        this.currentPageNum, {
-          previous: this.previousPageNum,
-          first: this.currentPageNum === 1,
-          last: this.currentPageNum === this.numPages
+define([
+    'underscore',
+    'backbone',
+    '../core'
+], function(_, Backbone, c) {
+
+    var PaginatorMixin = {
+        comparator: 'page_num',
+
+        refresh: function() {
+            var url = _.result(this, 'url');
+
+            if (this.pending) {
+                // Request already being made, otherwise abort
+                if (url === this.pending.url) return;
+
+                this.pending.abort();
+            }
+
+            var _this = this;
+
+            this.pending = this.fetch({
+                reset: true
+            }).done(function() {
+                delete _this.pending;
+                _this.setCurrentPage(_this.models[0].id);
+            });
+
+            // This is a deferred and does not contain any of the
+            // ajax settings, so we set the url for later reference.
+            this.pending.url = url;
+        },
+
+        // Parses the initial fetch which is a single page, resets if necessary
+        parse: function(resp, options) {
+            if (!options.reset) {
+                // TODO Smartly shuffle pages when only the size changes.
+                // The data is not invalid, just broken up differently.
+                this.reset(null, {
+                    silent: true
+                });
+            }
+
+            this.perPage = resp.per_page;   // jshint ignore:line
+            this.trigger('change:pagesize', this, this.perPage);
+            this.numPages = resp.num_pages; // jshint ignore:line
+            this.trigger('change:pagecount', this, this.numPages);
+            this.objectCount = resp.object_count;   // jshint ignore:line
+            this.trigger('change:objectcount', this, this.objectCount);
+            this.currentPageNum = null;
+            this.setCurrentPage(resp.page_num); // jshint ignore:line
+
+            return [resp];
+        },
+
+        // Ensures `num` is within the bounds
+        hasPage: function(num) {
+            return (1 <= num && num <= this.numPages);
+        },
+
+        // Checks the a _next_ page exists for num (or the current page)
+        hasNextPage: function(num) {
+            if (!num) num = this.currentPageNum;
+
+            return num < this.numPages;
+        },
+
+        // Checks the a _previous_ page exists for num (or the current page)
+        hasPreviousPage: function(num) {
+            if (!num) num = this.currentPageNum;
+
+            return num > 1;
+        },
+
+        // Set the current page which triggers the 'change:page' event
+        setCurrentPage: function(num) {
+            if (num === this.currentPageNum) return;
+
+            if (!this.hasPage(num)) {
+                throw new Error('Cannot set the current page out of bounds');
+            }
+
+            this.previousPageNum = this.currentPageNum;
+            this.currentPageNum = num;
+
+            return this.trigger.apply(this, ['change:currentpage', this].concat(
+                [].slice.call(this.getCurrentPageStats())));
+        },
+
+        // Gets or fetches the page for num, if options.active is true
+        // the page is set as the current one.
+        // If the page does not already exist, the model is created, added
+        // to the collected and fetched. Once fetched, the page is resolved.
+        getPage: function(num, options) {
+            if (!options) options = {};
+
+            if (!this.hasPage(num)) return;
+
+            var model = this.get(num);
+            if (!model && options.load !== false) {
+                model = new this.model({
+                    page_num: num       // jshint ignore:line
+                });
+
+                model.pending = true;
+                this.add(model);
+
+                model.fetch().done(function() {
+                    delete model.pending;
+                });
+            }
+
+            if (model && options.active !== false) {
+                this.setCurrentPage(num);
+            }
+
+            return model;
+        },
+
+        getCurrentPage: function(options) {
+            return this.getPage(this.currentPageNum, options);
+        },
+
+        getFirstPage: function(options) {
+            return this.getPage(1, options);
+        },
+
+        getLastPage: function(options) {
+            return this.getPage(this.numPages, options);
+        },
+
+        // Gets the next page relative to the current page
+        getNextPage: function(num, options) {
+            if (!num) num = this.currentPageNum;
+
+            return this.getPage(num + 1, options);
+        },
+
+        // Gets the previous page relative to the current page
+        getPreviousPage: function(num, options) {
+            if (!num) num = this.currentPageNum;
+
+            return this.getPage(num - 1, options);
+        },
+
+        // Checks if the current page is pending. Use of this check prevents
+        // stampeding the server with requests if the current one has not
+        // responded yet.
+        pageIsLoading: function(num) {
+            if (!num) num = this.currentPageNum;
+
+            var page = this.getPage(num, {
+                active: false,
+                load: false
+            });
+
+            if (page) {
+                return !!page.pending;
+            }
+        },
+
+        getPageCount: function() {
+            return this.numPages;
+        },
+
+        getCurrentPageStats: function() {
+            return [
+                this.currentPageNum, {
+                    previous: this.previousPageNum,
+                    first: this.currentPageNum === 1,
+                    last: this.currentPageNum === this.numPages
+                }
+            ];
         }
-      ];
-    }
-  };
-  Page = (function(_super) {
-    __extends(Page, _super);
 
-    function Page() {
-      return Page.__super__.constructor.apply(this, arguments);
-    }
-
-    Page.prototype.idAttribute = 'page_num';
-
-    Page.prototype.url = function() {
-      var url;
-      url = _.result(this.collection, 'url');
-      return c.utils.alterUrlParams(url, {
-        page: this.id,
-        per_page: this.collection.perPage
-      });
     };
 
-    return Page;
+    // Provides the facility for fetching it's own clice of content based on
+    // the collection it's contained in.
+    var Page = Backbone.Model.extend({
+        idAttribute: 'page_num',
 
-  })(Backbone.Model);
-  Paginator = (function(_super) {
-    __extends(Paginator, _super);
+        url: function() {
+            var url = _.result(this.collection, 'url');
+            return c.utils.alterUrlParams(url, {
+                page: this.id,
+                per_page: this.collection.perPage   // jshint ignore:line
+            });
+        }
+    });
 
-    function Paginator() {
-      return Paginator.__super__.constructor.apply(this, arguments);
-    }
+    // Paginator collection for managing its pages
+    var Paginator = Backbone.Collection.extend({
+        model: Page
+    });
 
-    Paginator.prototype.model = Page;
+    _.extend(Paginator.prototype, PaginatorMixin);
 
-    return Paginator;
+    return {
+        PaginatorMixin: PaginatorMixin,
+        Page: Page,
+        Paginator: Paginator
+    };
 
-  })(Backbone.Collection);
-  _.extend(Paginator.prototype, PaginatorMixin);
-  return {
-    PaginatorMixin: PaginatorMixin,
-    Page: Page,
-    Paginator: Paginator
-  };
 });

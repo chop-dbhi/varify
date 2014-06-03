@@ -1,50 +1,58 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['underscore', 'backbone'], function(_, Backbone) {
-  var StatCollection, StatModel;
-  StatModel = (function(_super) {
-    __extends(StatModel, _super);
+define([
+    'backbone'
+], function(Backbone) {
 
-    function StatModel() {
-      return StatModel.__super__.constructor.apply(this, arguments);
-    }
+    var StatModel = Backbone.Model.extend({
+        idAttribute: 'key'
+    });
 
-    StatModel.prototype.idAttribute = 'key';
+    var StatCollection = Backbone.Collection.extend({
+        model: StatModel,
 
-    return StatModel;
+        parse: function(attrs) {
+            var stats = [];
 
-  })(Backbone.Model);
-  StatCollection = (function(_super) {
-    __extends(StatCollection, _super);
+            var key, value;
+            for (key in attrs) {
+                value = attrs[key];
 
-    function StatCollection() {
-      return StatCollection.__super__.constructor.apply(this, arguments);
-    }
+                if (key.charAt(0) === '_') {
+                    continue;
+                }
 
-    StatCollection.prototype.model = StatModel;
+                stats.push({
+                    key: key,
+                    value: value
+                });
+            }
 
-    StatCollection.prototype.parse = function(attrs) {
-      var key, stats, value;
-      stats = [];
-      for (key in attrs) {
-        value = attrs[key];
-        if (key.slice(0, 1) === '_') {
-          continue;
+            // Reverse the order of 'min' and 'max'. If changing the order
+            // of other stats are required, put them into this array in the
+            // order required.
+            var order = ['min', 'max'];
+
+            stats.sort(function(a,b) {
+                var ai = order.indexOf(a.key),
+                    bi = order.indexOf(b.key);
+
+                // If both defined, compare
+                if (ai >= 0 && bi >= 0) return ai - bi;
+                // Sort lexicographically otherwise
+                if (ai < 0 && bi < 0) return a.key > b.key;
+                // If one of them defined, promote
+                if (ai >= 0) return -1;
+                return 1;
+            });
+
+            return stats;
         }
-        stats.push({
-          key: key,
-          value: value
-        });
-      }
-      return stats;
+    });
+
+    return {
+        StatModel: StatModel,
+        StatCollection: StatCollection
     };
 
-    return StatCollection;
-
-  })(Backbone.Collection);
-  return {
-    StatModel: StatModel,
-    StatCollection: StatCollection
-  };
 });

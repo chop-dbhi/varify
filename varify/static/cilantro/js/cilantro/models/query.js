@@ -1,2 +1,2 @@
-define(["./base"],function(e){var r=e.Model.extend({parse:function(r,s){return r&&!r.shared_users&&(r.shared_users=[]),e.Model.prototype.parse.call(this,r,s)}}),s=e.Collection.extend({model:r});return{Query:r,Queries:s}});
-//# sourceMappingURL=query.js.map
+define(["./base","../core","./context","./view"],function(t,e,i,n){var s=t.Model.extend({constructor:function(e,s){e=e||{},this.context=new i.Context({json:e.context_json}),this.view=new n.ViewModel({json:e.view_json}),t.Model.prototype.constructor.call(this,e,s)},parse:function(e,i){return e&&(e&&!e.shared_users&&(e.shared_users=[]),this.context.set({json:e.context_json}),this.view.set({json:e.view_json})),t.Model.prototype.parse.call(this,e,i)}}),o=t.Collection.extend({model:s});return{Query:s,Queries:o}});
+//@ sourceMappingURL=query.js.map

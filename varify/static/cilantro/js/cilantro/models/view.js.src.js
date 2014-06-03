@@ -1,155 +1,148 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['underscore', 'backbone', '../core', './base'], function(_, Backbone, c, base) {
-  var Facet, Facets, ViewCollection, ViewModel;
-  Facet = (function(_super) {
-    __extends(Facet, _super);
+define([
+    'underscore',
+    'backbone',
+    '../core',
+    './base'
+], function(_, Backbone, c, base) {
 
-    function Facet() {
-      return Facet.__super__.constructor.apply(this, arguments);
-    }
+    var Facet = Backbone.Model.extend({
+        idAttribute: 'concept'
+    });
 
-    Facet.prototype.idAttribute = 'concept';
+    var Facets = Backbone.Collection.extend({
+        model: Facet
+    });
 
-    return Facet;
+    var ViewModel = base.Model.extend({
+        constructor: function() {
+            this.facets = new Facets();
 
-  })(Backbone.Model);
-  Facets = (function(_super) {
-    __extends(Facets, _super);
+            // HACK: Convert columns in facets with the specific sets of
+            // models. This is until the facets API is supported on the server.
+            this.on('change:json', function(model, value) {
+                return this.jsonToFacets(value);
+            });
 
-    function Facets() {
-      return Facets.__super__.constructor.apply(this, arguments);
-    }
+            base.Model.prototype.constructor.apply(this, arguments);
+        },
 
-    Facets.prototype.model = Facet;
+        initialize: function() {
+            var _this = this;
 
-    return Facets;
+            this.on('request', function() {
+                return c.trigger(c.VIEW_SYNCING, this);
+            });
 
-  })(Backbone.Collection);
-  ViewModel = (function(_super) {
-    __extends(ViewModel, _super);
+            this.on('sync', function(model, attrs, options) {
+                if (!options) options = {};
 
-    function ViewModel() {
-      this.facets = new Facets;
-      this.on('change:json', function(model, value, options) {
-        return this.jsonToFacets(value);
-      });
-      ViewModel.__super__.constructor.apply(this, arguments);
-    }
+                if (options.silent !== true) {
+                    return c.trigger(c.VIEW_SYNCED, this, 'success');
+                }
+            });
 
-    ViewModel.prototype.initialize = function() {
-      this.on('request', function() {
-        return c.trigger(c.VIEW_SYNCING, this);
-      });
-      this.on('sync', function(model, attrs, options) {
-        if (options == null) {
-          options = {};
+            this.on('error', function() {
+                return c.trigger(c.VIEW_SYNCED, this, 'error');
+            });
+
+            this.on('change', function() {
+                return c.trigger(c.VIEW_CHANGED, this);
+            });
+
+            return c.on(c.VIEW_SAVE, function(id) {
+                if (_this.id === id || !id && _this.isSession()) {
+                    return _this.save();
+                }
+            });
+        },
+
+        isSession: function() {
+            return this.get('session');
+        },
+
+        isArchived: function() {
+            return this.get('archived');
+        },
+
+        toJSON: function() {
+            var attrs = base.Model.prototype.toJSON.apply(this, arguments);
+            attrs.json = this.facetsToJSON();
+            return attrs;
+        },
+
+        parse: function(attrs) {
+            base.Model.prototype.parse.apply(this, arguments);
+            this.jsonToFacets(attrs.json);
+            return attrs;
+        },
+
+        jsonToFacets: function(json) {
+            if (!json) json = {};
+
+            // Implies this is an array of object, set directly. This is for
+            // forwards compatibility.
+            if (_.isArray(json)) {
+                this.facets.reset(json);
+                return;
+            }
+
+            var attrs, id, order;
+            var models = [];
+            var columns = json.columns || [];
+            var ordering = json.ordering || [];
+
+            for (var i = 0; i < columns.length; i++) {
+                id = columns[i];
+                attrs = {
+                    concept: id
+                };
+
+                for (var j = 0; j < ordering.length; j++) {
+                    order = ordering[j];
+
+                    if (id === order[0]) {
+                        attrs.sort = order[1];
+                        attrs.sort_index = j;       // jshint ignore:line
+                    }
+                }
+
+                models.push(attrs);
+            }
+
+            return this.facets.reset(models);
+        },
+
+        facetsToJSON: function() {
+            var json = {
+                ordering: [],
+                columns: []
+            };
+
+            this.facets.each(function(model) {
+                var direction, index, sort;
+
+                json.columns.push(model.get('concept'));
+
+                if ((direction = model.get('sort'))) {
+                    index = model.get('sort_index');
+                    sort = [model.get('concept'), direction];
+                    return json.ordering.splice(index, 0, sort);
+                }
+            });
+
+            return json;
         }
-        if (options.silent !== true) {
-          return c.trigger(c.VIEW_SYNCED, this, 'success');
-        }
-      });
-      this.on('error', function() {
-        return c.trigger(c.VIEW_SYNCED, this, 'error');
-      });
-      this.on('change', function() {
-        return c.trigger(c.VIEW_CHANGED, this);
-      });
-      return c.on(c.VIEW_SAVE, (function(_this) {
-        return function(id) {
-          if (_this.id === id || !id && _this.isSession()) {
-            return _this.save();
-          }
-        };
-      })(this));
+    });
+
+    var ViewCollection = base.SessionCollection.extend({
+        model: ViewModel
+    });
+
+    return {
+        ViewModel: ViewModel,
+        ViewCollection: ViewCollection
     };
 
-    ViewModel.prototype.isSession = function() {
-      return this.get('session');
-    };
-
-    ViewModel.prototype.isArchived = function() {
-      return this.get('archived');
-    };
-
-    ViewModel.prototype.toJSON = function() {
-      var attrs;
-      attrs = ViewModel.__super__.toJSON.apply(this, arguments);
-      attrs.json = this.facetsToJSON();
-      return attrs;
-    };
-
-    ViewModel.prototype.parse = function(attrs) {
-      ViewModel.__super__.parse.apply(this, arguments);
-      this.jsonToFacets(attrs.json);
-      return attrs;
-    };
-
-    ViewModel.prototype.jsonToFacets = function(json) {
-      var attrs, columns, i, id, models, ordering, sort, _i, _id, _j, _len, _len1, _ref;
-      if (json == null) {
-        json = {};
-      }
-      if (_.isArray(json)) {
-        this.facets.reset(json);
-        return;
-      }
-      models = [];
-      columns = json.columns || [];
-      ordering = json.ordering || [];
-      for (_i = 0, _len = columns.length; _i < _len; _i++) {
-        id = columns[_i];
-        attrs = {
-          concept: id
-        };
-        for (i = _j = 0, _len1 = ordering.length; _j < _len1; i = ++_j) {
-          _ref = ordering[i], _id = _ref[0], sort = _ref[1];
-          if (id === _id) {
-            attrs.sort = sort;
-            attrs.sort_index = i;
-          }
-        }
-        models.push(attrs);
-      }
-      return this.facets.reset(models);
-    };
-
-    ViewModel.prototype.facetsToJSON = function() {
-      var json;
-      json = {
-        ordering: [],
-        columns: []
-      };
-      this.facets.each(function(model) {
-        var direction, index, sort;
-        json.columns.push(model.get('concept'));
-        if ((direction = model.get('sort'))) {
-          index = model.get('sort_index');
-          sort = [model.get('concept'), direction];
-          return json.ordering.splice(index, 0, sort);
-        }
-      });
-      return json;
-    };
-
-    return ViewModel;
-
-  })(base.Model);
-  ViewCollection = (function(_super) {
-    __extends(ViewCollection, _super);
-
-    function ViewCollection() {
-      return ViewCollection.__super__.constructor.apply(this, arguments);
-    }
-
-    ViewCollection.prototype.model = ViewModel;
-
-    return ViewCollection;
-
-  })(base.SessionCollection);
-  return {
-    ViewModel: ViewModel,
-    ViewCollection: ViewCollection
-  };
 });

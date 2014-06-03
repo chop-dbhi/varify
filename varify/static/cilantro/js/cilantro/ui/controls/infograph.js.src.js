@@ -1,11 +1,11 @@
 var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
+  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; },
   __slice = [].slice;
 
 define(['underscore', 'backbone', 'marionette', './base', '../button'], function(_, Backbone, Marionette, base, button) {
-  var Bar, BarChartToolbar, BarCollection, BarModel, Bars, InfographControl, sortModelAttr;
+  var Bar, BarChartToolbar, BarCollection, BarModel, Bars, InfographControl, sortModelAttr, _ref, _ref1, _ref2, _ref3, _ref4;
   sortModelAttr = function(attr) {
     return function(model) {
       var value;
@@ -20,7 +20,8 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     __extends(BarModel, _super);
 
     function BarModel() {
-      return BarModel.__super__.constructor.apply(this, arguments);
+      _ref = BarModel.__super__.constructor.apply(this, arguments);
+      return _ref;
     }
 
     BarModel.prototype.parse = function(attrs) {
@@ -35,7 +36,8 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     __extends(BarCollection, _super);
 
     function BarCollection() {
-      return BarCollection.__super__.constructor.apply(this, arguments);
+      _ref1 = BarCollection.__super__.constructor.apply(this, arguments);
+      return _ref1;
     }
 
     BarCollection.prototype.model = BarModel;
@@ -63,7 +65,9 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     __extends(Bar, _super);
 
     function Bar() {
-      return Bar.__super__.constructor.apply(this, arguments);
+      this.onExcludedChange = __bind(this.onExcludedChange, this);
+      _ref2 = Bar.__super__.constructor.apply(this, arguments);
+      return _ref2;
     }
 
     Bar.prototype.className = 'info-bar';
@@ -75,7 +79,8 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     };
 
     Bar.prototype.ui = {
-      bar: '.bar'
+      bar: '.bar',
+      barLabel: '.bar-label'
     };
 
     Bar.prototype.events = {
@@ -84,8 +89,11 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
 
     Bar.prototype.modelEvents = {
       'change:selected': 'setSelected',
-      'change:visible': 'setVisible',
-      'change:excluded': 'setExcluded'
+      'change:visible': 'setVisible'
+    };
+
+    Bar.prototype.initialize = function() {
+      return this.listenTo(this.model.collection, 'change:excluded', this.onExcludedChange);
     };
 
     Bar.prototype.serializeData = function() {
@@ -103,7 +111,13 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     };
 
     Bar.prototype.onRender = function() {
-      return this.setSelected(this.model, !!this.model.get('selected'));
+      this.setSelected(this.model, !!this.model.get('selected'));
+      if (this.ui.barLabel.html() === '') {
+        this.ui.barLabel.html('(empty)');
+      }
+      if (this.ui.barLabel.html() === 'null') {
+        return this.ui.barLabel.html('(null)');
+      }
     };
 
     Bar.prototype.getPercentage = function() {
@@ -114,8 +128,8 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
       return this.model.set('selected', !this.model.get('selected'));
     };
 
-    Bar.prototype.setExcluded = function(model, value) {
-      return this.$el.toggleClass('excluded', value);
+    Bar.prototype.onExcludedChange = function() {
+      return this.$el.toggleClass('excluded', this.model.get('excluded'));
     };
 
     Bar.prototype.setSelected = function(model, value) {
@@ -142,7 +156,8 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     __extends(Bars, _super);
 
     function Bars() {
-      return Bars.__super__.constructor.apply(this, arguments);
+      _ref3 = Bars.__super__.constructor.apply(this, arguments);
+      return _ref3;
     }
 
     Bars.prototype.className = 'info-bar-chart';
@@ -162,36 +177,34 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     };
 
     Bars.prototype.initialize = function() {
+      var _this = this;
       this.wait();
-      return this.model.distribution((function(_this) {
-        return function(resp) {
-          _this.collection.reset(resp.data, {
-            parse: true
-          });
-          return _this.ready();
-        };
-      })(this));
+      return this.model.distribution(function(resp) {
+        _this.collection.reset(resp.data, {
+          parse: true
+        });
+        return _this.ready();
+      });
     };
 
     Bars.prototype.calcTotal = function() {
-      var count, total, _i, _len, _ref;
+      var count, total, _i, _len, _ref4;
       total = 0;
-      _ref = this.collection.pluck('count');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        count = _ref[_i];
+      _ref4 = this.collection.pluck('count');
+      for (_i = 0, _len = _ref4.length; _i < _len; _i++) {
+        count = _ref4[_i];
         total += count;
       }
       return total;
     };
 
     Bars.prototype.sortChildren = function(collection, options) {
-      this.collection.each((function(_this) {
-        return function(model) {
-          var view;
-          view = _this.children.findByModel(model);
-          return _this.$el.append(view.el);
-        };
-      })(this));
+      var _this = this;
+      this.collection.each(function(model) {
+        var view;
+        view = _this.children.findByModel(model);
+        return _this.$el.append(view.el);
+      });
     };
 
     Bars.prototype.getField = function() {
@@ -221,8 +234,8 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
         values = [];
       }
       this.collection.each(function(model) {
-        var _ref;
-        return model.set('selected', (_ref = model.get('value'), __indexOf.call(values, _ref) >= 0));
+        var _ref4;
+        return model.set('selected', (_ref4 = model.get('value'), __indexOf.call(values, _ref4) >= 0));
       });
     };
 
@@ -243,7 +256,8 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
 
     function BarChartToolbar() {
       this.toggle = __bind(this.toggle, this);
-      return BarChartToolbar.__super__.constructor.apply(this, arguments);
+      _ref4 = BarChartToolbar.__super__.constructor.apply(this, arguments);
+      return _ref4;
     }
 
     BarChartToolbar.prototype.className = 'navbar navbar-toolbar';
@@ -337,12 +351,13 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
     };
 
     BarChartToolbar.prototype.excludeCheckboxChanged = function() {
-      this.collection.each((function(_this) {
-        return function(model) {
-          return model.set('excluded', _this.ui.excludeCheckbox.prop('checked'));
-        };
-      })(this));
-      this.collection.trigger('change');
+      var _this = this;
+      this.collection.each(function(model) {
+        return model.set('excluded', _this.ui.excludeCheckbox.prop('checked'), {
+          silent: true
+        });
+      });
+      this.collection.trigger('change:excluded');
     };
 
     return BarChartToolbar;
@@ -376,7 +391,8 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
 
     function InfographControl(options) {
       this.toggleToolbar = __bind(this.toggleToolbar, this);
-      var method, _fn, _i, _len, _ref;
+      var method, _fn, _i, _len, _ref5,
+        _this = this;
       if (options.collection == null) {
         options.collection = new BarCollection;
       }
@@ -385,18 +401,16 @@ define(['underscore', 'backbone', 'marionette', './base', '../button'], function
         model: this.model,
         collection: this.collection
       });
-      _ref = ['set', 'get', 'when', 'ready', 'wait'];
-      _fn = (function(_this) {
-        return function(method) {
-          return _this[method] = function() {
-            var args, _ref1;
-            args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-            return (_ref1 = _this.barsControl)[method].apply(_ref1, args);
-          };
+      _ref5 = ['set', 'get', 'when', 'ready', 'wait'];
+      _fn = function(method) {
+        return _this[method] = function() {
+          var args, _ref6;
+          args = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          return (_ref6 = _this.barsControl)[method].apply(_ref6, args);
         };
-      })(this);
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        method = _ref[_i];
+      };
+      for (_i = 0, _len = _ref5.length; _i < _len; _i++) {
+        method = _ref5[_i];
         _fn(method);
       }
       this.listenTo(this.barsControl, 'all', function() {

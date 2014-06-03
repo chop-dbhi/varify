@@ -3,12 +3,13 @@ var __hasProp = {}.hasOwnProperty,
   __slice = [].slice;
 
 define(['underscore', 'marionette', './base'], function(_, Marionette, base) {
-  var EmptyPage, ListingPage, LoadingPage, Page, PageRoll, Paginator;
+  var EmptyPage, ListingPage, LoadingPage, Page, PageRoll, Paginator, _ref, _ref1, _ref2, _ref3, _ref4, _ref5;
   EmptyPage = (function(_super) {
     __extends(EmptyPage, _super);
 
     function EmptyPage() {
-      return EmptyPage.__super__.constructor.apply(this, arguments);
+      _ref = EmptyPage.__super__.constructor.apply(this, arguments);
+      return _ref;
     }
 
     EmptyPage.prototype.message = 'No page results';
@@ -20,7 +21,8 @@ define(['underscore', 'marionette', './base'], function(_, Marionette, base) {
     __extends(LoadingPage, _super);
 
     function LoadingPage() {
-      return LoadingPage.__super__.constructor.apply(this, arguments);
+      _ref1 = LoadingPage.__super__.constructor.apply(this, arguments);
+      return _ref1;
     }
 
     LoadingPage.prototype.message = 'Loading page...';
@@ -32,7 +34,8 @@ define(['underscore', 'marionette', './base'], function(_, Marionette, base) {
     __extends(Paginator, _super);
 
     function Paginator() {
-      return Paginator.__super__.constructor.apply(this, arguments);
+      _ref2 = Paginator.__super__.constructor.apply(this, arguments);
+      return _ref2;
     }
 
     Paginator.prototype.template = 'paginator';
@@ -124,7 +127,8 @@ define(['underscore', 'marionette', './base'], function(_, Marionette, base) {
     __extends(Page, _super);
 
     function Page() {
-      return Page.__super__.constructor.apply(this, arguments);
+      _ref3 = Page.__super__.constructor.apply(this, arguments);
+      return _ref3;
     }
 
     return Page;
@@ -134,7 +138,8 @@ define(['underscore', 'marionette', './base'], function(_, Marionette, base) {
     __extends(ListingPage, _super);
 
     function ListingPage() {
-      return ListingPage.__super__.constructor.apply(this, arguments);
+      _ref4 = ListingPage.__super__.constructor.apply(this, arguments);
+      return _ref4;
     }
 
     ListingPage.prototype.itemView = Page;
@@ -155,7 +160,8 @@ define(['underscore', 'marionette', './base'], function(_, Marionette, base) {
     __extends(PageRoll, _super);
 
     function PageRoll() {
-      return PageRoll.__super__.constructor.apply(this, arguments);
+      _ref5 = PageRoll.__super__.constructor.apply(this, arguments);
+      return _ref5;
     }
 
     PageRoll.prototype.options = {

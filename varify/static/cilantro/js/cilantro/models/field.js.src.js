@@ -1,147 +1,161 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['underscore', 'backbone', '../core', './base', './stats'], function(_, Backbone, c, base, stats) {
-  var FieldCollection, FieldModel, getLogicalType;
-  getLogicalType = function(attrs) {
-    var type;
-    if ((type = c.config.get("fields.instances." + attrs.id + ".type"))) {
-      return type;
-    }
-    if (attrs.logical_type != null) {
-      return attrs.logical_type;
-    }
-    type = attrs.simple_type;
-    if (attrs.enumerable || type === 'boolean') {
-      return 'choice';
-    }
-    return type;
-  };
-  FieldModel = (function(_super) {
-    __extends(FieldModel, _super);
+define([
+    'underscore',
+    'backbone',
+    '../core',
+    './base',
+    './stats'
+], function(_, Backbone, c, base, stats) {
 
-    function FieldModel() {
-      FieldModel.__super__.constructor.apply(this, arguments);
-      if (this.links.stats) {
-        this.stats = new stats.StatCollection;
-        this.stats.url = (function(_this) {
-          return function() {
-            return _this.links.stats;
-          };
-        })(this);
-      }
-    }
+    var getLogicalType = function(attrs) {
+        // Takes precedence since it is specified explicitly.
+        var type = c.config.get('fields.instances.' + attrs.id + '.type');
 
-    FieldModel.prototype.parse = function() {
-      var attrs;
-      this._cache = {};
-      attrs = FieldModel.__super__.parse.apply(this, arguments);
-      attrs.type = getLogicalType(attrs);
-      return attrs;
-    };
+        if (type) return type;
 
-    FieldModel.prototype.distribution = function(handler, cache) {
-      if (cache == null) {
-        cache = true;
-      }
-      if (this.links.distribution == null) {
-        handler();
-      }
-      if (cache && (this._cache.distribution != null)) {
-        handler(this._cache.distribution);
-      } else {
-        Backbone.ajax({
-          url: this.links.distribution,
-          dataType: 'json',
-          success: (function(_this) {
-            return function(resp) {
-              _this._cache.distribution = cache ? resp : null;
-              return handler(resp);
-            };
-          })(this)
-        });
-      }
-    };
-
-    FieldModel.prototype.values = function(params, handler, cache) {
-      var deferred;
-      if (cache == null) {
-        cache = true;
-      }
-      if (typeof params === 'function') {
-        handler = params;
-        cache = handler;
-        params = {};
-      } else if (params) {
-        cache = false;
-        if (typeof params === 'string') {
-          params = {
-            query: params
-          };
+        // Fallback to the upstream type defined on the field.
+        if (attrs.type) {
+            return attrs.type;
         }
-      }
-      if (this.links.values == null) {
-        handler();
-      }
-      deferred = Backbone.$.Deferred();
-      if (handler) {
-        deferred.done(handler);
-      }
-      if (cache && (this._cache.values != null)) {
-        deferred.resolve(this._cache.values);
-      } else {
-        Backbone.ajax({
-          url: this.links.values,
-          data: params,
-          dataType: 'json',
-          success: (function(_this) {
-            return function(resp) {
-              if (cache) {
-                _this._cache.values = resp;
-              }
-              return deferred.resolve(resp);
-            };
-          })(this),
-          error: (function(_this) {
-            return function() {
-              return deferred.reject();
-            };
-          })(this)
-        });
-      }
-      return deferred.promise();
+
+        // Infer/select a logical type based on the field's properties.
+        type = attrs.simple_type;   // jshint ignore:line
+
+        if (attrs.enumerable || type === 'boolean') {
+            return 'choice';
+        }
+
+        return type;
     };
 
-    return FieldModel;
+    var FieldModel = base.Model.extend({
+        constructor: function() {
+            base.Model.prototype.constructor.apply(this, arguments);
 
-  })(base.Model);
-  FieldCollection = (function(_super) {
-    __extends(FieldCollection, _super);
-
-    function FieldCollection() {
-      return FieldCollection.__super__.constructor.apply(this, arguments);
-    }
-
-    FieldCollection.prototype.model = FieldModel;
-
-    FieldCollection.prototype.search = function(query, handler) {
-      return Backbone.ajax({
-        url: _.result(this, 'url'),
-        data: {
-          query: query
+            var _this = this;
+            if (this.links.stats) {
+                this.stats = new stats.StatCollection();
+                this.stats.url = function() {
+                    return _this.links.stats;
+                };
+            }
         },
-        dataType: 'json',
-        success: function(resp) {
-          return handler(resp);
+
+        parse: function() {
+            this._cache = {};
+
+            var attrs = base.Model.prototype.parse.apply(this, arguments);
+            attrs.type = getLogicalType(attrs);
+
+            return attrs;
+        },
+
+        distribution: function(handler, cache) {
+            if (cache !== false) cache = true;
+
+            if (this.links.distribution === undefined) {
+                handler();
+                return;
+            }
+
+            if (cache && (this._cache.distribution !== undefined)) {
+                handler(this._cache.distribution);
+            }
+            else {
+                var _this = this;
+                Backbone.ajax({
+                    url: this.links.distribution,
+                    dataType: 'json',
+                    success: function(resp) {
+                        if (cache) {
+                            _this._cache.distribution = resp;
+                        }
+                        return handler(resp);
+                    }
+                });
+            }
+        },
+
+        values: function(params, handler, cache) {
+            if (cache !== false) cache = true;
+
+            // Shift arguments if params is not supplied.
+            if (typeof params === 'function') {
+                handler = params;
+                cache = handler;
+                params = {};
+            }
+            // Do not cache query-based lookups.
+            else if (params) {
+                cache = false;
+                // Support previous behavior of passing a query string.
+                if (typeof params === 'string') {
+                    params = {
+                        query: params
+                    };
+                }
+            }
+
+            // Field does not support values, call the handler without
+            // a response.
+            if (!this.links.values) {
+                handler();
+                return;
+            }
+
+            var deferred = Backbone.$.Deferred();
+
+            // Register handler to facilitate previous behavior.
+            if (handler) {
+                deferred.done(handler);
+            }
+
+            // Use cache if available.
+            if (cache && (this._cache.values !== undefined)) {
+                deferred.resolve(this._cache.values);
+            }
+            else {
+                var _this = this;
+
+                Backbone.ajax({
+                    url: this.links.values,
+                    data: params,
+                    dataType: 'json',
+                    success: function(resp) {
+                        if (cache) {
+                            _this._cache.values = resp;
+                        }
+                        deferred.resolve(resp);
+                    },
+                    error: function() {
+                        deferred.reject();
+                    }
+                });
+            }
+
+            return deferred.promise();
         }
-      });
+    });
+
+    var FieldCollection = base.Collection.extend({
+        model: FieldModel,
+
+        search: function(query, handler) {
+            Backbone.ajax({
+                url: _.result(this, 'url'),
+                data: { query: query },
+                dataType: 'json',
+                success: function(resp) {
+                    handler(resp);
+                }
+            });
+        }
+    });
+
+    return {
+        FieldModel: FieldModel,
+        FieldCollection: FieldCollection
     };
 
-    return FieldCollection;
-
-  })(base.Collection);
-  return {
-    FieldModel: FieldModel,
-    FieldCollection: FieldCollection
-  };
 });
