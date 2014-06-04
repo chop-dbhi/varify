@@ -1,8 +1,8 @@
 import os
-from global_settings import *   # noqa
+from app import *   # noqa
 
 try:
-    from local_settings import *    # noqa
+    from local import *    # noqa
 except ImportError:
     import warnings
     warnings.warn(

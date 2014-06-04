@@ -1,12 +1,11 @@
 import os
 
 # Import global settings to make it easier to extend settings.
-from django.conf.global_settings import *  # noqa
+from django.conf.global_settings import *
 
 # Import the project module to calculate directories relative to the module
 # location.
-PROJECT_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                            '../..')
+PROJECT_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
 
 # List all Django apps here. Note that standard Python libraries should not
 # be added to this list since Django will not recognize them as apps anyway.
@@ -41,6 +40,9 @@ INSTALLED_APPS = (
 
     'varify.pipeline',
 
+    'varify',
+    'varify.chop',
+
     'sts',
     'haystack',
     'south',
@@ -54,19 +56,21 @@ INSTALLED_APPS = (
 
     'serrano',
     'avocado',
+    'avocado.events',
     'avocado.export',
     'modeltree',
     'guardian',
     'reversion',
 )
 
-
 #
 # ADMINISTRATIVE
 #
 
 # Admins receive any error messages by email if DEBUG is False
-ADMINS = ()
+ADMINS = (
+    ('Don Naegely', 'naegelyd@email.chop.edu')
+)
 
 # Managers receive broken link emails if SEND_BROKEN_LINK_EMAILS is True
 MANAGERS = ADMINS
@@ -92,7 +96,6 @@ DATABASES = {}
 # desirable to create all the Harvest application tables in this database, but
 # rather have a separate database for this purpose. That way the "data"
 # database does not need to be changed.
-
 DATABASE_ROUTERS = {}
 
 
@@ -145,8 +148,27 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(PROJECT_PATH, '_site/static')
 
 # URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+# Bust the cache whenenver new versions occur. By reading the latest commit id
+# and using it in the static url path, we will force client browsers to pull
+# new versions of JS, CSS, and HTML files. When a new version is pulled down
+# and the server is restarted, this STATIC_URL path will change to include
+# the new commit id which will invalidate the cached static files on the
+# client-side on the next request. If the commit id cannot be read for
+# whatever reason, the "unix time"(since epoch) is used to invalidate the
+# client-side cache.
+fp = os.path.join(
+    os.path.dirname(__file__), '..', '..', '.git', 'refs', 'heads', 'master')
+cache_id = ""
+if os.path.exists(fp):
+    f = open(fp, 'r')
+    cache_id = str(f.read()).strip()[0:10]
+
+if cache_id == "":
+    # If we can't get the commit id then use the "unix time"
+    #   http://en.wikipedia.org/wiki/Unix_time
+    cache_id = int(time.mktime(datetime.datetime.now().timetuple()))
+
+STATIC_URL = '/static/{}/'.format(cache_id)
 
 # URL prefix for admin static files -- CSS, JavaScript and images.
 # Make sure to use a trailing slash.
@@ -203,7 +225,8 @@ SITEAUTH_ALLOW_URLS = (
     r'^log(in|out)/',
     r'^password/reset/',
     r'^(static|support|register|verify)/',
-    r'^api/',
+    r'^api/samples/(?P<project>.+)/(?P<batch>.+)/(?P<sample>.+)/$',
+    r'^api/chop/results/mrn/$',
 )
 
 #
@@ -213,14 +236,15 @@ SITEAUTH_ALLOW_URLS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'tracking.middleware.VisitorTrackingMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'siteauth.middleware.SiteAuthenticationMiddleware',
+    'serrano.middleware.SessionMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'reversion.middleware.RevisionMiddleware',
-    'serrano.middleware.SessionMiddleware',
-    'siteauth.middleware.SiteAuthenticationMiddleware',
 )
 
 
@@ -228,9 +252,10 @@ MIDDLEWARE_CLASSES = (
 # EMAIL
 #
 
+SUPPORT_EMAIL = 'cbmisupport@email.chop.edu'
+DEFAULT_FROM_EMAIL = 'cbmisupport@email.chop.edu'
 EMAIL_SUBJECT_PREFIX = '[Varify] '
-NO_REPLY_EMAIL = 'noreply@example.com'
-SUPPORT_EMAIL = 'support@example.com'
+
 
 #
 # LOGGING
@@ -293,14 +318,31 @@ CACHE_MIDDLEWARE_KEY_PREFIX = ''
 # AUTHENTICATION
 #
 
+# Two additional auth backends for email-based (rather than username)
+# and LDAP-based authentication. To use the LDAP authentication, the
+# rematining LDAP settings (see below) must be defined.
 AUTHENTICATION_BACKENDS = (
+    'varify.backends.LdapBackend',
     'django.contrib.auth.backends.ModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
 
+# LDAP Authentication Backend -- LDAP['PREBINDPW'] and LDAP['SERVER_URI']
+# must be defined in local_settings.py since they are sensitive settings.
+LDAP = {
+    'DEBUG': False,
+    'PREBINDDN': 'cn=Version Control,ou=AdminUsers,ou=Res,dc=research,dc=chop,dc=edu',
+    'SEARCHDN': 'dc=chop,dc=edu',
+    'SEARCH_FILTER': 'sAMAccountName=%s',
+}
+
 # django-registration
 REGISTRATION_ACTIVATION_DAYS = 0
 REGISTRATION_MODERATION = True
+REGISTRATION_BACKENDS = {
+    'default': 'accounts.backends.DefaultBackend',
+}
+
 
 #
 # SESSIONS AND COOKIES
@@ -309,7 +351,7 @@ REGISTRATION_MODERATION = True
 CSRF_COOKIE_NAME = 'varify_csrftoken'
 
 SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
-SESSION_COOKIE_AGE = 60 * 60  # 1 hour
+SESSION_COOKIE_AGE = 60 * 60 # 1 hour
 SESSION_COOKIE_NAME = 'varify_sessionid'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 SESSION_SAVE_EVERY_REQUEST = False
@@ -380,11 +422,11 @@ AVOCADO = {
     'METADATA_MIGRATION_APP': 'varify',
 }
 
-SERRANO = {
-    'AUTH_REQUIRED': True,
-}
 
 VARIFY_SAMPLE_DIRS = ()
+
+
+CHOP_REDCAP_API_ENDPOINT = 'https://tiu.research.chop.edu/redcap/redcap/api/'
 
 #
 # SOLVEBIO SETTINGS (django_solvebio)
