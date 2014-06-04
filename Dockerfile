@@ -6,7 +6,7 @@ MAINTAINER Le Mar Davidson "davidsonl2@email.chop.edu"
 
 # Base Harvest System Software
 RUN apt-get update -qq --fix-missing
-RUN apt-get install -y curl python-dev python-setuptools supervisor git-core libpq-dev openldap openldap-dev libldap2-dev libsasl2-dev openssl memcached
+RUN apt-get install -y curl python-dev python-setuptools supervisor git-core libpq-dev libsasl2-dev libldap2-dev openssl memcached
 RUN easy_install pip
 RUN pip install virtualenv
 RUN pip install uwsgi
@@ -60,7 +60,8 @@ RUN apt-get update
 RUN apt-get install -y scala
 
 RUN apt-get update -qq --fix-missing
-RUN apt-get install -y curl python-dev python-setuptools supervisor git-core libpq-dev libldap2-dev libsasl2-dev openssl memcached  build-essential libssl-dev redis-server ruby rubygems libxml2-dev libxslt1-dev  zlib1g-dev wget
+RUN apt-get install -y ruby
+RUN apt-get install -y curl python-dev python-setuptools supervisor git-core libpq-dev libldap2-dev libsasl2-dev openssl memcached  build-essential libssl-dev redis-server libxml2-dev libxslt1-dev  zlib1g-dev wget
 
 RUN (cd /tmp && git clone https://github.com/joyent/node.git)
 RUN (cd /tmp/node && git checkout v0.10.26 && ./configure && make && make install)
@@ -113,7 +114,6 @@ RUN /opt/ve/harvest-app/bin/pip install -r /opt/apps/harvest-app/requirements.tx
 ADD continuous_deployment/custom/scripts/start.sh /usr/local/bin/start
 
 RUN chmod +x /usr/local/bin/start
-
 
 ENV ETCD_HOST ''
 
