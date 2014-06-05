@@ -341,4 +341,4 @@ AVOCADO = {
 # eHB Plugins Configuration
 PLUGINS = {}
 
-DATABASE_ROUTERS = ['varify.routers.Router']
+DATABASE_ROUTERS = ['varify.conf.routers.NoSyncDbRouter']
