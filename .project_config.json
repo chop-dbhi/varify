@@ -1,0 +1,141 @@
+{
+  "docker_registry": "",
+  "etcd_host": "",
+  "hipchat": {
+    "auth_token": ""
+  },
+  "hosts": {
+    "localhost": {
+        "git_branch": "develop",
+        "host_string":"localhost"
+      },
+    "development": {
+        "git_branch": "develop",
+        "host_string": ""
+      },
+    "production": {
+        "git_branch": "master",
+        "host_string": ""
+      },
+    "test": {
+        "host_string": ""
+      }
+  },
+  "user": "",
+  "project_settings": {
+    "APP_NAME": "varify",
+    "development": {
+      "databases": {
+        "default": "postgresql://test@localhost:5432/varify",
+        "epic": "",
+        "nautilus": "",
+        "portal": ""
+      },
+      "django": {
+        "DEBUG": "True",
+        "EHB_USE_ENCRYPTION": "True",
+        "EMAIL_HOST": "localhost",
+        "EMAIL_PORT": "25",
+        "LDAP_PREBINDPW": "",
+        "LDAP_SERVER_URI": "",
+        "SECRET_KEY": "123CHANGEME"
+      },
+      "etl": {
+        "DB_ETL_TARGET": "",
+        "EHB_PROTOCOLS": [],
+        "REDCAP_API_KEY": "",
+        "REDCAP_URL": ""
+      }
+    },
+    "local": {
+      "databases": {
+        "default": "sqlite:///varify.db",
+        "epic": "",
+        "nautilus": "",
+        "portal": ""
+      },
+      "django": {
+        "DEBUG": true,
+        "EHB_USE_ENCRYPTION": true,
+        "EMAIL_HOST": "localhost",
+        "EMAIL_PORT": "25",
+        "LDAP_PREBINDPW": "",
+        "LDAP_SERVER_URI": "",
+        "SECRET_KEY": "changeme",
+        "FORCE_SCRIPT_NAME": "",
+        "SERVICE_CLIENT_SETTINGS" : {
+            "HOST": "",
+            "ROOT_PATH": "",
+            "SELF_ROOT_PATH": "",
+            "ISSECURE": true,
+            "APP_URL": ""
+        },
+        "PROTOCOL_PROPS": {
+            "IMMUTABLE_KEYS": {
+                "LENGTH": ,
+                "SEED":
+            },
+            "CLIENT_KEY": {
+                "KEY": "changeme"
+            }
+        }
+      },
+      "etl": {
+        "DB_ETL_TARGET": "sqlite:///varify.db",
+        "EHB_PROTOCOLS": [],
+        "REDCAP_API_KEY": "",
+        "REDCAP_URL": ""
+      }
+    },
+    "test": {
+      "databases": {
+        "default": "sqlite:///varify.db",
+        "epic": "",
+        "nautilus": "",
+        "portal": ""
+      },
+      "django": {
+        "DEBUG": true,
+        "EHB_USE_ENCRYPTION": true,
+        "EMAIL_HOST": "localhost",
+        "EMAIL_PORT": "25",
+        "LDAP_PREBINDPW": "",
+        "LDAP_SERVER_URI": "",
+        "SECRET_KEY": "changeme",
+        "FORCE_SCRIPT_NAME": "",
+        "SERVICE_CLIENT_SETTINGS" : {
+            "HOST": "",
+            "ROOT_PATH": "",
+            "SELF_ROOT_PATH": "",
+            "ISSECURE": true,
+            "APP_URL": ""
+        },
+        "PROTOCOL_PROPS": {
+            "IMMUTABLE_KEYS": {
+                "LENGTH": ,
+                "SEED":
+            },
+            "CLIENT_KEY": {
+                "KEY": "changeme"
+            }
+        }
+      },
+      "etl": {
+        "databases": {
+            "nautilus": "",
+            "target": ""
+        },
+        "ehb": {
+            "protocols": []
+        },
+        "nautilus": {
+            "study_id": ""
+        },
+        "redcap": {
+            "api_key": "",
+            "url": ""
+        }
+      }
+    }
+  }
+}
