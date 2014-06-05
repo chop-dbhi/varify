@@ -12,10 +12,6 @@ def get_env_variable(var_name):
         error_msg = "Set the %s environment variable" % var_name
         raise ImproperlyConfigured(error_msg)
 
-DEBUG = False
-
-TEMPLATE_DEBUG = DEBUG
-
 # Import the project module to calculate directories relative to the module
 # location.
 PROJECT_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)), '../..')
@@ -61,6 +57,9 @@ MANAGERS = ADMINS
 # List of IP addresses which will show debug comments
 INTERNAL_IPS = ('127.0.0.1', '::1')
 
+DEBUG = True
+
+TEMPLATE_DEBUG = DEBUG
 #
 # LOCALITY
 #
@@ -342,4 +341,4 @@ AVOCADO = {
 # eHB Plugins Configuration
 PLUGINS = {}
 
-DATABASE_ROUTERS = ['varify.routers.Router']
+DATABASE_ROUTERS = ['varify.conf.routers.NoSyncDbRouter']
