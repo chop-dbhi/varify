@@ -1,25 +1,62 @@
 import os
-from global_settings import *   # noqa
+import json
+from base import *
+import dj_database_url
 
-try:
-    from local_settings import *    # noqa
-except ImportError:
-    import warnings
-    warnings.warn(
-        'Local settings have not been found (varify.conf.local_settings)')
+curdir = os.path.dirname(os.path.abspath(__file__))
+project_settings = json.loads(open(os.path.join(curdir, '../../.project_config.json'), 'r').read())['project_settings']
 
-# FORCE_SCRIPT_NAME overrides the interpreted 'SCRIPT_NAME' provided by the
-# web server. since the URLs below are used for various purposes outside of
-# the WSGI application (static and media files), these need to be updated to
-# reflect this alteration
-if FORCE_SCRIPT_NAME:
-    ADMIN_MEDIA_PREFIX = os.path.join(
-        FORCE_SCRIPT_NAME, ADMIN_MEDIA_PREFIX[1:])
+environment = get_env_variable('APP_ENV')
 
-    STATIC_URL = os.path.join(FORCE_SCRIPT_NAME, STATIC_URL[1:])
-    MEDIA_URL = os.path.join(FORCE_SCRIPT_NAME, MEDIA_URL[1:])
+if environment not in project_settings.keys():
+    error_msg = "Settings for {0} environment not found in project configuration.".format(environment)
+    raise ImproperlyConfigured(error_msg)
 
-    LOGIN_URL = os.path.join(FORCE_SCRIPT_NAME, LOGIN_URL[1:])
-    LOGOUT_URL = os.path.join(FORCE_SCRIPT_NAME, LOGOUT_URL[1:])
-    LOGIN_REDIRECT_URL = os.path.join(
-        FORCE_SCRIPT_NAME, LOGIN_REDIRECT_URL[1:])
+# Check here to see if db details exist in env
+LINKED_DB_IP = os.environ.get('DB_PORT_5432_TCP_ADDR')
+# Check here to see if memcache details exist in env
+LINKED_MEMCACHE = os.environ.get('MC_PORT_11211_TCP_ADDR')
+
+if LINKED_DB_IP:
+    DATABASES = {
+        'default': dj_database_url.parse('postgresql://docker:docker@{0}:5432/varify'.format(LINKED_DB_IP)),
+        'portal': dj_database_url.parse(project_settings[environment]['databases']['portal']),
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.parse(project_settings[environment]['databases']['default']),
+        'portal': dj_database_url.parse(project_settings[environment]['databases']['portal']),
+    }
+
+
+if LINKED_MEMCACHE:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'LOCATION': '{0}:11211'.format(LINKED_MEMCACHE),
+            'KEY_PREFIX': 'varify',
+            'VERSION': 1,
+        }
+    }
+else:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'
+        }
+    }
+
+EMAIL_PORT = project_settings[environment]['django']['EMAIL_PORT']
+
+EMAIL_SUBJECT_PREFIX = '[brand_new Local] '
+
+DEBUG = project_settings[environment]['django']['DEBUG']
+
+FORCE_SCRIPT_NAME = project_settings[environment]['django']['FORCE_SCRIPT_NAME']
+
+SECRET_KEY = project_settings[environment]['django']['SECRET_KEY']
+
+# eHB Integration
+
+SERVICE_CLIENT_SETTINGS = project_settings[environment]['django']['SERVICE_CLIENT_SETTINGS'],
+
+PROTOCOL_PROPS = project_settings[environment]['django']['PROTOCOL_PROPS']
