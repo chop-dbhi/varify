@@ -1,0 +1,4 @@
+Computing for 3 cohorts
+"CEU trio" (30 samples)...done in 2s
+"Default" (0 samples)...done in 0s
+"World" (30 samples)...done in 2s

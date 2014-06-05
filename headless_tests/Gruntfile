@@ -1,0 +1,8 @@
+jasmine: {
+    test: {
+        src: 'varify/static/scripts/javascript/src/ui/*.js',
+        options: {
+            specs: 'headless_tests/test/*.spec.js'
+        }
+    }
+}
