@@ -18,6 +18,10 @@ django-widget-tweaks
 # Database Drivers, the Python stdlib has support for SQLite
 psycopg2==2.4.4
 
+# Use database urls
+dj-database-url==0.3.0
+etcd==2.0.2
+
 # Harvest stack
 avocado>=2.3.3,<3.0
 serrano>=2.3.4,<3.0
