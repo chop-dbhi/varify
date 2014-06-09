@@ -143,7 +143,25 @@ define([
 
 
     var KnowledgeCapture = Marionette.ItemView.extend({
-        template: 'varify/workflows/variant-set/knowledge-capture'
+        template: 'varify/workflows/variant-set/knowledge-capture',
+
+        ui: {
+            form: 'form'
+        },
+
+        initialize: function(options) {
+            this.data = {};
+
+            if (options && options.result) {
+                this.data.result = options.result;
+            }
+        },
+
+        onRender: function() {
+            if (this.data.result) {
+                this.ui.form.show();
+            }
+        }
     });
 
 
@@ -181,8 +199,14 @@ define([
         },
 
         onChangeSelection: function(model) {
+            var result = new models.Result(model.attributes, {parse: true});
+
             this.variantDetails.show(new this.regionViews.variantDetails({
-                result: new models.Result(model.attributes, {parse: true})
+                result: result
+            }));
+
+            this.knowledgeCapture.show(new this.regionViews.knowledgeCapture({
+                result: result
             }));
         },
 
@@ -203,6 +227,8 @@ define([
             this.ui.modified.text(model.get('modified'));
             this.ui.description.text(model.get('description'));
             this.variants.currentView.collection.reset(model.get('results'));
+
+            this.knowledgeCapture.show(new this.regionViews.knowledgeCapture());
         },
 
         onRender: function() {
@@ -211,8 +237,6 @@ define([
             }));
             this.variants.currentView.on('change:selection',
                                          this.onChangeSelection);
-
-            this.knowledgeCapture.show(new this.regionViews.knowledgeCapture());
         },
 
         onRouterLoad: function(router, fragment, id) {
