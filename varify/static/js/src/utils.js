@@ -116,9 +116,12 @@ define([
         /*
          * Get the route-free URL. That is, we want to remove the route at the
          * end of the URL and be left with the root URL so we can use this to
-         * construct the result URLs later on.
+         * construct the result URLs later on. For example:
+         *
+         *  http://localhost/varify/results/  becomes  http://localhost/varify/
+         *  http://localhost/variant-sets/1   becomes  http://localhost/variant-sets/
          */
-        return window.location.href.replace(/\/[^\/]*\/$/, '/');
+        return window.location.href.replace(/\/[^\/]*\/([0-9]+)?$/, '/');
     };
 
 
