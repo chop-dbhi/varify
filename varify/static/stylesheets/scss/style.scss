@@ -399,6 +399,40 @@ body, #concept-panel, #context-panel {
     .knowledge-capture-region {
         height: 50%;
         bottom: 0;
+        overflow: auto;
+
+        form {
+            margin: 10px;
+        }
+
+        .incidental-findings-radios {
+            border-right: 1px solid #a9a9a9;
+        }
+
+        .incidental-findings-label {
+            padding-top: 50px;
+        }
+
+        .radio {
+            padding-left: 30px;
+        }
+        .nested-radio {
+            padding-left: 60px;
+        }
+        .inline {
+            display: inline;
+        }
+        label.inline {
+            padding-left: 15px;
+        }
+        textarea {
+            width: 75%;
+            resize: none;
+            margin: 0;
+        }
+        select, h4 {
+            margin: 5px 0px 5px 0px;
+        }
     }
 
     .alert-error {
