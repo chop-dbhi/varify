@@ -95,9 +95,8 @@ GeneSearch = {
 
 # Limited gene information to be embedded in a Transcript
 TranscriptGene = {
-    'exclude': ['synonyms', 'transcripts'],
+    'exclude': ['synonyms', 'transcripts', 'chr', 'families', 'id', 'name'],
     'related': {
-        'chr': Chromosome,
         'articles': Article,
     }
 }
@@ -175,13 +174,12 @@ EffectImpact = {
 
 # Extended lexicon, who other properties about the effect type
 Effect = {
-    'fields': ['type', 'description', 'impact', 'region'],
+    'fields': ['type', 'impact'],
     'key_map': {
         'type': 'label',
     },
     'related': {
         'impact': EffectImpact,
-        'region': EffectRegion,
     },
     'merge': True,
 }
@@ -190,17 +188,10 @@ Effect = {
 # The variant effect has quite a few components. Since it does not include
 # Variant, it is assumed to be used in the context of a Variant
 VariantEffect = {
-    'fields': ['transcript', 'codon_change', 'amino_acid_change',
-               'functional_class', 'effect', 'hgvs_c', 'hgvs_p', 'segment'],
+    'fields': ['transcript', 'amino_acid_change',
+               'effect', 'hgvs_c', 'hgvs_p', 'segment'],
     'related': {
         'transcript': Transcript,
-        'functional_class': {
-            'fields': ['functional_class'],
-            'key_map': {
-                'functional_class': 'label',
-            },
-            'merge': True,
-        },
         'effect': Effect
     }
 }
@@ -283,9 +274,8 @@ Batch = {
 # project and batch names are merged into the sample object to
 # remove excessive nesting.
 Sample = {
-    'fields': [':pk', 'label', 'count', 'batch', 'project'],
+    'fields': [':pk', 'label', 'project'],
     'related': {
-        'batch': Batch,
         'project': Project,
     }
 }
@@ -328,7 +318,8 @@ SampleResult = {
                 'homopolymer_run', 'notes', 'spanning_deletions',
                 'strand_bias', 'mq', 'mq0', 'mq_rank_sum',
                 'phred_scaled_likelihood', 'read_pos_rank_sum', 'in_dbsnp',
-                'coverage_ref', 'coverage_alt'],
+                'coverage_ref', 'coverage_alt', 'baseq_rank_sum',
+                'genotype_quality', 'haplotype_score', 'quality_by_depth'],
     'key_map': {
         'base_counts': 'base_count_map',
         'read_depth_alt': 'coverage_alt',
