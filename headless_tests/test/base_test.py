@@ -25,10 +25,12 @@
 
 #import sys
 #sys.path.insert(0, "utils")
+import os
 import properties
 import unittest
 from selenium import webdriver
-from settings import *
+from settings import *  # noqa
+
 
 class BaseTest(unittest.TestCase):
 
@@ -49,23 +51,30 @@ class BaseTest(unittest.TestCase):
     def setUp(self):
         driver = self.config.getProperty("driver")
 
+        # Get environment variables
+        DEVELOPMENT_SERVER_HOST = os.environ['DEVELOPMENT_SERVER_HOST']
+        PHANTOMJS_PORT = os.environ['PHANTOMJS_PORT']
+        DEVELOPMENT_SERVER_PORT = os.environ['DEVELOPMENT_SERVER_PORT']
+
         # TODO Use/Make a PhantomJSDriver for Python
-        # TODO Handle the case where "driver" is a URL to a RemoteWebDriver instance
+        # TODO Handle the case where "driver" is a URL to a RemoteWebDriver
+        # instance
 
         # Decide the Driver to use
         if driver == "firefox":
             self.driver = webdriver.Firefox()
         else:
             self.driver = webdriver.Remote(
-                command_executor="http://{0}:{1}/wd/hub".format(DEVELOPMENT_SERVER_HOST,PHANTOMJS_PORT),
-		desired_capabilities=self.caps)
-            
-        
+                command_executor="http://{0}:{1}/wd/hub".format(
+                    DEVELOPMENT_SERVER_HOST, PHANTOMJS_PORT),
+                desired_capabilities=self.caps)
+
         self.driver.implicitly_wait(30)
-        self.driver.set_window_size(800,600) 
-        self.base_url = "http://{0}:{1}".format(DEVELOPMENT_SERVER_HOST,DEVELOPMENT_SERVER_PORT)
+        self.driver.set_window_size(800, 600)
+        self.base_url = "http://{0}:{1}".format(DEVELOPMENT_SERVER_HOST,
+                                                DEVELOPMENT_SERVER_PORT)
         self.verificationErrors = []
-        self.accept_next_alert = True    
+        self.accept_next_alert = True
 
     def tearDown(self):
         self.driver.close()

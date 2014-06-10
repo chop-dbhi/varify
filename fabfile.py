@@ -145,9 +145,9 @@ def get_configuration(noinput=False):
 
 def build_container(noinput=False):
     # Check git status to make sure our build hash matches our git commit
-    index_status = local('git status --porcelain', capture=True)
-    if index_status != '':
-        abort('Please commit or stash any changes to git before building your container')
+    #index_status = local('git status --porcelain', capture=True)
+    #if index_status != '':
+     #   abort('Please commit or stash any changes to git before building your container')
 
     try:
         get_configuration(noinput)
