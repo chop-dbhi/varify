@@ -1,3 +1,5 @@
+<div data-target='error-message' class='alert alert-block alert-error hide'></div>
+
 <form class=hide>
     <div class='row-fluid'>
         <div class='span6'>
@@ -72,7 +74,7 @@
     </div>
     <h4>Parental Results</h4>
     <label class='inline'>Mother: </label>
-    <select class='inline'>
+    <select data-target='mother-result' class='inline'>
         <option value>---</option>
         <option value='1'>Not tested</option>
         <option value='2'>Heterozygous</option>
@@ -80,7 +82,7 @@
         <option value='4'>Absent</option>
     </select>
     <label class='inline'>Father: </label>
-    <select class='inline'>
+    <select data-target='father-result' class='inline'>
         <option value>---</option>
         <option value='1'>Not tested</option>
         <option value='2'>Heterozygous</option>
@@ -98,4 +100,5 @@
         <input type='radio' name='sanger-radio' value='true' />
         Request Sanger confirmation
     </label>
+    <a href='#' data-action=save class='btn btn-primary'>Save Changes</a>
 </form>
