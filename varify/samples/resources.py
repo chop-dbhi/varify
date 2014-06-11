@@ -635,6 +635,12 @@ class SampleResultSetResource(SampleResultSetsResource):
                 request, data['results'][i]['variant_id'])
             data['results'][i].pop('variant_id')
 
+            resultId = data['results'][i]['id']
+            data['results'][i]['num_assessments'] = len(
+                Assessment.objects.filter(
+                    sample_result__id=resultId,
+                    sample_result__resultset__id=pk))
+
         return data
 
 
