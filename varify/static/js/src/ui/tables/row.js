@@ -19,27 +19,11 @@ define([
             'click': 'onClick'
         },
 
-        onClick: function(events) {
+        onClick: function() {
             c.dialogs.resultDetails.open(this, this.model);
         },
 
-        initialize: function() {
-            _.bindAll(this, 'onSync');
-
-            this.data = {};
-
-            if (!(this.data.resultPk = this.options.resultPk)) {
-                throw new Error('result pk required');
-            }
-
-            this.model = new models.Result({
-                id: this.data.resultPk
-            });
-
-            this.model.on('sync', this.onSync);
-        },
-
-        onSync: function() {
+        onRender: function() {
             var $condensedFlags, $gene, $genomicPosition, $genotype, $hgvsC,
                 $hgvsP, $phenotypeScore, $variantEffects, assessment, resultScore,
                 variant;
@@ -84,12 +68,7 @@ define([
 
             this.$el.empty();
             return this.$el.append($gene, $hgvsP, $variantEffects, $hgvsC, $genotype, $genomicPosition, $phenotypeScore, $condensedFlags);
-        },
-
-        onRender: function() {
-            this.model.fetch();
         }
-
     });
 
     var EmptyResultRow = c.ui.LoadView.extend({

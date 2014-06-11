@@ -44,7 +44,16 @@ define([
         }
     });
 
+    var ResultCollection = Backbone.Collection.extend({
+        model: Result,
+
+        url: function() {
+            return '' + utils.getRootUrl() + 'api/samples/variants/';
+        }
+    });
+
     return {
-        Result: Result
+        Result: Result,
+        ResultCollection: ResultCollection
     };
 });
