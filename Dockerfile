@@ -60,7 +60,7 @@ RUN apt-get update
 RUN apt-get install -y scala
 
 RUN apt-get update -qq --fix-missing
-RUN apt-get install -y ruby
+RUN apt-get install -y ruby rubygems
 RUN apt-get install -y curl python-dev python-setuptools supervisor git-core libpq-dev libldap2-dev libsasl2-dev openssl memcached  build-essential libssl-dev redis-server libxml2-dev libxslt1-dev  zlib1g-dev wget
 
 RUN (cd /tmp && git clone https://github.com/joyent/node.git)
