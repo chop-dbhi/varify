@@ -607,15 +607,10 @@ class SampleResultSetResource(SampleResultSetsResource):
 
     template = api.templates.ResultSet
 
-    def get_queryset(self, request):
-        return self.model.objects.filter(user=request.user)
-
     def get_object(self, request, pk):
         if not hasattr(request, 'instance'):
-            queryset = self.get_queryset(request)
-
             try:
-                instance = queryset.get(pk=pk)
+                instance = self.model.objects.get(pk=pk)
             except self.model.DoesNotExist:
                 instance = None
 
