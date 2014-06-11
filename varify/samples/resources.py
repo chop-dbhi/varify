@@ -636,6 +636,16 @@ class SampleResultSetResource(SampleResultSetsResource):
                     sample_result__id=resultId,
                     sample_result__resultset__id=pk))
 
+            try:
+                assessment = Assessment.objects.get(
+                    sample_result__id=resultId,
+                    sample_result__resultset__id=pk,
+                    user=request.user.id)
+                data['results'][i]['assessment'] = \
+                    serialize(assessment, **api.templates.ResultAssessment)
+            except Assessment.DoesNotExist:
+                data['results'][i]['assessment'] = {}
+
         return data
 
 
