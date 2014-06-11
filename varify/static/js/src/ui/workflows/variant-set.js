@@ -8,8 +8,8 @@ define([
     '../../models',
     '../../utils',
     '../result-details',
-    'cilantro/utils/numbers'
-], function($, _, Backbone, Marionette, models, utils, details, Numbers) {
+    'cilantro'
+], function($, _, Backbone, Marionette, models, utils, details, c) {
 
     var VariantSet = Backbone.Model.extend({
         url: function() {
@@ -98,7 +98,7 @@ define([
         serializeData: function() {
             var data = this.model.toJSON();
 
-            data.pchr = Numbers.toDelimitedNumber(data.variant.pos);
+            data.pchr = c.utils.toDelimitedNumber(data.variant.pos);
 
             return data;
         }
@@ -146,20 +146,105 @@ define([
         template: 'varify/workflows/variant-set/knowledge-capture',
 
         ui: {
-            form: 'form'
+            form: 'form',
+            errorMessage: '[data-target=error-message]',
+            pathogenicity: '[name=pathogenicity-radio]',
+            category: '[name=category-radio]',
+            motherResult: '[data-target=mother-result]',
+            fatherResult: '[data-target=father-result]',
+            evidenceDetails: '[data-target=evidence-details]',
+            sangerRequested: '[name=sanger-radio]',
+            saveButton: '[data-action=save]'
         },
 
-        initialize: function(options) {
-            this.data = {};
+        events: {
+            'click @ui.saveButton': 'saveAssessment'
+        },
 
-            if (options && options.result) {
-                this.data.result = options.result;
+        initialize: function() {
+            _.bindAll(this, 'saveAssessment', 'onSaveError');
+        },
+
+        isValid: function() {
+            var valid = true;
+
+            this.ui.errorMessage.hide().html('');
+
+            if (_.isEmpty(this.model.get('pathogenicity'))) {
+                valid = false;
+                this.ui.errorMessage.append('<h5>Please select a pathogenicity.</h5>');
             }
+
+            if (_.isEmpty(this.model.get('assessment_category'))) {
+                valid = false;
+                this.ui.errorMessage.append('<h5>Please select a category.</h5>');
+            }
+
+            if (_.isEmpty(this.model.get('mother_result'))) {
+                valid = false;
+                this.ui.errorMessage.append('<h5>Please select a result from ' +
+                                            'the &quot;Mother&quot; dropdown.</h5>');
+            }
+
+            if (_.isEmpty(this.model.get('father_result'))) {
+                valid = false;
+                this.ui.errorMessage.append('<h5>Please select a result from ' +
+                                            'the &quot;Father&quot; dropdown.</h5>');
+            }
+
+            if (this.model.get('sanger_requested') === undefined) {
+                valid = false;
+                this.ui.errorMessage.append('<h5>Please select one of the ' +
+                                            '&quot;Sanger Requested&quot; options.</h5>');
+            }
+
+            if (!valid) {
+                this.ui.errorMessage.show();
+
+                // Since the form is invalid, we jump to the top to show the
+                // user the error(s).
+                this.$el.parent().scrollTop(0);
+            }
+
+            return valid;
         },
 
         onRender: function() {
-            if (this.data.result) {
+            if (this.model) {
                 this.ui.form.show();
+            }
+        },
+
+        onSaveError: function() {
+            this.ui.errorMessage.show().html('There was an error saving the assessment.');
+            // Jump to the top to show the user the error.
+            this.$el.parent().scrollTop(0);
+        },
+
+        onSaveSuccess: function() {
+            c.notify({
+                level: 'info',
+                timeout: 5000,
+                dismissable: true,
+                header: 'Assessment Saved!'
+            });
+        },
+
+        saveAssessment: function() {
+            this.model.set({
+                evidence_details: this.ui.evidenceDetails.val(),    // jshint ignore:line
+                sanger_requested: this.ui.sangerRequested.filter(':checked').val(),     // jshint ignore:line
+                pathogenicity: this.ui.pathogenicity.filter(':checked').val(),
+                assessment_category: this.ui.category.filter(':checked').val(),     // jshint ignore:line
+                mother_result: this.ui.motherResult.val(),  // jshint ignore:line
+                father_result: this.ui.fatherResult.val()   // jshint ignore:line
+            });
+
+            if (this.isValid()) {
+                this.model.save(null, {
+                    success: this.onSaveSuccess,
+                    error: this.onSaveError
+                });
             }
         }
     });
@@ -201,12 +286,25 @@ define([
         onChangeSelection: function(model) {
             var result = new models.Result(model.attributes, {parse: true});
 
+            var assessment = new models.Assessment({
+                sample_result: model.id     // jshint ignore:line
+            });
+
+            if (model.get('assessment')) {
+                // We normally would set assessmentModel.id, but, due to
+                // a change(https://github.com/jashkenas/backbone/pull/2878) in
+                // Backbone, we need to set this on attributes rather than
+                // access id directly like we used to. See notes and changes on
+                // the pull request for more details.
+                assessment.set(assessment.idAttribute, model.get('assessment').id);
+            }
+
             this.variantDetails.show(new this.regionViews.variantDetails({
                 result: result
             }));
 
             this.knowledgeCapture.show(new this.regionViews.knowledgeCapture({
-                result: result
+                model: assessment
             }));
         },
 
