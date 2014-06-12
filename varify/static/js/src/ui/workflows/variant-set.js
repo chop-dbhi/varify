@@ -148,6 +148,7 @@ define([
         ui: {
             form: 'form',
             errorMessage: '[data-target=error-message]',
+            loading: '[data-target=loading]',
             pathogenicity: '[name=pathogenicity-radio]',
             category: '[name=category-radio]',
             motherResult: '[data-target=mother-result]',
@@ -162,7 +163,8 @@ define([
         },
 
         initialize: function() {
-            _.bindAll(this, 'saveAssessment', 'onSaveError');
+            _.bindAll(this, 'saveAssessment', 'onSaveError', 'onFetchError',
+                      'onFetchSuccess');
         },
 
         isValid: function() {
@@ -209,9 +211,38 @@ define([
             return valid;
         },
 
+        onFetchError: function() {
+            this.ui.loading.hide();
+            this.ui.form.hide();
+            this.ui.errorMessage.show().html('There was an error retrieving ' +
+                                             'the assessment.');
+        },
+
+        onFetchSuccess: function() {
+            this.ui.loading.hide();
+            this.ui.errorMessage.hide();
+            this.resetForm();
+        },
+
         onRender: function() {
-            if (this.model) {
-                this.ui.form.show();
+            if (!this.model) return;
+
+            this.ui.errorMessage.hide();
+
+            // If this assessment already exists then fetch it, otherwise, we
+            // can just show the form now.
+            if (this.model.id) {
+                this.ui.form.hide();
+                this.ui.loading.show();
+
+                this.model.fetch({
+                    success: this.onFetchSuccess,
+                    error: this.onFetchError
+                });
+            }
+            else {
+                this.ui.loading.hide();
+                this.resetForm();
             }
         },
 
@@ -230,6 +261,20 @@ define([
             });
         },
 
+        resetForm: function() {
+            this.setRadioChecked('category-radio',
+                                 this.model.get('assessment_category') || '1');
+            this.setRadioChecked('pathogenicity-radio',
+                                 this.model.get('pathogenicity') || '1');
+            this.setRadioChecked('sanger-radio', this.model.get('sanger_requested'));
+
+            this.ui.motherResult.val(this.model.get('mother_result'));
+            this.ui.fatherResult.val(this.model.get('father_result'));
+            this.ui.evidenceDetails.val(this.model.get('evidence_details'));
+
+            this.ui.form.show();
+        },
+
         saveAssessment: function() {
             this.model.set({
                 evidence_details: this.ui.evidenceDetails.val(),    // jshint ignore:line
@@ -246,7 +291,22 @@ define([
                     error: this.onSaveError
                 });
             }
-        }
+        },
+
+        // Checks the radio button with the supplied name and value(all other
+        // radios with that name are unchecked).
+        setRadioChecked: function(name, value) {
+            var checkedRadio, radios;
+
+            // Lookup all the radio buttons using the supplied name
+            radios = $('input:radio[name=' + name + ']');
+            // Uncheck any current selection
+            $(radios.prop('checked', false));
+            // Check the correct radio button based on the supplied value
+            checkedRadio = $(radios.filter('[value=' + value + ']'));
+            $(checkedRadio.prop('checked', true));
+            $(checkedRadio.change());
+        },
     });
 
 
