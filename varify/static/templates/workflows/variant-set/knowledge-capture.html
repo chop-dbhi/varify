@@ -1,0 +1,116 @@
+<div data-target='error-message' class='alert alert-block alert-error hide'></div>
+<div data-target='success-message' class='alert alert-block alert-info hide'>
+    Assessment Saved!
+</div>
+
+<div data-target='loading' class=hide>
+    <i class='icon-spinner icon-spin'></i> Loading assessment...
+</div>
+
+<form class=hide>
+    <div class='row-fluid'>
+        <div class='span6'>
+            <h4>Pathogenicity</h4>
+            <label class='radio'>
+                <input type='radio' value='1' name='pathogenicity-radio' checked />
+                Unreviewed
+            </label>
+            <label class='radio'>
+                <input type='radio' class='requires-category' value='2' name='pathogenicity-radio' />
+                Pathogenic
+            </label>
+            <label class='radio'>
+                <input type='radio' class='requires-category' value='3' name='pathogenicity-radio' />
+                Likely pathogenic
+            </label>
+            <label class='radio'>
+                <input type='radio' class='requires-category' value='4' name='pathogenicity-radio' />
+                Variant of unknown significance
+            </label>
+            <label class='radio'>
+                <input type='radio' value='5' name='pathogenicity-radio' />
+                Likely benign
+            </label>
+            <label class='radio'>
+                <input type='radio' value='6' name='pathogenicity-radio' />
+                Benign
+            </label>
+            <label class='radio'>
+                <input type='radio' value='7' name='pathogenicity-radio' />
+                Exclude for technical reasons related to sequencing
+            </label>
+        </div>
+
+        <div class='span6'>
+            <h4>Category</h4>
+            <label class='radio'>
+                <input type='radio' value='1' name='category-radio' checked />
+                <span class='assessment-category-label'>Definitive cause of phenotype</span>
+            </label>
+            <label class='radio'>
+                <input type='radio' value='2' name='category-radio' />
+                <span class='assessment-category-label'>Possibly linked to clinical indication</span>
+            </label>
+            <div>
+                <div class='incidental-findings-radios span6'>
+                    <label class='radio'>
+                        <input type='radio' value='3' name='category-radio' />
+                        <span class='assessment-category-label'>Immediately medically actionable</span>
+                    </label>
+                    <label class='radio'>
+                        <input type='radio' value='4' name='category-radio' />
+                        <span class='assessment-category-label'>Childhood onset</span>
+                    </label>
+                    <label class='radio'>
+                        <input type='radio' value='5' name='category-radio' />
+                        <span class='assessment-category-label'>Adult onset</span>
+                    </label>
+                    <label class='radio'>
+                        <input type='radio' value='6' name='category-radio' />
+                        <span class='assessment-category-label'>Recessive carrier</span>
+                    </label>
+                    <label class='radio'>
+                        <input type='radio' value='7' name='category-radio' />
+                        <span class='assessment-category-label'>Other</span>
+                    </label>
+                </div>
+                <div class='incidental-findings-label span6'>
+                    <span class='muted'>Incidental Findings</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h4>Parental Results</h4>
+    <label class='inline'>Mother: </label>
+    <select data-target='mother-result' class='inline'>
+        <option value>---</option>
+        <option value='1'>Not tested</option>
+        <option value='2'>Heterozygous</option>
+        <option value='3'>Homozygous</option>
+        <option value='4'>Absent</option>
+    </select>
+    <label class='inline'>Father: </label>
+    <select data-target='father-result' class='inline'>
+        <option value>---</option>
+        <option value='1'>Not tested</option>
+        <option value='2'>Heterozygous</option>
+        <option value='3'>Homozygous</option>
+        <option value='4'>Absent</option>
+    </select>
+
+    <h4>Evidence Details</h4>
+    <textarea data-target=evidence-details rows='5'></textarea>
+
+    <h4>Sanger Confirmation</h4>
+    <label class='radio'>
+        <input type='radio' name='sanger-radio' value='false' />
+        No Sanger confirmation needed
+    </label>
+    <label class='radio'>
+        <input type='radio' name='sanger-radio' value='true' />
+        Request Sanger confirmation
+    </label>
+
+    <a data-action=save class='btn btn-primary'>Save Changes</a>
+</form>

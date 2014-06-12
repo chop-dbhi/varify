@@ -356,7 +356,7 @@ class PedigreeResource(ThrottledResource):
 class SampleResultSetsResource(ThrottledResource):
     model = ResultSet
 
-    template = api.templates.ResultSet
+    template = api.templates.SimpleResultSet
 
     INSERTION = 'Insertion'
     DELETION = 'Deletion'
@@ -607,15 +607,10 @@ class SampleResultSetResource(SampleResultSetsResource):
 
     template = api.templates.ResultSet
 
-    def get_queryset(self, request):
-        return self.model.objects.filter(user=request.user)
-
     def get_object(self, request, pk):
         if not hasattr(request, 'instance'):
-            queryset = self.get_queryset(request)
-
             try:
-                instance = queryset.get(pk=pk)
+                instance = self.model.objects.get(pk=pk)
             except self.model.DoesNotExist:
                 instance = None
 
@@ -628,7 +623,29 @@ class SampleResultSetResource(SampleResultSetsResource):
 
     def get(self, request, pk):
         instance = self.get_object(request, pk)
-        return serialize(instance, **self.template)
+        data = serialize(instance, **self.template)
+
+        for i in range(len(data['results'])):
+            data['results'][i]['variant'] = VariantResource.get(
+                request, data['results'][i]['variant_id'])
+            data['results'][i].pop('variant_id')
+
+            result_id = data['results'][i]['id']
+            data['results'][i]['num_assessments'] = Assessment.objects.filter(
+                sample_result__id=result_id,
+                sample_result__resultset__id=pk).count()
+
+            try:
+                assessment = Assessment.objects.get(
+                    sample_result__id=result_id,
+                    sample_result__resultset__id=pk,
+                    user=request.user.id)
+                data['results'][i]['assessment'] = \
+                    serialize(assessment, **api.templates.ResultAssessment)
+            except Assessment.DoesNotExist:
+                data['results'][i]['assessment'] = {}
+
+        return data
 
 
 sample_resource = never_cache(SampleResource())

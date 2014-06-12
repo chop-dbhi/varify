@@ -3,6 +3,7 @@
 define([
     'underscore',
     './workflows/results',
+    './workflows/variant-set',
     './workflows/workspace'
 ], function(_) {
 

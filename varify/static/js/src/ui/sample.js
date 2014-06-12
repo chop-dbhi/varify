@@ -4,8 +4,9 @@ define([
     'underscore',
     'marionette',
     'cilantro',
-    '../models'
-], function(_, Marionette, c, models) {
+    '../models',
+    '../utils'
+], function(_, Marionette, c, models, utils) {
 
     var SampleView = Marionette.ItemView.extend({
         serializeData: function() {
@@ -13,6 +14,7 @@ define([
 
             var data = this.model.toJSON();
             data.loaded = (new Date(data.created)).toLocaleDateString();
+
             return data;
         }
     });
@@ -28,9 +30,12 @@ define([
 
         serializeData: function() {
             var data = this.model.toJSON();
+
             data.modified = (new Date(data.modified)).toLocaleString();
             data.created = (new Date(data.created)).toLocaleString();
             data.url = this.model.url();
+            data.workflowUrl = utils.toAbsolutePath('variant-sets/' + this.model.id);
+
             return data;
         }
     });

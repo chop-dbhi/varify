@@ -19,37 +19,12 @@ body, #concept-panel, #context-panel {
     margin-top: 10px !important;
 }
 
-#result-details-modal {
-    width: 90%;
-    top: 5%;
-    left: 5%;
-    margin: 0;
-    max-height: 800px;
-    bottom: 5%;
-
-    .variant-details-container {
-        position: absolute;
-        width: 96.5%;
-        top: 0;
-        bottom: 70px;
-        overflow: auto;
-    }
-
-    .modal-footer {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
-    }
-
-    .modal-header {
-        border: 0px;
-        padding: 0 10px 0 0;
-    }
-
-    .modal-body {
-        position: static;
-    }
+.result-details {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 
     .expandable-item {
         height: 100%;
@@ -90,6 +65,39 @@ body, #concept-panel, #context-panel {
         tbody > tr {
             border-top: 1px solid #eee;
         }
+    }
+}
+
+#result-details-modal {
+    width: 90%;
+    top: 5%;
+    left: 5%;
+    margin: 0;
+    max-height: 800px;
+    bottom: 5%;
+
+    .variant-details-container {
+        position: absolute;
+        width: 96.5%;
+        top: 0;
+        bottom: 70px;
+        overflow: auto;
+    }
+
+    .modal-footer {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .modal-header {
+        border: 0px;
+        padding: 0 10px 0 0;
+    }
+
+    .modal-body {
+        position: static;
     }
 }
 
@@ -320,5 +328,114 @@ body, #concept-panel, #context-panel {
     }
     .span6 > :first-child {
         margin-top: 0;
+    }
+}
+
+.variant-set-workflow {
+    position: fixed;
+    top: 40px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    .variant-item {
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    .variant-item.selected {
+        background: #9fd2f0;
+    }
+
+    .variant-item:not(:last-child) {
+        border-bottom: 1px solid #eee;
+    }
+
+    .variant-list-container {
+        position: absolute;
+        height: 100%;
+        width: 30%;
+        border-right: 1px solid #c9c9c9;
+        overflow: scroll;
+
+        > * {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .variant-list-region {
+            border-top: 1px solid #c9c9c9;
+        }
+    }
+
+    .message-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+
+        // Force the error message to render above everything else and use the
+        // background to obscure anything(borders, etc.) that might still be
+        // visible.
+        background: #fff;
+        z-index: 1;
+    }
+
+    .variant-details-region, .knowledge-capture-region {
+        position: absolute;
+        width: 70%;
+        right: 0;
+    }
+
+    .variant-details-region {
+        height: 50%;
+        border-bottom: 1px solid #c9c9c9;
+        overflow: auto;
+
+        .result-details {
+            margin: 10px;
+        }
+    }
+
+    .knowledge-capture-region {
+        height: 50%;
+        bottom: 0;
+        overflow: auto;
+
+        form {
+            margin: 10px;
+        }
+
+        .incidental-findings-radios {
+            border-right: 1px solid #a9a9a9;
+        }
+
+        .incidental-findings-label {
+            padding-top: 50px;
+        }
+
+        .radio {
+            padding-left: 30px;
+        }
+        .nested-radio {
+            padding-left: 60px;
+        }
+        .inline {
+            display: inline;
+        }
+        label.inline {
+            padding-left: 15px;
+        }
+        textarea {
+            width: 75%;
+            resize: none;
+            margin: 0;
+        }
+        select, h4 {
+            margin: 5px 0px 5px 0px;
+        }
+    }
+
+    .alert-block {
+        margin: 10px;
     }
 }
