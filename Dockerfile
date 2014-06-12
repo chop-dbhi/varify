@@ -110,8 +110,11 @@ ADD . /opt/apps/harvest-app
 ENV APP_NAME varify
 RUN /opt/ve/harvest-app/bin/pip install -r /opt/apps/harvest-app/requirements.txt --use-mirrors
 
-# Add customer start script for continuous deployment/override default
+# Add custom start script for continuous deployment/override default
 ADD continuous_deployment/custom/scripts/start.sh /usr/local/bin/start
+
+# Add custom script for loading an initial database
+ADD continuous_deployment/data_service/scripts/load_initial_data.sh /usr/local/bin/load_initial_data
 
 RUN chmod +x /usr/local/bin/start
 
