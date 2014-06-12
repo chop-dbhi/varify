@@ -1,7 +1,7 @@
 #!/bin/bash
 
 service memcached start
-service redis start
+service redis-server start
 
 cd /opt/apps/harvest-app/ && /opt/ve/harvest-app/bin/python bin/manage.py syncdb --noinput
 cd /opt/apps/harvest-app/ && /opt/ve/harvest-app/bin/python bin/manage.py migrate --noinput
