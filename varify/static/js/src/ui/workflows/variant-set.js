@@ -54,6 +54,7 @@ define([
         templateHelpers: {
             getGeneSymbol: function() {
                 var geneSymbol = '<span class=muted>unknown gene</span>';
+
                 if (this.variant.unique_genes && this.variant.unique_genes.length) {    // jshint ignore:line
                     geneSymbol = this.variant.unique_genes[0];  // jshint ignore:line
                 }
@@ -83,11 +84,13 @@ define([
             },
 
             getAssessmentCount: function() {
+                var count = '<span class=muted>This variant has not been assessed</span>';
+
                 if (this.num_assessments) {     // jshint ignore:line
-                    return '' + this.num_assessments + ' related assessments';      // jshint ignore:line
+                    count = '' + this.num_assessments + ' related assessments';      // jshint ignore:line
                 }
 
-                return '<span class=muted>This variant has not been assessed</span>';
+                return count;
             }
         },
 
@@ -148,6 +151,7 @@ define([
         ui: {
             form: 'form',
             errorMessage: '[data-target=error-message]',
+            successMessage: '[data-target=success-message]',
             loading: '[data-target=loading]',
             pathogenicity: '[name=pathogenicity-radio]',
             category: '[name=category-radio]',
@@ -163,8 +167,8 @@ define([
         },
 
         initialize: function() {
-            _.bindAll(this, 'saveAssessment', 'onSaveError', 'onFetchError',
-                      'onFetchSuccess');
+            _.bindAll(this, 'saveAssessment', 'onSaveError', 'onSaveSuccess',
+                      'onFetchError', 'onFetchSuccess');
         },
 
         isValid: function() {
@@ -172,23 +176,23 @@ define([
 
             this.ui.errorMessage.hide().html('');
 
-            if (_.isEmpty(this.model.get('pathogenicity'))) {
+            if (this.model.get('pathogenicity') === undefined) {
                 valid = false;
                 this.ui.errorMessage.append('<h5>Please select a pathogenicity.</h5>');
             }
 
-            if (_.isEmpty(this.model.get('assessment_category'))) {
+            if (this.model.get('assessment_category') === undefined) {
                 valid = false;
                 this.ui.errorMessage.append('<h5>Please select a category.</h5>');
             }
 
-            if (_.isEmpty(this.model.get('mother_result'))) {
+            if (this.model.get('mother_result') === undefined) {
                 valid = false;
                 this.ui.errorMessage.append('<h5>Please select a result from ' +
                                             'the &quot;Mother&quot; dropdown.</h5>');
             }
 
-            if (_.isEmpty(this.model.get('father_result'))) {
+            if (this.model.get('father_result') === undefined) {
                 valid = false;
                 this.ui.errorMessage.append('<h5>Please select a result from ' +
                                             'the &quot;Father&quot; dropdown.</h5>');
@@ -214,8 +218,8 @@ define([
         onFetchError: function() {
             this.ui.loading.hide();
             this.ui.form.hide();
-            this.ui.errorMessage.show().html('There was an error retrieving ' +
-                                             'the assessment.');
+            this.ui.errorMessage.show()
+                .html('There was an error retrieving the assessment.');
         },
 
         onFetchSuccess: function() {
@@ -228,6 +232,7 @@ define([
             if (!this.model) return;
 
             this.ui.errorMessage.hide();
+            this.ui.successMessage.hide();
 
             // If this assessment already exists then fetch it, otherwise, we
             // can just show the form now.
@@ -247,18 +252,18 @@ define([
         },
 
         onSaveError: function() {
-            this.ui.errorMessage.show().html('There was an error saving the assessment.');
+            this.ui.errorMessage.show()
+                .html('There was an error saving the assessment.');
+
             // Jump to the top to show the user the error.
             this.$el.parent().scrollTop(0);
         },
 
         onSaveSuccess: function() {
-            c.notify({
-                level: 'info',
-                timeout: 5000,
-                dismissable: true,
-                header: 'Assessment Saved!'
-            });
+            this.ui.successMessage.show();
+
+            // Jump to the top to show the user the message.
+            this.$el.parent().scrollTop(0);
         },
 
         resetForm: function() {
@@ -279,10 +284,10 @@ define([
             this.model.set({
                 evidence_details: this.ui.evidenceDetails.val(),    // jshint ignore:line
                 sanger_requested: this.ui.sangerRequested.filter(':checked').val(),     // jshint ignore:line
-                pathogenicity: this.ui.pathogenicity.filter(':checked').val(),
-                assessment_category: this.ui.category.filter(':checked').val(),     // jshint ignore:line
-                mother_result: this.ui.motherResult.val(),  // jshint ignore:line
-                father_result: this.ui.fatherResult.val()   // jshint ignore:line
+                pathogenicity: parseInt(this.ui.pathogenicity.filter(':checked').val()),
+                assessment_category: parseInt(this.ui.category.filter(':checked').val()),     // jshint ignore:line
+                mother_result: parseInt(this.ui.motherResult.val()),  // jshint ignore:line
+                father_result: parseInt(this.ui.fatherResult.val())   // jshint ignore:line
             });
 
             if (this.isValid()) {
@@ -299,13 +304,13 @@ define([
             var checkedRadio, radios;
 
             // Lookup all the radio buttons using the supplied name
-            radios = $('input:radio[name=' + name + ']');
+            radios = this.$el.find('input:radio[name=' + name + ']');
             // Uncheck any current selection
-            $(radios.prop('checked', false));
+            radios.prop('checked', false);
             // Check the correct radio button based on the supplied value
-            checkedRadio = $(radios.filter('[value=' + value + ']'));
-            $(checkedRadio.prop('checked', true));
-            $(checkedRadio.change());
+            checkedRadio = radios.filter('[value=' + value + ']');
+            checkedRadio.prop('checked', true);
+            checkedRadio.change();
         },
     });
 

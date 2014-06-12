@@ -119,7 +119,7 @@ define([
          * construct the result URLs later on. For example:
          *
          *  http://localhost/varify/results/  becomes  http://localhost/varify/
-         *  http://localhost/variant-sets/1   becomes  http://localhost/variant-sets/
+         *  http://localhost/variant-sets/1   becomes  http://localhost/
          */
         return window.location.href.replace(/\/[^\/]*\/([0-9]+)?$/, '/');
     };

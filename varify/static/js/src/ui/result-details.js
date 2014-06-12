@@ -187,6 +187,7 @@ define([
             this.ui.expandableRows
                 .css('height', '' + this.maxExpandableHeight + 'px')
                 .css('overflow', 'hidden');
+
             this.ui.expandCollapseLinks.text(this.showMoreText);
         }
     });

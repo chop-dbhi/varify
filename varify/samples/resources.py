@@ -625,20 +625,19 @@ class SampleResultSetResource(SampleResultSetsResource):
         instance = self.get_object(request, pk)
         data = serialize(instance, **self.template)
 
-        for i in range(0, len(data['results'])):
+        for i in range(len(data['results'])):
             data['results'][i]['variant'] = VariantResource.get(
                 request, data['results'][i]['variant_id'])
             data['results'][i].pop('variant_id')
 
-            resultId = data['results'][i]['id']
-            data['results'][i]['num_assessments'] = len(
-                Assessment.objects.filter(
-                    sample_result__id=resultId,
-                    sample_result__resultset__id=pk))
+            result_id = data['results'][i]['id']
+            data['results'][i]['num_assessments'] = Assessment.objects.filter(
+                sample_result__id=result_id,
+                sample_result__resultset__id=pk).count()
 
             try:
                 assessment = Assessment.objects.get(
-                    sample_result__id=resultId,
+                    sample_result__id=result_id,
                     sample_result__resultset__id=pk,
                     user=request.user.id)
                 data['results'][i]['assessment'] = \
