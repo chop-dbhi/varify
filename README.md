@@ -164,6 +164,58 @@ or run a `uwsgi` process:
 uwsgi --ini server/uwsgi/local.ini --protocol http --socket 127.0.0.1:8000 --check-static _site
 ```
 
+## Optional JBrowse Setup
+
+*Note: Varify disables Alamut and JBrowse if nothing is running on settings.ALAMUT_URL and settings.JBROWSE_HOST, respectively. To hide, comment out one or both buttons in varify/static/templates/variant/summary.html.*
+
+Install JBrowse in $project_root/jbrowse
+
+```bash
+curl -O http://jbrowse.org/releases/JBrowse-x.x.x.zip (ie 1.11.3)
+unzip JBrowse-x.x.x.zip -d jbrowse
+cd jbrowse
+./setup.sh
+```
+
+Download data files (ie BAM, GFF, VCF) to /your/directory/of/files/ and add the following to nginx.conf. This corresponds to the JbrowseResource endpoint defined in varify/samples/resources.py.
+
+```bash
+location /files/ {
+    alias /your/directory/of/files/;
+    internal;
+}
+```
+
+Run the commands below to load reference sequences and Cosmic track (in that order). This only needs to be done once.
+
+```bash
+sudo ./bin/prepare-refseqs.pl --fasta ../files/chr1.fa
+...
+sudo ./bin/prepare-refseqs.pl --fasta ../files/chrY.fa
+sudo ./bin/flatfile-to-json.pl --gff ../files/ALL_COSMIC_POINT_MUTS_v65.gff3 --trackLabel Cosmic --trackType CanvasFeatures
+...
+
+Note: Segment large Cosmic GFF files with synchronization marks, a line containing '###', to prevent (really) slow loading. Once a loading script executes, a data directory will exist in $project_root/jbrowse.
+```
+
+Run bgzip and tabix (via samtools/htslib) on VCF files
+
+```bash
+git clone git://github.com/samtools/samtools.git
+bgzip my.vcf
+tabix -p vcf my.vcf.gz
+```
+
+**Lastly, make sure data files are named correctly!** The batch, sample and version values of the [sample] section of the sample manifest are concatenated and delimited by '_' to create the filename root for the BAM, BAI, VCF, and TBI files in the JBrowse URL. Suffixes are hard-coded '.sorted.mdup.bam','.sorted.mdup.bam.bai','.var_raw.vcf.gz', and '.var_raw.vcf.gz.tbi', respectively.
+
+```bash
+[sample]
+project = U01
+batch = Pseq_batch9
+sample = P-Pseq_0019-P-A
+version = 1
+```
+
 ## Makefile Commands
 
 - `build` - builds and initializes all submodules, compiles SCSS and optimizes JavaScript
