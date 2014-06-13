@@ -68,6 +68,7 @@ RUN (cd /tmp/node && git checkout v0.10.26 && ./configure && make && make instal
 RUN (apt-get install -y npm)
 RUN (npm install -g coffee-script)
 RUN (gem install sass)
+RUN (gem install bourbon)
 
 # Python dependencies
 
