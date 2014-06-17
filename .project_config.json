@@ -1,17 +1,28 @@
 {
-    "docker_registry": "",
-    "etcd_host": "",
+    "docker_registry": "reslnops01.research.chop.edu:5000",
+    "etcd_host": "reslnops01.research.chop.edu",
     "hipchat": {
-        "auth_token": ""
+        "auth_token": "fb10ab1e397199ffc9aef3b695cc62"
     },
     "hosts": {
-        "localhost": {
-            "git_branch": "develop",
-            "host_string": "localhost"
+        "continuous_deployment": {
+            "etcd_host": "reslnops01.research.chop.edu",
+            "git_branch": "continuous_deployment",
+            "host_string": "resrhtiuws05.research.chop.edu",
+            "path": "/export/resrhtiuws04_01/user001/webapps/varify-env/varify",
+            "repo_url": "http://github.com/cbmi/varify.git",
+            "ssh_usr": "user001"
         },
         "development": {
             "git_branch": "develop",
             "host_string": ""
+        },
+        "localhost": {
+            "git_branch": "continuous_deployment",
+            "host_string": "localhost",
+            "path": "/tmp",
+            "repo_url": "http://github.com/cbmi/varify.git",
+            "ssh_usr": ""
         },
         "production": {
             "git_branch": "master",
@@ -21,9 +32,145 @@
             "host_string": ""
         }
     },
-    "user": "",
     "project_settings": {
         "APP_NAME": "varify",
+        "continuous_deployment": {
+            "databases": {
+                "default": "postgres://varify:varify@resrhtiuws01.research.chop.edu:49182/varify",
+                "epic": "",
+                "nautilus": "",
+                "portal": ""
+            },
+            "django": {
+                "DEBUG": true,
+                "EHB_USE_ENCRYPTION": true,
+                "EMAIL_HOST": "localhost",
+                "EMAIL_PORT": "25",
+                "FORCE_SCRIPT_NAME": "",
+                "LDAP": {
+                    "DEBUG": "False",
+                    "PREBINDDN": "cn=Version Control,ou=AdminUsers,ou=Res,dc=research,dc=chop,dc=edu",
+                    "PREBINDPW": "VC0nt5ol#$",
+                    "SEARCHDN": "dc=chop,dc=edu",
+                    "SEARCH_FILTER": "sAMAccountName=%s",
+                    "SERVER_URI": "ldap://chop.edu:3268"
+                },
+                "LDAP_PREBINDPW": "",
+                "LDAP_SERVER_URI": "ldap://chop.edu:3268",
+                "LOGGING": {
+                    "disable_existing_loggers": true,
+                    "formatters": {
+                        "simple": {
+                            "format": "%(levelname)s %(message)s"
+                        },
+                        "verbose": {
+                            "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
+                        }
+                    },
+                    "handlers": {
+                        "console": {
+                            "class": "logging.StreamHandler",
+                            "formatter": "simple",
+                            "level": "DEBUG"
+                        },
+                        "file": {
+                            "class": "logging.FileHandler",
+                            "filename": "./continuous_deployment/log/log.txt",
+                            "level": "DEBUG"
+                        }
+                    },
+                    "loggers": {
+                        "./varify/samples/management/subcommands/queue.pyc": {
+                            "handlers": [
+                                "console",
+                                "file"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "avocado": {
+                            "handlers": [
+                                "console"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "django.request": {
+                            "handlers": [
+                                "file"
+                            ],
+                            "level": "INFO",
+                            "propagate": true
+                        },
+                        "rq.worker": {
+                            "handlers": [
+                                "console"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "serrano": {
+                            "handlers": [
+                                "console"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "varify": {
+                            "handlers": [
+                                "console",
+                                "file"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        }
+                    },
+                    "version": 1
+                },
+                "PROTOCOL_PROPS": {
+                    "CLIENT_KEY": {
+                        "KEY": "changeme"
+                    },
+                    "IMMUTABLE_KEYS": {
+                        "LENGTH": 16,
+                        "SEED": 111157444
+                    }
+                },
+                "RQ_QUEUES": {
+                    "default": {
+                        "DB": 0,
+                        "HOST": "localhost",
+                        "PORT": 6379
+                    },
+                    "samples": {
+                        "DB": 0,
+                        "HOST": "localhost",
+                        "PORT": 6379
+                    },
+                    "variants": {
+                        "DB": 0,
+                        "HOST": "localhost",
+                        "PORT": 6379
+                    }
+                },
+                "SECRET_KEY": "obp$e@g0cq9)%-4ycbhtbroe#)os^55huj*a9^d#b2_1#9$1js",
+                "SERVICE_CLIENT_SETTINGS": {
+                    "APP_URL": "",
+                    "HOST": "",
+                    "ISSECURE": true,
+                    "ROOT_PATH": "",
+                    "SELF_ROOT_PATH": ""
+                },
+                "VARIFY_PIPELINE_CACHE_ALIAS": "./continuous_deployment/pipeline/cache",
+                "VARIFY_SAMPLE_DIRS": "./continuous_deployment/data/samples"
+            },
+            "etl": {
+                "DB_ETL_TARGET": "sqlite:///varify.db",
+                "EHB_PROTOCOLS": [],
+                "REDCAP_API_KEY": "",
+                "REDCAP_URL": ""
+            }
+        },
         "development": {
             "databases": {
                 "default": "postgresql://test@localhost:5432/varify",
@@ -47,7 +194,7 @@
                 "REDCAP_URL": ""
             }
         },
-        "local": {
+        "integration_test": {
             "databases": {
                 "default": "sqlite:///varify.db",
                 "epic": "",
@@ -59,65 +206,25 @@
                 "EHB_USE_ENCRYPTION": true,
                 "EMAIL_HOST": "localhost",
                 "EMAIL_PORT": "25",
+                "FORCE_SCRIPT_NAME": "",
                 "LDAP_PREBINDPW": "",
                 "LDAP_SERVER_URI": "",
-                "SECRET_KEY": "changeme",
-                "FORCE_SCRIPT_NAME": "",
-                "SERVICE_CLIENT_SETTINGS": {
-                    "HOST": "",
-                    "ROOT_PATH": "",
-                    "SELF_ROOT_PATH": "",
-                    "ISSECURE": true,
-                    "APP_URL": ""
-                },
                 "PROTOCOL_PROPS": {
+                    "CLIENT_KEY": {
+                        "KEY": "changeme"
+                    },
                     "IMMUTABLE_KEYS": {
                         "LENGTH": 16,
                         "SEED": 111157444
-                    },
-                    "CLIENT_KEY": {
-                        "KEY": "changeme"
                     }
-                }
-            },
-            "etl": {
-                "DB_ETL_TARGET": "sqlite:///varify.db",
-                "EHB_PROTOCOLS": [],
-                "REDCAP_API_KEY": "",
-                "REDCAP_URL": ""
-            }
-        },
-        "test": {
-            "databases": {
-                "default": "sqlite:///varify.db",
-                "epic": "",
-                "nautilus": "",
-                "portal": ""
-            },
-            "django": {
-                "DEBUG": true,
-                "EHB_USE_ENCRYPTION": true,
-                "EMAIL_HOST": "localhost",
-                "EMAIL_PORT": "25",
-                "LDAP_PREBINDPW": "",
-                "LDAP_SERVER_URI": "",
-                "SECRET_KEY": "changeme",
-                "FORCE_SCRIPT_NAME": "",
-                "SERVICE_CLIENT_SETTINGS": {
-                    "HOST": "",
-                    "ROOT_PATH": "",
-                    "SELF_ROOT_PATH": "",
-                    "ISSECURE": true,
-                    "APP_URL": ""
                 },
-                "PROTOCOL_PROPS": {
-                    "IMMUTABLE_KEYS": {
-                        "LENGTH": 16,
-                        "SEED": 111157444
-                    },
-                    "CLIENT_KEY": {
-                        "KEY": "changeme"
-                    }
+                "SECRET_KEY": "changeme",
+                "SERVICE_CLIENT_SETTINGS": {
+                    "APP_URL": "",
+                    "HOST": "",
+                    "ISSECURE": true,
+                    "ROOT_PATH": "",
+                    "SELF_ROOT_PATH": ""
                 }
             },
             "etl": {
@@ -136,6 +243,144 @@
                     "url": ""
                 }
             }
+        },
+        "localhost": {
+            "databases": {
+                "default": "postgres://varify:varify@resrhtiuws01.research.chop.edu:49182/varify",
+                "epic": "",
+                "nautilus": "",
+                "portal": ""
+            },
+            "django": {
+                "DEBUG": true,
+                "EHB_USE_ENCRYPTION": true,
+                "EMAIL_HOST": "localhost",
+                "EMAIL_PORT": "25",
+                "FORCE_SCRIPT_NAME": "",
+                "LDAP": {
+                    "DEBUG": "False",
+                    "PREBINDDN": "cn=Version Control,ou=AdminUsers,ou=Res,dc=research,dc=chop,dc=edu",
+                    "PREBINDPW": "VC0nt5ol#$",
+                    "SEARCHDN": "dc=chop,dc=edu",
+                    "SEARCH_FILTER": "sAMAccountName=%s",
+                    "SERVER_URI": "ldap://chop.edu:3268"
+                },
+                "LDAP_PREBINDPW": "",
+                "LDAP_SERVER_URI": "ldap://chop.edu:3268",
+                "LOGGING": {
+                    "disable_existing_loggers": true,
+                    "formatters": {
+                        "simple": {
+                            "format": "%(levelname)s %(message)s"
+                        },
+                        "verbose": {
+                            "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
+                        }
+                    },
+                    "handlers": {
+                        "console": {
+                            "class": "logging.StreamHandler",
+                            "formatter": "simple",
+                            "level": "DEBUG"
+                        },
+                        "file": {
+                            "class": "logging.FileHandler",
+                            "filename": "./continuous_deployment/log/log.txt",
+                            "level": "DEBUG"
+                        }
+                    },
+                    "loggers": {
+                        "./varify/samples/management/subcommands/queue.pyc": {
+                            "handlers": [
+                                "console",
+                                "file"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "avocado": {
+                            "handlers": [
+                                "console"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "django.request": {
+                            "handlers": [
+                                "file"
+                            ],
+                            "level": "INFO",
+                            "propagate": true
+                        },
+                        "rq.worker": {
+                            "handlers": [
+                                "console"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "serrano": {
+                            "handlers": [
+                                "console"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "varify": {
+                            "handlers": [
+                                "console",
+                                "file"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        }
+                    },
+                    "version": 1
+                },
+                "PROTOCOL_PROPS": {
+                    "CLIENT_KEY": {
+                        "KEY": "changeme"
+                    },
+                    "IMMUTABLE_KEYS": {
+                        "LENGTH": 16,
+                        "SEED": 111157444
+                    }
+                },
+                "RQ_QUEUES": {
+                    "default": {
+                        "DB": 0,
+                        "HOST": "localhost",
+                        "PORT": 6379
+                    },
+                    "samples": {
+                        "DB": 0,
+                        "HOST": "localhost",
+                        "PORT": 6379
+                    },
+                    "variants": {
+                        "DB": 0,
+                        "HOST": "localhost",
+                        "PORT": 6379
+                    }
+                },
+                "SECRET_KEY": "obp$e@g0cq9)%-4ycbhtbroe#)os^55huj*a9^d#b2_1#9$1js",
+                "SERVICE_CLIENT_SETTINGS": {
+                    "APP_URL": "",
+                    "HOST": "",
+                    "ISSECURE": true,
+                    "ROOT_PATH": "",
+                    "SELF_ROOT_PATH": ""
+                },
+                "VARIFY_PIPELINE_CACHE_ALIAS": "./continuous_deployment/pipeline/cache",
+                "VARIFY_SAMPLE_DIRS": "./continuous_deployment/data/samples"
+            },
+            "etl": {
+                "DB_ETL_TARGET": "sqlite:///varify.db",
+                "EHB_PROTOCOLS": [],
+                "REDCAP_API_KEY": "",
+                "REDCAP_URL": ""
+            }
         }
-    }
+    },
+    "user": ""
 }
