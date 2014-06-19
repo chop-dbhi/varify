@@ -15,10 +15,17 @@ define([
         template: function() {},
 
         initialize: function(options) {
+            this._collection = options.collection;
             this.collection = new models.ResultCollection();
-            var data = {ids: options.collection.pluck('pk')};
+            
+            this.listenTo(this._collection, 'reset', this._fetch);
+
+            if (this._collection.length > 0) this._fetch();
+        },
+
+        _fetch: function() {
             this.collection.fetch({
-                data: JSON.stringify(data),
+                data: JSON.stringify({ids: this._collection.pluck('pk')}),
                 type: 'POST',
                 contentType: 'application/json',
                 parse: true
