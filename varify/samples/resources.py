@@ -254,13 +254,10 @@ class ResultsResource(ThrottledResource):
     template = api.templates.SampleResultVariant
 
     def post(self, request):
-        ids_not_found = 'ids' not in request.data
-        not_a_list = not isinstance(request.data['ids'], list)
-
-        if ids_not_found or not_a_list:
-            return self.render(
-                {'message': 'An array of "ids" is required'},
-                status=codes.unprocessable_entity)
+        if (not request.data.get('ids') or
+                not isinstance(request.data['ids'], list)):
+            return HttpResponse(status=codes.unprocessable_entity,
+                                content='Array of "ids" is required')
 
         data = []
         resource = SampleResultResource()
