@@ -266,7 +266,7 @@ class ResultsResource(ThrottledResource):
         resource = SampleResultResource()
         for id in request.data['ids']:
             data.append(resource.get(request, id))
-            
+
         return data
 
 
