@@ -1,0 +1,6 @@
+{% extends "solvebio/dashboard.html" %}
+
+{% block body %}
+<div clinvar="ClinVar" references="MEDLINE" path="/api/solvebio/datasets/clinvar"></div>
+<div medline="MEDLINE" path="/api/solvebio/datasets/medline"></div>
+{% endblock %}

@@ -403,10 +403,12 @@ else:
 
 # Get your API key from https://www.solvebio.com/account
 SOLVEBIO_API_KEY = os.environ.get('SOLVEBIO_API_KEY', None)
+SOLVEBIO_API_HOST = 'https://api.solvebio.com'
 
 # You can optionally bypass DB lookups by hardcoding aliases.
 # The dict key is the alias and the value may be an ID or
 # full dataset name. [OPTIONAL]
 SOLVEBIO_DATASET_ALIASES = {
-    'clinvar': 'ClinVar/0.0.2/ClinVar'
+    'clinvar': 'ClinVar/1.0.0/ClinVar',
+    'medline': 'MEDLINE/1.0.0/MEDLINE'
 }

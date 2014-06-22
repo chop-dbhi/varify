@@ -34,7 +34,6 @@ define([
             cohorts: '[data-target=cohorts]',
             frequencies: '[data-target=frequencies]',
             articles: '[data-target=articles]',
-            clinvar: '[data-target=clinvar]',
             assessmentMetrics: '[data-target=assessment-metrics]'
         },
 
@@ -164,10 +163,6 @@ define([
 
             this.articles.show(new details.Articles({
                 collection: variant.articles
-            }));
-
-            this.clinvar.show(new details.Clinvar({
-                collection: variant.clinvarResults
             }));
 
             this.assessmentMetrics.show(new details.AssessmentMetrics({
