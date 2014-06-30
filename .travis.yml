@@ -51,13 +51,8 @@ services:
 before_script:
     - flake8
     - psql -c 'create database varifydb;' -U postgres
-    - wget $DATA_URL -O data.tar.gz
-    - tar -zxf data.tar.gz
-    - gunzip varify-demo-data-0.1/CEU.trio.2010_03.genotypes.annotated.vcf.gz
-    - DJANGO_SETTINGS_MODULE=varify.conf.settings ./bin/manage.py samples queue varify-demo-data-0.1
-    - DJANGO_SETTINGS_MODULE=varify.conf.settings ./bin/manage.py rqworker variants &
-    - DJANGO_SETTINGS_MODULE=varify.conf.settings ./bin/manage.py rqworker default &
     - sleep 360
+    - ./bin/manage.py samples load_db --db varifydb
     - DJANGO_SETTINGS_MODULE=varify.conf.settings ./bin/manage.py variants load --evs
         --1000g --sift --polyphen2 > variants.load.txt 2>&1 &
     - DJANGO_SETTINGS_MODULE=varify.conf.settings
