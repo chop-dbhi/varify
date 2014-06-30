@@ -18,9 +18,14 @@ LINKED_DB_IP = os.environ.get('DB_PORT_5432_TCP_ADDR')
 
 LINKED_MEMCACHE = os.environ.get('MC_PORT_11211_TCP_ADDR')
 
-DATABASES = {
-    'default': dj_database_url.parse(project_settings[environment]['databases']['default']),
-}
+if environment == 'travis':
+    DATABASES = {
+        'default': project_settings[environment]['databases']['default'],
+    }
+else:
+    DATABASES = {
+        'default': dj_database_url.parse(project_settings[environment]['databases']['default']),
+    }
 
 if LINKED_MEMCACHE:
     CACHES = {
