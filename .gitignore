@@ -14,7 +14,7 @@ pip-log.txt
 whoosh.index
 profiled_tests.txt
 .fabhosts
-
+.project_config.json
 .watch-pid
 .sass-cache
 .coverage
