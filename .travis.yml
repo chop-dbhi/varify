@@ -6,6 +6,13 @@ python:
 
 env:
     global:
+        - APP_ENV=travis
+        - APP_NAME=varify
+        - DEVELOPMENT_SERVER_HOST='localhost'
+        - DEVELOPMENT_SERVER_PORT=8004
+        - PHANTOMJS_PORT=8150
+        - PHANTOMJS_HOST='localhost'
+        - LOG_FILE=$APP_NAME_phantomjs.log
         - DJANGO=1.4.12
         - ARTIFACTS_S3_BUCKET=edu.chop.cbmi.tiu.travisci
         - S3_POLICY=ewoJIlZlcnNpb24iOiAiMjAwOC0xMC0xNyIsCgkiSWQiOiAiUG9saWN5MTM4Njg4ODIxMTgyNCIsCgkiU3RhdGVtZW50IjogWwoJCXsKCQkJIlNpZCI6ICJTdG10MTM4Njg4ODE5MjE5MSIsCgkJCSJFZmZlY3QiOiAiQWxsb3ciLAoJCQkiUHJpbmNpcGFsIjogewoJCQkJIkFXUyI6ICIqIgoJCQl9LAoJCQkiQWN0aW9uIjogInMzOioiLAoJCQkiUmVzb3VyY2UiOiAiYXJuOmF3czpzMzo6OmVkdV9jaG9wX2NibWlfdGl1X3RyYXZpc2NpLyoiCgkJfQoJXQp9Cg==
@@ -24,7 +31,7 @@ before_install:
           upstream=$TRAVIS_BRANCH;
       fi;
       git fetch --append --no-tags upstream refs/heads/$upstream:refs/remotes/upstream/$upstream
-    - /usr/bin/python bin/check_signoff.py
+    #- /usr/bin/python bin/check_signoff.py
 
 install:
     - pip install -q coveralls Django==$DJANGO --use-mirrors
@@ -37,12 +44,10 @@ install:
     - npm install -g coffee-script
     - npm install phantomjs
     - gem install sass
-    - psql -c "create user varify with password 'varify';" -U postgres
-    - psql -c "create database varifydb with owner varify template template1 encoding 'utf8';" -U postgres
-    - cp headless_tests/settings.py varify/conf/local_settings.py
-    - cp headless_tests/data_setup/initial_data.json .
-    - ./bin/manage.py syncdb --noinput
-    - ./bin/manage.py migrate
+    - createdb varify
+    - createdb varifydb
+    - ./bin/manage.py samples load-db --db varify
+    - ./bin/manage.py syncdb --noinput --migrate
 
 services:
     - memcached
@@ -50,16 +55,11 @@ services:
 
 before_script:
     - flake8
-    - psql -c 'create database varifydb;' -U postgres
     - sleep 360
-    - ./bin/manage.py samples load_db --db varifydb
-    - DJANGO_SETTINGS_MODULE=varify.conf.settings ./bin/manage.py variants load --evs
-        --1000g --sift --polyphen2 > variants.load.txt 2>&1 &
     - DJANGO_SETTINGS_MODULE=varify.conf.settings
-    - ./bin/manage.py samples allele-freqs > samples.allele-freqs.txt 2>&1 &
     - python headless_tests/test/start_ghostdriver.py
     - sleep 8
-    - ./bin/manage.py runserver 0.0.0.0:8004 &
+    - ./bin/manage.py runserver 0.0.0.0:8000 &
     - sleep 10
     - rm -rf headless_tests/test/screen_shots/*
     - rm -rf headless_tests/test/log/*
