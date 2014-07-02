@@ -12,4 +12,7 @@ urlpatterns = patterns(
         namespace='samples')),
     url(r'^assessments/', include('varify.assessments.resources',
         namespace='assessments')),
+    # SolveBio API proxy and dashboard views
+    url(r'^solvebio/', include('solvebio.contrib.django_solvebio.urls',
+        namespace='solvebio'))
 )
