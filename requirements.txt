@@ -1,0 +1,65 @@
+# Core requirements
+django>=1.4.12,<1.5
+markdown==2.1.1
+south==0.8.2
+python-memcached==1.48
+coverage
+raven>=3.3.9
+uwsgi
+rq>=0.3.8
+django-rq>=0.5.1
+rq-dashboard>=0.3.1
+django-rq-dashboard
+requests==2.2.0
+
+# Templatetags for tweaking rendered HTML via form fields and such
+django-widget-tweaks
+
+# Database Drivers, the Python stdlib has support for SQLite
+psycopg2==2.4.4
+
+# Use database urls
+dj-database-url==0.3.0
+etcd==2.0.2
+
+# Harvest stack
+avocado>=2.3.3,<3.0
+serrano>=2.3.4,<3.0
+modeltree>=1.1.7
+
+# Harvest extensions
+django-haystack==2.0.0
+whoosh==2.4.1
+openpyxl==1.6.1
+django-objectset>=0.2.2
+
+# Site-wide authentication
+django-siteauth==0.9b1
+
+# Application registration and moderation
+django-registration2==0.9b2
+
+# User-tracking
+django-tracking2==0.1.2
+
+# Twitter Bootstrap tags
+django-bootstrap-form>=0.5
+
+# VCF loading
+pyvcf>=0.6.5
+
+# Permissions
+django-guardian==1.0.4
+
+# State Transition System
+django-sts==0.7.3
+
+# REDCap API client
+pycap==0.8.1
+
+# Model versioning -- use 1.6.6 because that is compatible with django 1.4.5
+#       See compatibility here: https://github.com/etianen/django-reversion/wiki/Compatible-Django-Versions
+django-reversion==1.6.6
+
+# Required for patch generation in reversion
+diff-match-patch

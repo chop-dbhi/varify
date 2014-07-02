@@ -1,0 +1,353 @@
+[
+    {
+        "model": "genome.chromosome",
+        "pk": 1,
+        "fields": {
+            "label": "1",
+            "value": "1",
+            "order": 1,
+            "code": 1
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 2,
+        "fields": {
+            "label": "2",
+            "value": "2",
+            "order": 2,
+            "code": 2
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 3,
+        "fields": {
+            "label": "3",
+            "value": "3",
+            "order": 3,
+            "code": 3
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 4,
+        "fields": {
+            "label": "4",
+            "value": "4",
+            "order": 4,
+            "code": 4
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 5,
+        "fields": {
+            "label": "5",
+            "value": "5",
+            "order": 5,
+            "code": 5
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 6,
+        "fields": {
+            "label": "6",
+            "value": "6",
+            "order": 6,
+            "code": 6
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 7,
+        "fields": {
+            "label": "7",
+            "value": "7",
+            "order": 7,
+            "code": 7
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 8,
+        "fields": {
+            "label": "8",
+            "value": "8",
+            "order": 8,
+            "code": 8
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 9,
+        "fields": {
+            "label": "9",
+            "value": "9",
+            "order": 9,
+            "code": 9
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 10,
+        "fields": {
+            "label": "10",
+            "value": "10",
+            "order": 10,
+            "code": 10
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 11,
+        "fields": {
+            "label": "11",
+            "value": "11",
+            "order": 11,
+            "code": 11
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 12,
+        "fields": {
+            "label": "12",
+            "value": "12",
+            "order": 12,
+            "code": 12
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 13,
+        "fields": {
+            "label": "13",
+            "value": "13",
+            "order": 13,
+            "code": 13
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 14,
+        "fields": {
+            "label": "14",
+            "value": "14",
+            "order": 14,
+            "code": 14
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 15,
+        "fields": {
+            "label": "15",
+            "value": "15",
+            "order": 15,
+            "code": 15
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 16,
+        "fields": {
+            "label": "16",
+            "value": "16",
+            "order": 16,
+            "code": 16
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 17,
+        "fields": {
+            "label": "17",
+            "value": "17",
+            "order": 17,
+            "code": 17
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 18,
+        "fields": {
+            "label": "18",
+            "value": "18",
+            "order": 18,
+            "code": 18
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 19,
+        "fields": {
+            "label": "19",
+            "value": "19",
+            "order": 19,
+            "code": 19
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 20,
+        "fields": {
+            "label": "20",
+            "value": "20",
+            "order": 20,
+            "code": 20
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 21,
+        "fields": {
+            "label": "21",
+            "value": "21",
+            "order": 21,
+            "code": 21
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 22,
+        "fields": {
+            "label": "22",
+            "value": "22",
+            "order": 22,
+            "code": 22
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 23,
+        "fields": {
+            "label": "X",
+            "value": "X",
+            "order": 23,
+            "code": 23
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 24,
+        "fields": {
+            "label": "Y",
+            "value": "Y",
+            "order": 24,
+            "code": 24
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 25,
+        "fields": {
+            "label": "MT",
+            "value": "MT",
+            "order": 25,
+            "code": 25
+        }
+    },
+    {
+        "model": "genome.chromosome",
+        "pk": 26,
+        "fields": {
+            "label": "XY",
+            "value": "XY",
+            "order": 26,
+            "code": 26
+        }
+    },
+
+    {
+        "model": "genome.genome",
+        "pk": 1,
+        "fields": {
+            "name": "Genome Reference Consortium GRCh37",
+            "version": "hg19",
+            "released": "2009-02-01"
+        }
+    },
+
+    {
+        "model": "genome.genotype",
+        "pk": 1,
+        "fields": {
+            "label": "Hom Ref",
+            "value": "0/0",
+            "order": 1,
+            "code": 1
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 2,
+        "fields": {
+            "label": "Het Ref",
+            "value": "0/1",
+            "order": 2,
+            "code": 2
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 3,
+        "fields": {
+            "label": "Hom Alt",
+            "value": "1/1",
+            "order": 3,
+            "code": 3
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 4,
+        "fields": {
+            "label": "Het Alt",
+            "value": "1/2",
+            "order": 4,
+            "code": 4
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 5,
+        "fields": {
+            "label": "Het Ref",
+            "value": "0/2",
+            "order": 5,
+            "code": 5
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 6,
+        "fields": {
+            "label": "Hom Alt",
+            "value": "2/2",
+            "order": 6,
+            "code": 6
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 7,
+        "fields": {
+            "label": "Het Mult Ref",
+            "value": "0/#",
+            "order": 7,
+            "code": 7
+        }
+    },
+    {
+        "model": "genome.genotype",
+        "pk": 8,
+        "fields": {
+            "label": "Hom Mult Alle",
+            "value": "#/#",
+            "order": 8,
+            "code": 8
+        }
+    }
+]

@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    {{ block.super }}
+    <style>#content { width: 500px; }</style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <div class="title"></div>
+        <div class="content">
+            <h1>You seemed to have lost your way...</h1>
+
+            <section>
+                <ul>
+                    <li>Need to refine your query conditions? <a href="{% url query %}">Go here</a></li>
+                    <li>Looking for your results? <a href="{% url results %}">View your report</a></li>
+                </ul>
+            </section>
+        </div>
+    </div>
+{% endblock %}

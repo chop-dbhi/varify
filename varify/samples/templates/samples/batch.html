@@ -1,0 +1,71 @@
+{% extends "samples/registry.html" %}
+{% load url from future %}
+{% load humanize %}
+
+{% block subnav_content %}
+    <ul class="breadcrumb">
+        <li><a href={% url "global-registry" %}>Registry</a> <span class=divider>/</span></li>
+        <li><a href={% url "project-registry" project.pk %}>{{ project }}</a> <span class=divider>/</span></li>
+        <li>{{ batch }}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <div id=main-area class=scrollable-column>
+        <div class=inner>
+            <h2>{{ batch }}</h2>
+
+            <div class=row-fluid>
+
+                <div class="span6 area-container">
+                    <h3 class=heading>Samples</h3>
+                    <div class=content>
+                        <table class=table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Variant Count</th>
+                                    <th>Proband?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sample in samples %}
+                                    <tr>
+                                        <td><a href={% url "sample-registry" sample.pk %}>{{ sample }}</a></td>
+                                        <td>{{ sample.count|intcomma }}</td>
+                                        <td>{{ sample.person.proband|yesno }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="span6 area-container">
+                    <h3 class=heading>Pedigrees</h3>
+                    <div class=content>
+                        <table class=table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Relative Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for pedigree in pedigrees %}
+                                <tr>
+                                    <td><a href={% url "person-registry" pedigree.pk %}>{{ pedigree }}</a></td>
+                                    <td>{{ pedigree.family_count }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

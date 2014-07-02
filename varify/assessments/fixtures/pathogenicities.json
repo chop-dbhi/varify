@@ -1,0 +1,51 @@
+[
+    {
+        "model": "assessments.pathogenicity",
+        "pk": 1,
+        "fields": {
+            "name": "Unreviewed"
+        }
+    },
+    {
+        "model": "assessments.pathogenicity",
+        "pk": 2,
+        "fields": {
+            "name": "Pathogenic"
+        }
+    },
+    {
+        "model": "assessments.pathogenicity",
+        "pk": 3,
+        "fields": {
+            "name": "Likely pathogenic"
+        }
+    },
+    {
+        "model": "assessments.pathogenicity",
+        "pk": 4,
+        "fields": {
+            "name": "Variant of unknown significance"
+        }
+    },
+    {
+        "model": "assessments.pathogenicity",
+        "pk": 5,
+        "fields": {
+            "name": "Likely benign"
+        }
+    },
+    {
+        "model": "assessments.pathogenicity",
+        "pk": 6,
+        "fields": {
+            "name": "Benign"
+        }
+    },
+    {
+        "model": "assessments.pathogenicity",
+        "pk": 7,
+        "fields": {
+            "name": "Exclude for technical reasons related to sequencing"
+        }
+    }
+]

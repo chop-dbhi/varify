@@ -1,0 +1,30 @@
+[
+    {
+        "model": "assessments.parentalresult",
+        "pk": 1,
+        "fields": {
+            "name": "Not tested"
+        }
+    },
+    {
+        "model": "assessments.parentalresult",
+        "pk": 2,
+        "fields": {
+            "name": "Heterozygous"
+        }
+    },
+    {
+        "model": "assessments.parentalresult",
+        "pk": 3,
+        "fields": {
+            "name": "Homozygous"
+        }
+    },
+    {
+        "model": "assessments.parentalresult",
+        "pk": 4,
+        "fields": {
+            "name": "Absent"
+        }
+    }
+]

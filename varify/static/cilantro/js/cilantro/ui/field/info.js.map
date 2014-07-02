@@ -1,0 +1,1 @@
+{"version":3,"file":"info.js","sources":["info.js.src.js"],"names":["define","_","Marionette","FieldInfo","ItemView","extend","className","template"],"mappings":"AAEAA,QACI,aACA,cACD,SAASC,EAAGC,GAEX,GAAIC,GAAYD,EAAWE,SAASC,QAChCC,UAAW,aAEXC,SAAU,cAId,QACIJ,UAAWA"}

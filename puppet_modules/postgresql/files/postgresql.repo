@@ -1,0 +1,5 @@
+[postgresql]
+name=Official PostgreSQL Repo
+baseurl=http://yum.postgresql.org/9.2/redhat/rhel-6-x86_64/
+gpgcheck=0
+enabled=1

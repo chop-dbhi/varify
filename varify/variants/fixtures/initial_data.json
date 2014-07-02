@@ -1,0 +1,713 @@
+[
+    {
+        "model": "variants.varianttype",
+        "pk": 1,
+        "fields": {
+            "value": "SNP",
+            "label": "SNP",
+            "code": 1,
+            "order": 1
+        }
+    },
+    {
+        "model": "variants.varianttype",
+        "pk": 2,
+        "fields": {
+            "value": "INDEL",
+            "label": "INDEL",
+            "code": 2,
+            "order": 2
+        }
+    },
+
+    {
+        "model": "variants.functionalclass",
+        "pk": 1,
+        "fields": {
+            "value": "MISSENSE",
+            "label": "Missense",
+            "code": 1,
+            "order": 1
+        }
+    },
+    {
+        "model": "variants.functionalclass",
+        "pk": 2,
+        "fields": {
+            "value": "NONSENSE",
+            "label": "Nonsense",
+            "code": 2,
+            "order": 2
+        }
+    },
+    {
+        "model": "variants.functionalclass",
+        "pk": 3,
+        "fields": {
+            "value": "SILENT",
+            "label": "Silent",
+            "code": 3,
+            "order": 3
+        }
+    },
+
+    {
+        "pk": 1,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 3,
+            "code": 0,
+            "description": "One codon is changed and one or more codons are deleted",
+            "region": 6,
+            "value": "CODON_CHANGE_PLUS_CODON_DELETION",
+            "label": "Codon Change Plus Codon Deletion",
+            "order": 0
+        }
+    },
+    {
+        "pk": 2,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 3,
+            "code": 1,
+            "description": "One codon is changed and one or many codons are inserted",
+            "region": 6,
+            "value": "CODON_CHANGE_PLUS_CODON_INSERTION",
+            "label": "Codon Change Plus Codon Insertion",
+            "order": 1
+        }
+    },
+    {
+        "pk": 3,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 3,
+            "code": 2,
+            "description": "One or many codons are deleted",
+            "region": 6,
+            "value": "CODON_DELETION",
+            "label": "Codon Deletion",
+            "order": 2
+        }
+    },
+    {
+        "pk": 4,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 3,
+            "code": 3,
+            "description": "One or many codons are inserted",
+            "region": 6,
+            "value": "CODON_INSERTION",
+            "label": "Codon Insertion",
+            "order": 3
+        }
+    },
+    {
+        "pk": 5,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 4,
+            "description": "The variant hits an exon.",
+            "region": 6,
+            "value": "EXON",
+            "label": "Exon",
+            "order": 4
+        }
+    },
+    {
+        "pk": 6,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 1,
+            "code": 5,
+            "description": "Insertion or deletion causes a frame shift",
+            "region": 6,
+            "value": "FRAME_SHIFT",
+            "label": "Frame Shift",
+            "order": 5
+        }
+    },
+    {
+        "pk": 7,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 6,
+            "description": "The variant is in an intergenic region",
+            "region": 1,
+            "value": "INTERGENIC",
+            "label": "Intergenic",
+            "order": 6
+        }
+    },
+    {
+        "pk": 8,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 7,
+            "description": "The variant hits a gene, but no transcripts within the gene",
+            "region": 11,
+            "value": "INTRAGENIC",
+            "label": "Intragenic",
+            "order": 7
+        }
+    },
+    {
+        "pk": 9,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 8,
+            "description": "Variant hist and intron. Technically, hits no exon in the transcript.",
+            "region": 7,
+            "value": "INTRON",
+            "label": "Intron",
+            "order": 8
+        }
+    },
+    {
+        "pk": 10,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 9,
+            "description": "\\N",
+            "region": 11,
+            "value": "NONE",
+            "label": "None",
+            "order": 9
+        }
+    },
+    {
+        "pk": 11,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 3,
+            "code": 10,
+            "description": "Variant causes a codon that produces a different amino acid",
+            "region": 6,
+            "value": "NON_SYNONYMOUS_CODING",
+            "label": "Non-Synonymous Coding",
+            "order": 10
+        }
+    },
+    {
+        "pk": 12,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 3,
+            "code": 11,
+            "description": "Variant causes start codon to be mutated into another start codon (the new codon produces a different AA).",
+            "region": 11,
+            "value": "NON_SYNONYMOUS_START",
+            "label": "Non-Synonymous Start",
+            "order": 11
+        }
+    },
+    {
+        "pk": 13,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 1,
+            "code": 12,
+            "description": "The variant hits a splice acceptor site (defined as two bases before exon start, except for the first exon).",
+            "region": 4,
+            "value": "SPLICE_SITE_ACCEPTOR",
+            "label": "Splice-Site Acceptor",
+            "order": 12
+        }
+    },
+    {
+        "pk": 14,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 1,
+            "code": 13,
+            "description": "The variant hits a Splice donor site (defined as two bases after coding exon end, except for the last exon).",
+            "region": 5,
+            "value": "SPLICE_SITE_DONOR",
+            "label": "Splice-Site Donor",
+            "order": 13
+        }
+    },
+    {
+        "pk": 15,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 3,
+            "code": 14,
+            "description": "A variant in 5'UTR region produces a three base sequence that can be a START codon.",
+            "region": 3,
+            "value": "START_GAINED",
+            "label": "Start Gained",
+            "order": 14
+        }
+    },
+    {
+        "pk": 16,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 1,
+            "code": 15,
+            "description": "Variant causes start codon to be mutated into a non-start codon.",
+            "region": 11,
+            "value": "START_LOST",
+            "label": "Start Lost",
+            "order": 15
+        }
+    },
+    {
+        "pk": 17,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 1,
+            "code": 16,
+            "description": "Variant causes a STOP codon",
+            "region": 11,
+            "value": "STOP_GAINED",
+            "label": "Stop Gained",
+            "order": 16
+        }
+    },
+    {
+        "pk": 18,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 1,
+            "code": 17,
+            "description": "Variant causes stop codon to be mutated into a non-stop codon",
+            "region": 11,
+            "value": "STOP_LOST",
+            "label": "Stop Lost",
+            "order": 17
+        }
+    },
+    {
+        "pk": 19,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 2,
+            "code": 18,
+            "description": "Variant causes a codon that produces the same amino acid",
+            "region": 6,
+            "value": "SYNONYMOUS_CODING",
+            "label": "Synonymous Coding",
+            "order": 18
+        }
+    },
+    {
+        "pk": 20,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 2,
+            "code": 19,
+            "description": "Variant causes stop codon to be mutated into another stop codon.",
+            "region": 6,
+            "value": "SYNONYMOUS_STOP",
+            "label": "Synonymous Stop",
+            "order": 19
+        }
+    },
+    {
+        "pk": 21,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 20,
+            "description": "Variant hits 3'UTR region",
+            "region": 8,
+            "value": "UTR_3_PRIME",
+            "label": "UTR-3 Prime",
+            "order": 20
+        }
+    },
+    {
+        "pk": 22,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 21,
+            "description": "Variant hits 5'UTR region",
+            "region": 3,
+            "value": "UTR_5_PRIME",
+            "label": "UTR-5 Prime",
+            "order": 21
+        }
+    },
+    {
+        "pk": 23,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 1,
+            "code": 22,
+            "description": "A deletion removes the whole exon.",
+            "region": 6,
+            "value": "EXON_DELETED",
+            "label": "Exon Deleted",
+            "order": 22
+        }
+    },
+    {
+        "pk": 24,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 2,
+            "code": 23,
+            "description": "The variant hits a rare amino acid thus is likely to produce protein loss of function",
+            "region": 6,
+            "value": "RARE_AMINO_ACID",
+            "label": "Rare Amino Acid",
+            "order": 23
+        }
+    },
+    {
+        "pk": 25,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 3,
+            "code": 24,
+            "description": "One or many codons are changed",
+            "region": 6,
+            "value": "CODON_CHANGE",
+            "label": "Codon Change",
+            "order": 24
+        }
+    },
+    {
+        "pk": 26,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 3,
+            "code": 25,
+            "description": "The variant deletes and exon which is in the 3'UTR of the transcript",
+            "region": 8,
+            "value": "UTR_3_DELETED",
+            "label": "UTR-3 Deleted",
+            "order": 25
+        }
+    },
+    {
+        "pk": 27,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 3,
+            "code": 26,
+            "description": "The variant deletes and exon which is in the 5'UTR of the transcript",
+            "region": 3,
+            "value": "UTR_5_DELETED",
+            "label": "UTR-5 Deleted",
+            "order": 26
+        }
+    },
+    {
+        "pk": 28,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 3,
+            "code": 27,
+            "description": "Variant causes start codon to be mutated into another start codon.",
+            "region": 11,
+            "value": "SYNONYMOUS_START",
+            "label": "Synonymous Start",
+            "order": 27
+        }
+    },
+    {
+        "pk": 29,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 2,
+            "code": 28,
+            "description": "Variant causes stop codon to be mutated into another stop codon (the new codon produces a different AA).",
+            "region": 6,
+            "value": "NON_SYNONYMOUS_STOP",
+            "label": "Non-Synonymous Stop",
+            "order": 28
+        }
+    },
+    {
+        "pk": 30,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 29,
+            "description": "\\N",
+            "region": 10,
+            "value": "REGULATION",
+            "label": "Regulation",
+            "order": 29
+        }
+    },
+    {
+        "pk": 31,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 30,
+            "description": "Upstream of a gene (default length: 5K bases)",
+            "region": 2,
+            "value": "UPSTREAM",
+            "label": "Upstream",
+            "order": 30
+        }
+    },
+    {
+        "pk": 32,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 31,
+            "description": "Downstream of a gene (default length: 5K bases)",
+            "region": 9,
+            "value": "DOWNSTREAM",
+            "label": "Downstream",
+            "order": 31
+        }
+    },
+    {
+        "pk": 33,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 32,
+            "description": "The variant hits a gene.",
+            "region": 11,
+            "value": "GENE",
+            "label": "Gene",
+            "order": 32
+        }
+    },
+    {
+        "pk": 34,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 33,
+            "description": "The variant hits a transcript.",
+            "region": 11,
+            "value": "TRANSCRIPT",
+            "label": "Transcript",
+            "order": 33
+        }
+    },
+    {
+        "pk": 35,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 34,
+            "description": "The variant is in a highly conserved intronic region",
+            "region": 7,
+            "value": "INTRON_CONSERVED",
+            "label": "Intron Conserved",
+            "order": 34
+        }
+    },
+    {
+        "pk": 36,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 35,
+            "description": "The variant is in a highly conserved intergenic region",
+            "region": 1,
+            "value": "INTERGENIC_CONSERVED",
+            "label": "Intergenic Conserved",
+            "order": 35
+        }
+    },
+    {
+        "pk": 37,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 36,
+            "description": "\\N",
+            "region": 11,
+            "value": "CHROMOSOME",
+            "label": "Chromosome",
+            "order": 36
+        }
+    },
+    {
+        "pk": 38,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 37,
+            "description": "\\N",
+            "region": 11,
+            "value": "CUSTOM",
+            "label": "Custom",
+            "order": 37
+        }
+    },
+    {
+        "pk": 39,
+        "model": "variants.effect",
+        "fields": {
+            "impact": 4,
+            "code": 38,
+            "description": "The variant hits a CDS.",
+            "region": 11,
+            "value": "CDS",
+            "label": "CDS",
+            "order": 38
+        }
+    },
+
+    {
+        "fields": {
+            "code": 0, 
+            "order": 0, 
+            "value": "HIGH", 
+            "label": "High"
+        }, 
+        "model": "variants.effectimpact", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "code": 1, 
+            "order": 1, 
+            "value": "MODERATE", 
+            "label": "Moderate"
+        }, 
+        "model": "variants.effectimpact", 
+        "pk": 3
+    }, 
+    {
+        "fields": {
+            "code": 2, 
+            "order": 2, 
+            "value": "LOW", 
+            "label": "Low"
+        }, 
+        "model": "variants.effectimpact", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "code": 3, 
+            "order": 3, 
+            "value": "MODIFIER", 
+            "label": "Modifier"
+        }, 
+        "model": "variants.effectimpact", 
+        "pk": 4
+    },
+
+    {
+        "fields": {
+            "code": 0, 
+            "order": 0, 
+            "value": "INTERGENIC", 
+            "label": "Intergenic"
+        }, 
+        "model": "variants.effectregion", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "code": 1, 
+            "order": 1, 
+            "value": "UPSTREAM", 
+            "label": "Upstream"
+        }, 
+        "model": "variants.effectregion", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "code": 2, 
+            "order": 2, 
+            "value": "UTR_5_PRIME", 
+            "label": "UTR-5 Prime"
+        }, 
+        "model": "variants.effectregion", 
+        "pk": 3
+    }, 
+    {
+        "fields": {
+            "code": 5, 
+            "order": 5, 
+            "value": "EXON", 
+            "label": "Exon"
+        }, 
+        "model": "variants.effectregion", 
+        "pk": 6
+    }, 
+    {
+        "fields": {
+            "code": 6, 
+            "order": 6, 
+            "value": "INTRON", 
+            "label": "Intron"
+        }, 
+        "model": "variants.effectregion", 
+        "pk": 7
+    }, 
+    {
+        "fields": {
+            "code": 7, 
+            "order": 7, 
+            "value": "UTR_3_PRIME", 
+            "label": "UTR-3 Prime"
+        }, 
+        "model": "variants.effectregion", 
+        "pk": 8
+    }, 
+    {
+        "fields": {
+            "code": 8, 
+            "order": 8, 
+            "value": "DOWNSTREAM", 
+            "label": "Downstream"
+        }, 
+        "model": "variants.effectregion", 
+        "pk": 9
+    }, 
+    {
+        "fields": {
+            "code": 9, 
+            "order": 9, 
+            "value": "REGULATION", 
+            "label": "Regulation"
+        }, 
+        "model": "variants.effectregion", 
+        "pk": 10
+    }, 
+    {
+        "fields": {
+            "code": 10, 
+            "order": 10, 
+            "value": "NONE", 
+            "label": "None"
+        }, 
+        "model": "variants.effectregion", 
+        "pk": 11
+    }, 
+    {
+        "fields": {
+            "code": 3, 
+            "order": 3, 
+            "value": "SLICE_SITE_ACCEPTOR", 
+            "label": "Slice-Site Acceptor"
+        }, 
+        "model": "variants.effectregion", 
+        "pk": 4
+    }, 
+    {
+        "fields": {
+            "code": 4, 
+            "order": 4, 
+            "value": "SLICE_SITE_DONOR", 
+            "label": "Slice-Site Donor"
+        }, 
+        "model": "variants.effectregion", 
+        "pk": 5
+    }
+]

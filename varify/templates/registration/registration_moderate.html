@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container no-title">
+        <div class="content">
+            {% with profile.user as user %}        
+                <h4>1. Contact Information</h4>
+
+                <section>
+                    <table>
+                        <tr>
+                            <th>Name</th>
+                            <td>{{ user.get_full_name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Email</th>
+                            <td>{{ user.email|urlize }}</td>
+                        </tr>
+                    </table>
+                </section>
+
+                <h4>2. Approval/Rejection Comment</h4>
+
+                <p class="info">This message will be sent to {{ user.get_full_name }}
+                    as part of their approval/rejection email.</p>
+
+                <form method="post" action="">
+                    {% csrf_token %}
+
+                    {{ form.comment }}
+
+                    <div class="controls">
+                        <input id="approve" type="submit" name="status" value="Approve">
+                        <input id="reject" type="submit" name="status" value="Reject">
+                    </div>
+                </form>    
+            {% endwith %}
+        </div>
+    </div>
+{% endblock %}

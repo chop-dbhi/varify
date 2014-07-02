@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block styles %}
+    {{ block.super }}
+    <style>
+        #content { width: 500px; }
+    </style>
+{% endblock %}
+
+
+{% block content %}
+
+    <div class="container">
+        <div class="title"></div>
+        <div style="text-align: center" class="info">
+            <span class="message success">
+                Thank you! Your message has been sent. We may follow-up with
+                you for more details depending on the issue you reported.
+            </span>
+        </div>
+    </div>
+
+{% endblock %}

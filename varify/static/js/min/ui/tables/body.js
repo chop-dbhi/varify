@@ -1,0 +1,1 @@
+define(["underscore","marionette","./row"],function(e,t,n){var r=t.CollectionView.extend({tagName:"tbody",template:function(){},itemView:n.ResultRow,itemViewOptions:function(t,n){return e.defaults({resultPk:t.get("pk")},this.options)}});return{ResultBody:r}})

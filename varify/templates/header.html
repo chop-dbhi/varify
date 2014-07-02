@@ -1,0 +1,38 @@
+<div id=header class="navbar navbar-fixed-top">
+    <div class=navbar-inner>
+        <div class=container-fluid>
+            <a class=brand href="{% url landing %}">Varify</a>
+
+            {% if user.is_authenticated %}
+        	<ul class="nav">
+                <li><a href="{% url workspace %}"><i class="icon-search"></i> Workspace</a></li>
+                <li><a href="{% url query %}"><i class="icon-search"></i> Discover</a></li>
+                <li><a href="{% url results %}"><i class="icon-table"></i> Results</a></li>
+            </ul>
+            {% endif %}
+
+            <ul class="nav pull-right">
+                {% if user.is_authenticated %}
+                    {% if unmoderated_accounts and perms.registration.change_registrationprofile %}
+                        <li><a href="{% url "moderate-registration-list" %}">Account Moderation <span class="badge badge-success">{{ unmoderated_accounts }}</span></a></li>
+                    {% endif %}
+                    <li><a id="report-concern-toggle" href="#report-concern-modal" data-toggle="modal"><i class="icon-warning-sign text-error"></i> Report Privacy Concern</a></li>
+                    <li class=dropdown>
+                        <a href=# class=dropdown-toggle data-toggle=dropdown>
+                            <i class=icon-user></i> {% firstof user.get_full_name user %} <b class=caret></b>
+                        </a>
+                        <ul class=dropdown-menu>
+                            {% if user.is_staff %}
+                                <li><a href="{% url admin:index %}">Admin</a></li>
+                            {% endif %}
+                            <li><a href="{% url logout %}">Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url login %}">Login</a></li>
+                {% endif %}
+            </ul>
+
+        </div>
+    </div>
+</div>

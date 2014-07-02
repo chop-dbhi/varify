@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container no-title">
+        <div class="content">
+            <section>
+            {% if verified %}
+                {% if moderated %}
+                    Your account has been verified. Account moderators have been notified
+                    and will begin reviewing your account request.
+                {% else %}
+                    Your account has been verified. You can now <a href="{% url login %}">login</a>.
+                {% endif %}
+            {% else %}
+                This account has already been verified or does not exist. No further action is necessary.
+            {% endif %}
+            </section>
+        </div>
+    </div>
+{% endblock %}

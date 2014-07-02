@@ -1,0 +1,47 @@
+{% extends "samples/registry.html" %}
+{% load url from future %}
+{% load humanize %}
+
+{% block subnav_content %}
+<ul class="breadcrumb">
+    <li><a href={% url "global-registry" %}>Registry</a> <span class=divider>/</span></li>
+    <li>{{ project }}</li>
+</ul>
+{% endblock %}
+
+{% block content %}
+    <div id=main-area class=scrollable-column>
+        <div class=inner>
+            <h2>{{ project }}</h2>
+
+            <div class=row-fluid>
+
+                <div class="span6 area-container">
+                    <h3 class=heading>Batches</h3>
+                    <div class=content>
+                        <table class=table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Sample Count</th>
+                                    <th>Published?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for batch in batches %}
+                                <tr>
+                                    <td><a href={% url "batch-registry" batch.pk %}>{{ batch }}</a></td>
+                                    <td>{{ batch.sample_count|intcomma }}</td>
+                                    <td>{{ batch.published|yesno }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

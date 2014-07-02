@@ -1,0 +1,80 @@
+import os
+from global_settings import PROJECT_PATH, LOGGING
+
+# Uncomment to put the application in non-debug mode. This is useful
+# for testing error handling and messages.
+# DEBUG = False
+# TEMPLATE_DEBUG = DEBUG
+
+# Override this to match the application endpoint
+# FORCE_SCRIPT_NAME = ''
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'varify'
+    }
+}
+
+#redis queues
+RQ_QUEUES = {
+    'default': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+    'samples': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+    'variants': {
+        'HOST': 'localhost',
+        'PORT': 6379,
+        'DB': 0,
+    },
+}
+
+
+# Non-restricted email port for development, run in a terminal:
+# python -m smtpd -n -c DebuggingServer localhost:1025
+EMAIL_PORT = 1025
+EMAIL_SUBJECT_PREFIX = '[varify] '
+
+# This is used as a "seed" for various hashing algorithms. This must be set to
+# a very long random string (40+ characters)
+SECRET_KEY = 'g0u!o7_mw=cfhrgb+#xupma&amp;@99443u06xs19$rlmt#wyt9xve'
+
+# Uncomment for additional logging. If using the 'rotating_file' handler
+# you must create the `logs` directory in the project root.
+# LOGGING['handlers'].update({
+#     'stdout': {
+#         'class': 'logging.StreamHandler',
+#         'level': 'DEBUG',
+#     },
+#     'rotating_file': {
+#         'class': 'logging.handlers.RotatingFileHandler',
+#         'level': 'DEBUG',
+#         'filename': os.path.join(PROJECT_PATH, 'logs/debug.log')
+#         'maxBytes': 2048,
+#         'backupCount': 5,
+#     },
+# })
+# 
+# LOGGING['loggers'].update({
+#     'django.db.backends': {
+#         'handlers': ['rotating_file'],
+#         'propagate': True,
+#         'level': 'DEBUG',
+#     }
+# 
+
+
+# Location of the Phenotype system
+PHENOTYPE_ENDPOINT = 'https://localhost/phenotype/sample/'
+
+# TLS certificates used to authenticate against the phenotype system
+# Replace with absolute locations of your certificates
+VARIFY_CERT = '/certs/varify.cert.pem'
+ROOT_CERTIFICATE = '/certs/ca.cert.pem'
+VARIFY_KEY = '/private/varify.key.pem'

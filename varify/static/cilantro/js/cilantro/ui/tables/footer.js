@@ -1,0 +1,2 @@
+var __hasProp={}.hasOwnProperty,__extends=function(t,e){function i(){this.constructor=t}for(var n in e)__hasProp.call(e,n)&&(t[n]=e[n]);return i.prototype=e.prototype,t.prototype=new i,t.__super__=e.prototype,t};define(["marionette","./row"],function(t){var e,i;return e=function(t){function e(){return i=e.__super__.constructor.apply(this,arguments)}return __extends(e,t),e.prototype.tagName="tfoot",e.prototype.template=function(){},e}(t.ItemView),{Footer:e}});
+//@ sourceMappingURL=footer.js.map

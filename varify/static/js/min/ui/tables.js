@@ -1,0 +1,1 @@
+define(["underscore","./tables/body","./tables/header","./tables/row","./tables/table"],function(e){var t=[].slice.call(arguments,1);return e.extend.apply(null,[{}].concat(t))})

@@ -1,0 +1,91 @@
+{% extends "samples/registry.html" %}
+{% load url from future %}
+{% load humanize %}
+
+{% block subnav_content %}
+    <ul class="breadcrumb">
+        <li><a href={% url "global-registry" %}>Registry</a> <span class=divider>/</span></li>
+        <li><a href={% url "project-registry" project.pk %}>{{ project }}</a> <span class=divider>/</span></li>
+        <li><a href={% url "batch-registry" batch.pk %}>{{ batch }}</a> <span class=divider>/</span></li>
+        <li>{{ sample }}</li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <div id=main-area class=scrollable-column>
+        <div class=inner>
+            <h2>{{ sample }} {% if person.proband %}<span class=label>proband</span>{% endif %}</h2>
+
+            <div class=row-fluid>
+
+                <div class="span6 area-container">
+                    <h3 class=heading>Variants</h3>
+                    <div class=content>
+                        <table class=table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Sample Count</th>
+                                    <th>Published?</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% if person.proband %}
+                <div class="span6 area-container">
+                    <h3 class=heading>Pedigree</h3>
+                    <div class=content>
+                        <table class=table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Relation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for relation in family %}
+                                <tr>
+                                    <td><a href={% url "person-registry" relation.relative.pk %}>{{ relation.relative }}</a></td>
+                                    <td>{{ relation.type }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                {% else %}
+
+                <div class="span6 area-container">
+                    <h3 class=heading>Relative Of</h3>
+                    <div class=content>
+                        <table class=table>
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Relation</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for relation in family %}
+                                <tr>
+                                    <td><a href={% url "person-registry" relation.person.pk %}>{{ relation.person }}</a></td>
+                                    <td>{{ relation.type }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
+
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

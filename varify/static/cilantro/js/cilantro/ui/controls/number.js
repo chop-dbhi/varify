@@ -1,0 +1,2 @@
+define(["./range"],function(t){var e=t.RangeControl.extend({getLowerBoundValue:function(){var t=this.ui.lowerBound.val().trim();return t?parseFloat(t):void 0},getUpperBoundValue:function(){var t=this.ui.upperBound.val().trim();return t?parseFloat(t):void 0}});return{NumberControl:e}});
+//@ sourceMappingURL=number.js.map
