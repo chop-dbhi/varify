@@ -10,4 +10,5 @@ class Command(Subcommander):
         'queue': 'queue',
         'delete-sample': 'delete_sample',
         'delete-project': 'delete_project',
+        'load-db': 'load_db'
     }
