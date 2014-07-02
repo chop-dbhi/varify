@@ -51,7 +51,7 @@ define([
 
             // If this column is not in the view already, add it in before
             // updating the view sort properties.
-            if (model === null) {
+            if (!model) {
                 this.data.view.facets.add({
                     concept: concept
                 });
@@ -63,7 +63,7 @@ define([
                 if (f.get('concept') === concept) {
                     direction = f.get('sort');
 
-                    if (direction !== null) {
+                    if (direction) {
                         if (direction.toLowerCase() === "asc") {
                             f.set('sort', "desc");
                             f.set('sort_index', 0);
