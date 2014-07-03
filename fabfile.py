@@ -19,16 +19,13 @@ Help Doc
 curdir = os.path.dirname(os.path.abspath(__file__))
 config_file = os.path.join(curdir, '.project_config.json')
 
-etcd_host = ""
-registry_host = ""
-registry_port = ""
-
 try:
     project_config = json.loads(open(config_file, 'r').read())
 except:
     project_config = {
-        "etcd_host": etcd_host
-    }
+        "etcd_host": env.etcd_host,
+        "docker_registry":env.registry_host
+}
 
 hidden_output = []
 
@@ -193,12 +190,22 @@ def push_to_repo():
 def deploy(commit='latest'):
 
     run('docker pull {0}/varify-{1}:{2}'.format(project_config['docker_registry'], env.git_branch, commit))
-    container = run('docker run -d -p :8000 -e APP_ENV={0} {1}/varify-{2}:{3} start'.format(
+    #container = run('docker run -d -p :8000 -e APP_ENV={0} {1}/varify-{2}:{3} start'.format(
+    #    env.host,
+    #    project_config['docker_registry'],
+    #    env.git_branch,
+    #    commit)
+    #)
+
+    #Temporary:  Anticipating new version of ATI Template
+    container = run('docker run --link memcache:mc -d -p :8000 -e APP_ENV={0} {1}/varify-{2}:{3} start'.format(
         env.host,
         project_config['docker_registry'],
         env.git_branch,
         commit)
     )
+    #
+
     port = run("docker inspect --format='{{{{range $p, $conf := .NetworkSettings.Ports}}}}{{{{(index $conf 0).HostPort}}}} {{{{end}}}}' {0}".format(container))
     commit_msg = local('git --no-pager log --oneline -1', capture = True)
     auth_token = project_config['hipchat']['auth_token']
@@ -344,7 +351,7 @@ def test_setup(noinput=False):
     with hide('output', 'running', 'warnings'):
         # Spin up a fresh Postgres instance:
         print(green('Starting Postgres Container...'))
-        pg_container = local('docker run -p :5432 -d --name varify_test_db {0}:{1}/postgresql', capture=True).format(registry_host,registry_port)
+        pg_container = local('docker run -p :5432 -d --name varify_test_db {registry_host}:5000/postgresql'.format(hosts=project_config['registry_host']), capture=True)
         port = local("docker inspect --format='{{{{range $p, $conf := .NetworkSettings.Ports}}}}{{{{(index $conf 0).HostPort}}}} {{{{end}}}}' {0}".format(pg_container), capture=True)
         time.sleep(2)
         # Create DB and User in fresh DB
@@ -395,7 +402,7 @@ def ci_setup(noinput=False):
     # Spin up a fresh postgres instance:
     with hide('output', 'running', 'warnings'):
         print(green('Starting Postgres Container...'))
-        pg_container = local('docker run -p :5432 -d --name varify_ci_db {0}:{1}/postgresql', capture=True).format(registry_host,registry_port)
+        pg_container = local('docker run -p :5432 -d --name varify_ci_db {registry_host}:5000/postgresql'.format(hosts=project_config['registry_host']), capture=True)
         port = local("docker inspect --format='{{{{range $p, $conf := .NetworkSettings.Ports}}}}{{{{(index $conf 0).HostPort}}}} {{{{end}}}}' {0}".format(pg_container), capture=True)
         time.sleep(2)
         print(green('Dump Production DB...'))
