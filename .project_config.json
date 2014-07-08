@@ -1,0 +1,157 @@
+{
+    "docker_registry": "localhost:5000",
+    "etcd_host": "localhost",
+    "hipchat": {
+        "auth_token": ""
+    },
+    "hosts": {
+        "localhost": {
+            "git_branch": "integration_test",
+            "host_string": "localhost",
+            "path": "/tmp",
+            "repo_url": "http://github.com/cbmi/varify.git",
+            "ssh_usr": ""
+        }
+    },
+    "project_settings": {
+        "APP_NAME": "varify",
+        "localhost": {
+            "databases": {
+                "default": "postgres://varify:varify@localhost/varify",
+                "epic": "",
+                "nautilus": "",
+                "portal": ""
+            },
+            "django": {
+                "DEBUG": true,
+                "EHB_USE_ENCRYPTION": true,
+                "EMAIL_HOST": "localhost",
+                "EMAIL_PORT": "25",
+                "FORCE_SCRIPT_NAME": "",
+                "LDAP": {
+                    "DEBUG": "",
+                    "PREBINDDN": "",
+                    "PREBINDPW": "",
+                    "SEARCHDN": "",
+                    "SEARCH_FILTER": "",
+                    "SERVER_URI": ""
+                },
+                "LDAP_PREBINDPW": "",
+                "LDAP_SERVER_URI": "",
+                "LOGGING": {
+                    "disable_existing_loggers": true,
+                    "formatters": {
+                        "simple": {
+                            "format": "%(levelname)s %(message)s"
+                        },
+                        "verbose": {
+                            "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"
+                        }
+                    },
+                    "handlers": {
+                        "console": {
+                            "class": "logging.StreamHandler",
+                            "formatter": "simple",
+                            "level": "DEBUG"
+                        },
+                        "file": {
+                            "class": "logging.FileHandler",
+                            "filename": "./continuous_deployment/log/log.txt",
+                            "level": "DEBUG"
+                        }
+                    },
+                    "loggers": {
+                        "./varify/samples/management/subcommands/queue.pyc": {
+                            "handlers": [
+                                "console",
+                                "file"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "avocado": {
+                            "handlers": [
+                                "console"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "django.request": {
+                            "handlers": [
+                                "file"
+                            ],
+                            "level": "INFO",
+                            "propagate": true
+                        },
+                        "rq.worker": {
+                            "handlers": [
+                                "console"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "serrano": {
+                            "handlers": [
+                                "console"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        },
+                        "varify": {
+                            "handlers": [
+                                "console",
+                                "file"
+                            ],
+                            "level": "DEBUG",
+                            "propagate": true
+                        }
+                    },
+                    "version": 1
+                },
+                "PROTOCOL_PROPS": {
+                    "CLIENT_KEY": {
+                        "KEY": "changeme"
+                    },
+                    "IMMUTABLE_KEYS": {
+                        "LENGTH": 16,
+                        "SEED": 111157444
+                    }
+                },
+                "RQ_QUEUES": {
+                    "default": {
+                        "DB": 0,
+                        "HOST": "localhost",
+                        "PORT": 6379
+                    },
+                    "samples": {
+                        "DB": 0,
+                        "HOST": "localhost",
+                        "PORT": 6379
+                    },
+                    "variants": {
+                        "DB": 0,
+                        "HOST": "localhost",
+                        "PORT": 6379
+                    }
+                },
+                "SECRET_KEY": "12345678909876543212345678909876543212345678909876",
+                "SERVICE_CLIENT_SETTINGS": {
+                    "APP_URL": "",
+                    "HOST": "",
+                    "ISSECURE": true,
+                    "ROOT_PATH": "",
+                    "SELF_ROOT_PATH": ""
+                },
+                "VARIFY_PIPELINE_CACHE_ALIAS": "./continuous_deployment/pipeline/cache",
+                "VARIFY_SAMPLE_DIRS": "./continuous_deployment/data/samples"
+            },
+            "etl": {
+                "DB_ETL_TARGET": "sqlite:///varify.db",
+                "EHB_PROTOCOLS": [],
+                "REDCAP_API_KEY": "",
+                "REDCAP_URL": ""
+            }
+        }
+    },
+    "user": ""
+}
