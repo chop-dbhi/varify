@@ -66,6 +66,7 @@ before_script:
     - gem install travis-artifacts
 
 script:
+    - createdb varifydb
     - coverage run test_suite.py
     - python -m unittest discover -s headless_tests/test --pattern=Verify*.py
     - ls headless_tests/test/screen_shots
