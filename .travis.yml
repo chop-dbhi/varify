@@ -44,8 +44,8 @@ install:
     - npm install -g coffee-script
     - npm install phantomjs
     - gem install sass
-    - createdb varify
-    - createdb varifydb
+    - createuser varify -s
+    - createdb -E UTF8 -T template1 --locale=en_US.utf8 -E UTF-8 --owner=varify varify
     - ./bin/manage.py samples load-db --db varify
     - ./bin/manage.py syncdb --noinput --migrate
 
