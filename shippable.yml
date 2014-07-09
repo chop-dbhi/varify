@@ -1,0 +1,85 @@
+language: python
+
+python:
+    - 2.6
+    - 2.7
+
+env:
+    global:
+        - APP_ENV=localhost
+        - APP_NAME=varify
+        - DEVELOPMENT_SERVER_HOST='localhost'
+        - DEVELOPMENT_SERVER_PORT=8004
+        - PHANTOMJS_PORT=8150
+        - PHANTOMJS_HOST='localhost'
+        - LOG_FILE=$APP_NAME_phantomjs.log
+        - DJANGO=1.4.12
+        - ARTIFACTS_S3_BUCKET=edu.chop.cbmi.tiu.travisci
+        - S3_POLICY=ewoJIlZlcnNpb24iOiAiMjAwOC0xMC0xNyIsCgkiSWQiOiAiUG9saWN5MTM4Njg4ODIxMTgyNCIsCgkiU3RhdGVtZW50IjogWwoJCXsKCQkJIlNpZCI6ICJTdG10MTM4Njg4ODE5MjE5MSIsCgkJCSJFZmZlY3QiOiAiQWxsb3ciLAoJCQkiUHJpbmNpcGFsIjogewoJCQkJIkFXUyI6ICIqIgoJCQl9LAoJCQkiQWN0aW9uIjogInMzOioiLAoJCQkiUmVzb3VyY2UiOiAiYXJuOmF3czpzMzo6OmVkdV9jaG9wX2NibWlfdGl1X3RyYXZpc2NpLyoiCgkJfQoJXQp9Cg==
+        - S3_SIGNATURE=DzomQiBA4U8Q3o4INLpJv1Py07U=
+        - secure: KxV9bg6JPbuyGI/RXoC8KsaKrWMyOQjnJXQd0uMhI1a89jNno527y6RprnHaX0Of9RoYEFeZi7G3rHT+gnCpPVoWIhl3yUrxe1X3k3Z8IUx96Aez9j/HIWXaoZV4LszIfwknLGH25EMfhKlu9g9xadPui9ZZn5HsWzWJdKeiCEU=
+        - secure: RkQZaMfzQCXNpDvpE25SlsTai0smuCcFv7zM6BCqtzZvQNiunolOmeNWVuV8Q3v+0JarN6K5+CFGdJTGOJY+rbICSIw8+4ceAwbaUGFKBpo96MdzfDEXhrl9cqFVLT4tderF+kLBMywVJHnZrxcEWNXf7uOEnz7l7P2KaSna01o=
+        - DATA_URL=https://github.com/cbmi/varify-demo-data/archive/0.1.tar.gz
+
+before_install:
+    - env | sort
+    - sudo apt-get update -qq
+    - sudo apt-get install -qq python-yaml
+    - sudo apt-get -y install docker.io
+    - sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker
+    - git remote add upstream git://github.com/cbmi/varify.git
+    - upstream=master;
+      if [ "$TRAVIS_PULL_REQUEST" != false ]; then
+          upstream=$TRAVIS_BRANCH;
+      fi;
+      git fetch --append --no-tags upstream refs/heads/$upstream:refs/remotes/upstream/$upstream
+    #- /usr/bin/python bin/check_signoff.py
+
+install:
+    - pip install -q coveralls Django==$DJANGO --use-mirrors
+    - pip install -r requirements.txt
+    - "if [[ $TRAVIS_PYTHON_VERSION == '2.6' ]]; then pip install --use-mirrors cython && pip install --use-mirrors pysam argparse counter ordereddict importlib; fi"
+    - pip install flake8
+    - pip install httpretty
+    - pip install discover==0.4.0
+    - pip install selenium==2.28.0
+    - npm install -g coffee-script
+    - npm install phantomjs
+    - gem install sass
+    - createuser varify -s
+    - createdb -E UTF8 -T template0 --locale=en_US.utf8 -E UTF-8 --owner=varify varify
+    - ./bin/manage.py samples load-db --db varify
+    - ./bin/manage.py syncdb --noinput --migrate
+
+services:
+    - memcached
+    - redis-server
+
+before_script:
+    - flake8
+    - sleep 360
+    - DJANGO_SETTINGS_MODULE=varify.conf.settings
+    - python headless_tests/test/start_ghostdriver.py
+    - docker build --rm="true" --tag="cbmi-varify".
+    - docker run -d cbmi-varify
+    - sleep 8
+    - ./bin/manage.py runserver 0.0.0.0:8000 &
+    - sleep 10
+    - rm -rf headless_tests/test/screen_shots/*
+    - rm -rf headless_tests/test/log/*
+    - gem install travis-artifacts
+
+script:
+    - createdb varifydb
+    - coverage run test_suite.py
+    - python -m unittest discover -s headless_tests/test --pattern=Verify*.py
+    - ls headless_tests/test/screen_shots
+
+after_script:
+    - travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path headless_tests/test/screen_shots
+
+after_failure:
+    - travis-artifacts upload --target-path $TRAVIS_REPO_SLUG/$TRAVIS_BRANCH/$TRAVIS_BUILD_ID/$TRAVIS_JOB_ID --path headless_tests/test/log
+
+after_success:
+    - coveralls
