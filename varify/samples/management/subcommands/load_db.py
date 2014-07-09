@@ -9,8 +9,7 @@ log = logging.getLogger(__name__)
 class Command(BaseCommand):
     option_list = BaseCommand.option_list + (
         make_option('--path', action='store', dest='path',
-                    default='continuous_deployment/data_service/data/varify.'
-                    'pgsql.tar.gz',
+                    default='cid/data_service/data/varify.pgsql.tar.gz',
                     help='Specifies the target sql file to load.'),
 
         make_option('--db', action='store', dest='db', default='varify',
@@ -18,9 +17,11 @@ class Command(BaseCommand):
     )
 
     def _loadDB(self, path, db):
+        # Extract the file name
+        fileName = path.split("/")[-1]
+
         # Untar the zip file
-        os.system('tar -xvf ' + path + ' -C ' +
-                  path.replace('varify.pgsql.tar.gz', ''))
+        os.system('tar -xvf ' + path + ' -C ' + path.replace(fileName, ""))
 
         # Load the file into the database
         os.system('psql ' + db + ' < ' + path.replace('.tar.gz', ''))
