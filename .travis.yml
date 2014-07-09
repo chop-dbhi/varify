@@ -25,6 +25,9 @@ before_install:
     - env | sort
     - sudo apt-get update -qq
     - sudo apt-get install -qq python-yaml
+    - sudo apt-get update
+    - sudo apt-get install docker.io
+    - sudo ln -sf /usr/bin/docker.io /usr/local/bin/docker
     - git remote add upstream git://github.com/cbmi/varify.git
     - upstream=master;
       if [ "$TRAVIS_PULL_REQUEST" != false ]; then
