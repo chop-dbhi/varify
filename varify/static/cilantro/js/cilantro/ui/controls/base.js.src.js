@@ -118,6 +118,8 @@ define([
         // is passed, it's toJSON method is called to returned the underlying
         // attributes of the model.
         set: function(key, value, options) {
+            if (this._changing) return;
+
             var attrs;
 
             // Shift arguments
@@ -172,6 +174,19 @@ define([
         // Takes attributes and returns an error message if they are invalid
         // for this control.
         validate: function() {},
+
+        // Takes attributes and returns a boolean to whether a value is set.
+        isEmpty: function(attrs) {
+            if (_.isUndefined(attrs.value) || _.isNull(attrs.value)) {
+                return true;
+            }
+
+            if (_.isArray(attrs.value) && !attrs.value.length) {
+                return true;
+            }
+
+            return false;
+        },
 
         // Placeholder no-op getter/setter functions for each attribute
         getConcept: noop,

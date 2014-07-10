@@ -2,7 +2,7 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['jquery', 'underscore', 'backbone', 'highcharts', '../base', '../controls', './options'], function($, _, Backbone, Highcharts, base, controls, chartOptions) {
-  var AreaChart, AreaSplineChart, BarChart, Chart, ColumnChart, LineChart, OPTIONS_MAP, PieChart, ScatterChart, Sparkline, SplineChart, charts, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6, _ref7, _ref8, _ref9;
+  var AreaChart, AreaSplineChart, BarChart, Chart, ColumnChart, LineChart, OPTIONS_MAP, PieChart, ScatterChart, Sparkline, SplineChart, charts;
   OPTIONS_MAP = {
     el: 'chart.renderTo',
     type: 'chart.type',
@@ -26,8 +26,7 @@ define(['jquery', 'underscore', 'backbone', 'highcharts', '../base', '../control
     __extends(Chart, _super);
 
     function Chart() {
-      _ref = Chart.__super__.constructor.apply(this, arguments);
-      return _ref;
+      return Chart.__super__.constructor.apply(this, arguments);
     }
 
     Chart.prototype.template = function() {};
@@ -131,8 +130,7 @@ define(['jquery', 'underscore', 'backbone', 'highcharts', '../base', '../control
     __extends(AreaChart, _super);
 
     function AreaChart() {
-      _ref1 = AreaChart.__super__.constructor.apply(this, arguments);
-      return _ref1;
+      return AreaChart.__super__.constructor.apply(this, arguments);
     }
 
     return AreaChart;
@@ -143,8 +141,7 @@ define(['jquery', 'underscore', 'backbone', 'highcharts', '../base', '../control
     __extends(AreaSplineChart, _super);
 
     function AreaSplineChart() {
-      _ref2 = AreaSplineChart.__super__.constructor.apply(this, arguments);
-      return _ref2;
+      return AreaSplineChart.__super__.constructor.apply(this, arguments);
     }
 
     return AreaSplineChart;
@@ -155,8 +152,7 @@ define(['jquery', 'underscore', 'backbone', 'highcharts', '../base', '../control
     __extends(BarChart, _super);
 
     function BarChart() {
-      _ref3 = BarChart.__super__.constructor.apply(this, arguments);
-      return _ref3;
+      return BarChart.__super__.constructor.apply(this, arguments);
     }
 
     return BarChart;
@@ -167,8 +163,7 @@ define(['jquery', 'underscore', 'backbone', 'highcharts', '../base', '../control
     __extends(ColumnChart, _super);
 
     function ColumnChart() {
-      _ref4 = ColumnChart.__super__.constructor.apply(this, arguments);
-      return _ref4;
+      return ColumnChart.__super__.constructor.apply(this, arguments);
     }
 
     return ColumnChart;
@@ -179,8 +174,7 @@ define(['jquery', 'underscore', 'backbone', 'highcharts', '../base', '../control
     __extends(LineChart, _super);
 
     function LineChart() {
-      _ref5 = LineChart.__super__.constructor.apply(this, arguments);
-      return _ref5;
+      return LineChart.__super__.constructor.apply(this, arguments);
     }
 
     return LineChart;
@@ -191,8 +185,7 @@ define(['jquery', 'underscore', 'backbone', 'highcharts', '../base', '../control
     __extends(PieChart, _super);
 
     function PieChart() {
-      _ref6 = PieChart.__super__.constructor.apply(this, arguments);
-      return _ref6;
+      return PieChart.__super__.constructor.apply(this, arguments);
     }
 
     return PieChart;
@@ -204,8 +197,7 @@ define(['jquery', 'underscore', 'backbone', 'highcharts', '../base', '../control
     __extends(ScatterChart, _super);
 
     function ScatterChart() {
-      _ref7 = ScatterChart.__super__.constructor.apply(this, arguments);
-      return _ref7;
+      return ScatterChart.__super__.constructor.apply(this, arguments);
     }
 
     return ScatterChart;
@@ -216,8 +208,7 @@ define(['jquery', 'underscore', 'backbone', 'highcharts', '../base', '../control
     __extends(SplineChart, _super);
 
     function SplineChart() {
-      _ref8 = SplineChart.__super__.constructor.apply(this, arguments);
-      return _ref8;
+      return SplineChart.__super__.constructor.apply(this, arguments);
     }
 
     return SplineChart;
@@ -228,8 +219,7 @@ define(['jquery', 'underscore', 'backbone', 'highcharts', '../base', '../control
     __extends(Sparkline, _super);
 
     function Sparkline() {
-      _ref9 = Sparkline.__super__.constructor.apply(this, arguments);
-      return _ref9;
+      return Sparkline.__super__.constructor.apply(this, arguments);
     }
 
     Sparkline.prototype.chartOptions = chartOptions.sparkline;

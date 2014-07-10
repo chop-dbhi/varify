@@ -2,13 +2,12 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['underscore', 'marionette', './body', './header', './footer'], function(_, Marionette, body, header, footer) {
-  var Table, _ref;
+  var Table;
   Table = (function(_super) {
     __extends(Table, _super);
 
     function Table() {
-      _ref = Table.__super__.constructor.apply(this, arguments);
-      return _ref;
+      return Table.__super__.constructor.apply(this, arguments);
     }
 
     Table.prototype.tagName = 'table';
@@ -28,7 +27,6 @@ define(['underscore', 'marionette', './body', './header', './footer'], function(
     };
 
     Table.prototype.initialize = function() {
-      var _this = this;
       this.header = new header.Header(_.defaults({
         collection: this.collection.indexes
       }, this.options));
@@ -38,13 +36,15 @@ define(['underscore', 'marionette', './body', './header', './footer'], function(
       this.header.render();
       this.footer.render();
       this.$el.append(this.header.el, this.footer.el);
-      return this.collection.on('reset', function() {
-        if (_this.collection.objectCount === 0) {
-          return _this.$el.hide();
-        } else {
-          return _this.$el.show();
-        }
-      });
+      return this.collection.on('reset', (function(_this) {
+        return function() {
+          if (_this.collection.objectCount === 0) {
+            return _this.$el.hide();
+          } else {
+            return _this.$el.show();
+          }
+        };
+      })(this));
     };
 
     Table.prototype.showCurrentPage = function(model, num, options) {

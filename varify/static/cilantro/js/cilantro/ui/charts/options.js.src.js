@@ -20,6 +20,18 @@ define([],function() {
       enabled: false
     },
     tooltip: {
+      formatter: function() {
+        var html;
+        if (this.point.values) {
+          html = [];
+          html.push('<strong>' + this.series.xAxis.axisTitle.text + '</strong>:');
+          html.push(this.point.values[0] + '<br>');
+          html.push('<strong>' + this.series.yAxis.axisTitle.text + '</strong>:');
+          html.push(this.y);
+          return html.join('');
+        }
+        return this.key;
+      },
       snap: 1,
       useHTML: true,
       borderWidth: 1,
@@ -31,6 +43,7 @@ define([],function() {
         shadow: false,
         borderWidth: 0,
         borderColor: '#4b8cf7',
+        turboThreshold: 0,
         animation: {
           duration: 400
         },

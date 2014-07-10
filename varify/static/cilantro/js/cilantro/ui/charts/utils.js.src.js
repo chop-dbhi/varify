@@ -16,8 +16,7 @@ define(['underscore', 'highcharts'], function(_, Highcharts) {
   processResponse = function(resp, fields, seriesIdx) {
     var avg, chartType, clustered, color, formatterFunc, i, idx, max, name, norm, options, p, point, series, seriesData, seriesList, seriesNo, svalue, x, xEnum, xField, xLabels, xName, xType, xlen, y, yEnum, yField, yLabels, yName, yType, ylen, _i, _j, _len, _len1, _ref, _ref1;
     if (fields.length > 2) {
-      throw new Error('3-dimensional charts are not supported.\
-                Specify which field the series applies to.');
+      throw new Error('3-dimensional charts are not supported. Specify which field the series applies to.');
     } else if (!fields) {
       throw new Error('The field instances must be supplied');
     }
@@ -44,8 +43,6 @@ define(['underscore', 'highcharts'], function(_, Highcharts) {
       chartType = 'scatter';
     } else if (yEnum) {
       chartType = 'scatter';
-    } else if (xType === 'datetime' || yType === 'datetime') {
-      chartType = 'line';
     } else {
       chartType = 'column';
     }
