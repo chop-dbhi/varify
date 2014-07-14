@@ -13,7 +13,7 @@ from varify.samples.models import Sample, CohortSample, Result, SampleRun, \
     SampleManifest, Project, Cohort, Batch, CohortVariant, ResultScore
 from varify.variants.models import Variant
 from varify.samples.management.subcommands import gene_ranks
-from ..sample_load_process.tests import QueueTestCase
+from ..base import QueueTestCase
 from ...models import MockHandler
 
 TESTS_DIR = os.path.join(os.path.dirname(__file__), '../..')

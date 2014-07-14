@@ -1,11 +1,9 @@
 import os
 from django.db.models import Max
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase
 from django.core import management
-from django.core.cache import cache
 from django.test.utils import override_settings
-from django_rq import get_worker, get_queue, get_connection
-from rq.queue import get_failed_queue
+from django_rq import get_worker
 from sts.models import System
 from varify.samples.models import Project, Batch, Cohort, Sample, \
     SampleManifest, Result
@@ -13,17 +11,10 @@ from varify.variants.models import Variant, VariantEffect, Sift, PolyPhen2, \
     ThousandG, EVS
 from varify.variants.pipeline.utils import VariantCache
 from varify.genes.models import Transcript, Gene
+from ..base import QueueTestCase
 
 TESTS_DIR = os.path.join(os.path.dirname(__file__), '../..')
 SAMPLE_DIRS = [os.path.join(TESTS_DIR, 'samples')]
-
-
-class QueueTestCase(TransactionTestCase):
-    def setUp(self):
-        cache.clear()
-        get_queue('variants').empty()
-        get_queue('default').empty()
-        get_failed_queue(get_connection()).empty()
 
 
 class VariantCacheTestCase(TestCase):
