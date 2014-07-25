@@ -1,7 +1,7 @@
 from django import forms
 from django.db import transaction
 from django.db.models.query import QuerySet
-from .models import GeneSet, Gene
+from vdw.genes.models import GeneSet, Gene
 
 
 class GeneSetField(forms.Field):

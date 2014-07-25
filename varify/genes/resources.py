@@ -6,7 +6,7 @@ from django.core.urlresolvers import reverse
 from preserialize.serialize import serialize
 from serrano.resources.base import ThrottledResource
 from varify import api
-from .models import Gene
+from vdw.genes.models import Gene
 
 
 class GeneResource(ThrottledResource):

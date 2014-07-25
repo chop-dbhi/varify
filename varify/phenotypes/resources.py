@@ -5,7 +5,7 @@ from django.views.decorators.cache import never_cache
 from django.core.urlresolvers import reverse
 from serrano.resources.base import ThrottledResource
 from varify import api
-from .models import Phenotype
+from vdw.phenotypes.models import Phenotype
 from preserialize.serialize import serialize
 
 

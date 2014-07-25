@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import VariantType, EffectImpact, EffectRegion, Effect, \
-    FunctionalClass
+from vdw.variants.models import VariantType, EffectImpact, EffectRegion, \
+    Effect, FunctionalClass
 
 
 class LexiconAdmin(admin.ModelAdmin):

@@ -1,6 +1,6 @@
 from django.contrib import admin
-from .models import SangerResult, Pathogenicity, AssessmentCategory, \
-    ParentalResult, Assessment
+from vdw.assessments.models import SangerResult, Pathogenicity, \
+    AssessmentCategory, ParentalResult, Assessment
 
 
 class AssessmentAdmin(admin.ModelAdmin):

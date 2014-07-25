@@ -3,7 +3,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.db.models import Count
 from django.core.urlresolvers import reverse
 from django.shortcuts import render, get_object_or_404
-from .models import Sample, Project, Batch, Cohort
+from vdw.samples.models import Sample, Project, Batch, Cohort
 from .forms import CohortForm
 
 

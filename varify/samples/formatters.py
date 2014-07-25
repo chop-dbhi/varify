@@ -55,7 +55,7 @@ class CohortsFormatter(HTMLFormatter):
     # formatter's usage
     def _get_cohorts(self, **context):
         if not hasattr(self, '_cohorts'):
-            from .models import Cohort
+            from vdw.samples.models import Cohort
             # Augment resource with cohort-related details
             # (e.g. allele frequencies).
             perms = Q(user=None, published=True)
@@ -70,7 +70,7 @@ class CohortsFormatter(HTMLFormatter):
         return self._cohorts
 
     def _get_cohort_variants(self, value, **context):
-        from .models import CohortVariant
+        from vdw.samples.models import CohortVariant
         cohorts = self._get_cohorts(**context)
 
         # All cohort variants for the above cohorts

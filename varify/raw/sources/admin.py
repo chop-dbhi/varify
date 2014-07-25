@@ -1,5 +1,5 @@
 from django.contrib import admin
-from varify.raw.sources.models import Source, Stat
+from vdw.raw.sources.models import Source, Stat
 
 
 class StatInline(admin.TabularInline):

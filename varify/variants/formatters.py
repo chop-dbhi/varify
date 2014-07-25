@@ -68,7 +68,7 @@ class SiftFormatter(HTMLFormatter):
     alt_keys = ('Sift Score', 'Sift Prediction')
 
     def _get_values(self, value):
-        from .models import Sift
+        from vdw.variants.models import Sift
         return value, Sift.get_prediction(value)
 
     def to_html(self, value, **context):
@@ -88,7 +88,7 @@ class PolyPhen2Formatter(HTMLFormatter):
     alt_keys = ('PolyPhen2 Score', 'PolyPhen2 Prediction')
 
     def _get_values(self, value):
-        from .models import PolyPhen2
+        from vdw.variants.models import PolyPhen2
         return value, PolyPhen2.get_prediction(value)
 
     def to_html(self, value, **context):

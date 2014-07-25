@@ -1,5 +1,5 @@
 from django.contrib import admin
-from varify.genes.models import GeneSet
+from vdw.genes.models import GeneSet
 
 
 class GeneSetAdmin(admin.ModelAdmin):
