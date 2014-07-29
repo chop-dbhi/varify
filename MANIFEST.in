@@ -12,6 +12,7 @@ recursive-include _site *
 recursive-include varify/static *
 recursive-include server *
 recursive-include varify/templates *
+recursive-include varify/genes/templates *
 
 global-exclude .DS_Store
 
