@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from varify.raw.sources.models import Source
+from vdw.raw.sources.models import Source
 
 
 def sources(request):
