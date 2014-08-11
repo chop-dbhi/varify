@@ -4,7 +4,7 @@ from serrano.formatters import HTMLFormatter
 
 class Pathogenicity(HTMLFormatter):
     def to_html(self, value, **context):
-        from .models import Pathogenicity
+        from vdw.assessments.models import Pathogenicity
 
         try:
             pathogenicity = Pathogenicity.objects.get(pk=value)
@@ -14,7 +14,7 @@ class Pathogenicity(HTMLFormatter):
         return pathogenicity.name
 
     def to_excel(self, value, **context):
-        from .models import Pathogenicity
+        from vdw.assessments.models import Pathogenicity
 
         try:
             pathogenicity = Pathogenicity.objects.get(pk=value)
@@ -26,7 +26,7 @@ class Pathogenicity(HTMLFormatter):
 
 class AssessmentCategory(HTMLFormatter):
     def to_html(self, value, **context):
-        from .models import AssessmentCategory
+        from vdw.assessments.models import AssessmentCategory
 
         try:
             category = AssessmentCategory.objects.get(pk=value)
@@ -36,7 +36,7 @@ class AssessmentCategory(HTMLFormatter):
         return category.name
 
     def to_excel(self, value, **context):
-        from .models import AssessmentCategory
+        from vdw.assessments.models import AssessmentCategory
 
         try:
             category = AssessmentCategory.objects.get(pk=value)

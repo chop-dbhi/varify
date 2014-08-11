@@ -12,6 +12,9 @@ rq-dashboard>=0.3.1
 django-rq-dashboard
 requests==2.2.0
 
+# Data models and loader
+git+git://github.com/cbmi/varify-data-warehouse.git
+
 # Templatetags for tweaking rendered HTML via form fields and such
 django-widget-tweaks
 

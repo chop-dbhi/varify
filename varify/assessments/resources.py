@@ -6,7 +6,7 @@ from preserialize.serialize import serialize
 from restlib2.http import codes
 from serrano.resources.base import ThrottledResource
 from varify import api
-from .models import Assessment
+from vdw.assessments.models import Assessment
 from .forms import AssessmentForm
 
 

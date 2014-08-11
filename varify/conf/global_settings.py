@@ -26,20 +26,15 @@ INSTALLED_APPS = (
 
     'varify',
 
-    'varify.raw',
-    'varify.raw.sources',
-
-    'varify.assessments',
-    'varify.genome',
-    'varify.genes',
-    'varify.variants',
-    'varify.phenotypes',
-    'varify.samples',
-    'varify.literature',
-
-    'varify.support',
-
-    'varify.pipeline',
+    'vdw.assessments',
+    'vdw.genes',
+    'vdw.genome',
+    'vdw.literature',
+    'vdw.raw',
+    'vdw.raw.sources',
+    'vdw.phenotypes',
+    'vdw.samples',
+    'vdw.variants',
 
     'sts',
     'haystack',

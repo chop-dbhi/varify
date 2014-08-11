@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from .forms import GeneSetBulkForm
-from .models import GeneSet
+from vdw.genes.models import GeneSet
 
 
 def geneset_form(request, pk=None):

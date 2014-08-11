@@ -15,8 +15,8 @@ from restlib2 import resources
 from serrano.resources.base import ThrottledResource
 from varify.variants.resources import VariantResource
 from varify import api
-from varify.assessments.models import Assessment
-from .models import Sample, Result, ResultScore
+from vdw.assessments.models import Assessment
+from vdw.samples.models import Sample, Result, ResultScore
 from restlib2.http import codes
 
 log = logging.getLogger(__name__)

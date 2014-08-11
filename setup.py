@@ -35,6 +35,7 @@ install_requires = [
     'django-reversion==1.6.6',
     'diff-match-patch',
     'pyvcf>=0.6.5',
+    'vdw'
 ]
 
 if sys.version_info < (2, 7):
@@ -47,6 +48,12 @@ kwargs = {
                                        'tests.*']),
     'include_package_data': True,
     'install_requires': install_requires,
+    # This is a hack to get setuptools to install the latest version of the
+    # varify-data-warehouse from the github repo. Until varify-data-warehouse
+    # is released on pypi, we need to continue to install from github.
+    'dependency_links': [
+        'https://github.com/cbmi/varify-data-warehouse/archive/master.zip#egg=vdw',     # noqa
+    ],
     'test_suite': 'test_suite',
     'tests_require': ['httpretty'],
     'author': '',

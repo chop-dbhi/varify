@@ -1,5 +1,5 @@
 from django.forms import ModelForm
-from .models import Assessment
+from vdw.assessments.models import Assessment
 
 
 class AssessmentForm(ModelForm):

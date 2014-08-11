@@ -7,10 +7,10 @@ from guardian.shortcuts import get_objects_for_user
 from preserialize.serialize import serialize
 from serrano.resources.base import ThrottledResource
 from varify import api
-from varify.samples.models import CohortVariant
-from varify.assessments.models import Assessment, Pathogenicity, \
+from vdw.samples.models import CohortVariant
+from vdw.assessments.models import Assessment, Pathogenicity, \
     AssessmentCategory
-from .models import Variant
+from vdw.variants.models import Variant
 
 log = logging.getLogger(__name__)
 

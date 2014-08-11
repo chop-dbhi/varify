@@ -1,6 +1,6 @@
 from django.contrib import admin
 from guardian.admin import GuardedModelAdmin
-from .models import Project, Cohort, Batch, Sample, SampleManifest
+from vdw.samples.models import Project, Cohort, Batch, Sample, SampleManifest
 
 
 class ProjectAdmin(GuardedModelAdmin):

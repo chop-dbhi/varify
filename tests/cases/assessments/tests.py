@@ -1,13 +1,16 @@
 import json
 from restlib2.http import codes
 from ..base import AuthenticatedBaseTestCase
-from varify.assessments.models import Assessment, Pathogenicity,\
-    ParentalResult, AssessmentCategory
-from varify.samples.models import Result
+from vdw.assessments.models import Assessment, Pathogenicity, ParentalResult, \
+    AssessmentCategory
+from vdw.samples.models import Result
 
 
 class AssessmentResourceTestCase(AuthenticatedBaseTestCase):
-    fixtures = ['initial_data.json']
+    # TODO: Trim this test data down, it loads a lot more than is really
+    # necessary. All that is really needed is a single result with all the
+    # related data needed for that result to exist.
+    fixtures = ['test_data.json']
 
     def setUp(self):
         # Create and record some data

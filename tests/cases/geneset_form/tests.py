@@ -1,7 +1,7 @@
 from django.test import TestCase
 from varify.genes.forms import GeneSetBulkForm
-from varify.genes.models import Gene, GeneSet
-from varify.genome.models import Chromosome
+from vdw.genes.models import Gene, GeneSet
+from vdw.genome.models import Chromosome
 
 
 class GeneSetBulkFormTestCase(TestCase):

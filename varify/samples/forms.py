@@ -1,6 +1,6 @@
 from django import forms
 from django.db import transaction
-from .models import Cohort, Sample
+from vdw.samples.models import Cohort, Sample
 
 
 class CohortForm(forms.ModelForm):
