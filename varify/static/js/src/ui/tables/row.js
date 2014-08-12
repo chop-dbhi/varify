@@ -1,13 +1,12 @@
 /* global define */
 
 define([
-    'underscore',
     'jquery',
     'marionette',
     'cilantro',
     '../../models',
     '../../templates'
-], function(_, $, Marionette, c, models, Templates) {
+], function($, Marionette, c, models, Templates) {
 
     var ResultRow = Marionette.ItemView.extend({
         className: 'area-container variant-container',
@@ -24,23 +23,7 @@ define([
             c.dialogs.resultDetails.open(this.model);
         },
 
-        initialize: function() {
-            _.bindAll(this, 'onSync');
-
-            this.data = {};
-
-            if (!(this.data.resultPk = this.options.resultPk)) {
-                throw new Error('result pk required');
-            }
-
-            this.model = new models.Result({
-                id: this.data.resultPk
-            });
-
-            this.model.on('sync', this.onSync);
-        },
-
-        onSync: function() {
+        onRender: function() {
             var $condensedFlags, $gene, $genomicPosition, $genotype, $hgvsC,
                 $hgvsP, $phenotypeScore, $variantEffects, assessment, resultScore,
                 variant;
@@ -89,12 +72,7 @@ define([
             return this.$el.append($gene, $hgvsP, $variantEffects, $hgvsC,
                                    $genotype, $genomicPosition, $phenotypeScore,
                                    $condensedFlags);
-        },
-
-        onRender: function() {
-            this.model.fetch();
         }
-
     });
 
     var EmptyResultRow = c.ui.LoadView.extend({

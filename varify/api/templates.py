@@ -95,7 +95,7 @@ GeneSearch = {
 
 # Limited gene information to be embedded in a Transcript
 TranscriptGene = {
-    'exclude': ['synonyms', 'transcripts'],
+    'exclude': ['synonyms', 'transcripts', 'chr', 'families', 'id', 'name'],
     'related': {
         'chr': Chromosome,
         'articles': Article,
@@ -175,7 +175,7 @@ EffectImpact = {
 
 # Extended lexicon, who other properties about the effect type
 Effect = {
-    'fields': ['type', 'description', 'impact', 'region'],
+    'fields': ['type', 'impact'],
     'aliases': {
         'type': 'label',
     },
@@ -190,8 +190,8 @@ Effect = {
 # The variant effect has quite a few components. Since it does not include
 # Variant, it is assumed to be used in the context of a Variant
 VariantEffect = {
-    'fields': ['transcript', 'codon_change', 'amino_acid_change',
-               'functional_class', 'effect', 'hgvs_c', 'hgvs_p', 'segment'],
+    'fields': ['transcript', 'amino_acid_change', 'effect', 'hgvs_c',
+               'hgvs_p', 'segment'],
     'related': {
         'transcript': Transcript,
         'functional_class': {
@@ -283,8 +283,7 @@ Batch = {
 # project and batch names are merged into the sample object to
 # remove excessive nesting.
 Sample = {
-    'fields': [':pk', 'label', 'count', 'batch', 'project', 'version',
-               'created'],
+    'fields': [':pk', 'label', 'project'],
     'related': {
         'batch': Batch,
         'project': Project,

@@ -275,6 +275,25 @@ class SampleResultResource(ThrottledResource):
 
         return data
 
+    post = get
+
+
+class ResultsResource(ThrottledResource):
+    template = api.templates.SampleResultVariant
+
+    def post(self, request):
+        if (not request.data.get('ids') or
+                not isinstance(request.data['ids'], list)):
+            return HttpResponse(status=codes.unprocessable_entity,
+                                content='Array of "ids" is required')
+
+        data = []
+        resource = SampleResultResource()
+        for id in request.data['ids']:
+            data.append(resource.get(request, id))
+
+        return data
+
 
 class PhenotypeResource(ThrottledResource):
     def get(self, request, sample_id):
@@ -654,6 +673,7 @@ named_sample_resource = never_cache(NamedSampleResource())
 
 sample_results_resource = never_cache(SampleResultsResource())
 sample_result_resource = never_cache(SampleResultResource())
+results_resource = never_cache(ResultsResource())
 
 sample_result_sets_resource = never_cache(SampleResultSetsResource())
 sample_result_set_resource = never_cache(SampleResultSetResource())
@@ -679,6 +699,10 @@ urlpatterns = patterns(
     url(r'^variants/(?P<pk>\d+)/$',
         sample_result_resource,
         name='variant'),
+
+    url(r'^variants/$',
+        results_resource,
+        name='results_resource'),
 
     url(r'^(?P<pk>\d+)/variants/sets/$',
         sample_result_sets_resource,
