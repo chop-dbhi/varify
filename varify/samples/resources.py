@@ -447,7 +447,7 @@ class SampleResultSetsResource(ThrottledResource):
             # so we can retrieve objects from our database.
             dbsnp_value = row[dbsnp_index].internal_value
             ref_value = row[ref_index].internal_value
-            start_value = row[start_index].internal_value
+            start_value = int(row[start_index].internal_value)
 
             # In the case that the position changes and there was no matching
             # query. Save the original to return back to the user.

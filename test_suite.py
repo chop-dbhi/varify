@@ -12,7 +12,8 @@ if not apps:
         'assessments',
         'south_tests',
         'geneset_form',
-        'resources'
+        'resources',
+        'samples'
     ]
 
 management.call_command('test', *apps)

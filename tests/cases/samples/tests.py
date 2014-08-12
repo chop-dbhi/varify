@@ -1,10 +1,10 @@
 import json
 import os
-from openpyxl import Workbook
+from openpyxl import Workbook, cell
 from restlib2.http import codes
-from ..base import AuthenticatedBaseTestCase
-from varify.samples.models import Project
+from vdw.samples.models import Project
 from guardian.shortcuts import assign
+from ..base import AuthenticatedBaseTestCase
 
 
 class VariantUploadResourceTestCase(AuthenticatedBaseTestCase):
@@ -33,13 +33,15 @@ class VariantUploadResourceTestCase(AuthenticatedBaseTestCase):
 
         # Write our fields in first.
         for i in range(0, 6):
-            sheet1.cell(row=0, column=i).value = fields[i]
+            sheet1.cell(row=0, column=i).set_value_explicit(
+                value=fields[i], data_type=cell.Cell.TYPE_STRING)
 
         # Write the variants to the excel sheet.
         row = 1
         for v in variants:
             for col in range(0, 6):
-                sheet1.cell(row=row, column=col).value = v[col]
+                sheet1.cell(row=row, column=col).set_value_explicit(
+                    value=v[col], data_type=cell.Cell.TYPE_STRING)
             row += 1
 
         book.save('variantList.xlsx')
@@ -49,17 +51,17 @@ class VariantUploadResourceTestCase(AuthenticatedBaseTestCase):
             p = Project.objects.get(pk=1)
             assign('samples.view_project', self.user, p)
 
-            response = self.client.post('/api/samples/9/variants/sets/upload/',
+            response = self.client.post('/api/samples/9/variants/sets/',
                                         {'name': 'variants',
-                                         'result_set_file': fp})
+                                         'source': fp})
             response_obj = json.loads(response.content)
 
             # An array of matching variants are returned. Make sure
             # that exactly 5 were found and 1 was added to the
             # list of unmatched variants.
-            self.assertEqual(response.status_code, codes.ok)
-            self.assertEqual(response_obj['total_processed'], 6)
-            self.assertEqual(response_obj['match_count'], 5)
-            self.assertEqual(len(response_obj['unknown']), 1)
+            self.assertEqual(response.status_code, codes.created)
+            self.assertEqual(response_obj['num_total_records'], 6)
+            self.assertEqual(response_obj['count'], 5)
+            self.assertEqual(len(response_obj['invalid_records']), 1)
 
         os.remove('variantList.xlsx')
