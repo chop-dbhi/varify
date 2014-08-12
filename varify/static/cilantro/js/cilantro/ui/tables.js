@@ -1,2 +1,2 @@
-var __slice=[].slice;define(["underscore","./tables/cell","./tables/row","./tables/header","./tables/footer","./tables/body","./tables/table"],function(){var e,t;return t=arguments[0],e=2<=arguments.length?__slice.call(arguments,1):[],t.extend.apply(t,[{}].concat(__slice.call(e)))});
-//@ sourceMappingURL=tables.js.map
+var __slice=[].slice;define(["underscore","./tables/cell","./tables/row","./tables/header","./tables/footer","./tables/body","./tables/table"],function(){var e,l;return l=arguments[0],e=2<=arguments.length?__slice.call(arguments,1):[],l.extend.apply(l,[{}].concat(__slice.call(e)))});
+//# sourceMappingURL=tables.js.map

@@ -2,13 +2,12 @@ var __hasProp = {}.hasOwnProperty,
   __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
 
 define(['jquery', 'underscore', './dist', './axis'], function($, _, dist, axis) {
-  var EditableFieldChart, _ref;
+  var EditableFieldChart;
   EditableFieldChart = (function(_super) {
     __extends(EditableFieldChart, _super);
 
     function EditableFieldChart() {
-      _ref = EditableFieldChart.__super__.constructor.apply(this, arguments);
-      return _ref;
+      return EditableFieldChart.__super__.constructor.apply(this, arguments);
     }
 
     EditableFieldChart.prototype.template = 'charts/editable-chart';
@@ -64,8 +63,7 @@ define(['jquery', 'underscore', './dist', './axis'], function($, _, dist, axis) 
       this.ui.heading.text(options.title.text);
       options.title.text = '';
       if (!options.series[0]) {
-        this.ui.chart.html('<p class=no-data>Unfortunately, there is\
-                    no data to graph here.</p>');
+        this.ui.chart.html('<p class=no-data>Unfortunately, there is no data to graph here.</p>');
         return;
       }
       this.ui.form.hide();
@@ -86,49 +84,50 @@ define(['jquery', 'underscore', './dist', './axis'], function($, _, dist, axis) 
     };
 
     EditableFieldChart.prototype.changeChart = function(event) {
-      var _this = this;
       if (event) {
         event.preventDefault();
       }
-      return this.collection.when(function() {
-        var data, fields, series, seriesIdx, url, xAxis, yAxis;
-        if (event == null) {
-          if ((xAxis = _this.model.get('xAxis'))) {
-            _this.xAxis.$el.val(xAxis.toString());
+      return this.collection.when((function(_this) {
+        return function() {
+          var data, fields, series, seriesIdx, url, xAxis, yAxis;
+          if (event == null) {
+            if ((xAxis = _this.model.get('xAxis'))) {
+              _this.xAxis.$el.val(xAxis.toString());
+            }
+            if ((yAxis = _this.model.get('yAxis'))) {
+              _this.yAxis.$el.val(yAxis.toString());
+            }
+            if ((series = _this.model.get('series'))) {
+              _this.series.$el.val(series.toString());
+            }
           }
-          if ((yAxis = _this.model.get('yAxis'))) {
-            _this.yAxis.$el.val(yAxis.toString());
+          xAxis = _this.xAxis.getSelected();
+          yAxis = _this.yAxis.getSelected();
+          series = _this.series.getSelected();
+          if (!xAxis) {
+            return;
           }
-          if ((series = _this.model.get('series'))) {
-            _this.series.$el.val(series.toString());
+          url = _this.model.get('_links').distribution.href;
+          fields = [xAxis];
+          data = 'dimension=' + xAxis.id;
+          if (yAxis) {
+            fields.push(yAxis);
+            data = data + '&dimension=' + yAxis.id;
           }
-        }
-        xAxis = _this.xAxis.getSelected();
-        yAxis = _this.yAxis.getSelected();
-        series = _this.series.getSelected();
-        if (!xAxis) {
-          return;
-        }
-        url = _this.model.get('_links').distribution.href;
-        fields = [xAxis];
-        data = 'dimension=' + xAxis.id;
-        if (yAxis) {
-          fields.push(yAxis);
-          data = data + '&dimension=' + yAxis.id;
-        }
-        if (series) {
-          seriesIdx = yAxis ? 2 : 1;
-          data = data + '&dimension=' + series.id;
-        }
-        if (event && _this.model) {
-          _this.model.set({
-            xAxis: xAxis.id,
-            yAxis: yAxis ? yAxis.id : void 0,
-            series: series ? series.id : void 0
-          });
-        }
-        return _this.update(url, data, fields, seriesIdx);
-      });
+          if (series) {
+            seriesIdx = yAxis ? 2 : 1;
+            data = data + '&dimension=' + series.id;
+          }
+          if (event && _this.model) {
+            _this.model.set({
+              xAxis: xAxis.id,
+              yAxis: yAxis ? yAxis.id : void 0,
+              series: series ? series.id : void 0
+            });
+          }
+          return _this.update(url, data, fields, seriesIdx);
+        };
+      })(this));
     };
 
     EditableFieldChart.prototype.disableSelected = function(event) {

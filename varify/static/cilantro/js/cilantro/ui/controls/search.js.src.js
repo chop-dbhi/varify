@@ -208,7 +208,7 @@ define([
         },
 
         clearValues: function() {
-            this.values.currentView.clear();
+            this.collection.reset();
         },
 
         getField: function() {
@@ -234,32 +234,32 @@ define([
         },
 
         validate: function(attrs) {
-            var pending, invalid = [];
-
             // If a call is still pending, warn the user that they are too
             // fast for their own good and to try again in a bit.
-            pending = this.collection.any(function(value) {
+            var pending = this.collection.any(function(value) {
                 return value.get('pending') === true;
             });
 
             if (pending) {
-                return 'The values are being checked, please wait a few ' +
-                       'seconds then click &quot;Apply Filter&quot; again.';
+                return 'The entered ' + this.model.get('plural_name') +
+                       ' are being validated.';
             }
 
             // Get a list of labels for all the elements in the collection that
             // were found to be invalid during the last call to the values
             // endpoint on the server. If no such elements exist, then this
             // control is deemed valid.
-            this.collection.each(function(value) {
-                if (!value.get('valid')) {
-                    invalid.push(value.get('label'));
+            var invalid = [];
+
+            this.collection.each(function(model) {
+                if (model.get('valid') === false) {
+                    invalid.push(model.get('label'));
                 }
             });
 
             if (invalid.length) {
-                return 'Remove the following invalid labels then click ' +
-                       '&quot;Apply Filter&quot; again: ' + invalid.join(', ');
+                return 'The following ' + this.model.get('plural_name') +
+                       ' are invalid: <pre>' + invalid.join('\n') + '</pre>';
             }
 
             if (attrs && (!attrs.value || !attrs.value.length)) {

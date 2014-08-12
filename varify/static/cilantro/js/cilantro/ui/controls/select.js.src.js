@@ -3,13 +3,12 @@ var __hasProp = {}.hasOwnProperty,
   __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
 
 define(['underscore', 'backbone', 'marionette', '../../core', './base'], function(_, Backbone, Marionette, c, base) {
-  var MultiSelectionList, SelectionListItem, SingleSelectionList, _ref, _ref1, _ref2;
+  var MultiSelectionList, SelectionListItem, SingleSelectionList;
   SelectionListItem = (function(_super) {
     __extends(SelectionListItem, _super);
 
     function SelectionListItem() {
-      _ref = SelectionListItem.__super__.constructor.apply(this, arguments);
-      return _ref;
+      return SelectionListItem.__super__.constructor.apply(this, arguments);
     }
 
     SelectionListItem.prototype.template = function() {};
@@ -43,8 +42,7 @@ define(['underscore', 'backbone', 'marionette', '../../core', './base'], functio
     __extends(SingleSelectionList, _super);
 
     function SingleSelectionList() {
-      _ref1 = SingleSelectionList.__super__.constructor.apply(this, arguments);
-      return _ref1;
+      return SingleSelectionList.__super__.constructor.apply(this, arguments);
     }
 
     SingleSelectionList.prototype.className = 'selection-list';
@@ -74,8 +72,7 @@ define(['underscore', 'backbone', 'marionette', '../../core', './base'], functio
     };
 
     SingleSelectionList.prototype.initialize = function(options) {
-      var limit,
-        _this = this;
+      var limit;
       this.wait();
       if (!this.collection) {
         this.collection = new Backbone.Collection;
@@ -86,10 +83,12 @@ define(['underscore', 'backbone', 'marionette', '../../core', './base'], functio
         }
         this.model.values({
           limit: limit
-        }).done(function(resp) {
-          _this.collection.reset(resp.values);
-          return _this.ready();
-        });
+        }).done((function(_this) {
+          return function(resp) {
+            _this.collection.reset(resp.values);
+            return _this.ready();
+          };
+        })(this));
       }
       return this.on('ready', function() {
         return this.change();
@@ -133,8 +132,7 @@ define(['underscore', 'backbone', 'marionette', '../../core', './base'], functio
     __extends(MultiSelectionList, _super);
 
     function MultiSelectionList() {
-      _ref2 = MultiSelectionList.__super__.constructor.apply(this, arguments);
-      return _ref2;
+      return MultiSelectionList.__super__.constructor.apply(this, arguments);
     }
 
     MultiSelectionList.prototype.onCollectionSync = function() {
@@ -142,10 +140,11 @@ define(['underscore', 'backbone', 'marionette', '../../core', './base'], functio
     };
 
     MultiSelectionList.prototype.onSelectionChange = function(event) {
-      var _this = this;
-      this.ui.items.children().each(function(i, el) {
-        return _this.collection.models[i].set('selected', el.selected);
-      });
+      this.ui.items.children().each((function(_this) {
+        return function(i, el) {
+          return _this.collection.models[i].set('selected', el.selected);
+        };
+      })(this));
       return this.change();
     };
 
@@ -170,8 +169,8 @@ define(['underscore', 'backbone', 'marionette', '../../core', './base'], functio
         values = [];
       }
       return this.collection.each(function(model) {
-        var _ref3;
-        return model.set('selected', (_ref3 = model.get('value'), __indexOf.call(values, _ref3) >= 0));
+        var _ref;
+        return model.set('selected', (_ref = model.get('value'), __indexOf.call(values, _ref) >= 0));
       });
     };
 
