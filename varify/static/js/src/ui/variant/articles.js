@@ -55,6 +55,8 @@ define([
 
         itemView: ArticleGroup,
 
+        itemViewContainer: '[data-target=items]',
+
         itemViewOptions: function(model) {
             // Since the articles property is a list of pubmed IDs, we can sort
             // by returning the object itself as it is the pubmed ID we will
@@ -66,9 +68,7 @@ define([
                     })
                 )
             };
-        },
-
-        itemViewContainer: '[data-target=items]'
+        }
     });
 
     return {

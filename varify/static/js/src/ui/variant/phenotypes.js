@@ -74,6 +74,8 @@ define([
 
         itemView: PhenotypeGroup,
 
+        itemViewContainer: '[data-target=items]',
+
         itemViewOptions: function(model) {
             return {
                 collection: new Backbone.Collection(
@@ -82,9 +84,7 @@ define([
                     })
                 )
             };
-        },
-
-        itemViewContainer: '[data-target=items]'
+        }
     });
 
     return {

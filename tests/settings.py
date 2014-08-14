@@ -81,48 +81,21 @@ RQ_QUEUES = {
     },
 }
 
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
-    'formatters': {
-        'rq_console': {
-            'format': '%(asctime)s %(message)s',
-            'datefmt': '%H:%M:%S',
-        },
-    },
     'handlers': {
-        'console': {
+        'null': {
             'level': 'DEBUG',
-            'class': 'logging.StreamHandler'
+            'class': 'tests.models.NullHandler'
         },
-        'rq_console': {
-            'level': 'DEBUG',
-            'class': 'rq.utils.ColorizingStreamHandler',
-            'formatter': 'rq_console',
-            'exclude': ['%(asctime)s'],
-        }
     },
     'loggers': {
-        'varify': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
         'vdw': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'tests': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propagate': True,
-        },
-        'rq.worker': {
-            'handlers': ['rq_console'],
             'level': 'DEBUG',
-        },
+            'handler': 'null',
+            'propogate': True
+        }
     }
 }
 

@@ -120,7 +120,7 @@ define([
 
         _renderDiagnoses: function(diagnoses) {
             if (diagnoses && diagnoses.length) {
-                var html = [], key, priority;
+                var html = [], key;
 
                 html.push('<ul>');
 
@@ -130,9 +130,9 @@ define([
                               diagnoses[key].omim_id + '" target="_blank">' +   // jshint ignore: line
                               diagnoses[key].name + '</a>');
 
-                    if ((priority = diagnoses[key].priority)) {
+                    if (diagnoses[key].priority) {
                         html.push('<span class="badge badge-important">' +
-                                  priority + '</span>');
+                                  diagnoses[key].priority + '</span>');
                     }
 
                     html.push('</li>');
@@ -259,8 +259,12 @@ define([
             else {
                 this.ui.headerLabel.text('Phenotypes');
 
-                if (samples.length === 0) this.ui.error.html(this.alerts.missingSample);
-                else this.ui.error.html(this.alerts.multipleSamples);
+                if (samples.length === 0) {
+                    this.ui.error.html(this.alerts.missingSample);
+                }
+                else {
+                    this.ui.error.html(this.alerts.multipleSamples);
+                }
 
                 this.ui.error.show();
             }

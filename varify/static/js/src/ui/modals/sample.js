@@ -96,6 +96,7 @@ define([
 
         handleSort: function(event) {
             if (!this.collection.length) return;
+
             this.applySort($(event.target).data('sort'));
         },
 
@@ -107,9 +108,11 @@ define([
 
                 if (regexp.test(model.get('label'))) {
                     filtered = false;
-                } else if (regexp.test(model.get('batch'))) {
+                }
+                else if (regexp.test(model.get('batch'))) {
                     filtered = false;
-                } else if (regexp.test(model.get('project'))) {
+                }
+                else if (regexp.test(model.get('project'))) {
                     filtered = false;
                 }
 
@@ -148,9 +151,12 @@ define([
             }
 
             this.collection.comparator = function(m1, m2) {
-                var v1 = parse(m1.get(attr)), v2 = parse(m2.get(attr));
+                var v1 = parse(m1.get(attr)),
+                    v2 = parse(m2.get(attr));
+
                 if (v1 < v2) return (dir === 'asc' ? 1 : -1);
                 if (v1 > v2) return (dir === 'asc' ? -1 : 1);
+
                 return 0;
             };
 

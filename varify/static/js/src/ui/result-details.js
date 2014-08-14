@@ -112,14 +112,15 @@ define([
             if (element.text() === this.showMoreText) {
                 parent.find(this.ui.expandCollapseLinks)
                       .text(this.showLessText);
-                parent.css('height', 'auto')
-                      .css('overflow', 'visible');
+                parent.css({height: 'auto', overflow: 'visible'});
             }
             else {
                 parent.find(this.ui.expandCollapseLinks)
                       .text(this.showMoreText);
-                parent.css('height', this.maxExpandableHeight)
-                      .css('overflow', 'hidden');
+                parent.css({
+                    height: this.maxExpandableHeight,
+                    overflow: 'hidden'
+                });
             }
         },
 

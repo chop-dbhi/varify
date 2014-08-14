@@ -13,6 +13,7 @@ from django.core.urlresolvers import reverse
 from django.views.decorators.cache import never_cache
 from django.conf import settings
 from guardian.shortcuts import get_objects_for_user
+from openpyxl.shared.exc import OpenModeError, InvalidFileException
 from preserialize.serialize import serialize
 from restlib2 import resources
 from restlib2.http import codes
@@ -26,6 +27,33 @@ from vdw.variants.models import Variant
 from .forms import ResultSetForm
 
 log = logging.getLogger(__name__)
+OPENPYXL_MAJOR_VERSION = int(openpyxl.__version__[0])
+
+
+def get_cell_value(cell):
+    """
+    Convenience method for getting the value of an openpyxl cell
+
+    This is necessary since the value property changed from internal_value
+    to value between version 1.* and 2.*.
+    """
+    if OPENPYXL_MAJOR_VERSION > 1:
+        return cell.value
+
+    return cell.internal_value
+
+
+def set_cell_value(cell, value):
+    """
+    Convenience method for setting the value of an openpyxl cell
+
+    This is necessary since the value property changed from internal_value
+    to value between version 1.* and 2.*.
+    """
+    if OPENPYXL_MAJOR_VERSION > 1:
+        cell.value = value
+    else:
+        cell.internal_value = value
 
 
 def sample_posthook(instance, data, request):
@@ -382,11 +410,12 @@ class SampleResultSetsResource(ThrottledResource):
 
     supported_content_types = (
         'application/json',
-        'multipart/form-data',)
+        'multipart/form-data',
+    )
 
     def get_change_type(self, ref, a1, a2):
         """
-        Given ref allele1 and allele2, returns the type of change.
+        Given ref, allele1, and allele2, returns the type of change.
         The only case of an amino acid insertion is when the ref is
         represented as a '.'.
         """
@@ -394,17 +423,6 @@ class SampleResultSetsResource(ThrottledResource):
             return self.INSERTION
         elif a1 == '.' or a2 == '.':
             return self.DELETION
-
-    def get_object(self, request, pk):
-        if not hasattr(request, 'instance'):
-            try:
-                instance = Sample.objects.get(pk=pk)
-            except self.model.DoesNotExist:
-                instance = None
-
-            request.instance = instance
-
-        return request.instance
 
     def get_queryset(self, request, pk):
         return self.model.objects.filter(sample__pk=pk)
@@ -416,14 +434,15 @@ class SampleResultSetsResource(ThrottledResource):
     # Consume the variants excel file and search the database for
     # matching queries.
     def _create_from_file(self, request, pk, instance):
-        sample = self.get_object(request, pk=pk)
+        sample = instance.sample
 
         # Try opening the excel file that was uploaded.
         try:
             variant_book = request.FILES['source']
             workbook = openpyxl.load_workbook(variant_book,
                                               use_iterators=True)
-        except:
+        except (OpenModeError, InvalidFileException):
+            log.exception('Error opening workbook when creating result set')
             return self.render(request, 'Could not process the file. Make '
                                'sure that the file is a valid excel file',
                                status=codes.unprocessable_entity)
@@ -437,9 +456,9 @@ class SampleResultSetsResource(ThrottledResource):
         # and find the row where the data starts by finding the first instance
         # of a column title.
         for row in sheet.iter_rows():
-            if row[0].internal_value == 'Chromosome':
+            if get_cell_value(row[0]) == 'Chromosome':
                 # Retrieve all the column titles from the sheet.
-                fields = [r.internal_value.lower() for r in row]
+                fields = [get_cell_value(r).lower() for r in row]
                 break
             start_row += 1
 
@@ -464,21 +483,21 @@ class SampleResultSetsResource(ThrottledResource):
         for row in itertools.islice(sheet.iter_rows(), start_row + 1, None):
             # Retrieve rsid, ref, start and chr from our spreadsheet
             # so we can retrieve objects from our database.
-            dbsnp_value = row[dbsnp_index].internal_value
-            ref_value = row[ref_index].internal_value
-            start_value = int(row[start_index].internal_value)
+            dbsnp_value = get_cell_value(row[dbsnp_index])
+            ref_value = get_cell_value(row[ref_index])
+            start_value = int(get_cell_value(row[start_index]))
 
             # In the case that the position changes and there was no matching
             # query. Save the original to return back to the user.
             old_position = start_value
 
-            chr_label = row[chr_index].internal_value
+            chr_label = get_cell_value(row[chr_index])
 
             chr_match = Chromosome.objects.get(value=chr_label)
 
-            allele1 = row[allele1_index].internal_value \
+            allele1 = get_cell_value(row[allele1_index]) \
                 if allele1_index else None
-            allele2 = row[allele2_index].internal_value \
+            allele2 = get_cell_value(row[allele2_index]) \
                 if allele1_index else None
 
             is_found = False
@@ -597,7 +616,7 @@ class SampleResultSetsResource(ThrottledResource):
         else:
             data = request.data
 
-        data['sample'] = self.get_object(request, pk=pk).id
+        data['sample'] = Sample.objects.get(pk=pk).id
 
         form = ResultSetForm(data)
 
