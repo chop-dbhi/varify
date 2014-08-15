@@ -1,0 +1,1 @@
+define(["underscore","./variant/articles","./variant/assessment-metrics","./variant/solvebio","./variant/cohorts","./variant/effects","./variant/frequencies","./variant/phenotypes","./variant/scores","./variant/summary"],function(e){var t=[].slice.call(arguments,1);return e.extend.apply(null,[{}].concat(t))})

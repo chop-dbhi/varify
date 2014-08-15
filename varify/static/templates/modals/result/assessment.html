@@ -1,0 +1,127 @@
+<div data-target=error-message class='alert alert-error alert-block hide'></div>
+
+<div data-target=loading-message>
+    <i class='icon-spinner icon-spin'></i> Loading knowledge capture data...
+</div>
+
+<div data-target=assessment-content class=hide>
+    <form>
+        <div class=row-fluid>
+            <div class=span6>
+                <h4>Pathogenicity</h4>
+                <label class=radio>
+                    <input type=radio value=1 name=pathogenicity-radio id=pathogenicity-unreviewed checked>
+                    Unreviewed
+                </label>
+                <label class=radio>
+                    <input type=radio class=requires-category value=2 name=pathogenicity-radio id=pathogenicity-pathogenic>
+                    Pathogenic
+                </label>
+                <label class=radio>
+                    <input type=radio class=requires-category value=3 name=pathogenicity-radio id=pathogenicity-likely-pathogenic>
+                    Likely pathogenic
+                </label>
+                <label class=radio>
+                    <input type=radio class=requires-category value=4 name=pathogenicity-radio id=pathogenicity-variant>
+                    Variant of unknown significance
+                </label>
+                <label class=radio>
+                    <input type=radio value=5 name=pathogenicity-radio id=pathogenicity-likely-benign>
+                    Likely benign
+                </label>
+                <label class=radio>
+                    <input type=radio value=6 name=pathogenicity-radio id=pathogenicity-benign>
+                    Benign
+                </label>
+                <label class=radio>
+                    <input type=radio value=7 name=pathogenicity-radio id=pathogenicity-exclude>
+                    Exclude for technical reasons related to sequencing
+                </label>
+            </div>
+
+            <div class=span6>
+                <h4>Category</h4>
+                <label class=radio>
+                    <input type=radio value=1 name=category-radio id=category-definitive checked>
+                    <span class=assessment-category-label>Definitive cause of phenotype</span>
+                </label>
+                <label class=radio>
+                    <input type=radio value=2 name=category-radio id=category-possible>
+                    <span class=assessment-category-label>Possibly linked to clinical indication</span>
+                </label>
+                <div>
+                    <div id=incidental-category-radios class=span6>
+                        <label class=radio>
+                            <input type=radio value=3 name=category-radio id=incidental-immediate>
+                            <span class=assessment-category-label>Immediately medically actionable</span>
+                        </label>
+                        <label class=radio>
+                            <input type=radio value=4 name=category-radio id=incidental-childhood>
+                            <span class=assessment-category-label>Childhood onset</span>
+                        </label>
+                        <label class=radio>
+                            <input type=radio value=5 name=category-radio id=incidental-adult>
+                            <span class=assessment-category-label>Adult onset</span>
+                        </label>
+                        <label class=radio>
+                            <input type=radio value=6 name=category-radio id=incidental-recessive>
+                            <span class=assessment-category-label>Recessive carrier</span>
+                        </label>
+                        <label class=radio>
+                            <input type=radio value=7 name=category-radio id=incidental-other>
+                            <span class=assessment-category-label>Other</span>
+                        </label>
+                    </div>
+                    <div class=span6 id=incidental-findings-label>
+                        <span class=muted>Incidental Findings</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4>Parental Results</h4>
+        <label class=inline>Mother: </label>
+        <select id=mother-results class=inline>
+            <option value>---</option>
+            <option value=1>Not tested</option>
+            <option value=2>Heterozygous</option>
+            <option value=3>Homozygous</option>
+            <option value=4>Absent</option>
+        </select>
+        <label class=inline>Father: </label>
+        <select id=father-results class=inline>
+            <option value>---</option>
+            <option value=1>Not tested</option>
+            <option value=2>Heterozygous</option>
+            <option value=3>Homozygous</option>
+            <option value=4>Absent</option>
+        </select>
+
+        <h4>Evidence Details</h4>
+        <textarea rows=5 id=evidence-details></textarea>
+
+        <div class=row-fluid>
+            <div class=span6>
+                <h4>Sanger Confirmation</h4>
+                <label class=radio>
+                    <input type=radio name=sanger-radio id=sanger-no value=false>
+                    No Sanger confirmation needed
+                </label>
+                <label class=radio>
+                    <input type=radio name=sanger-radio id=sanger-yes value=true>
+                    Request Sanger confirmation
+                </label>
+            </div>
+            <div class=span6>
+                <h4>Assessment Status</h4>
+                <label class=inline>Status: </label>
+                <select data-target=assessment-status class=inline>
+                    <option value='Draft'>Draft</option>
+                    <option value='Pending'>Pending Review</option>
+                    <option value='Ignored'>Exclude From Analysis</option>
+                    <option value='Complete' disabled>Complete</option>
+                </select>
+            </div>
+        </div>
+    </form>
+</div>

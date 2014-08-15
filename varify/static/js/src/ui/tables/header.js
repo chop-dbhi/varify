@@ -1,9 +1,10 @@
 /* global define */
 
 define([
+    'jquery',
     'underscore',
     'marionette'
-], function(_, Marionette) {
+], function($, _, Marionette) {
 
     var Header = Marionette.ItemView.extend({
         tagName: 'thead',
@@ -25,7 +26,7 @@ define([
         _getConcept: function(element) {
             var concept = parseInt(element.getAttribute('data-concept-id'), 10);
 
-            if ((concept != null) && !isNaN(concept)) {
+            if ((concept !== null) && !isNaN(concept)) {
                 return concept;
             }
 
@@ -40,7 +41,7 @@ define([
 
             concept = this._getConcept(event.target);
 
-            if ((concept == null) || isNaN(concept)) {
+            if ((concept === null) || isNaN(concept)) {
                 throw new Error('Unrecognized concept ID on column');
             }
 
@@ -50,7 +51,7 @@ define([
 
             // If this column is not in the view already, add it in before
             // updating the view sort properties.
-            if (model == null) {
+            if (!model) {
                 this.data.view.facets.add({
                     concept: concept
                 });
@@ -62,7 +63,7 @@ define([
                 if (f.get('concept') === concept) {
                     direction = f.get('sort');
 
-                    if (direction != null) {
+                    if (direction) {
                         if (direction.toLowerCase() === "asc") {
                             f.set('sort', "desc");
                             f.set('sort_index', 0);
@@ -92,7 +93,7 @@ define([
 
                 $sortIcon = $('th[data-concept-id=' + (f.get('concept')) + '] i');
 
-                if ($sortIcon != null) {
+                if ($sortIcon !== null) {
                     $sortIcon.removeClass('icon-sort icon-sort-up icon-sort-down');
 
                     direction = (f.get('sort') || '').toLowerCase();

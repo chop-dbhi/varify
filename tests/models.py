@@ -1,6 +1,16 @@
 import logging
 
 
+class NullHandler(logging.Handler):
+    """
+    Workaround to support Python 2.6
+
+    NullHandler was officially added to the logging package in Python 2.7
+    """
+    def emit(self, record):
+        pass
+
+
 class MockHandler(logging.Handler):
     def __init__(self, *args, **kwargs):
         self.reset()

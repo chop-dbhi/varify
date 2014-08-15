@@ -1,0 +1,82 @@
+<div class=modal-header>
+    <h3>Create Variant Set</h3>
+</div>
+
+<div class=modal-body>
+    <form class=form-inline>
+        <h5>Import:</h5>
+        <div class=radio>
+            <label>
+                <input type=radio name=source value=file checked>
+                From file
+            </label>
+        </div>
+        <div class=radio>
+            <label>
+                <input type=radio name=source value=results>
+                Using current filters
+            </label>
+        </div>
+
+        <h5>Variant Set Details:</h5>
+        <div class='control-group row-fluid'>
+            <label class=control-label>Name</label>
+            <div class=controls>
+                <input type=text data-target=name class='span12' placeholder='Variant set name (required)...' />
+            </div>
+        </div>
+        <div class='control-group row-fluid'>
+            <label class=control-label>Description</label>
+            <div class=controls>
+                <input type=text data-target=description class='span12' placeholder='Additional description or details (optional)...' />
+            </div>
+        </div>
+        <div data-target=file-container class='control-group row-fluid'>
+            <label class=control-label>File</label>
+            <div class=controls>
+                <input type=file data-target=file class='span12' placeholder='Variant set source file (required)...' />
+            </div>
+        </div>
+    </form>
+    <div data-target=success-message class=hide>
+        <p class='alert alert-block alert-info'>
+            The variant set was created successfully. You can access this varaint set by navigating to the Workspace page and selecting it from the list of variant sets shown in the lower left corner of the screen.
+        </p>
+        <b>Name: </b><span data-target=created-name></span>
+        <br>
+        <b># Variants In Set: </b><span data-target=valid-count></span>
+        <div data-target=invalid-container>
+            <b># Invalid Records: </b><span data-target=invalid-count></span>
+            <p class='alert alert-block alert-warning'>
+                The records below are present in the uploaded file but could not be linked to a variant.
+            </p>
+            <table class=table-striped>
+                <thead>
+                    <tr>
+                        <th>Chromosome</th>
+                        <th>Start Position</th>
+                        <th>Reference</th>
+                        <th>Allele 1</th>
+                        <th>Allele 2</th>
+                        <th>dbSNP</th>
+                    </tr>
+                </thead>
+                <tbody data-target=invalid-table></tbody>
+            </table>
+        </div>
+    </div>
+    <div data-target=error-message class='alert alert-block alert-error hide'>
+        There was an error creating the new variant set. If you are creating from your current filter set, please make sure that the filters match at least 1 result. If you are creating from a file, please make sure that the data from the file applies to the currently selected sample and that the file is a valid Excel document.
+    </div>
+    <div data-target=loading-message class=hide>
+        <i class='icon-spinner icon-spin'></i> Creating Variant Set...
+    </div>
+    <div data-target=mismatch-message class='alert alert-block alert-warning hide'>
+        The following variants from the uploaded file could not be found in the currently selected sample. If you wish to create the variant set anyway, click the create button below.
+    </div>
+</div>
+
+<div class=modal-footer>
+    <button data-target=close class=btn>Close</button>
+    <button data-target=save class='btn btn-primary' disabled=disabled>Save</button>
+</div>

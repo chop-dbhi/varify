@@ -3,7 +3,9 @@
 define([
     'underscore',
     './modals/result',
-    './modals/phenotype'
+    './modals/phenotype',
+    './modals/sample',
+    './modals/variant-set'
 ], function(_) {
 
     var mods = [].slice.call(arguments, 1);

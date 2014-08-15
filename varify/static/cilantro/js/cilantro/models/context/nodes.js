@@ -1,2 +1,0 @@
-var __slice=[].slice;define(["underscore","./nodes/base","./nodes/condition","./nodes/branch","./nodes/composite"],function(){var t,e;return e=arguments[0],t=2<=arguments.length?__slice.call(arguments,1):[],e.extend.apply(e,[{}].concat(__slice.call(t)))});
-//@ sourceMappingURL=nodes.js.map

@@ -19,37 +19,64 @@ body, #concept-panel, #context-panel {
     margin-top: 10px !important;
 }
 
-.export-options-modal {
-    // Override Cilantro styles for modal and modal-body to alow the export
-    // modal to be a little larger than normal.
-    width: 720px !important;
-    margin-left: -360px !important;
-    max-height: 720px;
-    bottom: 5%;
-    top: 5%;
+.result-details {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
 
-    .tab-content {
-        position: absolute;
-        bottom: 65px;
-        top: 105px;
-        left: 15px;
-        right: 15px;
+    .expandable-item {
+        height: 100%;
+        position: relative;
+        padding-bottom: 20px;
     }
 
-    .modal-body {
-        position: static;
-        overflow: scroll;
-    }
-
-    .modal-footer {
+    .expand-collapse-container {
         position: absolute;
-        left: 0;
-        right: 0;
         bottom: 0;
+        width: 100%;
+        background: white;
+    }
+
+    // Override default bootstrap popover width to something very large so
+    // individual popovers can shrink as needed.
+    .popover {
+        max-width: 600px;
+    }
+
+    .cohort-popover-content, .percentage-popover-content {
+        max-height: 250px;
+        max-width: 200px;
+        overflow-y: auto;
+    }
+
+    .details-popover-content {
+        max-width: 500px;
+        max-height: 250px;
+        overflow: auto;
+    }
+
+    .assessment-table {
+        th, td {
+            text-align: left;
+            padding-right: 20px;
+        }
+        tbody > tr {
+            border-top: 1px solid #eee;
+        }
     }
 }
 
-.result-details-modal {
+.phenotype-detail-modal {
+    .content-display {
+        .horizontal-list-display {
+            display: inline-flex;
+        }
+    }
+}
+
+#result-details-modal {
     width: 90%;
     top: 5%;
     left: 5%;
@@ -57,11 +84,12 @@ body, #concept-panel, #context-panel {
     max-height: 800px;
     bottom: 5%;
 
-    .tab-content {
+    .variant-details-container {
         position: absolute;
         width: 96.5%;
-        top: 60px;
-        bottom: 60px;
+        top: 0;
+        bottom: 70px;
+        overflow: auto;
     }
 
     .modal-footer {
@@ -78,82 +106,6 @@ body, #concept-panel, #context-panel {
 
     .modal-body {
         position: static;
-    }
-
-    #knowledge-capture-feedback-container {
-        height: 400px;
-        text-align: center;
-    }
-
-    #knowledge-capture-form {
-        margin: 0;
-        .radio {
-            padding-left: 30px;
-        }
-        .nested-radio {
-            padding-left: 60px;
-        }
-        .inline {
-            display: inline;
-        }
-        label.inline {
-            padding-left: 15px;
-        }
-        textarea {
-            width: 75%;
-            resize: none;
-            margin: 0;
-        }
-        select, h4 {
-            margin: 5px 0px 5px 0px;
-        }
-    }
-
-    #error-container {
-        margin: 0;
-        margin-bottom: 10px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-
-        h5 {
-            margin: 0;
-        }
-    }
-
-    #audit-trail-button {
-        float: left;
-    }
-
-    .expandable-details-item {
-        height: 100%;
-        position: relative;
-        padding-bottom: 20px;
-    }
-
-    .expand-collapse-container {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        background: white;
-    }
-
-    // Cohort popover styles
-    .popover {
-        max-height: 250px;
-        max-width: 200px;
-    }
-
-    .popover-content > div {
-        max-height: 200px;
-        overflow-y: scroll;
-    }
-}
-
-.phenotype-detail-modal {
-    .content-display {
-        .horizontal-list-display {
-            display: inline-flex;
-        }
     }
 }
 
@@ -289,5 +241,209 @@ body, #concept-panel, #context-panel {
 
     tbody > tr {
         border-top: 1px solid #eee;
+    }
+}
+
+#sample-dialog {
+    .modal-footer {
+        text-align: left;
+
+        [data-target=selected-sample] {
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        button {
+            float: right;
+        }
+    }
+
+    table.table {
+        thead th {
+            cursor: pointer;
+            position: relative;
+            width: 200px;
+
+            &:hover {
+                background-color: #eee;
+            }
+
+            .icon-sort-up, .icon-sort-down {
+                position: absolute;
+                right: 8px;
+                top: 12px;
+            }
+
+            &.desc {
+                .icon-sort-up {
+                    display: none;
+                }
+            }
+
+            &.asc {
+                .icon-sort-down {
+                    display: none;
+                }
+            }
+
+            &:first-child {
+                border-left: 1px solid #ddd;
+            }
+        }
+
+        tbody tr {
+            cursor: pointer;
+
+            &.filtered {
+                display: none;
+            }
+
+            &.selected td {
+                background-color: lightYellow;
+                font-weight: bold;
+            }
+        }
+    }
+}
+
+#variant-set-dialog {
+    width: 800px;
+    margin-left: -400px;
+
+    .radio {
+        margin-left: 25px;
+    }
+
+    table {
+        table-layout: fixed;
+    }
+
+    th, td {
+        width: 150px;
+        text-align: left;
+    }
+
+    td {
+        padding-left: 5px;
+        max-width: 150px;
+        word-wrap: break-word;
+    }
+}
+
+.workspace-workflow {
+    .span6 > * {
+        margin-top: 20px;
+    }
+    .span6 > :first-child {
+        margin-top: 0;
+    }
+}
+
+.variant-set-workflow {
+    position: fixed;
+    top: 40px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    .variant-item {
+        margin: 5px;
+        cursor: pointer;
+    }
+
+    .variant-item.selected {
+        background: #9fd2f0;
+    }
+
+    .variant-item:not(:last-child) {
+        border-bottom: 1px solid #eee;
+    }
+
+    .variant-list-container {
+        position: absolute;
+        height: 100%;
+        width: 30%;
+        border-right: 1px solid #c9c9c9;
+        overflow: scroll;
+
+        > * {
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .variant-list-region {
+            border-top: 1px solid #c9c9c9;
+        }
+    }
+
+    .message-container {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+
+        // Force the error message to render above everything else and use the
+        // background to obscure anything(borders, etc.) that might still be
+        // visible.
+        background: #fff;
+        z-index: 1;
+    }
+
+    .variant-details-region, .knowledge-capture-region {
+        position: absolute;
+        width: 70%;
+        right: 0;
+    }
+
+    .variant-details-region {
+        height: 50%;
+        border-bottom: 1px solid #c9c9c9;
+        overflow: auto;
+
+        .result-details {
+            margin: 10px;
+        }
+    }
+
+    .knowledge-capture-region {
+        height: 50%;
+        bottom: 0;
+        overflow: auto;
+
+        form {
+            margin: 10px;
+        }
+
+        .incidental-findings-radios {
+            border-right: 1px solid #a9a9a9;
+        }
+
+        .incidental-findings-label {
+            padding-top: 50px;
+        }
+
+        .radio {
+            padding-left: 30px;
+        }
+        .nested-radio {
+            padding-left: 60px;
+        }
+        .inline {
+            display: inline;
+        }
+        label.inline {
+            padding-left: 15px;
+        }
+        textarea {
+            width: 75%;
+            resize: none;
+            margin: 0;
+        }
+        select, h4 {
+            margin: 5px 0px 5px 0px;
+        }
+    }
+
+    .alert-block {
+        margin: 10px;
     }
 }

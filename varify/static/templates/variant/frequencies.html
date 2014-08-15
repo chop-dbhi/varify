@@ -1,0 +1,38 @@
+<h4>1000 Genomes</h4>
+
+<% if (data.thousandg) { %>
+    <ul class=unstyled>
+        <% if (data.thousandg.all_af) { %>
+            <li><small>All</small> <%= data.thousandg.all_af %>%</li>
+        <% } %>
+        <% if (data.thousandg.amr_af) { %>
+            <li><small>American</small> <%= data.thousandg.amr_af %>%</li>
+        <% } %>
+        <% if (data.thousandg.afr_af) { %>
+            <li><small>African</small> <%= data.thousandg.afr_af %>%</li>
+        <% } %>
+        <% if (data.thousandg.eur_af) { %>
+            <li><small>European</small> <%= data.thousandg.eur_af %>%</li>
+        <% } %>
+    </ul>
+<% } else { %>
+    <p class=muted>No 1000G frequencies</p>
+<% } %>
+
+<h4>EVS</h4>
+
+<% if (data.evs) { %>
+    <ul class=unstyled>
+        <% if (data.evs.all_af) { %>
+            <li><small>All</small> <%= data.evs.all_af %>%</li>
+        <% } %>
+        <% if (data.evs.afr_af) { %>
+            <li><small>African</small> <%= data.evs.afr_af %>%</li>
+        <% } %>
+        <% if (data.evs.eur_af) { %>
+            <li><small>European</small> <%= data.evs.eur_af %>%</li>
+        <% } %>
+    </ul>
+<% } else { %>
+    <p class=muted>No EVS frequencies</p>
+<% } %>

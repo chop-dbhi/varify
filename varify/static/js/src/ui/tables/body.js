@@ -17,7 +17,7 @@ define([
         initialize: function(options) {
             this._collection = options.collection;
             this.collection = new models.ResultCollection();
-            
+
             this.listenTo(this._collection, 'reset', this._fetch);
 
             if (this._collection.length > 0) this._fetch();

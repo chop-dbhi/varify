@@ -1,0 +1,1 @@
+define(["marionette"],function(e){var t=e.ItemView.extend({template:"varify/tables/row/genes/empty"}),n=e.ItemView.extend({template:"varify/tables/row/genes/item"}),r=e.CollectionView.extend({itemView:n,emptyView:t});return{EmptyGene:t,GeneItem:n,GeneList:r}})

@@ -20,7 +20,7 @@ define([
         },
 
         onClick: function() {
-            c.dialogs.resultDetails.open(this, this.model);
+            c.dialogs.resultDetails.open(this.model);
         },
 
         onRender: function() {
@@ -54,8 +54,10 @@ define([
                 container: 'body'
             });
 
-            $genotype = $(Templates.genotype(this.model.get('genotype_value'), this.model.get('genotype_description')))
-                .addClass('genotype').tooltip({container: 'body'});
+            $genotype = $(Templates.genotype(
+                    this.model.get('genotype_value'),
+                    this.model.get('genotype_description'))
+                ).addClass('genotype').tooltip({container: 'body'});
 
             $genomicPosition = $(Templates.genomicPosition(variant.chr, variant.pos))
                 .addClass('genomic-position')
@@ -67,7 +69,9 @@ define([
             $condensedFlags = $(Templates.condensedFlags(variant));
 
             this.$el.empty();
-            return this.$el.append($gene, $hgvsP, $variantEffects, $hgvsC, $genotype, $genomicPosition, $phenotypeScore, $condensedFlags);
+            return this.$el.append($gene, $hgvsP, $variantEffects, $hgvsC,
+                                   $genotype, $genomicPosition, $phenotypeScore,
+                                   $condensedFlags);
         }
     });
 

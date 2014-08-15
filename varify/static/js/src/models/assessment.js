@@ -24,7 +24,7 @@ define([
         },
 
         parse: function(response) {
-            if (response != null) {
+            if (response !== null) {
                 var data = response;
 
                 var objFields = [
@@ -36,7 +36,7 @@ define([
 
                 _.each(objFields, function(field) {
                     if (response[field]) {
-                        data[field] = response[field]['id'];
+                        data[field] = response[field].id;
                     }
                 });
 
@@ -47,14 +47,12 @@ define([
 
     var AssessmentMetrics = Backbone.Model.extend({
         url: function() {
-          return '' + utils.getRootUrl() + 'api/variants/' + this.variant_id + '/assessment-metrics/';
+            return '' + utils.getRootUrl() + 'api/variants/' +
+                   this.variantId + '/assessment-metrics/';
         },
 
         initialize: function(attrs, options) {
-            if (!(this.result = options.result_id)) {
-                throw new Error("Result ID required");
-            }
-            if (!(this.variant_id = options.variant_id)) {
+            if (!(this.variantId = options.variantId)) {
                 throw new Error("Variant ID required");
             }
         }
