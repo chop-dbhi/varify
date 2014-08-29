@@ -323,19 +323,20 @@ ResultAssessment = {
 
 SampleResult = {
     'fields': [':pk', ':local', 'genotype_value', 'read_depth_ref',
-               'read_depth_alt', 'base_counts'],
+               'read_depth_alt', 'base_counts', 'variant'],
     'exclude': ['created', 'modified', 'downsampling', 'fisher_strand',
                 'homopolymer_run', 'notes', 'spanning_deletions',
                 'strand_bias', 'mq', 'mq0', 'mq_rank_sum',
                 'phred_scaled_likelihood', 'read_pos_rank_sum', 'in_dbsnp',
-                'coverage_ref', 'coverage_alt'],
+                'coverage_1', 'coverage_2', 'allele_1', 'allele_2'],
     'aliases': {
         'base_counts': 'base_count_map',
-        'read_depth_alt': 'coverage_alt',
-        'read_depth_ref': 'coverage_ref',
+        'read_depth_alt': 'coverage_2',
+        'read_depth_ref': 'coverage_1',
+        'variant': 'allele_1'
     },
     'related': {
-        'variant': ResultVariant,
+        'allele_1': ResultVariant,
         'sample': Sample,
         'genotype': Genotype,
     }
@@ -345,7 +346,7 @@ SampleResult = {
 # the variant_id. This is used downstreamed to simply link together
 # data from an alternate source.
 SampleResultVariant = deepcopy(SampleResult)
-SampleResultVariant['related']['variant'] = {
+SampleResultVariant['related']['allele_1'] = {
     'fields': ['variant_id'],
     'aliases': {
         'variant_id': 'id',
