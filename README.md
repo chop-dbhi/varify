@@ -200,3 +200,11 @@ make sass collect watch
 ```
 
 _Note, the `sass` target is called first to ensure the compiled files exist before attempting to collect them._
+
+##VCF Exporter
+
+In order to gain access to the data in Varify for use in a Bioinformatics worflow, there is a VCF exporter available.  This exporter can be invoked as a download option, or by sending a POST request to /api/data/export/vcf.  This POST request can be generated automatically using the `fetchVCF` utility.
+
+In order to install fetchVCF in your virtualenv:
+
+`pip install varify-client`

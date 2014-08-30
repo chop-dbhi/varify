@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.template.loader import add_to_builtins
 from django.views.generic import RedirectView, TemplateView
+from varify.export.resources import VcfExporterResource
 
 add_to_builtins('bootstrapform.templatetags.bootstrap')
 add_to_builtins('avocado.templatetags.avocado_tags')
@@ -30,6 +31,8 @@ urlpatterns = patterns(
     # Required for opening a sample
     url(r'^sample/', TemplateView.as_view(template_name='index.html'),
         name='sample'),
+
+    url(r'^api/data/export/vcf/$', VcfExporterResource(), name='vcf'),
 
     url(r'^sources/', include('varify.raw.sources.urls')),
     url(r'^genes/', include('varify.genes.urls')),

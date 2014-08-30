@@ -36,6 +36,8 @@ INSTALLED_APPS = (
     'vdw.samples',
     'vdw.variants',
 
+    'varify.export',
+
     'sts',
     'haystack',
     'south',

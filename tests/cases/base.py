@@ -10,10 +10,15 @@ class AuthenticatedBaseTestCase(TestCase):
         self.user = User.objects.create_user(username='test', password='test')
         self.client.login(username='test', password='test')
 
-
 class QueueTestCase(TransactionTestCase):
     def setUp(self):
         cache.clear()
         get_queue('variants').empty()
         get_queue('default').empty()
         get_failed_queue(get_connection()).empty()
+
+class AuthenticatedQueueTestCase(QueueTestCase):
+    def setUp(self):
+        super(AuthenticatedQueueTestCase, self).setUp()
+        self.user = User.objects.create_user(username='test', password='test')
+        self.client.login(username='test', password='test')
