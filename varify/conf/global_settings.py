@@ -275,6 +275,15 @@ CACHES = {
     }
 }
 
+try:
+    from vdw.conf.global_settings import CACHES as vdw_caches
+
+    for key in vdw_caches:
+        if not key in CACHES:
+            CACHES[key] = vdw_caches[key]
+except ImportError:
+    pass
+
 # Default cache seconds for a resource, use the `cache_page` decorator to
 # change the amount of time for a given resource.
 CACHE_MIDDLEWARE_SECONDS = 60
