@@ -4,8 +4,8 @@ except ImportError:
     from ordereddict import OrderedDict
 from django.db.models import Q
 from avocado.formatters import registry as formatters
-from serrano.formatters import HTMLFormatter
 from django.conf import settings
+from serrano.formatters import HTMLFormatter
 
 
 class AlamutFormatter(HTMLFormatter):

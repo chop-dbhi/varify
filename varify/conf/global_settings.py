@@ -167,7 +167,7 @@ TEMPLATE_DIRS = ()
 TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.request',
     'varify.context_processors.static',
-    'varify.context_processors.alamut',
+    'varify.context_processors.alamut'
 )
 
 
@@ -188,6 +188,7 @@ LOGOUT_URL = '/logout/'
 LOGIN_REDIRECT_URL = '/workspace/'
 
 ALAMUT_URL = 'http://localhost:10000'
+JBROWSE_HOST = 'localhost'
 
 # For non-publicly accessible applications, the siteauth app can be used to
 # restrict access site-wide.

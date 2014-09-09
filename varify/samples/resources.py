@@ -22,9 +22,11 @@ from varify.variants.resources import VariantResource
 from varify import api
 from vdw.assessments.models import Assessment
 from vdw.genome.models import Chromosome
-from vdw.samples.models import Sample, Result, ResultScore, ResultSet
+from vdw.samples.models import (Sample, SampleManifest, Result, ResultScore,
+                                ResultSet)
 from vdw.variants.models import Variant
 from .forms import ResultSetForm
+
 
 log = logging.getLogger(__name__)
 OPENPYXL_MAJOR_VERSION = int(openpyxl.__version__[0])
@@ -274,6 +276,34 @@ class SampleResultResource(ThrottledResource):
         data['variant'] = VariantResource.get(request, data['variant_id'])
         data.pop('variant_id')
 
+        # Integrate the SampleManifest data
+        sm = SampleManifest.objects.get(sample__id=data['sample']['id'])
+        found = False
+        filestem = ''
+
+        # Add JBrowse data requirements, including sample_manifest which is
+        # constructed by concatenating the batch, sample and run of [sample]
+        for line in sm.content.split('\n'):
+            if '[sample]' in line:
+                found = True
+
+            if found:
+                if line.startswith('batch = ') or line.startswith('sample = '):
+                    chunks = line.split('=')
+
+                    if len(chunks) > 1:
+                        filestem += chunks[1].strip() + '_'
+
+                if line.startswith('version = '):
+                    chunks = line.split('=')
+
+                    if len(chunks) > 1:
+                        filestem += chunks[1].strip()
+                        break
+
+        data['sample_manifest'] = filestem
+        data['jbrowse_host'] = settings.JBROWSE_HOST
+
         try:
             score = ResultScore.objects.get(result=result)
             data['score'] = {
@@ -310,10 +340,15 @@ class ResultsResource(ThrottledResource):
     template = api.templates.SampleResultVariant
 
     def post(self, request):
-        if (not request.data.get('ids') or
-                not isinstance(request.data['ids'], list)):
-            return HttpResponse(status=codes.unprocessable_entity,
-                                content='Array of "ids" is required')
+        ids_not_found = 'ids' not in request.data
+        not_a_list = not isinstance(request.data['ids'], list)
+
+        if ids_not_found or not_a_list:
+            return self.render(
+                request,
+                {'message': 'An array of "ids" is required'},
+                status=codes.unprocessable_entity
+            )
 
         data = []
         resource = SampleResultResource()
@@ -686,6 +721,31 @@ class SampleResultSetResource(SampleResultSetsResource):
         return data
 
 
+class JbrowseResource(ThrottledResource):
+    def get(self, request, filename):
+        response = HttpResponse()
+        try:
+            if '.bai' in filename or '.tbi' in filename:
+                response['Content-Type'] = 'application/octet-stream'
+            else:
+                response['Content-Type'] = 'text/plain'
+
+            # Control access to files hosted by nginx
+            response['X-Accel-Redirect'] = '/files/' + filename
+            # Control access to files hosted by Apache
+            response['X-Sendfile'] = '/files/' + filename
+
+            response['Content-Disposition'] = 'attachment;filename=' + filename
+        except Exception:
+            return self.render(
+                request,
+                {'message': 'No sample found for "id"'},
+                status=codes.unprocessable_entity
+            )
+
+        return response
+
+
 sample_resource = never_cache(SampleResource())
 samples_resource = never_cache(SamplesResource())
 named_sample_resource = never_cache(NamedSampleResource())
@@ -699,6 +759,7 @@ sample_result_set_resource = never_cache(SampleResultSetResource())
 
 phenotype_resource = never_cache(PhenotypeResource())
 pedigree_resource = never_cache(PedigreeResource())
+jbrowse_resource = never_cache(JbrowseResource())
 
 urlpatterns = patterns(
     '',
@@ -730,6 +791,10 @@ urlpatterns = patterns(
     url(r'^variants/sets/(?P<pk>\d+)/$',
         sample_result_set_resource,
         name='variant-set'),
+
+    url(r'^jbrowse/(?P<filename>.+)$',
+        jbrowse_resource,
+        name='jbrowse_resource'),
 
     url(r'^(?P<sample_id>.+)/phenotypes/$',
         phenotype_resource,
