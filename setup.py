@@ -35,7 +35,7 @@ install_requires = [
     'django-reversion==1.6.6',
     'diff-match-patch',
     'pyvcf>=0.6.5',
-    'vdw'
+    'vdw>=0.1.0'
 ]
 
 if sys.version_info < (2, 7):
@@ -48,21 +48,26 @@ kwargs = {
                                        'tests.*']),
     'include_package_data': True,
     'install_requires': install_requires,
-    # This is a hack to get setuptools to install the latest version of the
-    # varify-data-warehouse from the github repo. Until varify-data-warehouse
-    # is released on pypi, we need to continue to install from github.
-    'dependency_links': [
-        'https://github.com/cbmi/varify-data-warehouse/archive/master.zip#egg=vdw',     # noqa
-    ],
     'test_suite': 'test_suite',
     'tests_require': ['httpretty'],
-    'author': '',
-    'author_email': '',
-    'description': '',
-    'license': '',
-    'keywords': '',
-    'url': '',
-    'classifiers': [],
+    'author': 'Byron Ruth',
+    'author_email': 'b@devel.io',
+    'description': 'Clinical DNA Sequencing Analysis and Data Discovery',
+    'license': 'bsd',
+    'keywords': 'vcf dna clinical sequence harvest genome',
+    'url': 'http://github.com/cbmi/varify',
+    'classifiers': [
+        'Development Status :: 5 - Production/Stable',
+        'License :: OSI Approved :: BSD License',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Framework :: Django',
+        'Topic :: Internet :: WWW/HTTP',
+        'Intended Audience :: Developers',
+        'Intended Audience :: Science/Research',
+        'Intended Audience :: Healthcare Industry',
+        'Intended Audience :: Information Technology',
+    ],
 }
 
 setup(**kwargs)

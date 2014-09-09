@@ -53,7 +53,18 @@ define([
         },
 
         initialize: function() {
+            _.bindAll(this, 'hideLoadingOverlay');
+
             c.ui.ResultsWorkflow.prototype.initialize.call(this);
+
+            // We will manage the hiding of the loading overlay ourselves. The
+            // call to the preview endpoint returns the variant IDs. The actual
+            // variant data is retrieved by another call after the call to the
+            // preview endpoint comes back so we cannot let Cilantro hide the
+            // overlay after the preview endpoint syncs like it normally does.
+            // Insted, we need to hide it after the variant collection becomes
+            // synced.
+            this.stopListening(this.data.results, 'sync');
 
             // The Cilantro workflow no longer requires the context but we
             // need it to have any hope of referencing the sample name in the
@@ -85,7 +96,10 @@ define([
                 view: this.data.view,
                 collection: this.data.results
             }));
-
+            // When the body of the table reports that it is synced, then the
+            // variant data has arrived and we can now hide the loading
+            // overlay.
+            this.table.currentView.on('itemview:synced', this.hideLoadingOverlay);
 
             this.ui.navbarButtons.tooltip({
                 animation: false,

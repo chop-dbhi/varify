@@ -24,11 +24,16 @@ define([
         },
 
         _fetch: function() {
+            var _this = this;
+
             this.collection.fetch({
                 data: JSON.stringify({ids: this._collection.pluck('pk')}),
                 type: 'POST',
                 contentType: 'application/json',
-                parse: true
+                parse: true,
+                success: function() {
+                    _this.trigger('synced');
+                }
             });
         },
 

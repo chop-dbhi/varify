@@ -283,7 +283,7 @@ Batch = {
 # project and batch names are merged into the sample object to
 # remove excessive nesting.
 Sample = {
-    'fields': [':pk', 'label', 'project'],
+    'fields': [':pk', 'batch', 'count', 'created', 'label', 'project'],
     'related': {
         'batch': Batch,
         'project': Project,
