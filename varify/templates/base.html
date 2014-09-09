@@ -16,6 +16,35 @@
         <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap/2.3.2/css/bootstrap.css">
         <link rel="stylesheet" href="//cdn.jsdelivr.net/bootstrap/2.3.2/css/bootstrap-responsive.css">
         <link rel="stylesheet" href="//cdn.jsdelivr.net/fontawesome/3.2.1/css/font-awesome.css">
+
+        <script>
+            function cssLoaded(href) {
+                var cssFound = false;
+
+                for (var i = 0; i < document.styleSheets.length; i++) {
+                    var sheet = document.styleSheets[i];
+
+                    if (sheet['href'].indexOf(href) >= 0) {
+                        cssFound = true;
+                    }
+                }
+                return cssFound;
+
+            }
+
+            var cssStyles = ['bootstrap.css', 'bootstrap-responsive.css', 'font-awesome.css'];
+
+            for (var cs in cssStyles) {
+                if (!cssLoaded(cssStyles[cs])) {
+                    var local_bootstrap = document.createElement('link');
+                        .setAttribute('rel', 'stylesheet');
+                        .setAttribute('type', 'text/css');
+                        .setAttribute('href', '/static/stylesheets/css/' + cssStyles[cs]);
+                    document.getElementsByTagName('head')[0].appendChild(local_bootstrap);
+                }
+            }
+        </script>
+
         <link rel=stylesheet href="{{ STATIC_URL }}cilantro/css/style.css">
         <link rel=stylesheet href="{{ CSS_URL }}/style.css">
         {% block styles %}{% endblock %}
