@@ -66,7 +66,9 @@ class VariantResource(ThrottledResource):
         # frequencies)
         perms = Q(cohort__user=None, cohort__published=True) | \
             Q(cohort__user=request.user)
-        cohort_variants = CohortVariant.objects.filter(perms, variant=variant)\
+        projects = get_objects_for_user(request.user, 'samples.view_project')
+        cohort_variants = CohortVariant.objects\
+            .filter(perms, variant=variant, cohort__project__in=projects)\
             .order_by('-cohort__order', 'cohort__name').distinct()
 
         cohort_list = []
