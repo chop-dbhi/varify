@@ -405,7 +405,7 @@ else:
 
 
 # SolveBio OAuth2 Application credentials
-SOLVEBIO_APP_ID = os.environ.get('SOLVEBIO_API_ID', None)
+SOLVEBIO_APP_ID = os.environ.get('SOLVEBIO_APP_ID', None)
 SOLVEBIO_APP_SECRET = os.environ.get('SOLVEBIO_APP_SECRET', None)
 
 # You can optionally bypass DB lookups by hardcoding aliases.
