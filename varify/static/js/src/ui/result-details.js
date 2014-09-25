@@ -4,9 +4,65 @@ define([
     'jquery',
     'underscore',
     'marionette',
+    '../lib/solvebio',
     '../models',
     './variant'
-], function($, _, Marionette, models, details) {
+], function($, _, Marionette, SolveBio, models, details) {
+
+    var createSolveBioDashboard = function(attrs) {
+        // Delete and recreate the dashboard if found
+        // TODO: destroy the dashboard on view change
+        if (SolveBio.Dashboards.get('variantDetailDashboard')) {
+            SolveBio.Dashboards.delete('variantDetailDashboard');
+        }
+        SolveBio.Dashboards.create(
+            'variantDetailDashboard',
+            '/api/solvebio/dashboards/variant-detail',
+            '#solvebio-variant-detail'
+        ).ready(function(dash) {
+            // Filter by position +- 1000, rsid, and hgvs values
+            var filters = [{
+                and: [['hg18_chromosome', attrs.variant.chr],
+                      ['hg18_start__range', [attrs.variant.pos - 1000,
+                                             attrs.variant.pos + 1000]]]
+            }];
+
+            if (attrs.variant.rsid) {
+                filters.push(['rsid', attrs.variant.rsid]);
+            }
+
+            var hgvs = [];
+            /* jshint ignore:start */
+            _.each(attrs.variant.effects, function(effect) {
+                if (effect.hgvs_c && effect.transcript.transcript) {
+                    hgvs.push(effect.transcript.transcript + ':' + effect.hgvs_c);
+                }
+            });
+
+            if (hgvs.length > 0) {
+                filters.push(['hgvs__in', hgvs]);
+            }
+            /* jshint ignore:end */
+
+            dash.postMessage({
+                header: {
+                    'id': '[#' + attrs.sample.id + ']',
+                    'subtitle': 'in ' + attrs.sample.project,
+                    'title': attrs.sample.label,
+                    'alt': attrs.variant.alt,
+                    'ref': attrs.variant.ref,
+                    'quality': attrs.quality,
+                    'read_depth': attrs.raw_read_depth, // jshint ignore:line
+                    'hgvs': hgvs,
+                    'chr': attrs.variant.chr,
+                    'pos': attrs.variant.pos
+                },
+                clinvar: {
+                    filters: [{'or': filters}]
+                }
+            });
+        });
+    };
 
     var ResultDetails = Marionette.Layout.extend({
         className: 'result-details',
@@ -34,7 +90,6 @@ define([
             cohorts: '[data-target=cohorts]',
             frequencies: '[data-target=frequencies]',
             articles: '[data-target=articles]',
-            clinvar: '[data-target=clinvar]',
             assessmentMetrics: '[data-target=assessment-metrics]'
         },
 
@@ -131,6 +186,23 @@ define([
             // properties always having values of 0 making it impossible to
             // detect overflow anywhere but here.
             this._checkForOverflow();
+
+            // Set up the SolveBio dashboard
+            var dashboardAttrs = this.model.attributes;
+            if (SolveBio.getAccessToken()) {
+                createSolveBioDashboard(dashboardAttrs);
+            } else if (!SolveBio.disabled) {
+                // Get SolveBio access token
+                $.getJSON('/api/solvebio/oauth2/token', function(data) {
+                    if (data.access_token) {  // jshint ignore:line
+                        SolveBio.setAccessToken(data.access_token);  // jshint ignore:line
+                        createSolveBioDashboard(dashboardAttrs);
+                    } else {
+                        // No access token, disable so we never try again
+                        SolveBio.disabled = true;
+                    }
+                });
+            }
         },
 
         onRender: function() {
@@ -167,10 +239,6 @@ define([
                 collection: variant.articles
             }));
 
-            this.clinvar.show(new details.Clinvar({
-                collection: variant.clinvarResults
-            }));
-
             this.assessmentMetrics.show(new details.AssessmentMetrics({
                 variantId: variant.id,
             }));
@@ -192,7 +260,6 @@ define([
             this.ui.expandCollapseLinks.text(this.showMoreText);
         }
     });
-
 
     return {
         ResultDetails: ResultDetails

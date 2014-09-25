@@ -177,10 +177,6 @@ define([
         flags.push(['1000g', attrs['1000g'].length > 0]);
         flags.push(['EVS', attrs.evs.length > 0]);
 
-        if (attrs.solvebio && attrs.solvebio.clinvar) {
-            flags.push(['ClinVar', attrs.solvebio.clinvar.total > 0]);
-        }
-
         var html = [], label, present, klass;
         for (var i = 0; i < flags.length; i++) {
             label = flags[i][0];
