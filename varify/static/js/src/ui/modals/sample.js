@@ -179,10 +179,12 @@ define([
         ui: {
             empty: '[data-target=empty-message]',
             selectedSample: '.modal-footer [data-target=selected-sample]',
-            saveButton: '[data-target=save]',
+            cancelButton: '.cancel-button',
+            saveButton: '[data-target=save]'
         },
 
         events: {
+            'click @ui.cancelButton': 'cancelAndClose',
             'click @ui.saveButton': 'handleSaveSample'
         },
 
@@ -294,6 +296,11 @@ define([
 
             this.ui.selectedSample.html(html);
             this.ui.saveButton.prop('disabled', !model);
+        },
+
+        cancelAndClose: function(event) {
+            this.getSelected();
+            this.close();
         },
 
         handleSaveSample: function(event) {
