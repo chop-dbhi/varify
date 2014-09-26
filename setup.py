@@ -35,7 +35,7 @@ install_requires = [
     'django-reversion==1.6.6',
     'diff-match-patch',
     'pyvcf>=0.6.5',
-    'vdw>=0.2.0'
+    'vdw>=0.3.0'
 ]
 
 if sys.version_info < (2, 7):
