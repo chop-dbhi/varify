@@ -27,7 +27,7 @@ define([
 
                 if (!eff.transcript || !(gene = eff.transcript.gene)) return;
 
-                if (/^LOC\d+/.test(gene.symbol) || uniqueGenes[gene.symbol] !== null) {
+                if (/^LOC\d+/.test(gene.symbol) || uniqueGenes[gene.symbol] === true) {
                     return;
                 }
 
