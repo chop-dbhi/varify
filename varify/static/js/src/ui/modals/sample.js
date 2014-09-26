@@ -298,7 +298,7 @@ define([
             this.ui.saveButton.prop('disabled', !model);
         },
 
-        cancelAndClose: function(event) {
+        cancelAndClose: function() {
             this.getSelected();
             this.close();
         },
