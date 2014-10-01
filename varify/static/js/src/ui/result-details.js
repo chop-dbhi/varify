@@ -17,7 +17,7 @@ define([
         }
         SolveBio.Dashboards.create(
             'variantDetailDashboard',
-            '/api/solvebio/dashboards/variant-detail',
+            '//solvebio-varify.s3.amazonaws.com/dashboards/dev/variant-detail.html',
             '#solvebio-variant-detail'
         ).ready(function(dash) {
             // Filter by position +- 1000, rsid, and hgvs values

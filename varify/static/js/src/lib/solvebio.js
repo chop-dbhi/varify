@@ -40,6 +40,20 @@
     var version = "0.0.1";
     var config = {};
 
+    var log = {
+        debug: function(msg) {
+            if (debug) {
+                window.console.debug("[SolveBio] " + msg);
+            }
+        },
+        error: function(msg) {
+            window.console.error("[SolveBio] " + msg);
+        },
+        warn: function(msg) {
+            window.console.warn("[SolveBio] " + msg);
+        }
+    };
+
     // Load config from requirejs
     if (module && typeof module.config === 'function') {
         config = module.config();
@@ -52,9 +66,8 @@
                  'https://api.solvebio.com';
     // The URL where the dashboard iframes are loaded from
     // Protocol, port and hostname of the target window must match.
-    // Specifying "*" is discouraged for security reasons.
-    // TODO: use SolveBio Dashboards URL (solvebio-dashboards.com)
-    var dashboardOrigin = config.dashboardOrigin || "*";
+    // Origins are set automatically when Dashboards are created.
+    var dashboardOrigins = [];
 
     // Serializes data to a query string
     var serialize = function(obj) {
@@ -76,17 +89,6 @@
     var dashboards = {};
     var eventListenerCreated = false;
 
-    // Wrapper for iframe postMessage
-    var postMessage = function(dashboard, data) {
-      if (dashboard._iframe && dashboard._iframe.contentWindow) {
-          dashboard._iframe.contentWindow.postMessage(
-            JSON.stringify(data), dashboardOrigin);
-      }
-      else {
-        log.error('Could not postMessage to dashboard: ' + dashboard._name);
-      }
-    };
-
     var createEventListener = function() {
         if (eventListenerCreated) return;
         eventListenerCreated = true;
@@ -94,21 +96,21 @@
         window.addEventListener("message", function(ev) {
             ev = ev.originalEvent || ev;
 
-            if (dashboardOrigin !== "*" && dashboardOrigin !== ev.origin) {
-                return false;
+            if (dashboardOrigins.indexOf(ev.origin) < 0) {
+                log.debug('Invalid message origin ('+ev.origin+'), ' +
+                          'expected: "'+dashboardOrigins+'"');
+                return;
             }
 
             var data;
 
             try {
-                data = (ev.data && (ev.data.length > 0)) ? JSON.parse(ev.data) : {};
-
-                if (data === {}) {
-                    return false;
-                }
+                data = (ev.data && (ev.data.length > 0)) ? JSON.parse(ev.data) : false;
             } catch (_error) {
-                return false;
+                return;
             }
+
+            if (!data) return;
 
             if (data.name in dashboards) {
                 var dash = dashboards[data.name];
@@ -131,17 +133,6 @@
                 }
             }
         }, false);
-    };
-
-    var log = {
-        debug: function(msg) {
-            if (debug) {
-                window.console.debug("[SolveBio] " + msg);
-            }
-        },
-        error: function(msg) {
-            window.console.error("[SolveBio] " + msg);
-        }
     };
 
     var SolveBio = {
@@ -264,12 +255,25 @@
                   settings.accessToken = accessToken;
                 }
 
+                // // setup the expected dashboard origin
+                // if (!settings.origin) {
+                //     // if no origin is set explicitly, use window.location
+                //     settings.origin = window.location.origin;
+                // }
+
+                // parse the dashboard's origin from url
+                var urlParser = document.createElement('a');
+                urlParser.href = url;
+                var origin = urlParser.protocol + '//' + urlParser.host;
+                dashboardOrigins.push(origin);
+
                 iframe = document.createElement('iframe');
                 // build a URL with safe settings name and debug
                 // other settings will be sent in a message on load
                 iframe.setAttribute("src", buildURL(url, {
                     name: name,
-                    debug: debug
+                    debug: debug,
+                    origin: window.location.origin
                 }));
                 iframe.setAttribute("id", name + "-iframe");
                 iframe.setAttribute("name", name);
@@ -287,11 +291,19 @@
                     _id: name + "-iframe",
                     _iframe: iframe,
                     _loaded: false,
+                    _origin: origin,
                     _settings: settings,
                     _onLoad: [],
 
-                    postMessage: function(message) {
-                        postMessage(this, message);
+                    postMessage: function(data) {
+                        if (dashboard._iframe && dashboard._iframe.contentWindow) {
+                            dashboard._iframe.contentWindow.postMessage(
+                                JSON.stringify(data), dashboard._origin);
+                        }
+                        else {
+                            log.error('Could not postMessage to dashboard: ' +
+                                      dashboard._name);
+                        }
                     },
 
                     // Execute func when the dashboard is ready
