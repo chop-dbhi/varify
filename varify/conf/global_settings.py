@@ -403,15 +403,6 @@ except ImportError:
 else:
     INSTALLED_APPS += ('solvebio.contrib.django_solvebio', )
 
-
 # SolveBio OAuth2 Application credentials
-SOLVEBIO_APP_ID = os.environ.get('SOLVEBIO_APP_ID', None)
-SOLVEBIO_APP_SECRET = os.environ.get('SOLVEBIO_APP_SECRET', None)
-
-# You can optionally bypass DB lookups by hardcoding aliases.
-# The dict key is the alias and the value may be an ID or
-# full dataset name. [OPTIONAL]
-SOLVEBIO_DATASET_ALIASES = {
-    'clinvar': 'ClinVar/2.0.0-1/Variants',
-    'medline': 'Medline/1.0.0/MEDLINE'
-}
+SOLVEBIO_APP_ID = os.environ.get('SOLVEBIO_APP_ID')
+SOLVEBIO_APP_SECRET = os.environ.get('SOLVEBIO_APP_SECRET')
