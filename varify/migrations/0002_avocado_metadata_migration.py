@@ -4,7 +4,7 @@ from south.v2 import DataMigration
 class Migration(DataMigration):
 
     depends_on = (
-       ("avocado", "0034_auto__add_field_datafield_type"),
+       ('avocado', '0036_initialize_indexable'),
     )
 
     def forwards(self, orm):
