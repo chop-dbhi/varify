@@ -245,6 +245,15 @@ body, #concept-panel, #context-panel {
 }
 
 #sample-dialog {
+    .clear-button {
+        float: right;
+        margin-bottom: 10px;
+    }
+
+    .filter-input {
+        width: 375px;
+    }
+
     .modal-footer {
         text-align: left;
 

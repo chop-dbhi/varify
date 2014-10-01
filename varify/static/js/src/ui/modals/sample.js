@@ -34,7 +34,13 @@ define([
         triggerSelected: function(event) {
             event.preventDefault();
             event.stopPropagation();
-            this.model.trigger('select', this.model);
+
+            if (this.model.get('selected')) {
+                this.model.trigger('deselect', this.model);
+            }
+            else {
+                this.model.trigger('select', this.model);
+            }
         },
 
         onRender: function() {
@@ -178,14 +184,16 @@ define([
 
         ui: {
             empty: '[data-target=empty-message]',
-            selectedSample: '.modal-footer [data-target=selected-sample]',
+            selectedSample: '[data-target=selected-sample]',
             cancelButton: '.cancel-button',
-            saveButton: '[data-target=save]'
+            saveButton: '[data-target=save]',
+            clearButton: '.clear-button'
         },
 
         events: {
             'click @ui.cancelButton': 'cancelAndClose',
-            'click @ui.saveButton': 'handleSaveSample'
+            'click @ui.saveButton': 'handleSaveSample',
+            'click @ui.clearButton': 'clearSelected'
         },
 
         regionViews: {
@@ -213,6 +221,7 @@ define([
             // load
             this.listenTo(this.data.samples, 'reset', this.onSamplesReset);
             this.listenTo(this.data.samples, 'select', this.setSelected);
+            this.listenTo(this.data.samples, 'deselect', this.setDeselected);
         },
 
         onRender: function() {
@@ -239,18 +248,16 @@ define([
             }
         },
 
-        // Get the currently selected sample from the context and updates the
-        // state of the collection.
-        getSelected: function() {
-            var value = this.data.filter.get('value'),
-                operator = this.data.filter.get('operator');
-
+        // Select an individual sample given a value representing that sample.
+        // This handles all cases from the current(where the value is a number
+        // being the sample id) to legacy cases where the values were object
+        // or string based. In legacy cases, the context will be updated to
+        // use the new format and that change will be persisted when the
+        // sample selection is saved.
+        _selectSample: function(value) {
             var model;
 
             if (value) {
-                // Unpack in case the IN operator is being used
-                if (operator === 'in') value = value[0];
-
                 // Parse { value: ..., label: ... } format
                 if (typeof value === 'object') value = value.value;
 
@@ -268,34 +275,77 @@ define([
                 }
             }
 
-            this.data.samples.trigger('select', model);
+            if (model) {
+                this.data.samples.trigger('select', model);
+            }
+        },
+
+        // Get the currently selected samples from the context and updates the
+        // state of the collection.
+        getSelected: function() {
+            var value = this.data.filter.get('value'),
+                operator = this.data.filter.get('operator');
+
+            if (operator === 'in') {
+                var _this = this;
+
+                _.each(value, function(v) {
+                    _this._selectSample(v);
+                });
+            }
+            else {
+                this._selectSample(value);
+            }
+        },
+
+        clearSelected: function() {
+            this.data.samples.each(function(sample) {
+                sample.set('selected', false);
+            });
+
+            this.renderSelectedSamples();
+        },
+
+        setDeselected: function(model) {
+            this.data.samples.get(model.id).set('selected', false);
+            this.renderSelectedSamples();
         },
 
         setSelected: function(model) {
             this.data.samples.each(function(m) {
-                m.set('selected', model && m.id === model.id);
+                m.set('selected', m.get('selected') || m.id === model.id);
             });
 
-            this.renderSelectedSample();
+            this.renderSelectedSamples();
         },
 
-        renderSelectedSample: function() {
-            var model = this.data.samples.findWhere({selected: true});
+        _getSampleHtml: function(sample) {
+            return '<li><strong>' + sample.get('label') +
+                    '</strong> from project <strong>' +
+                    sample.get('project') + ' (' + sample.get('batch') +
+                    ')</strong></li>';
+        },
+
+        renderSelectedSamples: function() {
+            var models = this.data.samples.where({selected: true});
 
             var html;
 
-            if (model) {
-                html = 'Current: <strong>' + model.get('label') +
-                    '</strong> from project <strong>' +
-                    model.get('project') + ' (' + model.get('batch') + ')</strong>';
-
+            if (!models.length) {
+                html = '<p><strong>Please select a sample.</strong></p>';
             }
             else {
-                html = 'Please select a sample.';
+                var _this = this;
+
+                var sampleHtml = _.map(models, function(sample) {
+                    return _this._getSampleHtml(sample);
+                });
+
+                html = '<ul class=unstyled>' + sampleHtml.join('') + '</ul>';
             }
 
             this.ui.selectedSample.html(html);
-            this.ui.saveButton.prop('disabled', !model);
+            this.ui.saveButton.prop('disabled', !models);
         },
 
         cancelAndClose: function() {
@@ -306,11 +356,11 @@ define([
         handleSaveSample: function(event) {
             event.preventDefault();
 
-            var model = this.data.samples.findWhere({selected: true});
+            var ids = _.pluck(this.data.samples.where({selected: true}), 'id');
 
             this.data.filter.set({
-                operator: 'exact',
-                value: model.id
+                operator: 'in',
+                value: ids
             });
 
             if (this.data.filter.hasChanged()) {
