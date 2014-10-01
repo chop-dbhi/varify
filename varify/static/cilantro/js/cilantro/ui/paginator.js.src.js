@@ -1,216 +1,194 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  __slice = [].slice;
+/* global define */
 
-define(['underscore', 'marionette', './base'], function(_, Marionette, base) {
-  var EmptyPage, ListingPage, LoadingPage, Page, PageRoll, Paginator;
-  EmptyPage = (function(_super) {
-    __extends(EmptyPage, _super);
+define([
+    'jquery',
+    'underscore',
+    'marionette',
+    './base',
+    '../constants'
+], function($, _, Marionette, base, constants) {
 
-    function EmptyPage() {
-      return EmptyPage.__super__.constructor.apply(this, arguments);
-    }
+    var EmptyPage = base.EmptyView.extend({
+        message: 'No page results'
+    });
 
-    EmptyPage.prototype.message = 'No page results';
+    var LoadingPage = base.LoadView.extend({
+        message: 'Loading page...'
+    });
 
-    return EmptyPage;
+    // Set of pagination links that are used to control/navigation the bound
+    // model. The model is assumed to implement the 'paginator protocol', see
+    // cilantro/models/paginator.
+    var Paginator = Marionette.ItemView.extend({
+        template: 'paginator',
 
-  })(base.EmptyView);
-  LoadingPage = (function(_super) {
-    __extends(LoadingPage, _super);
+        className: 'paginator',
 
-    function LoadingPage() {
-      return LoadingPage.__super__.constructor.apply(this, arguments);
-    }
+        ui: {
+            first: '[data-page=first]',
+            prev: '[data-page=prev]',
+            next: '[data-page=next]',
+            last: '[data-page=last]',
+            pageCount: '.page-count',
+            currentPage: '.current-page',
+            buttons: '[data-toggle=tooltip]'
+        },
 
-    LoadingPage.prototype.message = 'Loading page...';
+        modelEvents: {
+            'change:pagecount': 'renderPageCount',
+            'change:currentpage': 'renderCurrentPage'
+        },
 
-    return LoadingPage;
+        events: {
+            'click [data-page]': 'requestChangePage'
+        },
 
-  })(base.LoadView);
-  Paginator = (function(_super) {
-    __extends(Paginator, _super);
+        initialize: function() {
+            this._changePage = _.debounce(this.changePage, constants.REQUEST_DELAY);
+        },
 
-    function Paginator() {
-      return Paginator.__super__.constructor.apply(this, arguments);
-    }
+        onRender: function() {
+            // The tooltip call MUST be done before the render calls below or
+            // the tooltip options set here will not be respected because some
+            // of the buttons will be disabled.
+            this.ui.buttons.tooltip({
+                animation: false,
+                placement: 'bottom'
+            });
 
-    Paginator.prototype.template = 'paginator';
+            if (!this.model.pageIsLoading()) {
+                this.renderPageCount(this.model, this.model.getPageCount());
+                var args = [this.model].concat(this.model.getCurrentPageStats());
+                this.renderCurrentPage.apply(this, args);
+            }
+        },
 
-    Paginator.prototype.requestDelay = 250;
+        renderPageCount: function(model, value) {
+            this.ui.pageCount.text(value);
+        },
 
-    Paginator.prototype.className = 'paginator';
+        renderCurrentPage: function(model, value, options) {
+            this.ui.currentPage.text(value);
+            this.ui.first.prop('disabled', !!options.first);
+            this.ui.prev.prop('disabled', !!options.first);
+            this.ui.next.prop('disabled', !!options.last);
+            this.ui.last.prop('disabled', !!options.last);
 
-    Paginator.prototype.ui = {
-      first: '[data-page=first]',
-      prev: '[data-page=prev]',
-      next: '[data-page=next]',
-      last: '[data-page=last]',
-      pageCount: '.page-count',
-      currentPage: '.current-page',
-      buttons: '[data-toggle=tooltip]'
+            // If we have disabled the buttons then we need to force hide the
+            // tooltip to prevent it from being permanently visible.
+            if (!!options.first) {
+                this.ui.first.tooltip('hide');
+                this.ui.prev.tooltip('hide');
+            }
+
+            if (!!options.last) {
+                this.ui.next.tooltip('hide');
+                this.ui.last.tooltip('hide');
+            }
+        },
+
+        changePage: function(newPage) {
+            switch (newPage) {
+                case 'first':
+                    return this.model.getFirstPage();
+                case 'prev':
+                    return this.model.getPreviousPage();
+                case 'next':
+                    return this.model.getNextPage();
+                case 'last':
+                    return this.model.getLastPage();
+                default:
+                    throw new Error('Unknown paginator direction: ' + newPage);
+            }
+        },
+
+        requestChangePage: function(event) {
+            this._changePage($(event.currentTarget).data('page'));
+        }
+    });
+
+    // Page for representing model-based data.
+    var Page = Marionette.ItemView.extend({});
+
+    // Page for representing collection-based data.
+    var ListingPage = Marionette.CollectionView.extend({
+        itemView: Page,
+
+        emptyPage: EmptyPage,
+
+        itemViewOptions: function(item, index) {
+            return _.defaults({model: item, index: index}, this.options);
+        }
+    });
+
+    // Renders multiples pages as requested, but only shows the current
+    // page. This is delegated by the paginator-based collection bound to
+    // this view.
+    //
+    // The contained views may be model-based or collection-based. This is
+    // toggled based on the `options.list` flag. If true, the `listView`
+    // will be used as the item view class. Otherwise the standard `itemView`
+    // will be used for model-based data.
+    //
+    // If list is true, the `listViewOptions` will be called to produce the
+    // view options for the collection view. By default the item passed in
+    // is assumed to have an `items` collection on it that will be used.
+    var PageRoll = Marionette.CollectionView.extend({
+        options: {
+            list: true
+        },
+
+        itemView: Page,
+
+        listView: ListingPage,
+
+        // The first page is guaranteed (assumed) to be fetch and rendered,
+        // thus the empty view for the page roll is the loading state.
+        emptyView: LoadingPage,
+
+        collectionEvents: {
+            'change:currentpage': 'showCurrentPage'
+        },
+
+        // Toggle between list-based versus item-based page roll
+        getItemView: function() {
+            if (this.options.list) {
+                return this.listView;
+            }
+
+            return this.itemView;
+        },
+
+        listViewOptions: function(item) {
+            return {
+                collection: item.items
+            };
+        },
+
+        itemViewOptions: function(item, index) {
+            var options = {
+                model: item,
+                index: index
+            };
+
+            if (this.options.list) {
+                _.extend(options, this.listViewOptions(item, index));
+            }
+
+            return _.defaults(options, this.options);
+        },
+
+        showCurrentPage: function(model, num) {
+            this.children.each(function(view) {
+                view.$el.toggle(view.model.id === num);
+            });
+        }
+    });
+
+    return {
+        Paginator: Paginator,
+        Page: Page,
+        ListingPage: ListingPage,
+        PageRoll: PageRoll
     };
-
-    Paginator.prototype.modelEvents = {
-      'change:pagecount': 'renderPageCount',
-      'change:currentpage': 'renderCurrentPage'
-    };
-
-    Paginator.prototype.events = {
-      'click [data-page=first]': 'requestChangePage',
-      'click [data-page=prev]': 'requestChangePage',
-      'click [data-page=next]': 'requestChangePage',
-      'click [data-page=last]': 'requestChangePage'
-    };
-
-    Paginator.prototype.initialize = function() {
-      return this._changePage = _.debounce(this.changePage, this.requestDelay);
-    };
-
-    Paginator.prototype.onRender = function() {
-      this.ui.buttons.tooltip({
-        animation: false,
-        placement: 'bottom'
-      });
-      if (!this.model.pageIsLoading()) {
-        this.renderPageCount(this.model, this.model.getPageCount());
-        return this.renderCurrentPage.apply(this, [this.model].concat(__slice.call(this.model.getCurrentPageStats())));
-      }
-    };
-
-    Paginator.prototype.renderPageCount = function(model, value, options) {
-      return this.ui.pageCount.text(value);
-    };
-
-    Paginator.prototype.renderCurrentPage = function(model, value, options) {
-      this.ui.currentPage.text(value);
-      this.ui.first.prop('disabled', !!options.first);
-      this.ui.prev.prop('disabled', !!options.first);
-      this.ui.next.prop('disabled', !!options.last);
-      this.ui.last.prop('disabled', !!options.last);
-      if (!!options.first) {
-        this.ui.first.tooltip('hide');
-        this.ui.prev.tooltip('hide');
-      }
-      if (!!options.last) {
-        this.ui.next.tooltip('hide');
-        return this.ui.last.tooltip('hide');
-      }
-    };
-
-    Paginator.prototype.changePage = function(newPage) {
-      switch (newPage) {
-        case "first":
-          return this.model.getFirstPage();
-        case "prev":
-          return this.model.getPreviousPage();
-        case "next":
-          return this.model.getNextPage();
-        case "last":
-          return this.model.getLastPage();
-        default:
-          throw new Error("Unknown paginator direction: " + newPage);
-      }
-    };
-
-    Paginator.prototype.requestChangePage = function(event) {
-      return this._changePage($(event.currentTarget).data('page'));
-    };
-
-    return Paginator;
-
-  })(Marionette.ItemView);
-  Page = (function(_super) {
-    __extends(Page, _super);
-
-    function Page() {
-      return Page.__super__.constructor.apply(this, arguments);
-    }
-
-    return Page;
-
-  })(Marionette.ItemView);
-  ListingPage = (function(_super) {
-    __extends(ListingPage, _super);
-
-    function ListingPage() {
-      return ListingPage.__super__.constructor.apply(this, arguments);
-    }
-
-    ListingPage.prototype.itemView = Page;
-
-    ListingPage.prototype.emptyPage = EmptyPage;
-
-    ListingPage.prototype.itemViewOptions = function(item, index) {
-      return _.defaults({
-        model: item,
-        index: index
-      }, this.options);
-    };
-
-    return ListingPage;
-
-  })(Marionette.CollectionView);
-  PageRoll = (function(_super) {
-    __extends(PageRoll, _super);
-
-    function PageRoll() {
-      return PageRoll.__super__.constructor.apply(this, arguments);
-    }
-
-    PageRoll.prototype.options = {
-      list: true
-    };
-
-    PageRoll.prototype.itemView = Page;
-
-    PageRoll.prototype.listView = ListingPage;
-
-    PageRoll.prototype.emptyView = LoadingPage;
-
-    PageRoll.prototype.getItemView = function() {
-      if (this.options.list) {
-        return this.listView;
-      } else {
-        return this.itemView;
-      }
-    };
-
-    PageRoll.prototype.listViewOptions = function(item, index) {
-      return {
-        collection: item.items
-      };
-    };
-
-    PageRoll.prototype.itemViewOptions = function(item, index) {
-      var options;
-      options = {
-        model: item,
-        index: index
-      };
-      if (this.options.list) {
-        _.extend(options, this.listViewOptions(item, index));
-      }
-      return _.defaults(options, this.options);
-    };
-
-    PageRoll.prototype.collectionEvents = {
-      'change:currentpage': 'showCurentPage'
-    };
-
-    PageRoll.prototype.showCurentPage = function(model, num, options) {
-      return this.children.each(function(view) {
-        return view.$el.toggle(view.model.id === num);
-      });
-    };
-
-    return PageRoll;
-
-  })(Marionette.CollectionView);
-  return {
-    Paginator: Paginator,
-    Page: Page,
-    ListingPage: ListingPage,
-    PageRoll: PageRoll
-  };
 });

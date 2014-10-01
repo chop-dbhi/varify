@@ -1,190 +1,188 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-  __indexOf = [].indexOf || function(item) { for (var i = 0, l = this.length; i < l; i++) { if (i in this && this[i] === item) return i; } return -1; };
+/* global define */
 
-define(['underscore', 'backbone', 'marionette', '../../core', './base'], function(_, Backbone, Marionette, c, base) {
-  var MultiSelectionList, SelectionListItem, SingleSelectionList;
-  SelectionListItem = (function(_super) {
-    __extends(SelectionListItem, _super);
+define([
+    'underscore',
+    'backbone',
+    'marionette',
+    '../../core',
+    './base'
+], function(_, Backbone, Marionette, c, base) {
 
-    function SelectionListItem() {
-      return SelectionListItem.__super__.constructor.apply(this, arguments);
-    }
+    var SelectionListItem = Marionette.ItemView.extend({
+        template: function() {},
 
-    SelectionListItem.prototype.template = function() {};
+        tagName: 'option',
 
-    SelectionListItem.prototype.tagName = 'option';
+        modelEvents: {
+            'change:selected': 'render'
+        },
 
-    SelectionListItem.prototype.modelEvents = function() {
-      return {
-        'change:selected': 'render'
-      };
-    };
+        onRender: function() {
+            var label = this.model.get('label');
 
-    SelectionListItem.prototype.onRender = function() {
-      var label;
-      label = this.model.get('label');
-      if (label === '') {
-        this.$el.text('(empty)');
-      } else if (label === 'null') {
-        this.$el.text('(null)');
-      } else {
-        this.$el.text(label);
-      }
-      this.$el.attr('value', this.model.get('value'));
-      return this.$el.attr('selected', this.model.get('selected'));
-    };
+            if (label === '') {
+                this.$el.text('(empty)');
+            }
+            else if (label === 'null') {
+                this.$el.text('(null)');
+            }
+            else {
+                this.$el.text(label);
+            }
 
-    return SelectionListItem;
-
-  })(Marionette.ItemView);
-  SingleSelectionList = (function(_super) {
-    __extends(SingleSelectionList, _super);
-
-    function SingleSelectionList() {
-      return SingleSelectionList.__super__.constructor.apply(this, arguments);
-    }
-
-    SingleSelectionList.prototype.className = 'selection-list';
-
-    SingleSelectionList.prototype.itemView = SelectionListItem;
-
-    SingleSelectionList.prototype.itemViewOptions = function(model, index) {
-      return {
-        model: model
-      };
-    };
-
-    SingleSelectionList.prototype.itemViewContainer = '.items';
-
-    SingleSelectionList.prototype.template = 'controls/select/list';
-
-    SingleSelectionList.prototype.ui = {
-      items: '.items'
-    };
-
-    SingleSelectionList.prototype.events = {
-      'change .items': 'onSelectionChange'
-    };
-
-    SingleSelectionList.prototype.collectionEvents = {
-      'reset': 'onCollectionSync'
-    };
-
-    SingleSelectionList.prototype.initialize = function(options) {
-      var limit;
-      this.wait();
-      if (!this.collection) {
-        this.collection = new Backbone.Collection;
-        if (c.isSupported('2.3.1')) {
-          limit = 0;
-        } else {
-          limit = 1000;
+            this.$el.attr('value', this.model.get('value'));
+            this.$el.attr('selected', this.model.get('selected'));
         }
-        this.model.values({
-          limit: limit
-        }).done((function(_this) {
-          return function(resp) {
-            _this.collection.reset(resp.values);
-            return _this.ready();
-          };
-        })(this));
-      }
-      return this.on('ready', function() {
-        return this.change();
-      });
+    });
+
+    // Renders a dropdown of items allowing for selection of a single item
+    // from the list.
+    var SingleSelectionList = base.ControlCompositeView.extend({
+        className: 'selection-list',
+
+        template: 'controls/select/list',
+
+        itemView: SelectionListItem,
+
+        itemViewOptions: function(model) {
+            return {
+                model: model
+            };
+        },
+
+        itemViewContainer: '.items',
+
+        ui: {
+            items: '.items'
+        },
+
+        events: {
+            'change .items': 'onSelectionChange'
+        },
+
+        collectionEvents: {
+            'reset': 'onCollectionSync'
+        },
+
+        initialize: function() {
+            var limit;
+
+            this.wait();
+
+            if (!this.collection) {
+                this.collection = new Backbone.Collection();
+
+                // This is a hack to prevent a 500 error that occurs in
+                // Serrano prior to 2.3.1 if limit is set to 0. The assumption
+                // here is that if this type of control is being used for
+                // selecting a value, it is unlikely to be rendering a large
+                // number of values due to its poor usability. The field search
+                // control is more appropriate for a large number of values.
+                if (c.isSupported('2.3.1')) {
+                    limit = 0;
+                }
+                else {
+                    limit = 1000;
+                }
+
+                var _this = this;
+                this.model.values({limit: limit}).done(function(resp) {
+                    _this.collection.reset(resp.values);
+                    return _this.ready();
+                });
+            }
+
+            this.on('ready', function() {
+                // Since the first item is selected immediately by the very
+                // nature of a drow down list without a placeholder, we need to
+                // call the change method when the control originally renders
+                // so the value is set to the default selected option in the
+                // dropdown and the apply(or update) filter button becomes
+                // activated.
+                this.change();
+            });
+        },
+
+        onCollectionSync: function() {
+            this.render();
+        },
+
+        onSelectionChange: function() {
+            this.change();
+        },
+
+        getField: function() {
+            return this.model.id;
+        },
+
+        getOperator: function() {
+            return 'exact';
+        },
+
+        getValue: function() {
+            return this.ui.items.val();
+        },
+
+        setValue: function(value) {
+            this.ui.items.val(value);
+        },
+
+        validate: function(attrs) {
+            if (_.isNull(attrs.value) || _.isUndefined(attrs.value)) {
+                return 'An option must be selected';
+            }
+        }
+    });
+
+    var MultiSelectionList = SingleSelectionList.extend({
+        onCollectionSync: function() {
+            this.render();
+        },
+
+        onSelectionChange: function() {
+            var _this = this;
+
+            this.ui.items.children().each(function(i, el) {
+                _this.collection.models[i].set('selected', el.selected);
+            });
+
+            this.change();
+        },
+
+        onRender: function() {
+            this.ui.items.attr('multiple', true);
+        },
+
+        getOperator: function() {
+            return 'in';
+        },
+
+        getValue: function() {
+            return _.map(this.collection.where({selected: true}), function(model) {
+                return model.get('value');
+            });
+        },
+
+        setValue: function(values) {
+            if (!values) {
+                values = [];
+            }
+
+            this.collection.each(function(model) {
+                model.set('selected', (values.indexOf(model.get('value')) >= 0));
+            });
+        },
+
+        validate: function(attrs) {
+            if (!attrs.value || !attrs.value.length) {
+                return 'At least one option must be selected';
+            }
+        }
+    });
+
+    return {
+        SingleSelectionList: SingleSelectionList,
+        MultiSelectionList: MultiSelectionList
     };
 
-    SingleSelectionList.prototype.onCollectionSync = function() {
-      return this.render();
-    };
-
-    SingleSelectionList.prototype.onSelectionChange = function() {
-      return this.change();
-    };
-
-    SingleSelectionList.prototype.getField = function() {
-      return this.model.id;
-    };
-
-    SingleSelectionList.prototype.getOperator = function() {
-      return "exact";
-    };
-
-    SingleSelectionList.prototype.getValue = function() {
-      return this.ui.items.val();
-    };
-
-    SingleSelectionList.prototype.setValue = function(value) {
-      return this.ui.items.val(value);
-    };
-
-    SingleSelectionList.prototype.validate = function(attrs) {
-      if (_.isNull(attrs.value) || _.isUndefined(attrs.value)) {
-        return 'An option must be selected';
-      }
-    };
-
-    return SingleSelectionList;
-
-  })(base.ControlCompositeView);
-  MultiSelectionList = (function(_super) {
-    __extends(MultiSelectionList, _super);
-
-    function MultiSelectionList() {
-      return MultiSelectionList.__super__.constructor.apply(this, arguments);
-    }
-
-    MultiSelectionList.prototype.onCollectionSync = function() {
-      return this.render();
-    };
-
-    MultiSelectionList.prototype.onSelectionChange = function(event) {
-      this.ui.items.children().each((function(_this) {
-        return function(i, el) {
-          return _this.collection.models[i].set('selected', el.selected);
-        };
-      })(this));
-      return this.change();
-    };
-
-    MultiSelectionList.prototype.onRender = function() {
-      return this.ui.items.attr('multiple', true);
-    };
-
-    MultiSelectionList.prototype.getOperator = function() {
-      return "in";
-    };
-
-    MultiSelectionList.prototype.getValue = function() {
-      return _.map(this.collection.where({
-        selected: true
-      }), function(model) {
-        return model.get('value');
-      });
-    };
-
-    MultiSelectionList.prototype.setValue = function(values) {
-      if (values == null) {
-        values = [];
-      }
-      return this.collection.each(function(model) {
-        var _ref;
-        return model.set('selected', (_ref = model.get('value'), __indexOf.call(values, _ref) >= 0));
-      });
-    };
-
-    MultiSelectionList.prototype.validate = function(attrs) {
-      if (!attrs.value || !attrs.value.length) {
-        return 'At least one option must be selected';
-      }
-    };
-
-    return MultiSelectionList;
-
-  })(SingleSelectionList);
-  return {
-    SingleSelectionList: SingleSelectionList,
-    MultiSelectionList: MultiSelectionList
-  };
 });

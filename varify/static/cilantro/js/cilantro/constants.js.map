@@ -1,1 +1,1 @@
-{"version":3,"file":"constants.js","sources":["constants.js.src.js"],"names":["define","INPUT_DELAY","CLICK_DELAY"],"mappings":"AAEAA,QAMIC,YAAa,IAIbC,YAAa"}
+{"version":3,"file":"constants.js","sources":["constants.js.src.js"],"names":["define","INPUT_DELAY","CLICK_DELAY","REQUEST_DELAY"],"mappings":"AAEAA,QAMIC,YAAa,IAIbC,YAAa,IAMbC,cAAe"}

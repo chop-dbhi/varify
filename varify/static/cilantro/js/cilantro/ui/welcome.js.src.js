@@ -1,23 +1,58 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['underscore', 'marionette'], function(_, Marionette) {
-  var Welcome;
-  Welcome = (function(_super) {
-    __extends(Welcome, _super);
+define([
+    'underscore',
+    'marionette'
+], function(_, Marionette) {
 
-    function Welcome() {
-      return Welcome.__super__.constructor.apply(this, arguments);
-    }
+    var Welcome = Marionette.ItemView.extend({
+        className: 'welcome',
 
-    Welcome.prototype.className = 'welcome';
+        template: 'welcome',
 
-    Welcome.prototype.template = 'welcome';
+        ui: {
+            firstTime: '[data-target=first-time]',
+            welcomeBack: '[data-target=welcome-back]'
+        },
 
-    return Welcome;
+        initialize: function() {
+            this.data = {};
 
-  })(Marionette.ItemView);
-  return {
-    Welcome: Welcome
-  };
+            if (!(this.data.context = this.options.context)) {
+                throw new Error('context model required');
+            }
+
+            this.listenTo(this.data.context, 'change', this.renderWelcomeMessage);
+        },
+
+        renderWelcomeMessage: function() {
+            var isReturningUser = false;
+
+            // If there is no session then this is not a returning user.
+            if (this.data.context.get('session') === true) {
+                // Just because the context has been created doesn't mean it
+                // is a returning user. We assume that a returning user will
+                // have at least one filter setup so we check for a created 
+                // date and a filter in order to qualify a user as returning.
+                if (this.data.context.get('created') && 
+                        !_.isEmpty(this.data.context.get('json'))) {
+                    isReturningUser = true;
+                }
+            }
+
+            if (isReturningUser) {
+                this.ui.firstTime.hide();
+                this.ui.welcomeBack.show();
+            }
+            else {
+                this.ui.firstTime.show();
+                this.ui.welcomeBack.hide();
+            }
+        }
+    });
+
+    return {
+        Welcome: Welcome
+    };
+
 });

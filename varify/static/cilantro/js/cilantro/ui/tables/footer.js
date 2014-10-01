@@ -1,2 +1,2 @@
-var __hasProp={}.hasOwnProperty,__extends=function(t,o){function r(){this.constructor=t}for(var e in o)__hasProp.call(o,e)&&(t[e]=o[e]);return r.prototype=o.prototype,t.prototype=new r,t.__super__=o.prototype,t};define(["marionette","./row"],function(t){var o;return o=function(t){function o(){return o.__super__.constructor.apply(this,arguments)}return __extends(o,t),o.prototype.tagName="tfoot",o.prototype.template=function(){},o}(t.ItemView),{Footer:o}});
+define(["marionette"],function(e){var t=e.ItemView.extend({tagName:"tfoot",template:function(){}});return{Footer:t}});
 //# sourceMappingURL=footer.js.map

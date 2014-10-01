@@ -58,11 +58,16 @@ define([
         maxFilterDisplayValues: 4,
 
         /*
+         * Setting this as true will style the filter display, highlighting
+         * concept names, operators and values to make filters more readable.
+         */
+        styleFilters: false,
+
+        /*
          * Timeouts
          *
          * Timeouts for various components in Cilantro.
          */
-
         timeouts: {
             control: 10000
         },
@@ -137,8 +142,8 @@ define([
          * Precedence hierarchy:
          *
          * - defaults: default options for the component
-         * - types: specific to concept type, overrides defaults
-         * - instances: specific to a concept instance, overrides types
+         * - types: specific to field type, overrides defaults
+         * - instances: specific to a field instance, overrides types
          *
          */
 

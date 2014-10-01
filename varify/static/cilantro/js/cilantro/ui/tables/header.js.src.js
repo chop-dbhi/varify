@@ -1,126 +1,126 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['underscore', 'marionette', './row'], function(_, Marionette, row) {
-  var Header, HeaderCell, HeaderRow;
-  HeaderCell = (function(_super) {
-    __extends(HeaderCell, _super);
+define([
+    'underscore',
+    'marionette',
+    './row'
+], function(_, Marionette, row) {
 
-    HeaderCell.prototype.tagName = 'th';
+    var HeaderCell = Marionette.ItemView.extend({
+        tagName: 'th',
 
-    function HeaderCell(options) {
-      if (options.view == null) {
-        throw new Error('ViewModel instance required');
-      }
-      this.view = options.view;
-      delete options.view;
-      HeaderCell.__super__.constructor.call(this, options);
-    }
+        events: {
+            'click': 'onClick'
+        },
 
-    HeaderCell.prototype.onClick = function() {
-      _.each(this.view.facets.models, function(f) {
-        var direction;
-        if (f.get('concept') === this.model.id) {
-          direction = f.get('sort');
-          if (direction != null) {
-            if (direction.toLowerCase() === "asc") {
-              f.set('sort', "desc");
-              return f.set('sort_index', 0);
-            } else {
-              f.unset('sort');
-              return f.unset('sort_index');
+        constructor: function(options) {
+            if (!options.view) {
+                throw new Error('ViewModel instance required');
             }
-          } else {
-            f.set('sort', "asc");
-            return f.set('sort_index', 0);
-          }
-        } else {
-          f.unset('sort');
-          return f.unset('sort_index');
+
+            this.view = options.view;
+            delete options.view;
+            Marionette.ItemView.prototype.constructor.call(this, options);
+        },
+
+        onClick: function() {
+            _.each(this.view.facets.models, function(f) {
+                var direction;
+
+                if (f.get('concept') === this.model.id) {
+                    direction = f.get('sort');
+
+                    if (direction) {
+                        if (direction.toLowerCase() === "asc") {
+                            f.set('sort', "desc");
+                            f.set('sort_index', 0);
+                        }
+                        else {
+                            f.unset('sort');
+                            f.unset('sort_index');
+                        }
+                    }
+                    else {
+                        f.set('sort', "asc");
+                        f.set('sort_index', 0);
+                    }
+                }
+                else {
+                    f.unset('sort');
+                    f.unset('sort_index');
+                }
+            }, this);
+
+            this.view.save();
+        },
+
+        initialize: function() {
+            this.listenTo(this.model, 'change:visible', this.toggleVisible);
+        },
+
+        // Finds and returns the sort icon html associatied with the sort
+        // direction of the Facet being represented by this header cell.
+        getSortIconClass: function() {
+            var direction, model;
+
+            model = this.view.facets.findWhere({concept: this.model.id});
+
+            // If there are no view facets for the this header cell's model
+            // then the this really shouldn't be displaying anyway so return
+            // the empty string. We really should not ever get into this
+            // situation since the facets should be driving the columns but
+            // this check prevents TypeErrors just in case.
+            if (!model) return;
+
+            direction = (model.get('sort') || '').toLowerCase();
+
+            switch (direction) {
+                case 'asc':
+                    return 'icon-sort-up';
+                case 'desc':
+                    return 'icon-sort-down';
+                default:
+                    return 'icon-sort';
+            }
+        },
+
+        render: function() {
+            this.toggleVisible();
+
+            var iconClass = this.getSortIconClass();
+
+            // TODO: Could we just use a template here instead and then just
+            // modify the class on the icon in the template?
+            this.$el.html('<span>' + (this.model.get('name')) + ' <i class=' +
+                          iconClass + '></i></span>');
+            this.$el.attr('title', this.model.get('name'));
+
+            return this;
+        },
+
+        toggleVisible: function() {
+            this.$el.toggle(this.model.get('visible'));
         }
-      }, this);
-      return this.view.save();
+    });
+
+    var HeaderRow = row.Row.extend({
+        itemView: HeaderCell
+    });
+
+    var Header = Marionette.ItemView.extend({
+        tagName: 'thead',
+
+        render: function() {
+            var row = new HeaderRow(this.options);
+
+            this.$el.html(row.el);
+            row.render();
+            return this;
+        }
+    });
+
+    return {
+        Header: Header
     };
 
-    HeaderCell.prototype.initialize = function() {
-      return this.listenTo(this.model, 'change:visible', this.toggleVisible);
-    };
-
-    HeaderCell.prototype.events = {
-      "click": "onClick"
-    };
-
-    HeaderCell.prototype.getSortIconClass = function() {
-      var direction, model;
-      model = _.find(this.view.facets.models, (function(_this) {
-        return function(m) {
-          return _this.model.id === m.get('concept');
-        };
-      })(this));
-      if (model == null) {
-        return;
-      }
-      direction = (model.get('sort') || '').toLowerCase();
-      switch (direction) {
-        case 'asc':
-          return 'icon-sort-up';
-        case 'desc':
-          return 'icon-sort-down';
-        default:
-          return 'icon-sort';
-      }
-    };
-
-    HeaderCell.prototype.render = function() {
-      var iconClass;
-      this.toggleVisible();
-      iconClass = this.getSortIconClass();
-      this.$el.html("<span>" + (this.model.get('name')) + " <i class=" + iconClass + "></i></span>");
-      this.$el.attr('title', this.model.get('name'));
-      return this;
-    };
-
-    HeaderCell.prototype.toggleVisible = function() {
-      return this.$el.toggle(this.model.get('visible'));
-    };
-
-    return HeaderCell;
-
-  })(Marionette.ItemView);
-  HeaderRow = (function(_super) {
-    __extends(HeaderRow, _super);
-
-    function HeaderRow() {
-      return HeaderRow.__super__.constructor.apply(this, arguments);
-    }
-
-    HeaderRow.prototype.itemView = HeaderCell;
-
-    return HeaderRow;
-
-  })(row.Row);
-  Header = (function(_super) {
-    __extends(Header, _super);
-
-    function Header() {
-      return Header.__super__.constructor.apply(this, arguments);
-    }
-
-    Header.prototype.tagName = 'thead';
-
-    Header.prototype.render = function() {
-      row = new HeaderRow(_.extend({}, this.options, {
-        collection: this.collection
-      }));
-      this.$el.html(row.el);
-      row.render();
-      return this;
-    };
-
-    return Header;
-
-  })(Marionette.ItemView);
-  return {
-    Header: Header
-  };
 });

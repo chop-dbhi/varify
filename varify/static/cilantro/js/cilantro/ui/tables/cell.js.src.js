@@ -1,35 +1,29 @@
-var __hasProp = {}.hasOwnProperty,
-  __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+/* global define */
 
-define(['marionette'], function(Marionette) {
-  var Cell;
-  Cell = (function(_super) {
-    __extends(Cell, _super);
+define([
+    'marionette'
+], function(Marionette) {
 
-    function Cell() {
-      return Cell.__super__.constructor.apply(this, arguments);
-    }
+    var Cell = Marionette.View.extend({
+        tagName: 'td',
 
-    Cell.prototype.tagName = 'td';
+        initialize: function() {
+            this.listenTo(this.model.index, 'change:visible', this.toggleVisible);
+        },
 
-    Cell.prototype.initialize = function() {
-      return this.listenTo(this.model.index, 'change:visible', this.toggleVisible, this);
+        render: function() {
+            this.toggleVisible();
+            this.$el.html(this.model.get('value'));
+            return this;
+        },
+
+        toggleVisible: function() {
+            this.$el.toggle(this.model.index.get('visible'));
+        }
+    });
+
+    return {
+        Cell: Cell
     };
 
-    Cell.prototype.render = function() {
-      this.toggleVisible();
-      this.$el.html(this.model.get('value'));
-      return this;
-    };
-
-    Cell.prototype.toggleVisible = function() {
-      return this.$el.toggle(this.model.index.get('visible'));
-    };
-
-    return Cell;
-
-  })(Marionette.View);
-  return {
-    Cell: Cell
-  };
 });
