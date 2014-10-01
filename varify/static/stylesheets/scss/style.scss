@@ -39,24 +39,6 @@ body, #concept-panel, #context-panel {
         background: white;
     }
 
-    // Override default bootstrap popover width to something very large so
-    // individual popovers can shrink as needed.
-    .popover {
-        max-width: 600px;
-    }
-
-    .cohort-popover-content, .percentage-popover-content {
-        max-height: 250px;
-        max-width: 200px;
-        overflow-y: auto;
-    }
-
-    .details-popover-content {
-        max-width: 500px;
-        max-height: 250px;
-        overflow: auto;
-    }
-
     .assessment-table {
         th, td {
             text-align: left;
@@ -84,14 +66,6 @@ body, #concept-panel, #context-panel {
     max-height: 800px;
     bottom: 5%;
 
-    .variant-details-container {
-        position: absolute;
-        width: 96.5%;
-        top: 0;
-        bottom: 70px;
-        overflow: auto;
-    }
-
     .modal-footer {
         position: absolute;
         left: 0;
@@ -106,6 +80,32 @@ body, #concept-panel, #context-panel {
 
     .modal-body {
         position: static;
+
+        .variant-details-container {
+            position: absolute;
+            width: 96.5%;
+            top: 0;
+            bottom: 70px;
+            overflow: auto;
+        }
+    }
+
+    // Override default bootstrap popover width to something very large so
+    // individual popovers can shrink as needed.
+    .popover {
+        max-width: 600px;
+    }
+
+    .cohort-popover-content, .percentage-popover-content {
+        max-height: 250px;
+        max-width: 200px;
+        overflow-y: auto;
+    }
+
+    .details-popover-content {
+        max-width: 500px;
+        max-height: 250px;
+        overflow: auto;
     }
 }
 
