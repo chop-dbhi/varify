@@ -16,10 +16,14 @@ define([
             if (!(this.data.context = this.options.context)) {
                 throw new Error('context model required');
             }
+
+            if (!(this.data.samples = this.options.samples)) {
+                throw new Error('samples collection required');
+            }
         },
 
         renderCount: function(model, count) {
-            var samples = utils.samplesInContext(this.data.context);
+            var samples = utils.samplesInContext(this.data.context, this.data.samples);
 
             numbers.renderCount(this.ui.count, count);
             if (samples.length === 1) {
@@ -74,6 +78,10 @@ define([
             if (!(this.data.context = this.options.context)) {
                 throw new Error('context model required');
             }
+
+            if (!(this.data.samples = this.options.samples)) {
+                throw new Error('samples collection required');
+            }
         },
 
         showPhenotypesModal: function() {
@@ -89,7 +97,8 @@ define([
 
             this.count.show(new ResultCount({
                 model: this.data.results,
-                context: this.data.context
+                context: this.data.context,
+                samples: this.data.samples
             }));
 
             this.table.show(new tables.ResultTable({

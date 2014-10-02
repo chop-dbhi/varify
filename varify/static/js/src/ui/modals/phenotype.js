@@ -65,6 +65,10 @@ define([
             if (!(this.data.context = this.options.context)) {
                 throw new Error('context model required');
             }
+
+            if (!(this.data.samples = this.options.samples)) {
+                throw new Error('samples collection required');
+            }
         },
 
         renderHPO: function(annotations) {
@@ -228,7 +232,7 @@ define([
             this.ui.hideOnRetrieve.hide();
             this.ui.recalculateButton.prop('disabled', true);
 
-            var samples = utils.samplesInContext(this.data.context);
+            var samples = utils.samplesInContext(this.data.context, this.data.samples);
 
             // If there aren't exactly 1 samples in the current context then
             // warn the user with instructions on limiting their filter to
