@@ -2,10 +2,11 @@ try:
     from collections import OrderedDict
 except ImportError:
     from ordereddict import OrderedDict
+from django.conf import settings
 from django.db.models import Q
+from guardian.shortcuts import get_objects_for_user
 from avocado.formatters import registry as formatters
 from serrano.formatters import HTMLFormatter
-from django.conf import settings
 
 
 class AlamutFormatter(HTMLFormatter):
@@ -60,13 +61,21 @@ class CohortsFormatter(HTMLFormatter):
             # (e.g. allele frequencies).
             perms = Q(user=None, published=True)
 
+            # All cohorts this user has permission to.
+            projects = None
             if 'request' in context:
                 perms |= Q(user=context['request'].user)
+                projects = get_objects_for_user(
+                    context['request'].user, 'samples.view_project')
 
-            # All cohorts this user has permission to
-            self._cohorts = list(Cohort.objects.filter(perms, batch=None)
-                                 .only('name', 'count')
-                                 .order_by('order', 'name'))
+            cohorts = Cohort.objects.filter(perms, batch=None)
+
+            if projects is not None:
+                cohorts = cohorts.filter(project__in=projects)
+
+            self._cohorts = list(
+                cohorts.only('name', 'count').order_by('order', 'name'))
+
         return self._cohorts
 
     def _get_cohort_variants(self, value, **context):
