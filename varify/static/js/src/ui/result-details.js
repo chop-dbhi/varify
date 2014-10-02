@@ -17,7 +17,7 @@ define([
         }
         SolveBio.Dashboards.create(
             'variantDetailDashboard',
-            '//solvebio-varify.s3.amazonaws.com/dashboards/dev/variant-detail.html',
+            '//solvebio-varify.s3.amazonaws.com/0.0.1/variant-detail.html',
             '#solvebio-variant-detail'
         ).ready(function(dash) {
             // Filter by position +- 1000, rsid, and hgvs values
@@ -197,7 +197,8 @@ define([
                     if (data.access_token) {  // jshint ignore:line
                         SolveBio.setAccessToken(data.access_token);  // jshint ignore:line
                         createSolveBioDashboard(dashboardAttrs);
-                    } else {
+                    }
+                    else {
                         // No access token, disable so we never try again
                         SolveBio.disabled = true;
                     }
