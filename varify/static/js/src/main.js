@@ -170,7 +170,8 @@ require({
                 resultDetails: new ui.ResultDetailsModal(),
 
                 phenotype: new ui.Phenotype({
-                    context: this.data.contexts.session
+                    context: this.data.contexts.session,
+                    samples: this.data.samples
                 }),
 
                 sample: new ui.SampleDialog({
@@ -219,7 +220,8 @@ require({
                     // We need the context in the results workflow because we
                     // need to be able to reference the sample name.
                     context: this.data.contexts.session,
-                    results: this.data.preview
+                    results: this.data.preview,
+                    samples: this.data.samples
                 }),
 
                 sampleload: new ui.SampleLoader({

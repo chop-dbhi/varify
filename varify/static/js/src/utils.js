@@ -244,7 +244,7 @@ define([
     };
 
 
-    var samplesInContext = function(context) {
+    var samplesInContext = function(context, samples) {
         /*
          * Utility method for retrieving the full list of sample labels in
          * the current context. Given the current sample control, this could
@@ -253,17 +253,27 @@ define([
          * retreving them or there are no sample labels, an empty list is
          * returned.
          */
-        var samples = [], json;
+        var sampleLabels = [], json;
 
         if (context && (json = context.get('json'))) {
             _.each(json.children, function(child) {
                 if (child.concept && child.concept === 2) {
-                    samples = _.pluck(child.value, 'label');
+                    _.each(child.value, function(value) {
+                        // Handle legacy { value: ..., label: ... } format.
+                        if (typeof value === 'object') {
+                            sampleLabels.push(value.label);
+                        }
+                        // Assume this is a sample ID and lookup the
+                        // appropriate label from the list of samples.
+                        else {
+                            sampleLabels.push(samples.get(value).get('label'));
+                        }
+                    });
                 }
             });
         }
 
-        return samples;
+        return sampleLabels;
     };
 
 
