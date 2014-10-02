@@ -191,7 +191,8 @@ define([
             var dashboardAttrs = this.model.attributes;
             if (SolveBio.getAccessToken()) {
                 createSolveBioDashboard(dashboardAttrs);
-            } else if (!SolveBio.disabled) {
+            }
+            else if (!SolveBio.disabled) {
                 // Get SolveBio access token
                 $.getJSON('/api/solvebio/oauth2/token', function(data) {
                     if (data.access_token) {  // jshint ignore:line
