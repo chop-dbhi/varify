@@ -266,7 +266,11 @@ define([
                         // Assume this is a sample ID and lookup the
                         // appropriate label from the list of samples.
                         else {
-                            sampleLabels.push(samples.get(value).get('label'));
+                            var sample = samples.get(value);
+
+                            if (sample === undefined) return;
+
+                            sampleLabels.push(sample.get('label'));
                         }
                     });
                 }

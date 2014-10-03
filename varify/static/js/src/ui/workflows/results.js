@@ -20,13 +20,25 @@ define([
             if (!(this.data.samples = this.options.samples)) {
                 throw new Error('samples collection required');
             }
+
+            this.listenTo(this.data.samples, 'sync', this.renderLabel);
         },
 
         renderCount: function(model, count) {
+            numbers.renderCount(this.ui.count, count);
+
+            this.renderLabel();
+        },
+
+        renderLabel: function() {
             var samples = utils.samplesInContext(this.data.context, this.data.samples);
 
-            numbers.renderCount(this.ui.count, count);
-            if (samples.length === 1) {
+            if (samples.length === 0) {
+                this.ui.label.text('records in unknown sample');
+                this.ui.label.attr('title', 'Unknown Sample');
+                this.ui.label.tooltip('destroy');
+            }
+            else if (samples.length === 1) {
                 this.ui.label.text('records in ' + samples[0]);
                 this.ui.label.attr('title', samples[0]);
                 this.ui.label.tooltip({
@@ -38,11 +50,10 @@ define([
             }
             else {
                 this.ui.label.text('records in various samples');
-                this.ui.label.attr('title', 'various samples');
+                this.ui.label.attr('title', 'Various Samples');
                 this.ui.label.tooltip('destroy');
             }
         }
-
     });
 
     // Extend the default Cilantro results workflow to account for items like
