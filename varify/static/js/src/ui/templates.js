@@ -47,9 +47,6 @@ define([
 
     'tpl!../../../templates/variant/scores.html',
 
-    'tpl!../../../templates/variant/clinvar.html',
-    'tpl!../../../templates/variant/clinvar-item.html',
-
     'tpl!../../../templates/variant/summary.html',
 
     'tpl!../../../templates/workflows/results.html',
