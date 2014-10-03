@@ -15,7 +15,6 @@ define([
             this.phenotypes = new Backbone.Collection();
             this.cohorts = new Backbone.Collection();
             this.articles = new Backbone.Collection();
-            this.clinvarResults = new Backbone.Collection();
             this.assessmentMetrics = new Backbone.Collection();
 
             Backbone.Model.prototype.constructor.call(this, attrs, options);
@@ -33,12 +32,6 @@ define([
             this.phenotypes.reset(utils.groupPhenotypesByType(attrs));
             this.cohorts.reset(attrs.cohorts);
             this.articles.reset(utils.groupArticlesByType(attrs));
-
-            var clinvarResults;
-            if (attrs.solvebio && attrs.solvebio.clinvar) {
-                clinvarResults = attrs.solvebio.clinvar.results;
-            }
-            this.clinvarResults.reset(clinvarResults);
 
             return attrs;
         }

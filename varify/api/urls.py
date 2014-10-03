@@ -13,3 +13,14 @@ urlpatterns = patterns(
     url(r'^assessments/', include('varify.assessments.resources',
         namespace='assessments')),
 )
+
+# SolveBio local API proxy and iframe dashboard URL
+try:
+    import solvebio  # noqa
+    urlpatterns += patterns(
+        '',
+        url(r'^solvebio/', include('solvebio.contrib.django_solvebio.urls',
+            namespace='solvebio'))
+    )
+except ImportError:
+    pass
