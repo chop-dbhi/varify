@@ -257,7 +257,7 @@ define([
 
         if (context && (json = context.get('json'))) {
             _.each(json.children, function(child) {
-                if (child.concept && child.concept === 2) {
+                if (child.concept === 2) {
                     _.each(child.value, function(value) {
                         // Handle legacy { value: ..., label: ... } format.
                         if (typeof value === 'object') {
@@ -281,6 +281,31 @@ define([
     };
 
 
+    var sampleIdsInContext = function(context) {
+        /*
+         * Utility method for retrieving the full list of sample IDs in
+         * the current context.
+         */
+        var sampleIds = [], json;
+
+        if (context && (json = context.get('json'))) {
+            _.each(json.children, function(child) {
+                if (child.concept === 2) {
+                    sampleIds = child.value;
+                }
+            });
+        }
+
+        // Handle case where a "legacy" context is encountered and the value is
+        // a single value and not a list of values.
+        if (!_.isArray(sampleIds)) {
+            sampleIds = [sampleIds];
+        }
+
+        return sampleIds;
+    };
+
+
     var toAbsolutePath = function(path) {
         return '' + getRootUrl() + path;
     };
@@ -297,6 +322,7 @@ define([
         priorityClass: priorityClass,
         qualityClass: qualityClass,
         samplesInContext: samplesInContext,
+        sampleIdsInContext: sampleIdsInContext,
         toAbsolutePath: toAbsolutePath
     };
 
