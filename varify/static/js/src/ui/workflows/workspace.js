@@ -3,8 +3,9 @@
 define([
     'cilantro',
     'marionette',
-    '../sample'
-], function(c, Marionette, sample) {
+    '../sample',
+    '../../utils'
+], function(c, Marionette, sample, utils) {
 
 
     var WorkspaceWorkflow = c.ui.WorkspaceWorkflow.extend({
@@ -54,6 +55,27 @@ define([
             });
 
             this.listenTo(this.data.samples, 'select', this.onSampleSelected);
+
+            if (this.sample === undefined) {
+                var contextSampleIds = utils.sampleIdsInContext(this.data.context);
+
+                // If there are no samples in the context then don't bother
+                // doing anything because the user will be forced to select
+                // one and our select handler on this.data.samples will pick
+                // up on it and take over from there.
+                if (contextSampleIds.length > 0) {
+                    // TODO: Given the rush to handle support multiple samples
+                    // in the user context, I haven't had time to think through
+                    // how variant set creation works when multiple samples are
+                    // selected so, for now, just take the first and we will
+                    // deal with this later.
+                    this.sample = this.data.samples.get(contextSampleIds[0]);
+                }
+            }
+
+
+            this.renderSampleDetail();
+            this.renderSampleVariantSets();
         },
 
         onSampleSelected: function(model) {
