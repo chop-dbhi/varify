@@ -88,11 +88,13 @@ define([
         },
 
         renderSampleDetail: function() {
-            var sampleDetail = new this.regionViews.sampleDetail({
-                model: this.sample
-            });
+            if (this.sample) {
+                var sampleDetail = new this.regionViews.sampleDetail({
+                    model: this.sample
+                });
 
-            this.sampleDetail.show(sampleDetail);
+                this.sampleDetail.show(sampleDetail);
+            }
         },
 
         renderSampleVariantSets: function() {
