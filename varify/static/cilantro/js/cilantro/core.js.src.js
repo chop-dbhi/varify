@@ -14,7 +14,7 @@ define([
 
     var cilantro = {
         // Version of cilantro
-        version: '2.3.2',
+        version: '2.3.5',
 
         // Defines the minimum version and maximum version Serrano that this version
         // of Cilantro is 100% compatible with. While Cilantro will attempt to run
@@ -22,7 +22,7 @@ define([
         // will be warned if no version number is found or if it is less than this
         // minimum to prepare them in the case of missing or broken functionality.
         minSerranoVersion: '2.0.16',
-        maxSerranoVersion: '2.3.6',
+        maxSerranoVersion: '2.3.8',
 
         // Returns the current session's Serrano version. If there is no
         // active session or version defined, the absolute minimum is returned.
