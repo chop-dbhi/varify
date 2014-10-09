@@ -1,19 +1,22 @@
 /* global define */
 
 define([
+    'underscore',
     'cilantro',
     'marionette',
     '../sample',
     '../../utils'
-], function(c, Marionette, sample, utils) {
+], function(_, c, Marionette, sample, utils) {
 
 
     var WorkspaceWorkflow = c.ui.WorkspaceWorkflow.extend({
         template: 'varify/workflows/workspace',
 
-        ui: {
-            sampleVariantSetHelp: '[data-target=sample-variant-set-help]',
-            createVariantSetButton: '[data-target=create-variant-set]'
+        ui: function() {
+            return _.extend({
+                sampleVariantSetHelp: '[data-target=sample-variant-set-help]',
+                createVariantSetButton: '[data-target=create-variant-set]'
+            }, c.ui.WorkspaceWorkflow.prototype.ui);
         },
 
         events: {
