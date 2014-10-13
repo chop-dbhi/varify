@@ -1,4 +1,5 @@
 language: python
+
 branches:
     only:
         - headless_test
@@ -8,7 +9,6 @@ python:
     - '2.7'
 
 env:
-<<<<<<< HEAD
     - DJANGO=1.4.15
     - DJANGO=1.5.10
 
@@ -30,19 +30,6 @@ before_install:
       git fetch --append --no-tags upstream refs/heads/$upstream:refs/remotes/upstream/$upstream
     - /usr/bin/python bin/check_signoff.py
 
-=======
-  global:
-  - ARTIFACTS_S3_BUCKET=edu.chop.cbmi.tiu.travisci
-  - S3_POLICY=ewoJIlZlcnNpb24iOiAiMjAwOC0xMC0xNyIsCgkiSWQiOiAiUG9saWN5MTM4Njg4ODIxMTgyNCIsCgkiU3RhdGVtZW50IjogWwoJCXsKCQkJIlNpZCI6ICJTdG10MTM4Njg4ODE5MjE5MSIsCgkJCSJFZmZlY3QiOiAiQWxsb3ciLAoJCQkiUHJpbmNpcGFsIjogewoJCQkJIkFXUyI6ICIqIgoJCQl9LAoJCQkiQWN0aW9uIjogInMzOioiLAoJCQkiUmVzb3VyY2UiOiAiYXJuOmF3czpzMzo6OmVkdV9jaG9wX2NibWlfdGl1X3RyYXZpc2NpLyoiCgkJfQoJXQp9Cg==
-  - S3_SIGNATURE=DzomQiBA4U8Q3o4INLpJv1Py07U=
-  - DJANGO=1.4.5
-  - DJANGO=1.5.1
-  - secure: KxV9bg6JPbuyGI/RXoC8KsaKrWMyOQjnJXQd0uMhI1a89jNno527y6RprnHaX0Of9RoYEFeZi7G3rHT+gnCpPVoWIhl3yUrxe1X3k3Z8IUx96Aez9j/HIWXaoZV4LszIfwknLGH25EMfhKlu9g9xadPui9ZZn5HsWzWJdKeiCEU=
-  - secure: RkQZaMfzQCXNpDvpE25SlsTai0smuCcFv7zM6BCqtzZvQNiunolOmeNWVuV8Q3v+0JarN6K5+CFGdJTGOJY+rbICSIw8+4ceAwbaUGFKBpo96MdzfDEXhrl9cqFVLT4tderF+kLBMywVJHnZrxcEWNXf7uOEnz7l7P2KaSna01o=
-virtualenv:
-  system_site_packages: true
-before_install:
->>>>>>> Putting headings for secure keys
 install:
     - pip install -q coveralls Django==$DJANGO --use-mirrors
     - pip install -r requirements.txt
