@@ -5,7 +5,7 @@ python:
     - "2.7"
 
 env:
-    - DJANGO=1.4.11
+    - DJANGO=1.4.15
 
 before_install:
     - env | sort
