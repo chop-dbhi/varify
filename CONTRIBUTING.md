@@ -39,11 +39,11 @@ This DCO simply certifies that the code you are submitting abides by the clauses
 
 ### *Script
 
-Some code has been done in CoffeeScript, however the decision has been made to port over code to JavaScript. All new code is to be written in JavaScript and any heavy refactors of existing files should be done in JavaScript. The repository has a `.jshintrc` file that will enforce certain rules and conventions on the JavaScript source code. Files should not have any JSHint warnings when being committed. 
+The repository has a `.jshintrc` file that will enforce certain rules and conventions on the JavaScript source code. Files should not have any JSHint warnings when being committed.
 
 ### Python
 
-Python code should adhere to (PEP8)[http://legacy.python.org/dev/peps/pep-0008/] and should pass [flake8](https://flake8.readthedocs.org/en/2.0/) without errors or warnings. Any code that fails to pass flake8 will cause the build to fail and will not be considered for merge until the flake8 errors are resolved and the build is passing. 
+Python code should adhere to (PEP8)[http://legacy.python.org/dev/peps/pep-0008/] and should pass [flake8](https://flake8.readthedocs.org/en/2.0/) without errors or warnings. Any code that fails to pass flake8 will cause the build to fail and will not be considered for merge until the flake8 errors are resolved and the build is passing.
 
 ## Modules
 
