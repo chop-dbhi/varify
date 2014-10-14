@@ -160,8 +160,8 @@ define([
                 var v1 = parse(m1.get(attr)),
                     v2 = parse(m2.get(attr));
 
-                if (v1 < v2) return (dir === 'asc' ? 1 : -1);
-                if (v1 > v2) return (dir === 'asc' ? -1 : 1);
+                if (v1 < v2) return (dir === 'asc' ? -1 : 1);
+                if (v1 > v2) return (dir === 'asc' ? 1 : -1);
 
                 return 0;
             };
