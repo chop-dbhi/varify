@@ -251,7 +251,7 @@ sudo make install
 #### Node Libraries
 
 ```bash
-sudo npm install -g coffee-script
+sudo npm install -g
 ```
 
 ### PostgreSQL
