@@ -37,7 +37,6 @@ sass: _ensure
 
 watch: _ensure unwatch
 	@echo 'Watching in the background...'
-	@${WATCH_COFFEE} > /dev/null 2>&1 & echo $$! > ${WATCH_FILE}
 	@${COMPILE_SASS} --watch > /dev/null 2>&1 & echo $$! >> ${WATCH_FILE}
 
 unwatch:
