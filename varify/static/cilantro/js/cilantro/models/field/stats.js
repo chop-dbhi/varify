@@ -1,0 +1,2 @@
+define(["backbone"],function(e){var n=e.Model.extend({idAttribute:"key"}),t=e.Collection.extend({model:n,parse:function(e){var n,t,r=[];for(n in e)t=e[n],"_"!==n.charAt(0)&&r.push({key:n,value:t});var o=["min","max"];return r.sort(function(e,n){var t=o.indexOf(e.key),r=o.indexOf(n.key);return t>=0&&r>=0?t-r:0>t&&0>r?e.key>n.key:t>=0?-1:1}),r}});return{StatModel:n,StatCollection:t}});
+//# sourceMappingURL=stats.js.map

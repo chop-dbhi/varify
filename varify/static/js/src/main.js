@@ -207,7 +207,8 @@ require({
                     context: this.data.contexts.session,
                     view: this.data.views.session,
                     public_queries: this.data.public_queries,   // jshint ignore:line
-                    samples: this.data.samples
+                    samples: this.data.samples,
+                    stats: this.data.stats
                 }),
 
                 query: new c.ui.QueryWorkflow({

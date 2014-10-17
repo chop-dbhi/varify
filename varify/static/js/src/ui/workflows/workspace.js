@@ -19,11 +19,14 @@ define([
             }, c.ui.WorkspaceWorkflow.prototype.ui);
         },
 
-        events: {
-            'click @ui.createVariantSetButton': 'onCreateVariantSetClicked'
+        events: function() {
+            return _.extend({
+                'click @ui.createVariantSetButton': 'onCreateVariantSetClicked'
+            }, c.ui.WorkspaceWorkflow.prototype.events);
         },
 
         regions: {
+            dataSummary: '.data-summary-region',
             queries: '[data-target=query-region]',
             publicQueries: '[data-target=public-query-region]',
             sampleDetail: '[data-target=sample-details-region]',
@@ -31,6 +34,7 @@ define([
         },
 
         regionViews: {
+            dataSummary: c.ui.CountList,
             queries: c.ui.QueryList,
             publicQueries: c.ui.QueryList,
             sampleDetail: sample.SampleDetail,
