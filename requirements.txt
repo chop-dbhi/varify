@@ -13,7 +13,7 @@ django-rq-dashboard
 requests==2.2.0
 
 # Data models and loader
-vdw>=0.3.0
+vdw>=0.4.0
 
 # Templatetags for tweaking rendered HTML via form fields and such
 django-widget-tweaks
@@ -22,8 +22,8 @@ django-widget-tweaks
 psycopg2==2.4.4
 
 # Harvest stack
-avocado>=2.3.8,<3.0
-serrano>=2.3.8,<3.0
+avocado>=2.3.9,<3.0
+serrano>=2.3.9,<3.0
 modeltree>=1.1.7
 
 # Harvest extensions

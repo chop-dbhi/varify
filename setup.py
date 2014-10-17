@@ -18,8 +18,8 @@ install_requires = [
     'django-rq-dashboard',
     'django-widget-tweaks',
     'psycopg2==2.4.4',
-    'avocado>=2.3.8,<3.0',
-    'serrano>=2.3.8,<3.0',
+    'avocado>=2.3.9,<3.0',
+    'serrano>=2.3.9,<3.0',
     'modeltree>=1.1.7',
     'django-haystack==2.0.0',
     'whoosh==2.4.1',
@@ -35,7 +35,7 @@ install_requires = [
     'django-reversion==1.6.6',
     'diff-match-patch',
     'pyvcf>=0.6.5',
-    'vdw>=0.3.0'
+    'vdw>=0.4.0'
 ]
 
 if sys.version_info < (2, 7):
