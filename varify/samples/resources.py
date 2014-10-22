@@ -28,6 +28,7 @@ from .forms import ResultSetForm
 
 log = logging.getLogger(__name__)
 OPENPYXL_MAJOR_VERSION = int(openpyxl.__version__[0])
+GENOME_VERSION = getattr(settings, 'VDW_GENOME_VERSION', None)
 
 
 def get_cell_value(cell):
@@ -76,6 +77,8 @@ def sample_posthook(instance, data, request):
                                 args=[instance.pk])),
         }
     }
+
+    data['genome_version'] = GENOME_VERSION
 
     return data
 

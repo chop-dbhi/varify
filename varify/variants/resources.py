@@ -1,4 +1,5 @@
 import logging
+from django.conf import settings
 from django.conf.urls import patterns, url
 from django.db.models import Q
 from django.http import Http404
@@ -13,6 +14,7 @@ from vdw.assessments.models import Assessment, Pathogenicity, \
 from vdw.variants.models import Variant
 
 log = logging.getLogger(__name__)
+GENOME_VERSION = getattr(settings, 'VDW_GENOME_VERSION', None)
 
 try:
     from solvebio.contrib.django_solvebio import SolveBio
@@ -116,6 +118,8 @@ class VariantResource(ThrottledResource):
                 }
             except SolveError as e:
                 log.exception('SolveBio ClinVar query failed: {0}'.format(e))
+
+        data['genome_version'] = GENOME_VERSION
 
         return data
 
