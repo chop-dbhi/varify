@@ -25,6 +25,12 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'varify',
+    'varify.assessments',
+    'varify.genes',
+    'varify.genome',
+    'varify.phenotypes',
+    'varify.samples',
+    'varify.variants',
 
     'vdw.assessments',
     'vdw.genes',
@@ -392,6 +398,19 @@ SERRANO = {
 }
 
 VARIFY_SAMPLE_DIRS = ()
+
+# We need to map local apps to the those in vdw for migration purposes
+# otherwise South will look in varify.* for migrations instead of vdw.* where
+# it should be looking.
+SOUTH_MIGRATION_MODULES = {
+    'assessments': 'vdw.assessments.migrations',
+    'genes': 'vdw.genes.migrations',
+    'genome': 'vdw.genome.migrations',
+    'literature': 'vdw.literature.migrations',
+    'phenotypes': 'vdw.phenotypes.migrations',
+    'samples': 'vdw.samples.migrations',
+    'variants': 'vdw.variants.migrations'
+}
 
 #
 # SOLVEBIO SETTINGS (django_solvebio)
