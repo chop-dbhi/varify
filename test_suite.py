@@ -12,6 +12,7 @@ if not apps:
         'assessments',
         'south_tests',
         'geneset_form',
+        'export',
         'resources',
         'samples'
     ]
